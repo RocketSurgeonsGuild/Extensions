@@ -1,0 +1,15 @@
+<Project>
+    <ItemGroup>
+        <PackageReference Include="xunit.runner.visualstudio" Version="$(xunit_Version)" />
+        <PackageReference Include="xunit" Version="$(xunit_Version)" />
+        <PackageReference Include="FluentAssertions" Version="$(FluentAssertions_Version)" />
+        <PackageReference Include="FakeItEasy" Version="$(FakeItEasy_Version)" />
+        <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="$(FakeItEasy_Version)" />
+        <DotNetCliToolReference Include="dotnet-xunit" Version="$(xunit_Version)" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="xunit.runner.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+</Project>

@@ -1,0 +1,21 @@
+language: csharp
+sudo: required
+dist: trusty
+mono: latest
+dotnet: 2.0.0
+os:
+  - linux
+git:
+  depth: 1
+cache:
+  directories:
+    - tools
+    - $HOME/.nuget/packages
+before_cache:
+  - rm -f tools/packages.config
+script:
+  - git fetch --unshallow
+  - git fetch origin '+refs/heads/*:refs/heads/*'
+  - git branch -r
+  - chmod 755 ./build.sh
+  - ./build.sh --verbosity Diagnostic

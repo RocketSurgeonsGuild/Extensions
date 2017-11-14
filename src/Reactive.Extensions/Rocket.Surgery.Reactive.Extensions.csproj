@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard1.3;net451</TargetFrameworks>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Reactive" Version="$(System_Reactive_Version)" />
+        <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(System_Reactive_Version)" />
+    </ItemGroup>
+</Project>
