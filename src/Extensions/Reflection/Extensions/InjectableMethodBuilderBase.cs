@@ -45,7 +45,7 @@ namespace XUnitTestProject1
             string GetParameterName(Type type)
             {
                 if (type is null) return null;
-                if (type.GetTypeInfo().IsInterface && type.Name.StartsWith('I'))
+                if (type.GetTypeInfo().IsInterface && type.Name.StartsWith("I"))
                 {
                     return type.Name.Substring(1, 1).ToLower() + type.Name.Substring(2);
                 }
@@ -61,7 +61,7 @@ namespace XUnitTestProject1
                     info,
                     type = info.ParameterType,
                     index = Array.IndexOf((Array)parameters, info),
-                    argument = arguments.FirstOrDefault(x => x == info.ParameterType)
+                    argument = arguments.FirstOrDefault(x => x.AsType() == info.ParameterType)
                 })
                 .ToArray();
 

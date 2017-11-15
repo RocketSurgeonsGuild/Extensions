@@ -1,4 +1,6 @@
-﻿using Rocket.Surgery.Extensions.Tests.Fixtures;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Rocket.Surgery.Extensions.Tests.Fixtures;
 
 namespace Rocket.Surgery.Extensions.Tests
 {
