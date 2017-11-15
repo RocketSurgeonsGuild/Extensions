@@ -10,14 +10,6 @@ namespace Rocket.Surgery.Extensions.Tests
 {
     public class InjectableMethodBuilderTests
     {
-        class Instance
-        {
-            private string InjectableMethod(string a, int b, long c)
-            {
-                return a;
-            }
-        }
-
         [Fact]
         public void CreatesAMethod_WithZeroParameters()
         {

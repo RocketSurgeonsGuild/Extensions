@@ -61,7 +61,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                     info,
                     type = info.ParameterType,
                     index = Array.IndexOf((Array)parameters, info),
-                    argument = arguments.FirstOrDefault(x => x.AsType() == info.ParameterType)
+                    argument = arguments.FirstOrDefault(x => info.ParameterType.GetTypeInfo().IsAssignableFrom(x))
                 })
                 .ToArray();
 
