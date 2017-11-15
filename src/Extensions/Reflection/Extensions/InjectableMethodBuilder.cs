@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XUnitTestProject1
+namespace Rocket.Surgery.Reflection.Extensions
 {
     public static class InjectableMethodBuilder
     {

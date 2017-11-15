@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
-namespace XUnitTestProject1
+namespace Rocket.Surgery.Reflection.Extensions
 {
 
     public class InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7> : InjectableMethodBuilderBase
@@ -13,9 +11,9 @@ namespace XUnitTestProject1
         public InjectableMethodBuilder() : base(typeof(TContainer)) { }
         public InjectableMethodBuilder(ImmutableArray<string> methodNames) : base(typeof(TContainer), methodNames) { }
 
-        public InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, T8> WithParameter<T8>()
+        public InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, TNext> WithParameter<TNext>()
         {
-            return new InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, T8>(MethodNames);
+            return new InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, TNext>(MethodNames);
         }
 
         public InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7> ForMethod(string methodName)

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace XUnitTestProject1
+namespace Rocket.Surgery.Reflection.Extensions
 {
     public abstract class InjectableMethodBuilderBase
     {

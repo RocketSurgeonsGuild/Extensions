@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
-using System.Text;
 
-namespace XUnitTestProject1
+namespace Rocket.Surgery.Reflection.Extensions
 {
     public class InjectableMethodBuilder<TContainer> : InjectableMethodBuilderBase
     {
