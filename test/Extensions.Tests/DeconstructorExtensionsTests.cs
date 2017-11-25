@@ -1,11 +1,17 @@
 using System.Collections.Generic;
 using FluentAssertions;
+using Rocket.Surgery.Extensions.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests
 {
-    public class DeconstructorExtensionsTests
+    public class DeconstructorExtensionsTests : AutoTestBase
     {
+        public DeconstructorExtensionsTests(ITestOutputHelper outputHelper) : base(outputHelper)
+        {
+        }
+
         [Fact]
         public void Deconstructs_TheTarget_KeyValuePair()
         {

@@ -2,12 +2,16 @@
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using Rocket.Surgery.Binding;
+using Rocket.Surgery.Extensions.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests
 {
-    public class BindingTests
+    public class BindingTests : AutoTestBase
     {
+        public BindingTests(ITestOutputHelper outputHelper) : base(outputHelper) { }
+
         class AutoProperty
         {
             public string Value { get; set; }

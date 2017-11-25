@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Rocket.Surgery.Encoding;
+using Rocket.Surgery.Extensions.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.Encoding
 {
@@ -10,9 +12,11 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding
     /// TODO: Anyone feels like it some more comprehensive testing of the crockford encoding would be helpful. Cheers, Mhano
     /// TODO: Tests evolved a bit over time, refactoring to organise might be needed if adding significant test cases.
     /// </summary>
-    public class Base3264EncodingTests
+    public class Base3264EncodingTests : AutoTestBase
     {
         private const string Chars = @"!""#$%&'()*+,-./:;<=>?@[\]^_`{|}~€‚ƒ„…†‡ˆ‰Š‹Œ¼½¾¿ÀÁÂÃÄÅÆÇÈÏÐÑÕ×ØÛÜÝÞßåæçéíðñõö÷øüýþÿabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ electricity 電	电	電 red 紅	红	紅";
+
+        public Base3264EncodingTests(ITestOutputHelper outputHelper) : base(outputHelper){}
 
         [Fact]
         public void TestEncodeDecode()
