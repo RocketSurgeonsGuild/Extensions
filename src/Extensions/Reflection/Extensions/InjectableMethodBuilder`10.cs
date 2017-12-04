@@ -5,23 +5,22 @@ using System.Reflection;
 
 namespace Rocket.Surgery.Reflection.Extensions
 {
-    public class InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, T8, T9> : InjectableMethodBuilderBase
+    public class InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> : InjectableMethodBuilderBase
     {
-        public InjectableMethodBuilder() : base(typeof(TContainer)) { }
-        public InjectableMethodBuilder(ImmutableArray<string> methodNames) : base(typeof(TContainer), methodNames) { }
+        internal InjectableMethodBuilder(TypeInfo containerType, ImmutableArray<string> methodNames) : base(containerType.AsType(), methodNames) { }
 
 
-        public InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, T8, T9, TNext> WithParameter<TNext>()
+        public InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, TNext> WithParameter<TNext>()
         {
-            return new InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, T8, T9, TNext>(MethodNames);
+            return new InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, TNext>(Container, MethodNames);
         }
 
-        public InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, T8, T9> ForMethod(string methodName)
+        public InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> ForMethod(string methodName)
         {
-            return new InjectableMethodBuilder<TContainer, T, T2, T3, T4, T5, T6, T7, T8, T9>(MethodNames.Add(methodName));
+            return new InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>(Container, MethodNames.Add(methodName));
         }
 
-        public Func<TContainer, IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Compile<TResult>()
+        public Func<object, IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, TResult> Compile<TResult>()
         {
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo(),
@@ -33,11 +32,11 @@ namespace Rocket.Surgery.Reflection.Extensions
                 typeof(T7).GetTypeInfo(),
                 typeof(T8).GetTypeInfo(),
                 typeof(T9).GetTypeInfo());
-            var lambda = Expression.Lambda<Func<TContainer, IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, TResult>>(body, parameters);
+            var lambda = Expression.Lambda<Func<object, IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, TResult>>(body, parameters);
             return lambda.Compile();
         }
 
-        public Action<TContainer, IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9> Compile()
+        public Action<object, IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9> Compile()
         {
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo(),
@@ -49,7 +48,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                 typeof(T7).GetTypeInfo(),
                 typeof(T8).GetTypeInfo(),
                 typeof(T9).GetTypeInfo());
-            var lambda = Expression.Lambda<Action<TContainer, IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9>>(body, parameters);
+            var lambda = Expression.Lambda<Action<object, IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9>>(body, parameters);
             return lambda.Compile();
         }
     }

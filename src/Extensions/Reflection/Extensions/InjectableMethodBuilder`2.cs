@@ -5,34 +5,33 @@ using System.Reflection;
 
 namespace Rocket.Surgery.Reflection.Extensions
 {
-    public class InjectableMethodBuilder<TContainer, T> : InjectableMethodBuilderBase
+    public class InjectableMethodBuilder<T> : InjectableMethodBuilderBase
     {
-        public InjectableMethodBuilder() : base(typeof(TContainer)) { }
-        public InjectableMethodBuilder(ImmutableArray<string> methodNames) : base(typeof(TContainer), methodNames) { }
+        internal InjectableMethodBuilder(TypeInfo containerType, ImmutableArray<string> methodNames) : base(containerType.AsType(), methodNames) { }
 
-        public InjectableMethodBuilder<TContainer, T, TNext> WithParameter<TNext>()
+        public InjectableMethodBuilder<T, TNext> WithParameter<TNext>()
         {
-            return new InjectableMethodBuilder<TContainer, T, TNext>(MethodNames);
+            return new InjectableMethodBuilder<T, TNext>(Container, MethodNames);
         }
 
-        public InjectableMethodBuilder<TContainer, T> ForMethod(string methodName)
+        public InjectableMethodBuilder<T> ForMethod(string methodName)
         {
-            return new InjectableMethodBuilder<TContainer, T>(MethodNames.Add(methodName));
+            return new InjectableMethodBuilder<T>(Container, MethodNames.Add(methodName));
         }
 
-        public Func<TContainer, IServiceProvider, T, TResult> Compile<TResult>()
+        public Func<object, IServiceProvider, T, TResult> Compile<TResult>()
         {
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo());
-            var lambda = Expression.Lambda<Func<TContainer, IServiceProvider, T, TResult>>(body, parameters);
+            var lambda = Expression.Lambda<Func<object, IServiceProvider, T, TResult>>(body, parameters);
             return lambda.Compile();
         }
 
-        public Action<TContainer, IServiceProvider, T> Compile()
+        public Action<object, IServiceProvider, T> Compile()
         {
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo());
-            var lambda = Expression.Lambda<Action<TContainer, IServiceProvider, T>>(body, parameters);
+            var lambda = Expression.Lambda<Action<object, IServiceProvider, T>>(body, parameters);
             return lambda.Compile();
         }
     }

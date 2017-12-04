@@ -4,38 +4,42 @@ using System.Linq.Expressions;
 
 namespace Rocket.Surgery.Reflection.Extensions
 {
-    public class InjectableMethodBuilder<TContainer> : InjectableMethodBuilderBase
+    public class InjectableMethodBuilder : InjectableMethodBuilderBase
     {
+        public static InjectableMethodBuilder Create<TContainer>(string methodName)
+        {
+            return new InjectableMethodBuilder(typeof(TContainer)).ForMethod(methodName);
+        }
 
-        public InjectableMethodBuilder() : base(typeof(TContainer)) { }
+        public static InjectableMethodBuilder Create(Type container, string methodName)
+        {
+            return new InjectableMethodBuilder(container).ForMethod(methodName);
+        }
+
         public InjectableMethodBuilder(Type container) : base(container) { }
+        public InjectableMethodBuilder(Type container, ImmutableArray<string> methodNames) : base(container, methodNames) { }
 
-
-        public InjectableMethodBuilder(ImmutableArray<string> methodNames) : base(typeof(TContainer), methodNames)
+        public InjectableMethodBuilder<T> WithParameter<T>()
         {
+            return new InjectableMethodBuilder<T>(Container, MethodNames);
         }
 
-        public InjectableMethodBuilder<TContainer, T> WithParameter<T>()
+        public InjectableMethodBuilder ForMethod(string methodName)
         {
-            return new InjectableMethodBuilder<TContainer, T>(MethodNames);
+            return new InjectableMethodBuilder(Container.AsType(), MethodNames.Add(methodName));
         }
 
-        public InjectableMethodBuilder<TContainer> ForMethod(string methodName)
-        {
-            return new InjectableMethodBuilder<TContainer>(MethodNames.Add(methodName));
-        }
-
-        public Func<TContainer, IServiceProvider, TResult> Compile<TResult>()
+        public Func<object, IServiceProvider, TResult> Compile<TResult>()
         {
             var (body, parameters) = base.Compile();
-            var lambda = Expression.Lambda<Func<TContainer, IServiceProvider, TResult>>(body, parameters);
+            var lambda = Expression.Lambda<Func<object, IServiceProvider, TResult>>(body, parameters);
             return lambda.Compile();
         }
 
-        public Action<TContainer, IServiceProvider> Compile()
+        public Action<object, IServiceProvider> Compile()
         {
             var (body, parameters) = base.Compile();
-            var lambda = Expression.Lambda<Action<TContainer, IServiceProvider>>(body, parameters);
+            var lambda = Expression.Lambda<Action<object, IServiceProvider>>(body, parameters);
             return lambda.Compile();
         }
     }

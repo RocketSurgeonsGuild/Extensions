@@ -30,6 +30,25 @@ namespace Rocket.Surgery.Extensions.Tests
         }
 
         [Fact]
+        public void CreatesAMethod_WithZeroParameters_UsingTypeForMethod()
+        {
+            var method = InjectableMethodBuilder
+                .Create(typeof(MethodFuncTest), nameof(MethodFuncTest.ExecuteReturn0))
+                .Compile<bool>();
+            method.Should().NotBeNull();
+            var serviceProvider = A.Fake<IServiceProvider>();
+            var injected1 = A.Fake<IInjected1>();
+            var injected2 = A.Fake<IInjected2>();
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
+            method(new MethodFuncTest(), serviceProvider);
+
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+        }
+
+        [Fact]
         public void CreatesAMethod_WithOneParameters()
         {
             var method = InjectableMethodBuilder

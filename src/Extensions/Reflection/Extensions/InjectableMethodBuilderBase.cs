@@ -66,7 +66,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                 .ToArray();
 
             var providerArg = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
-            var instanceArg = Expression.Parameter(middleware.AsType(), "instance");
+            var instanceArg = Expression.Parameter(typeof(object), "instance");
 
             var methodArguments = new Expression[parameters.Length];
 
