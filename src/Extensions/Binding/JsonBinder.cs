@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Rocket.Surgery.Binding
 {
@@ -12,35 +13,42 @@ namespace Rocket.Surgery.Binding
     /// TODO Edit XML Comment Template for JsonBinder
     public class JsonBinder
     {
+        private static readonly JsonSerializer DefaultSerializer = JsonSerializer.CreateDefault(new JsonSerializerSettings {ContractResolver = new PrivateSetterContractResolver()});
+        private readonly JsonSerializer _serializer;
         private readonly string[] _separator;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonBinder"/> class.
-        /// </summary>
-        /// TODO Edit XML Comment Template for #ctor
-        public JsonBinder() : this(':')
-        {
+        /// <inheritdoc />
+        public JsonBinder() : this(":", DefaultSerializer) { }
 
-        }
+        /// <inheritdoc />
+        public JsonBinder(char separator) : this(separator.ToString(), DefaultSerializer) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonBinder"/> class.
-        /// </summary>
-        /// <param name="separator">The separator.</param>
-        /// TODO Edit XML Comment Template for #ctor
-        public JsonBinder(char separator)
-        {
-            this._separator = new[] {separator.ToString()};
-        }
+        /// <inheritdoc />
+        public JsonBinder(string separator) : this(separator, DefaultSerializer) { }
+
+        /// <inheritdoc />
+        public JsonBinder(JsonSerializerSettings settings) : this(":", settings) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonBinder"/> class.
         /// </summary>
         /// <param name="separator">The separator.</param>
-        /// TODO Edit XML Comment Template for #ctor
-        public JsonBinder(string separator)
+        /// <param name="settings">The serialization setings.</param>
+        public JsonBinder(string separator, JsonSerializerSettings settings)
+            : this(separator, JsonSerializer.CreateDefault(
+                settings ?? new JsonSerializerSettings { ContractResolver = new PrivateSetterContractResolver() })
+            )
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonBinder"/> class.
+        /// </summary>
+        /// <param name="separator">The separator.</param>
+        /// <param name="serializer">The serializer.</param>
+        public JsonBinder(string separator, JsonSerializer serializer)
         {
-            this._separator = new[] { separator };
+            _serializer = serializer;
+            _separator = new[] { separator };
         }
 
         /// <summary>
@@ -53,7 +61,7 @@ namespace Rocket.Surgery.Binding
         public T Get<T>(IEnumerable<KeyValuePair<string, string>> values)
         where T : class, new()
         {
-            return Parse(values).ToObject<T>(GetSerializer(null));
+            return Parse(values).ToObject<T>(_serializer);
         }
 
         /// <summary>
@@ -164,48 +172,5 @@ namespace Rocket.Surgery.Binding
             }
             return root[key];
         }
-
-        private JsonSerializer GetSerializer(JsonSerializer serializer)
-        {
-            serializer = serializer ?? JsonSerializer.CreateDefault();
-
-            if (!(serializer.ContractResolver is PrivateSetterContractResolver))
-            {
-                // ensure we have the correct settings to capture the backing field
-                serializer = JsonSerializer.Create(new JsonSerializerSettings()
-                {
-                    CheckAdditionalContent = serializer.CheckAdditionalContent,
-                    ConstructorHandling = serializer.ConstructorHandling,
-                    Context = serializer.Context,
-                    ContractResolver = new PrivateSetterContractResolver(),
-                    Converters = serializer.Converters,
-                    Culture = serializer.Culture,
-                    DateFormatHandling = serializer.DateFormatHandling,
-                    DateFormatString = serializer.DateFormatString,
-                    DateParseHandling = serializer.DateParseHandling,
-                    DateTimeZoneHandling = serializer.DateTimeZoneHandling,
-                    DefaultValueHandling = serializer.DefaultValueHandling,
-                    EqualityComparer = serializer.EqualityComparer,
-                    FloatFormatHandling = serializer.FloatFormatHandling,
-                    FloatParseHandling = serializer.FloatParseHandling,
-                    Formatting = serializer.Formatting,
-                    MaxDepth = serializer.MaxDepth,
-                    MetadataPropertyHandling = serializer.MetadataPropertyHandling,
-                    MissingMemberHandling = serializer.MissingMemberHandling,
-                    NullValueHandling = serializer.NullValueHandling,
-                    ObjectCreationHandling = serializer.ObjectCreationHandling,
-                    PreserveReferencesHandling = serializer.PreserveReferencesHandling,
-                    ReferenceLoopHandling = serializer.ReferenceLoopHandling,
-                    StringEscapeHandling = serializer.StringEscapeHandling,
-                    TypeNameAssemblyFormatHandling = serializer.TypeNameAssemblyFormatHandling,
-                    TypeNameHandling = serializer.TypeNameHandling,
-                    ReferenceResolverProvider = () => serializer.ReferenceResolver,
-                    SerializationBinder = serializer.SerializationBinder,
-                    TraceWriter = serializer.TraceWriter
-                });
-            }
-            return serializer;
-        }
-
     }
 }
