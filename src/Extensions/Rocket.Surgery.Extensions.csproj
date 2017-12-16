@@ -11,5 +11,6 @@
         <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
         <PackageReference Include="System.ValueTuple" Version="4.4.0" />
         <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(Microsoft_Extensions_Configuration_Version)" />
     </ItemGroup>
 </Project>

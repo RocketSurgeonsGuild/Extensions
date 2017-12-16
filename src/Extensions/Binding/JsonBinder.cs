@@ -7,13 +7,10 @@ using Newtonsoft.Json.Serialization;
 
 namespace Rocket.Surgery.Binding
 {
-    /// <summary>
-    /// Class JsonBinder.
-    /// </summary>
-    /// TODO Edit XML Comment Template for JsonBinder
-    public class JsonBinder
+    /// <inheritdoc />
+    public class JsonBinder : IJsonBinder
     {
-        private static readonly JsonSerializer DefaultSerializer = JsonSerializer.CreateDefault(new JsonSerializerSettings {ContractResolver = new PrivateSetterContractResolver()});
+        internal static readonly JsonSerializer DefaultSerializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = new PrivateSetterContractResolver() });
         private readonly JsonSerializer _serializer;
         private readonly string[] _separator;
 
@@ -51,39 +48,49 @@ namespace Rocket.Surgery.Binding
             _separator = new[] { separator };
         }
 
-        /// <summary>
-        /// Gets the specified values.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="values">The values.</param>
-        /// <returns>T.</returns>
-        /// TODO Edit XML Comment Template for Get`1
-        public T Get<T>(IEnumerable<KeyValuePair<string, string>> values)
-        where T : class, new()
+        /// <inheritdoc />
+        public T Bind<T>(IEnumerable<KeyValuePair<string, string>> values)
+            where T : class, new()
         {
             return Parse(values).ToObject<T>(_serializer);
         }
 
-        /// <summary>
-        /// Gets the specified values.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="values">The values.</param>
-        /// <param name="serializer">The serializer.</param>
-        /// <returns>T.</returns>
-        /// TODO Edit XML Comment Template for Get`1
-        public T Get<T>(IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
-        where T : class, new()
+        /// <inheritdoc />
+        public T Bind<T>(IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
+            where T : class, new()
         {
             return Parse(values).ToObject<T>(serializer);
         }
 
+        /// <inheritdoc />
+        public object Bind(Type objectType, IEnumerable<KeyValuePair<string, string>> values)
+        {
+            return Parse(values).ToObject(objectType, _serializer);
+        }
 
-        /// <summary>
-        /// Parses the specified values.
-        /// </summary>
-        /// <param name="values">The values.</param>
-        /// <returns>Newtonsoft.Json.Linq.JObject.</returns>
+        /// <inheritdoc />
+        public object Bind(Type objectType, IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
+        {
+            return Parse(values).ToObject(objectType, serializer);
+        }
+
+        /// <inheritdoc />
+        public T Populate<T>(T value, IEnumerable<KeyValuePair<string, string>> values)
+            where T : class
+        {
+            _serializer.Populate(Parse(values).CreateReader(), value);
+            return value;
+        }
+
+        /// <inheritdoc />
+        public T Populate<T>(T value, IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
+            where T : class
+        {
+            serializer.Populate(Parse(values).CreateReader(), value);
+            return value;
+        }
+
+        /// <inheritdoc />
         public JObject Parse(IEnumerable<KeyValuePair<string, string>> values)
         {
             var result = new JObject();
@@ -95,7 +102,7 @@ namespace Rocket.Surgery.Binding
 
                 // This produces a simple look ahead
                 var zippedKeys = keys
-                    .Zip(keys.Skip(1), (prev, current) => (prev: prev, current: current));
+                    .Zip(keys.Skip(1), (prev, current) => (prev, current));
 
                 foreach (var (key, next) in zippedKeys)
                 {
@@ -114,16 +121,59 @@ namespace Rocket.Surgery.Binding
             return result;
         }
 
-        /// <summary>
-        /// Gets the key.
-        /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns>System.String.</returns>
-        public string GetKey(JToken token)
+        /// <inheritdoc />
+        public IEnumerable<KeyValuePair<string, JValue>> GetValues<T>(T value)
+            where T : class
+        {
+            return JObject.FromObject(value, _serializer)
+                .Descendants()
+                .Where(p => !p.Any())
+                .OfType<JValue>()
+                .Select(item => new KeyValuePair<string, JValue>(GetKey(item), item));
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<KeyValuePair<string, JValue>> GetValues<T>(T value, JsonSerializer serializer)
+            where T : class
+        {
+            return JObject.FromObject(value, serializer)
+                .Descendants()
+                .Where(p => !p.Any())
+                .OfType<JValue>()
+                .Select(item => new KeyValuePair<string, JValue>(GetKey(item), item));
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<KeyValuePair<string, string>> From<T>(T value)
+            where T : class
+        {
+            return JObject.FromObject(value, _serializer)
+                .Descendants()
+                .Where(p => !p.Any())
+                .OfType<JValue>()
+                .Select(item => new KeyValuePair<string, string>(GetKey(item), item.ToString()));
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<KeyValuePair<string, string>> From<T>(T value, JsonSerializer serializer)
+            where T : class
+        {
+            return JObject.FromObject(value, serializer)
+                .Descendants()
+                .Where(p => !p.Any())
+                .OfType<JValue>()
+                .Select(item => new KeyValuePair<string, string>(GetKey(item), item.ToString()));
+        }
+
+        private string GetKey(JToken token)
         {
             var items = new Stack<string>();
             while (token.Parent != null)
             {
+                if (token.Parent is JArray arr)
+                {
+                    items.Push(arr.IndexOf(token).ToString());
+                }
                 if (token is JProperty p)
                 {
                     items.Push(p.Name);
@@ -134,18 +184,25 @@ namespace Rocket.Surgery.Binding
         }
 
         private T SetValueToToken<T>(JToken root, string key, T value)
-        where T : JToken
+            where T : JToken
         {
-            if (GetValueFromToken(root, key) is null)
+            var currentValue = GetValueFromToken(root, key);
+            if (currentValue == null || currentValue.Type == JTokenType.Null)
             {
                 if (root is JArray arr)
                 {
                     if (int.TryParse(key, out var index))
                     {
                         if (arr.Count <= index)
+                        {
+                            while (arr.Count < index)
+                                arr.Add(null);
                             arr.Add(value);
+                        }
                         else
+                        {
                             arr[index] = value;
+                        }
 
                         return value;
                     }
@@ -155,6 +212,11 @@ namespace Rocket.Surgery.Binding
                     root[key] = value;
                     return value;
                 }
+            }
+
+            if (root is JArray arr2 && int.TryParse(key, out var i))
+            {
+                return (T)arr2[i];
             }
             return (T)root[key];
         }

@@ -3,7 +3,6 @@
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
-        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
         <RootNamespace>$(MSBuildProjectName.Replace('.Extensions', ''))</RootNamespace>
     </PropertyGroup>
     <ItemGroup>

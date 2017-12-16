@@ -11,10 +11,8 @@ using Rocket.Surgery.Reflection.Extensions;
 namespace Rocket.Surgery.Binding
 {
     /// <summary>
-    /// Class PrivateSetterContractResolver.
+    /// Allows Newtonsoft.Json to set the underlying backing field for a given readonly autoprop
     /// </summary>
-    /// <seealso cref="Newtonsoft.Json.Serialization.DefaultContractResolver" />
-    /// TODO Edit XML Comment Template for PrivateSetterContractResolver
     public class PrivateSetterContractResolver : DefaultContractResolver
     {
         /// <inheritdoc />

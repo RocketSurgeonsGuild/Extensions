@@ -6,10 +6,8 @@ using Newtonsoft.Json.Serialization;
 namespace Rocket.Surgery.Binding
 {
     /// <summary>
-    /// Class BackingFieldValueProvider.
+    /// Allows Newtonsoft.Json to set the underlying backing field for a given readonly autoprop
     /// </summary>
-    /// <seealso cref="Newtonsoft.Json.Serialization.IValueProvider" />
-    /// TODO Edit XML Comment Template for BackingFieldValueProvider
     public class BackingFieldValueProvider : IValueProvider
     {
         private readonly FieldInfo _backingField;
@@ -20,20 +18,13 @@ namespace Rocket.Surgery.Binding
         /// </summary>
         /// <param name="memberInfo">The member information.</param>
         /// <param name="backingField">The backing field.</param>
-        /// TODO Edit XML Comment Template for #ctor
         public BackingFieldValueProvider(MemberInfo memberInfo, FieldInfo backingField)
         {
             _backingField = backingField;
             _memberInfo = memberInfo;
         }
 
-        /// <summary>
-        /// Sets the value.
-        /// </summary>
-        /// <param name="target">The target to set the value on.</param>
-        /// <param name="value">The value to set on the target.</param>
-        /// <exception cref="Newtonsoft.Json.JsonSerializationException"></exception>
-        /// TODO Edit XML Comment Template for SetValue
+        /// <inheritdoc />
         public void SetValue(object target, object value)
         {
             try
@@ -46,13 +37,7 @@ namespace Rocket.Surgery.Binding
             }
         }
 
-        /// <summary>
-        /// Gets the value.
-        /// </summary>
-        /// <param name="target">The target to get the value from.</param>
-        /// <returns>The value.</returns>
-        /// <exception cref="Newtonsoft.Json.JsonSerializationException"></exception>
-        /// TODO Edit XML Comment Template for GetValue
+        /// <inheritdoc />
         public object GetValue(object target)
         {
             try

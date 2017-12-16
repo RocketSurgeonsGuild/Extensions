@@ -1,47 +1,106 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Rocket.Surgery.Binding
 {
     /// <summary>
-    /// Interface IJsonBinder
+    /// <see cref="IJsonBinder"/> is a way to bind complex objects, with nested keys.
     /// </summary>
-    /// TODO Edit XML Comment Template for IJsonBinder
     public interface IJsonBinder
     {
         /// <summary>
-        /// Gets the key.
+        /// Bind the values to the source type
         /// </summary>
-        /// <param name="token">The token.</param>
-        /// <returns>System.String.</returns>
-        /// TODO Edit XML Comment Template for GetKey
-        string GetKey(JToken token);
+        /// <typeparam name="T"></typeparam>
+        /// <param name="values">The values.</param>
+        T Bind<T>(IEnumerable<KeyValuePair<string, string>> values)
+            where T : class, new();
+
         /// <summary>
-        /// Parses the specified values.
+        /// Bind the values to the source type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="values">The values.</param>
+        /// <param name="serializer">The serializer.</param>
+        T Bind<T>(IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
+            where T : class, new();
+
+        /// <summary>
+        /// Bind the values to the source type
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <param name="values">The values.</param>
+        object Bind(Type objectType, IEnumerable<KeyValuePair<string, string>> values);
+
+        /// <summary>
+        /// Bind the values to the source type
+        /// </summary>
+        /// <param name="objectType"></param>
+        /// <param name="values">The values.</param>
+        /// <param name="serializer">The serializer.</param>
+        object Bind(Type objectType, IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer);
+
+        /// <summary>
+        /// Populate the values to the source type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
+        /// <param name="values">The values.</param>
+        T Populate<T>(T value, IEnumerable<KeyValuePair<string, string>> values)
+            where T : class;
+
+        /// <summary>
+        /// Populate the values to the source type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
+        /// <param name="values">The values.</param>
+        /// <param name="serializer">The serializer.</param>
+        T Populate<T>(T value, IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
+            where T : class;
+
+        /// <summary>
+        /// Parses the given key value pairs into a <see cref="JObject"/>.
         /// </summary>
         /// <param name="values">The values.</param>
-        /// <returns>JObject.</returns>
-        /// TODO Edit XML Comment Template for Parse
+        /// <returns>Newtonsoft.Json.Linq.JObject.</returns>
         JObject Parse(IEnumerable<KeyValuePair<string, string>> values);
 
         /// <summary>
-        /// Gets the specified values.
+        /// Get a list of <see cref="JValue"/>'s for a given object
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="values">The values.</param>
-        /// <returns>T.</returns>
-        /// TODO Edit XML Comment Template for Get`1
-        T Get<T>(IEnumerable<KeyValuePair<string, string>> values) where T : class, new();
-        
+        /// <param name="value">The value.</param>
+        IEnumerable<KeyValuePair<string, JValue>> GetValues<T>(T value)
+            where T : class;
+
         /// <summary>
-        /// Gets the specified values.
+        /// Get a list of <see cref="JValue"/>'s for a given object
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="values">The values.</param>
-        /// <param name="settings">The settings.</param>
-        /// <returns>T.</returns>
-        /// TODO Edit XML Comment Template for Get`1
-        T Get<T>(IEnumerable<KeyValuePair<string, string>> values, JsonSerializer settings) where T : class, new();
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The serializer.</param>
+        IEnumerable<KeyValuePair<string, JValue>> GetValues<T>(T value, JsonSerializer serializer)
+            where T : class;
+
+        /// <summary>
+        /// Get a list of key value pairs for the given source object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
+        IEnumerable<KeyValuePair<string, string>> From<T>(T value)
+            where T : class;
+
+        /// <summary>
+        /// Get a list of key value pairs for the given source object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The serializer.</param>
+        IEnumerable<KeyValuePair<string, string>> From<T>(T value, JsonSerializer serializer)
+            where T : class;
     }
 }
