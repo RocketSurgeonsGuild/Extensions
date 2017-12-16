@@ -7,9 +7,8 @@ using Newtonsoft.Json;
 namespace Rocket.Surgery.Binding
 {
     /// <summary>
-    /// Class JsonBinderExtensions.
+    /// Extension methods for <see cref="IJsonBinder"/>
     /// </summary>
-    /// TODO Edit XML Comment Template for JsonBinderExtensions
     public static class JsonBinderExtensions
     {
         private static IEnumerable<KeyValuePair<string, string>> GetValues(IConfiguration configuration) =>

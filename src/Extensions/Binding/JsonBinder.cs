@@ -7,10 +7,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Rocket.Surgery.Binding
 {
-    /// <summary>
-    /// Class JsonBinder.
-    /// </summary>
-    /// TODO Edit XML Comment Template for JsonBinder
+    /// <inheritdoc />
     public class JsonBinder : IJsonBinder
     {
         internal static readonly JsonSerializer DefaultSerializer = JsonSerializer.CreateDefault(new JsonSerializerSettings { ContractResolver = new PrivateSetterContractResolver() });

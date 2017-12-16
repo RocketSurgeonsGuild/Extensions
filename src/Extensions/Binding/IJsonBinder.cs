@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace Rocket.Surgery.Binding
 {
     /// <summary>
-    /// Interface IJsonBinder
+    /// <see cref="IJsonBinder"/> is a way to bind complex objects, with nested keys.
     /// </summary>
     public interface IJsonBinder
     {
