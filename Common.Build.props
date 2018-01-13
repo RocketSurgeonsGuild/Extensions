@@ -6,17 +6,17 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <PropertyGroup>
-        <RSG_Build_Version>1.2.2</RSG_Build_Version>
+        <RSG_Build_Version>1.2.3</RSG_Build_Version>
         <System_Interactive_Version>3.1.1</System_Interactive_Version>
         <System_Reactive_Version>3.1.1</System_Reactive_Version>
-        <SourceLink_Version>2.6.0</SourceLink_Version>
+        <SourceLink_Version>2.7.4</SourceLink_Version>
         <Microsoft_Extensions_Configuration_Version>2.0.0</Microsoft_Extensions_Configuration_Version>
         <Microsoft_NET_Test_Sdk_Version>15.5.0</Microsoft_NET_Test_Sdk_Version>
         <xunit_Version>2.3.1</xunit_Version>
-        <FluentAssertions_Version>5.0.0-beta0004</FluentAssertions_Version>
-        <FakeItEasy_Version>4.1.1</FakeItEasy_Version>
+        <FluentAssertions_Version>5.0.0-rc0002</FluentAssertions_Version>
+        <FakeItEasy_Version>4.3.0</FakeItEasy_Version>
         <Autofac_FakeItEasy_Version>5.0.0</Autofac_FakeItEasy_Version>
-		<RSG_Testing_Version>0.1.0</RSG_Testing_Version>
+		<RSG_Testing_Version>0.1.1</RSG_Testing_Version>
     </PropertyGroup>
     <!-- Overrides -->
     <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3' or '$(TargetFramework)'=='net451'">
