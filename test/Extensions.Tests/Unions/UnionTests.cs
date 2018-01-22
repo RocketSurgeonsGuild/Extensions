@@ -154,16 +154,16 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
 
         [Theory]
         [MemberData(nameof(GetAllEnumDiscriminatorTypes))]
-        public void All_Union_Types_Are_Implemented(TypeInfo enumType, TypeInfo[] typesFromEnum, TypeInfo[] implementationTypes)
+        public void All_Union_Types_Are_Implemented(TypeInfo enumType, bool allImplemented)
         {
-            typesFromEnum.Should().Contain(implementationTypes, $"All types must be implemented, not just the correct number.  EnumType: {enumType.FullName}");
+            allImplemented.Should().BeTrue($"All types must be implemented, not just the correct number.  EnumType: {enumType.FullName}");
         }
 
         public static IEnumerable<object[]> GetAllEnumDiscriminatorTypes()
         {
             foreach (var type in UnionHelper.GetAll(typeof(UnionTests).GetTypeInfo().Assembly))
             {
-                yield return new object[] { type.enumType, type.typesFromEnum, type.implementationTypes };
+                yield return new object[] { type.enumType, type.allImplemented };
             }
         }
     }

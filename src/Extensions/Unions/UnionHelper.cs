@@ -53,7 +53,7 @@ namespace Rocket.Surgery.Unions
         /// <param name="assembly"></param>
         /// <param name="rest"></param>
         /// <returns></returns>
-        public static IEnumerable<(TypeInfo enumType, TypeInfo[] typesFromEnum, TypeInfo[] implementationTypes)> GetAll(
+        public static IEnumerable<(TypeInfo enumType, bool allImplemented)> GetAll(
             Assembly assembly, params Assembly[] rest)
         {
             return GetAll(new[] { assembly }.Concat(rest));
@@ -66,7 +66,7 @@ namespace Rocket.Surgery.Unions
         /// </summary>
         /// <param name="assemblies"></param>
         /// <returns></returns>
-        public static IEnumerable<(TypeInfo enumType, TypeInfo[] typesFromEnum, TypeInfo[] implementationTypes)> GetAll(IEnumerable<Assembly> assemblies)
+        public static IEnumerable<(TypeInfo enumType, bool allImplemented)> GetAll(IEnumerable<Assembly> assemblies)
         {
             foreach (var type in assemblies.SelectMany(x =>
                 {
@@ -79,41 +79,21 @@ namespace Rocket.Surgery.Unions
                         return Enumerable.Empty<TypeInfo>();
                     }
                 })
-                .Where(x => x.IsClass && x.IsAbstract)
-                .Where(x => x.GetCustomAttributes<JsonConverterAttribute>()
-                    .Any(z => z.ConverterType == typeof(UnionConverter))
-                || (x.IsEnum && x.GetCustomAttributes<UnionAttribute>().Any())
-                            ))
+                .Where(x => x.IsEnum && x.GetCustomAttributes<UnionAttribute>().Any())
+            )
             {
-                TypeInfo enumType;
-                TypeInfo rootType;
-                if (type.IsEnum)
-                {
-                    enumType = type;
-                    rootType = type.GetCustomAttribute<UnionAttribute>().Type.GetTypeInfo();
-                }
-                else
-                {
-                    var converter = type.GetCustomAttribute<JsonConverterAttribute>();
-                    rootType = ((Type)converter.ConverterParameters[0]).GetTypeInfo();
-                    var key = (string)converter.ConverterParameters[1];
-
-                    enumType = rootType.GetDeclaredProperty(key).PropertyType.GetTypeInfo();
-                }
+                var enumType = type;
+                var rootType = type.GetCustomAttribute<UnionAttribute>().Type.GetTypeInfo();
 
                 var enumTypes = enumType
                     .DeclaredFields
                     .Where(x => x.IsStatic)
-                    .Select(x => x.GetCustomAttribute<UnionAttribute>()?.Type?.GetTypeInfo())
-                    .Where(x => x != null)
+                    .Select(field => new { field, type = field.GetCustomAttribute<UnionAttribute>()?.Type?.GetTypeInfo() })
                     .ToArray();
 
-                var types = rootType.Assembly.DefinedTypes
-                    .Where(rootType.IsAssignableFrom)
-                    .Where(x => !x.IsAbstract)
-                    .ToArray();
+                var allImplemented = enumTypes.All(x => x.type != null);
 
-                yield return (enumType, enumTypes, types);
+                yield return (enumType, allImplemented);
             }
         }
     }
