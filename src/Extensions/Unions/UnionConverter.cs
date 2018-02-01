@@ -1,27 +1,4 @@
-﻿//The Inflector class was cloned from Inflector (https://github.com/srkirkland/Inflector)
-
-//The MIT License (MIT)
-
-//Copyright (c) 2013 Scott Kirkland
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy of
-//this software and associated documentation files (the "Software"), to deal in
-//the Software without restriction, including without limitation the rights to
-//use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-//the Software, and to permit persons to whom the Software is furnished to do so,
-//subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-//FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-//COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-//IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-//CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -32,42 +9,66 @@ namespace Rocket.Surgery.Unions
 {
     public class UnionConverter : JsonConverter
     {
-        private readonly Type _enumType;
-        private readonly IReadOnlyDictionary<object, Type> _enumTypeList;
-
-        private readonly string _camelCasePropertyName;
-        private readonly string _pascalCasePropertyName;
-        private readonly string _dashCasePropertyName;
-        private readonly string _propertyName;
-
-        public UnionConverter(Type rootType, string propertyName)
-        {
-            _propertyName = propertyName;
-            _camelCasePropertyName = Inflector.Camelize(propertyName);
-            _pascalCasePropertyName = Inflector.Pascalize(propertyName);
-            _dashCasePropertyName = Inflector.Kebaberize(propertyName);
-            _enumType  = UnionHelper.GetUnionType(rootType, propertyName);
-            _enumTypeList = UnionHelper.GetUnion(_enumType);
-        }
+        private readonly IDictionary<Type, UnionContext> _contexts = new Dictionary<Type, UnionContext>();
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var obj = (JObject)JToken.ReadFrom(reader);
-            var instance = Activator.CreateInstance(GetTypeToDeserializeTo(obj));
+            var context = GetContext(objectType);
+            var instance = Activator.CreateInstance(context.GetTypeToDeserializeTo(obj));
             serializer.Populate(obj.CreateReader(), instance);
             return instance;
         }
 
-        private Type GetTypeToDeserializeTo(JObject obj)
+        private UnionContext GetContext(Type type)
         {
-            var property =
-                obj[_camelCasePropertyName] ??
-                obj[_pascalCasePropertyName] ??
-                obj[_dashCasePropertyName] ??
-                throw new KeyNotFoundException($"Could not find property name for {_propertyName}");
-            var value = property.Value<string>();
-            var result = Enum.Parse(_enumType, value, true);
-            return _enumTypeList[result];
+            if (!_contexts.TryGetValue(type, out var context))
+            {
+                context = _contexts[type] = new UnionContext(type.GetTypeInfo());
+            }
+
+            return context;
+        }
+
+        class UnionContext
+        {
+            private readonly IReadOnlyDictionary<object, Type> _enumTypeList;
+
+            private readonly string _camelCasePropertyName;
+            private readonly string _pascalCasePropertyName;
+            private readonly string _dashCasePropertyName;
+            private readonly Type _enumType;
+            private readonly string _propertyName;
+
+            public UnionContext(TypeInfo typeInfo)
+            {
+                var rootType = typeInfo;
+                while (typeInfo.BaseType != null)
+                {
+                    if (typeInfo.GetCustomAttributes<UnionKeyAttribute>().Any()) break;
+                    rootType = rootType.BaseType.GetTypeInfo();
+                }
+
+                var unionKeyAttribute = rootType.GetCustomAttribute<UnionKeyAttribute>();
+                _propertyName = unionKeyAttribute.Key;
+                _camelCasePropertyName = Inflector.Camelize(_propertyName);
+                _pascalCasePropertyName = Inflector.Pascalize(_propertyName);
+                _dashCasePropertyName = Inflector.Kebaberize(_propertyName);
+                _enumType = UnionHelper.GetUnionEnumType(rootType);
+                _enumTypeList = UnionHelper.GetUnion(rootType);
+            }
+
+            public Type GetTypeToDeserializeTo(JObject obj)
+            {
+                var property =
+                    obj[_camelCasePropertyName] ??
+                    obj[_pascalCasePropertyName] ??
+                    obj[_dashCasePropertyName] ??
+                    throw new KeyNotFoundException($"Could not find property name for {_propertyName}");
+                var value = property.Value<string>();
+                var result = Enum.Parse(_enumType, value, true);
+                return _enumTypeList[result];
+            }
         }
 
         #region Base Class

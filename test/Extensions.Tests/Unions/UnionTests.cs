@@ -12,16 +12,14 @@ using Xunit;
 
 namespace Rocket.Surgery.Extensions.Tests.Unions
 {
-    [Union(typeof(Base))]
     enum BaseType
     {
-        [Union(typeof(Thing1))]
         Thing1,
-        [Union(typeof(Thing2))]
         Thing2
     }
 
-    [JsonConverter(typeof(UnionConverter), typeof(Base), nameof(Type))]
+    [UnionKey(nameof(Type))]
+    [JsonConverter(typeof(UnionConverter))]
     abstract class Base
     {
         protected Base(BaseType type)
@@ -32,6 +30,7 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
         public BaseType Type { get; }
     }
 
+    [Union(BaseType.Thing1)]
     class Thing1 : Base
     {
         public Thing1() : base(BaseType.Thing1)
@@ -40,6 +39,7 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
         public string Thing1Name { get; set; }
     }
 
+    [Union(BaseType.Thing2)]
     class Thing2 : Base
     {
         public Thing2() : base(BaseType.Thing2)
@@ -148,22 +148,22 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
         [Fact]
         public void ShouldGetUnionTypeProperly()
         {
-            UnionHelper.GetUnionType(typeof(BaseType)).Should().Be(typeof(BaseType));
-            UnionHelper.GetUnionType(typeof(Base), nameof(Base.Type)).Should().Be(typeof(BaseType));
+            UnionHelper.GetUnionEnumType(typeof(Base)).Should().Be(typeof(BaseType));
+            UnionHelper.GetUnionEnumType(typeof(Base), nameof(Base.Type)).Should().Be(typeof(BaseType));
         }
 
         [Theory]
         [MemberData(nameof(GetAllEnumDiscriminatorTypes))]
-        public void All_Union_Types_Are_Implemented(TypeInfo enumType, bool allImplemented)
+        public void All_Union_Types_Are_Implemented(TypeInfo rootType, bool allImplemented)
         {
-            allImplemented.Should().BeTrue($"All types must be implemented, not just the correct number.  EnumType: {enumType.FullName}");
+            allImplemented.Should().BeTrue($"All types must be implemented, not just the correct number.  RootType: {rootType.FullName}");
         }
 
         public static IEnumerable<object[]> GetAllEnumDiscriminatorTypes()
         {
             foreach (var type in UnionHelper.GetAll(typeof(UnionTests).GetTypeInfo().Assembly))
             {
-                yield return new object[] { type.enumType, type.allImplemented };
+                yield return new object[] { type.rootType, type.allImplemented };
             }
         }
     }
