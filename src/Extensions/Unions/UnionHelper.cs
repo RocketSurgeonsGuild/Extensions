@@ -112,6 +112,8 @@ namespace Rocket.Surgery.Unions
                     .Where(rootType.IsAssignableFrom)
                     .Where(x => x.GetCustomAttributes<UnionAttribute>().Any())
                     .Where(x => !x.IsAbstract)
+                    .Select(x => x.GetCustomAttribute<UnionAttribute>().Value)
+                    .Distinct()
                     .ToArray();
 
                 var values = Enum.GetValues(enumType)
