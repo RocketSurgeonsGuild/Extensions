@@ -145,11 +145,14 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
             result.Should().BeOfType(expected);
         }
 
-        [Fact]
-        public void ShouldGetUnionTypeProperly()
+        [Theory]
+        [InlineData(typeof(Base))]
+        [InlineData(typeof(Thing1))]
+        [InlineData(typeof(Thing2))]
+        public void ShouldGetUnionTypeProperly(Type type)
         {
-            UnionHelper.GetUnionEnumType(typeof(Base)).Should().Be(typeof(BaseType));
-            UnionHelper.GetUnionEnumType(typeof(Base), nameof(Base.Type)).Should().Be(typeof(BaseType));
+            UnionHelper.GetUnionEnumType(type).Should().Be(typeof(BaseType));
+            UnionHelper.GetUnionEnumType(type, nameof(Base.Type)).Should().Be(typeof(BaseType));
         }
 
         [Theory]

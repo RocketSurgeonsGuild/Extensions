@@ -24,7 +24,12 @@ namespace Rocket.Surgery.Unions
         {
             if (!_contexts.TryGetValue(type, out var context))
             {
-                context = _contexts[type] = new UnionContext(type.GetTypeInfo());
+                var rootType = UnionHelper.GetRootType(type);
+                if (!_contexts.TryGetValue(rootType.AsType(), out var rootContext))
+                {
+                    rootContext = _contexts[rootType.AsType()] = new UnionContext(rootType);
+                }
+                context = _contexts[type] = rootContext;
             }
 
             return context;
@@ -40,15 +45,8 @@ namespace Rocket.Surgery.Unions
             private readonly Type _enumType;
             private readonly string _propertyName;
 
-            public UnionContext(TypeInfo typeInfo)
+            public UnionContext(TypeInfo rootType)
             {
-                var rootType = typeInfo;
-                while (typeInfo.BaseType != null)
-                {
-                    if (typeInfo.GetCustomAttributes<UnionKeyAttribute>().Any()) break;
-                    rootType = rootType.BaseType.GetTypeInfo();
-                }
-
                 var unionKeyAttribute = rootType.GetCustomAttribute<UnionKeyAttribute>();
                 _propertyName = unionKeyAttribute.Key;
                 _camelCasePropertyName = Inflector.Camelize(_propertyName);

@@ -17,9 +17,12 @@ namespace Rocket.Surgery.Unions
         public static Type GetUnionEnumType(TypeInfo type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (type.GetCustomAttribute<UnionKeyAttribute>() == null)
+
+            type = GetRootType(type);
+
+            if (type.GetCustomAttribute<UnionKeyAttribute>(false) == null)
                 throw new ArgumentOutOfRangeException(nameof(type), "type must have a union key attribute");
-            return type.GetDeclaredProperty(type.GetCustomAttribute<UnionKeyAttribute>(true).Key).PropertyType;
+            return type.GetDeclaredProperty(type.GetCustomAttribute<UnionKeyAttribute>(false).Key).PropertyType;
         }
 
         public static Type GetUnionEnumType(Type type, string propertyName)
@@ -33,9 +36,29 @@ namespace Rocket.Surgery.Unions
         public static Type GetUnionEnumType(TypeInfo type, string propertyName)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
+
+            type = GetRootType(type);
+
             if (string.IsNullOrWhiteSpace(propertyName))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(propertyName));
             return type.GetDeclaredProperty(propertyName).PropertyType;
+        }
+
+        internal static TypeInfo GetRootType(Type type)
+        {
+            return GetRootType(type.GetTypeInfo());
+        }
+
+        internal static TypeInfo GetRootType(TypeInfo typeInfo)
+        {
+            var rootType = typeInfo;
+            while (rootType.BaseType != null)
+            {
+                if (rootType.GetCustomAttributes<UnionKeyAttribute>(false)?.Any() == true) break;
+                rootType = rootType.BaseType.GetTypeInfo();
+            }
+
+            return rootType;
         }
 
         /// <summary>
