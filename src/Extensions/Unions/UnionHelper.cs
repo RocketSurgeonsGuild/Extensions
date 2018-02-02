@@ -19,7 +19,7 @@ namespace Rocket.Surgery.Unions
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (type.GetCustomAttribute<UnionKeyAttribute>() == null)
                 throw new ArgumentOutOfRangeException(nameof(type), "type must have a union key attribute");
-            return type.GetDeclaredProperty(type.GetCustomAttribute<UnionKeyAttribute>().Key).PropertyType;
+            return type.GetDeclaredProperty(type.GetCustomAttribute<UnionKeyAttribute>(true).Key).PropertyType;
         }
 
         public static Type GetUnionEnumType(Type type, string propertyName)
