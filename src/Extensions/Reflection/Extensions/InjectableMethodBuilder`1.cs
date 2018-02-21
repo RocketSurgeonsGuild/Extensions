@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FastExpressionCompiler;
+using System;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
 
@@ -33,14 +34,14 @@ namespace Rocket.Surgery.Reflection.Extensions
         {
             var (body, parameters) = base.Compile();
             var lambda = Expression.Lambda<Func<object, IServiceProvider, TResult>>(body, parameters);
-            return lambda.Compile();
+            return ExpressionCompiler.CompileFast(lambda);
         }
 
         public Action<object, IServiceProvider> Compile()
         {
             var (body, parameters) = base.Compile();
             var lambda = Expression.Lambda<Action<object, IServiceProvider>>(body, parameters);
-            return lambda.Compile();
+            return ExpressionCompiler.CompileFast(lambda);
         }
     }
 }
