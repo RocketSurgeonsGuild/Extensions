@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FastExpressionCompiler;
+using System;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -29,7 +30,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                 typeof(T4).GetTypeInfo(),
                 typeof(T5).GetTypeInfo());
             var lambda = Expression.Lambda<Func<object, IServiceProvider, T, T2, T3, T4, T5, TResult>>(body, parameters);
-            return lambda.Compile();
+            return ExpressionCompiler.CompileFast<Func<object, IServiceProvider, T, T2, T3, T4, T5, TResult>>(lambda);
         }
 
         public Action<object, IServiceProvider, T, T2, T3, T4, T5> Compile()
@@ -41,7 +42,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                 typeof(T4).GetTypeInfo(),
                 typeof(T5).GetTypeInfo());
             var lambda = Expression.Lambda<Action<object, IServiceProvider, T, T2, T3, T4, T5>>(body, parameters);
-            return lambda.Compile();
+            return ExpressionCompiler.CompileFast<Action<object, IServiceProvider, T, T2, T3, T4, T5>>(lambda);
         }
     }
 }
