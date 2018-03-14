@@ -13,9 +13,12 @@ namespace Rocket.Surgery.Unions
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var obj = (JObject)JToken.ReadFrom(reader);
+            var obj = JToken.ReadFrom(reader);
+            if (obj.Type == JTokenType.Null)
+                return null;
+
             var context = GetContext(objectType);
-            var instance = Activator.CreateInstance(context.GetTypeToDeserializeTo(obj));
+            var instance = Activator.CreateInstance(context.GetTypeToDeserializeTo((JObject)obj));
             serializer.Populate(obj.CreateReader(), instance);
             return instance;
         }

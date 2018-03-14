@@ -49,6 +49,11 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
         public string Thing2Name { get; set; }
     }
 
+    class Parent
+    {
+        public Base Item { get; set; }
+    }
+
     public class UnionTests
     {
         private readonly JsonSerializer _serializer = JsonSerializer.Create(new JsonSerializerSettings()
@@ -160,6 +165,22 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
         public void All_Union_Types_Are_Implemented(TypeInfo rootType, bool allImplemented)
         {
             allImplemented.Should().BeTrue($"All types must be implemented, not just the correct number.  RootType: {rootType.FullName}");
+        }
+
+        [Fact]
+        public void Should_Handle_Missing_Property_Values()
+        {
+            var result = JsonConvert.DeserializeObject<Parent>("{}");
+            result.Should().NotBeNull();
+            result.Item.Should().BeNull();
+        }
+
+        [Fact]
+        public void Should_Handle_Null_Property_Values()
+        {
+            var result = JsonConvert.DeserializeObject<Parent>("{ \"Item\": null }");
+            result.Should().NotBeNull();
+            result.Item.Should().BeNull();
         }
 
         public static IEnumerable<object[]> GetAllEnumDiscriminatorTypes()
