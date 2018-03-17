@@ -52,10 +52,10 @@ namespace Rocket.Surgery.Unions
         public static TypeInfo GetRootType(TypeInfo typeInfo)
         {
             var rootType = typeInfo;
-            while (rootType.BaseType != null)
+            while (rootType != null)
             {
                 if (rootType.GetCustomAttributes<UnionKeyAttribute>(false)?.Any() == true) break;
-                rootType = rootType.BaseType.GetTypeInfo();
+                rootType = rootType.BaseType?.GetTypeInfo();
             }
 
             return rootType;
