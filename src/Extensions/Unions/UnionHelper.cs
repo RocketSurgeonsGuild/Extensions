@@ -44,12 +44,12 @@ namespace Rocket.Surgery.Unions
             return type.GetDeclaredProperty(propertyName).PropertyType;
         }
 
-        internal static TypeInfo GetRootType(Type type)
+        public static TypeInfo GetRootType(Type type)
         {
             return GetRootType(type.GetTypeInfo());
         }
 
-        internal static TypeInfo GetRootType(TypeInfo typeInfo)
+        public static TypeInfo GetRootType(TypeInfo typeInfo)
         {
             var rootType = typeInfo;
             while (rootType.BaseType != null)
