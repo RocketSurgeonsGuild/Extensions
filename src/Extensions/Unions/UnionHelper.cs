@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Rocket.Surgery.Unions
 {
+
     public static class UnionHelper
     {
         public static Type GetUnionEnumType(Type type)
@@ -42,6 +44,12 @@ namespace Rocket.Surgery.Unions
             if (string.IsNullOrWhiteSpace(propertyName))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(propertyName));
             return type.GetDeclaredProperty(propertyName).PropertyType;
+        }
+
+        public static string GetUnionKey(TypeInfo type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            return type.GetCustomAttribute<UnionKeyAttribute>(false).Key;
         }
 
         public static TypeInfo GetRootType(Type type)
