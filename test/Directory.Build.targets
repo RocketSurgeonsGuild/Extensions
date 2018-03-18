@@ -7,6 +7,7 @@
         <PackageReference Include="FakeItEasy" Version="$(FakeItEasy_Version)" />
         <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="$(FakeItEasy_Version)" />
         <PackageReference Include="Autofac.Extras.FakeItEasy" Version="$(Autofac_FakeItEasy_Version)" />
+        <PackageReference Include="Bogus" Version="$(Bogus_Version)" />
 		<PackageReference Include="Rocket.Surgery.Extensions.Testing" Version="$(RSG_Testing_Version)" />
         <DotNetCliToolReference Include="dotnet-xunit" Version="$(xunit_Version)" />
     </ItemGroup>
