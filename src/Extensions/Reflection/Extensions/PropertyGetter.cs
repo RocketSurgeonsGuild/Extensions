@@ -1,199 +1,213 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Rocket.Surgery.Reflection.Extensions
 {
     public class PropertyGetter
     {
         private readonly string _separator;
-        private readonly ConcurrentDictionary<(Type type, string path), (Type type, Lazy<Delegate> getter)> CachedPropertyGetters = new ConcurrentDictionary<(Type type, string path), (Type type, Lazy<Delegate> getter)>();
-        public PropertyGetter(string separator = null)
+        private readonly StringComparison _comparison;
+        private readonly ConcurrentDictionary<Type, TypeDelegate> _cachedTypeDelegates = new ConcurrentDictionary<Type, TypeDelegate>();
+        public PropertyGetter(string separator = null, StringComparison comparison = StringComparison.Ordinal)
         {
             _separator = separator;
+            _comparison = comparison;
         }
 
-        public T Get<T>(object value, string path)
+        public bool TryGet<T>(object instance, string path, out T value, bool throwError = false)
         {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-            return Getter<T>(value.GetType(), path)(value);
-        }
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            if (path == null) throw new ArgumentNullException(nameof(path));
 
-        public object Get(object value, string path)
-        {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-            return Getter(value.GetType(), path)(value);
-        }
-
-        public Type GetPropertyType(object value, string path)
-        {
-            if (value == null) throw new ArgumentNullException(nameof(value));
-            return GetPropertyType(value.GetType(), path);
-        }
-
-        public Func<object, T> Getter<T>(Type value, string path)
-        {
-            if (!CachedPropertyGetters.TryGetValue((value, path), out var tuple))
+            if (TryGetter<T>(instance.GetType(), path, out var getter))
             {
-                tuple = CreateGetter(value, path);
-                CachedPropertyGetters.TryAdd((value, path), tuple);
+                value = getter(instance);
+                return true;
             }
 
-            return v => (T)tuple.getter.Value.DynamicInvoke(v);
+            value = default;
+            return false;
         }
 
-        public Func<object, object> Getter(Type value, string path)
+        public T Get<T>(object instance, string path)
         {
-            if (!CachedPropertyGetters.TryGetValue((value, path), out var tuple))
-            {
-                tuple = CreateGetter(value, path);
-                CachedPropertyGetters.TryAdd((value, path), tuple);
-            }
-
-            return v => tuple.getter.Value.DynamicInvoke(v);
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            if (TryGet<T>(instance, path, out var propertyValue)) return propertyValue;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
         }
 
-        public Type GetPropertyType(Type value, string path)
+        public bool TryGet(object instance, string path, out object value, bool throwError = false)
         {
-            if (!CachedPropertyGetters.TryGetValue((value, path), out var tuple))
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+
+            if (TryGetter(instance.GetType(), path, out var getter))
             {
-                tuple = CreateGetter(value, path);
-                CachedPropertyGetters.TryAdd((value, path), tuple);
+                value = getter(instance);
+                return true;
             }
-            return tuple.type;
+
+            value = null;
+            return false;
         }
 
-        private string[] GetParts(string path)
+        public object Get(object instance, string path)
         {
-            var parts = new List<string>();
-            if (string.IsNullOrWhiteSpace(_separator))
-            {
-                var current = new StringBuilder();
-                foreach (var c in path)
-                {
-                    if (c == '.' || c == '[' || c == ']')
-                    {
-                        parts.Add(current.ToString());
-                        current = new StringBuilder();
-                    }
-                    else
-                    {
-                        current.Append(c);
-                    }
-                }
-                parts.Add(current.ToString());
-                return parts.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
-            }
-
-            return path.Split(new[] { _separator }, StringSplitOptions.RemoveEmptyEntries);
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            if (TryGet(instance, path, out var propertyValue)) return propertyValue;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
         }
 
-        private (Type type, Lazy<Delegate> getter) CreateGetter(Type type, string path)
+        public bool TryGetPropertyType(object instance, string path, out Type type)
         {
-            var parts = GetParts(path);
-            var root = Expression.Parameter(type, "instance");
-            Expression expression = root;
-            var innerType = type;
-
-            foreach (var part in parts)
-            {
-                if (innerType.IsArray)
-                {
-                    if (!int.TryParse(part, out var intValue))
-                    {
-                        throw new ArgumentException($"Could not parse integer value for indexer from '{part}'.");
-                    }
-                    expression = Expression.ArrayIndex(expression, Expression.Constant(intValue, typeof(int)));
-                    innerType = innerType.GetTypeInfo().GetElementType();
-                    continue;
-                }
-                if (innerType.IsGenericListInterfaceType())
-                {
-                    if (!int.TryParse(part, out var intValue))
-                    {
-                        throw new ArgumentException($"Could not parse integer value for indexer from '{part}'.");
-                    }
-
-                    var paremeter = innerType.GetRuntimeProperties()
-                        .First(x => x.GetIndexParameters().Any(z => z.ParameterType == typeof(int)));
-
-                    expression = Expression.MakeIndex(expression, paremeter, new[] { Expression.Constant(intValue, typeof(int)) });
-                    innerType = innerType.GetGenericListInterfaceType().GenericTypeArguments[0];
-                    continue;
-                }
-                if (innerType.IsClosedTypeOf(typeof(IDictionary<,>)) || innerType.IsClosedTypeOf(typeof(IReadOnlyDictionary<,>)))
-                {
-                    var paremeter = innerType.GetRuntimeProperties()
-                        .First(x => x.GetIndexParameters().Any(z => z.ParameterType == typeof(string)));
-
-                    expression = Expression.MakeIndex(expression, paremeter, new[] { Expression.Constant(part, typeof(string)) });
-                    innerType = (innerType.GetClosedTypeOf(typeof(IDictionary<,>)) ?? innerType.GetClosedTypeOf(typeof(IReadOnlyDictionary<,>))).GenericTypeArguments[1];
-                    continue;
-                }
-                if (innerType.IsGenericEnumerableInterfaceType())
-                {
-                    innerType = innerType.GetGenericEnumerableInterfaceType().GenericTypeArguments[0];
-                    var firstMethod = typeof(Enumerable).GetRuntimeMethods().First(x =>
-                            x.Name == nameof(Enumerable.FirstOrDefault) && x.GetParameters().Length == 1)
-                        .MakeGenericMethod(innerType);
-                    var skipMethod = typeof(Enumerable).GetRuntimeMethods().First(x =>
-                            x.Name == nameof(Enumerable.Skip))
-                        .MakeGenericMethod(innerType);
-
-                    if (!int.TryParse(part, out var intValue))
-                    {
-                        throw new ArgumentException($"Could not parse integer value for indexer from '{part}'.");
-                    }
-
-                    expression = Expression.Call(
-                        null, skipMethod, expression, Expression.Constant(intValue, typeof(int))
-                    );
-                    expression = Expression.Call(null, firstMethod, expression);
-                    continue;
-                }
-
-                var info = Info.GetInfo(innerType, part);
-                innerType = info.Type;
-                expression = Expression.PropertyOrField(expression, info.Name);
-            }
-
-            return (innerType, new Lazy<Delegate>(() => Expression.Lambda(expression, root).Compile()));
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            return TryGetPropertyType(instance.GetType(), path, out type);
         }
 
-        class Info
+        public Type GetPropertyType(object instance, string path)
         {
-            public static Info GetInfo(Type type, string name)
-            {
-                var propertyInfo = type.GetRuntimeProperty(name);
-                if (propertyInfo != null)
-                {
-                    return new Info(propertyInfo.PropertyType, name);
-                }
-
-                var fieldInfo = type.GetRuntimeField(name);
-                if (fieldInfo != null)
-                {
-                    return new Info(fieldInfo.FieldType, name);
-                }
-
-                throw new ArgumentOutOfRangeException("path", $"Could not find property or field '{name}'.");
-            }
-
-            public Info(Type type, string name)
-            {
-                Name = name;
-                Type = type;
-            }
-
-            public string Name { get; }
-            public Type Type { get; }
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            if (TryGetPropertyType(instance, path, out var propertyValue)) return propertyValue;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
         }
 
+        public bool TryGetPropertyType(Type type, string path, out Type propertyType)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (path == null) throw new ArgumentNullException(nameof(path));
 
+            var typeDelegate = GetOrCreateTypeDelegate(type);
+            if (!typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
+            {
+                propertyType = null;
+                return false;
+            }
+
+            propertyType = propertyDelegate.PropertyType;
+            return true;
+        }
+
+        public Type GetPropertyType(Type type, string path)
+        {
+            if (TryGetPropertyType(type, path, out var propertyValue)) return propertyValue;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
+        }
+
+        public bool TryGetter<T>(Type type, string path, out Func<object, T> getter)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            var typeDelegate = GetOrCreateTypeDelegate(type);
+            if (!typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
+            {
+                getter = null;
+                return false;
+            }
+
+            getter = v => (T)propertyDelegate.Delegate.DynamicInvoke(v);
+            return true;
+        }
+
+        public Func<object, T> Getter<T>(Type type, string path)
+        {
+            if (TryGetter<T>(type, path, out var getter)) return getter;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
+        }
+
+        public bool TryGetter(Type type, string path, out Func<object, object> getter)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            var typeDelegate = GetOrCreateTypeDelegate(type);
+            if (!typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
+            {
+                getter = null;
+                return false;
+            }
+
+            getter = v => propertyDelegate.Delegate.DynamicInvoke(v);
+            return true;
+        }
+
+        public Func<object, object> Getter(Type type, string path)
+        {
+            if (TryGetter(type, path, out var getter)) return getter;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
+        }
+
+        public bool TryGetExpression(object instance, string path, out Expression expression)
+        {
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            return TryGetExpression(instance.GetType(), path, out expression);
+        }
+
+        public Expression GetExpression(object instance, string path)
+        {
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            if (TryGetExpression(instance, path, out var expression)) return expression;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
+        }
+
+        public bool TryGetExpression(Type type, string path, out Expression expression)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            var typeDelegate = GetOrCreateTypeDelegate(type);
+            if (typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
+            {
+                expression = propertyDelegate.StronglyTypedExpression;
+                return true;
+            }
+
+            expression = null;
+            return false;
+        }
+
+        public Expression GetExpression(Type type, string path)
+        {
+            if (TryGetExpression(type, path, out var expression)) return expression;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
+        }
+
+        public bool TryGetPropertyDelegate(object instance, string path, out PropertyDelegate propertyDelegate)
+        {
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            return TryGetPropertyDelegate(instance.GetType(), path, out propertyDelegate);
+        }
+
+        public PropertyDelegate GetPropertyDelegate(object instance, string path)
+        {
+            if (TryGetPropertyDelegate(instance, path, out var propertyDelegate)) return propertyDelegate;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
+        }
+
+        public bool TryGetPropertyDelegate(Type type, string path, out PropertyDelegate propertyDelegate)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (path == null) throw new ArgumentNullException(nameof(path));
+
+            var typeDelegate = GetOrCreateTypeDelegate(type);
+            return typeDelegate.TryGetPropertyDelegate(path, out propertyDelegate);
+        }
+
+        public PropertyDelegate GetPropertyDelegate(Type type, string path)
+        {
+            if (TryGetPropertyDelegate(type, path, out var propertyDelegate)) return propertyDelegate;
+            throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
+        }
+
+        private TypeDelegate GetOrCreateTypeDelegate(Type type)
+        {
+            if (!_cachedTypeDelegates.TryGetValue(type, out var typeDelegate))
+            {
+                _cachedTypeDelegates.TryAdd(type, typeDelegate = new TypeDelegate(type, _separator, _comparison));
+            }
+
+            return typeDelegate;
+        }
     }
 }

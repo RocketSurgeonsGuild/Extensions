@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using FluentAssertions;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
@@ -72,6 +73,52 @@ namespace Rocket.Surgery.Extensions.Tests
 
             value = getter.Get(fixture, "E");
             value.Should().Be(1234L);
+        }
+
+        [Fact]
+        public void Should_Have_StronglyTypedExpression()
+        {
+            var getter = new PropertyGetter(comparison: StringComparison.OrdinalIgnoreCase);
+
+
+            var fixture = new Fixture_Thing2()
+            {
+                Thing1 = new Fixture_Thing()
+                {
+                    A = "123",
+                    B = 1,
+                    C = null
+                },
+                D = 123,
+                E = 1234L
+            };
+
+
+            getter.TryGetPropertyDelegate(fixture, "thing1.a", out var propertyDelegate);
+            propertyDelegate.Should().NotBeNull();
+            propertyDelegate.StronglyTypedExpression.Type.Should().Be<Func<Fixture_Thing2, string>>();
+        }
+
+        [Fact]
+        public void Should_Fail_If_StringComparsion_IsSetWrong()
+        {
+            var getter = new PropertyGetter(comparison: StringComparison.Ordinal);
+
+
+            var fixture = new Fixture_Thing2()
+            {
+                Thing1 = new Fixture_Thing()
+                {
+                    A = "123",
+                    B = 1,
+                    C = null
+                },
+                D = 123,
+                E = 1234L
+            };
+
+            getter.TryGetPropertyDelegate(fixture, "thing1.a", out _).Should().BeFalse();
+            getter.TryGetPropertyDelegate(fixture, "Thing1.A", out _).Should().BeTrue();
         }
 
         public static IEnumerable<object[]> ListData_ForNormal()
