@@ -17,7 +17,7 @@
         <FakeItEasy_Version>4.5.1</FakeItEasy_Version>
         <Autofac_FakeItEasy_Version>5.0.0</Autofac_FakeItEasy_Version>
         <Bogus_Version>22.0.5</Bogus_Version>
-		<RSG_Testing_Version>0.3.0</RSG_Testing_Version>
+		<RSG_Testing_Version>0.4.0</RSG_Testing_Version>
     </PropertyGroup>
     <!-- Overrides -->
     <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3' or '$(TargetFramework)'=='net451'">

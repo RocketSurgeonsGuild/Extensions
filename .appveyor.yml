@@ -12,7 +12,6 @@ artifacts:
   - path: ./artifacts/nuget/*.nupkg
 cache:
   - tools -> build.cake, tools/packages.config
-  - '%USERPROFILE%\.nuget\packages -> **\*.targets, **\*.props, **\*.csproj'
 nuget:
   project_feed: true
 deploy:
