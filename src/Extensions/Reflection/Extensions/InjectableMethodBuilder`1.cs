@@ -32,6 +32,8 @@ namespace Rocket.Surgery.Reflection.Extensions
 
         public Func<object, IServiceProvider, TResult> Compile<TResult>()
         {
+            if (GetMethodInfo()?.IsStatic == true)
+                throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
             var (body, parameters) = base.Compile();
             var lambda = Expression.Lambda<Func<object, IServiceProvider, TResult>>(body, parameters);
             return ExpressionCompiler.CompileFast(lambda);
@@ -39,8 +41,28 @@ namespace Rocket.Surgery.Reflection.Extensions
 
         public Action<object, IServiceProvider> Compile()
         {
+            if (GetMethodInfo()?.IsStatic == true)
+                throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
             var (body, parameters) = base.Compile();
             var lambda = Expression.Lambda<Action<object, IServiceProvider>>(body, parameters);
+            return ExpressionCompiler.CompileFast(lambda);
+        }
+
+        public Func<IServiceProvider, TResult> CompileStatic<TResult>()
+        {
+            if (GetMethodInfo()?.IsStatic != true)
+                throw new NotSupportedException("Method must be a static method to compile as an static methods!");
+            var (body, parameters) = base.Compile();
+            var lambda = Expression.Lambda<Func<IServiceProvider, TResult>>(body, parameters);
+            return ExpressionCompiler.CompileFast(lambda);
+        }
+
+        public Action<IServiceProvider> CompileStatic()
+        {
+            if (GetMethodInfo()?.IsStatic != true)
+                throw new NotSupportedException("Method must be a static method to compile as an static methods!");
+            var (body, parameters) = base.Compile();
+            var lambda = Expression.Lambda<Action<IServiceProvider>>(body, parameters);
             return ExpressionCompiler.CompileFast(lambda);
         }
     }

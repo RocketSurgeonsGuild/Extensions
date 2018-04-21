@@ -23,19 +23,23 @@ namespace Rocket.Surgery.Reflection.Extensions
         public TypeInfo Container { get; }
         public ImmutableArray<string> MethodNames { get; }
 
-        protected (MethodCallExpression body, IEnumerable<ParameterExpression> parameters) Compile(params TypeInfo[] arguments)
+        protected MethodInfo GetMethodInfo()
         {
-            var middleware = Container;
-
-
             // Make this stupid simple
             // We allow multiple method names, but beyond that overloads are not allowed
             // there are multiple methods we simply take the one with the most arguments and move on.
-
-            var methodInfo = MethodNames
-                .SelectMany(z => middleware.DeclaredMethods.Where(x => x.Name == z))
+            return MethodNames
+                .SelectMany(z => Container.DeclaredMethods.Where(x => x.Name == z))
                 .OrderByDescending(x => x.GetParameters().Length)
                 .FirstOrDefault();
+        }
+
+        protected (MethodCallExpression body, IEnumerable<ParameterExpression> parameters) Compile(params TypeInfo[] arguments)
+        {
+            // Make this stupid simple
+            // We allow multiple method names, but beyond that overloads are not allowed
+            // there are multiple methods we simply take the one with the most arguments and move on.
+            var methodInfo = GetMethodInfo();
 
             if (methodInfo is null)
             {
@@ -66,7 +70,6 @@ namespace Rocket.Surgery.Reflection.Extensions
                 .ToArray();
 
             var providerArg = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
-            var instanceArg = Expression.Parameter(typeof(object), "instance");
 
             var methodArguments = new Expression[parameters.Length];
 
@@ -92,26 +95,46 @@ namespace Rocket.Surgery.Reflection.Extensions
                 }
             }
 
-            Expression middlewareInstanceArg = instanceArg;
-            if (methodInfo.DeclaringType == middleware.AsType())
+            if (methodInfo.IsStatic)
             {
-                middlewareInstanceArg = Expression.Convert(middlewareInstanceArg, methodInfo.DeclaringType);
-            }
-
-            var body = Expression.Call(middlewareInstanceArg, methodInfo, methodArguments);
-            return (
-                body,
-                new[]
-                {
-                    instanceArg,
-                    providerArg
-                }.Concat(
-                    resolvedParameters
-                        .Where(x => !(x.argument is null))
-                        .OrderBy(x => x.index)
-                        .Select(x => x.expression)
-                )
+                var body = Expression.Call(methodInfo, methodArguments);
+                return (
+                    body,
+                    new[]
+                    {
+                        providerArg
+                    }.Concat(
+                        resolvedParameters
+                            .Where(x => !(x.argument is null))
+                            .OrderBy(x => x.index)
+                            .Select(x => x.expression)
+                    )
                 );
+            }
+            else
+            {
+                var instanceArg = Expression.Parameter(typeof(object), "instance");
+                Expression middlewareInstanceArg = instanceArg;
+                if (methodInfo.DeclaringType == Container.AsType())
+                {
+                    middlewareInstanceArg = Expression.Convert(middlewareInstanceArg, methodInfo.DeclaringType);
+                }
+
+                var body = Expression.Call(middlewareInstanceArg, methodInfo, methodArguments);
+                return (
+                    body,
+                    new[]
+                    {
+                        instanceArg,
+                        providerArg
+                    }.Concat(
+                        resolvedParameters
+                            .Where(x => !(x.argument is null))
+                            .OrderBy(x => x.index)
+                            .Select(x => x.expression)
+                    )
+                );
+            }
         }
 
         private static readonly MethodInfo GetServiceInfo = typeof(InjectableMethodBuilderBase)

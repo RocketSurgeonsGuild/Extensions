@@ -22,6 +22,8 @@ namespace Rocket.Surgery.Reflection.Extensions
 
         public Func<object, IServiceProvider, T, T2, T3, TResult> Compile<TResult>()
         {
+            if (GetMethodInfo()?.IsStatic == true)
+                throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo(),
                 typeof(T2).GetTypeInfo(),
@@ -32,11 +34,37 @@ namespace Rocket.Surgery.Reflection.Extensions
 
         public Action<object, IServiceProvider, T, T2, T3> Compile()
         {
+            if (GetMethodInfo()?.IsStatic == true)
+                throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo(),
                 typeof(T2).GetTypeInfo(),
                 typeof(T3).GetTypeInfo());
             var lambda = Expression.Lambda<Action<object, IServiceProvider, T, T2, T3>>(body, parameters);
+            return ExpressionCompiler.CompileFast(lambda);
+        }
+
+        public Func<IServiceProvider, T, T2, T3, TResult> CompileStatic<TResult>()
+        {
+            if (GetMethodInfo()?.IsStatic != true)
+                throw new NotSupportedException("Method must be a static method to compile as an static methods!");
+            var (body, parameters) = base.Compile(
+                typeof(T).GetTypeInfo(),
+                typeof(T2).GetTypeInfo(),
+                typeof(T3).GetTypeInfo());
+            var lambda = Expression.Lambda<Func<IServiceProvider, T, T2, T3, TResult>>(body, parameters);
+            return ExpressionCompiler.CompileFast(lambda);
+        }
+
+        public Action<IServiceProvider, T, T2, T3> CompileStatic()
+        {
+            if (GetMethodInfo()?.IsStatic != true)
+                throw new NotSupportedException("Method must be a static method to compile as an static methods!");
+            var (body, parameters) = base.Compile(
+                typeof(T).GetTypeInfo(),
+                typeof(T2).GetTypeInfo(),
+                typeof(T3).GetTypeInfo());
+            var lambda = Expression.Lambda<Action<IServiceProvider, T, T2, T3>>(body, parameters);
             return ExpressionCompiler.CompileFast(lambda);
         }
     }

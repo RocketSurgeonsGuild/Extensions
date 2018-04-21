@@ -22,6 +22,8 @@ namespace Rocket.Surgery.Reflection.Extensions
 
         public Func<object, IServiceProvider, T, TResult> Compile<TResult>()
         {
+            if (GetMethodInfo()?.IsStatic == true)
+                throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo());
             var lambda = Expression.Lambda<Func<object, IServiceProvider, T, TResult>>(body, parameters);
@@ -30,9 +32,31 @@ namespace Rocket.Surgery.Reflection.Extensions
 
         public Action<object, IServiceProvider, T> Compile()
         {
+            if (GetMethodInfo()?.IsStatic == true)
+                throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo());
             var lambda = Expression.Lambda<Action<object, IServiceProvider, T>>(body, parameters);
+            return ExpressionCompiler.CompileFast(lambda);
+        }
+
+        public Func<IServiceProvider, T, TResult> CompileStatic<TResult>()
+        {
+            if (GetMethodInfo()?.IsStatic != true)
+                throw new NotSupportedException("Method must be a static method to compile as an static methods!");
+            var (body, parameters) = base.Compile(
+                typeof(T).GetTypeInfo());
+            var lambda = Expression.Lambda<Func<IServiceProvider, T, TResult>>(body, parameters);
+            return ExpressionCompiler.CompileFast(lambda);
+        }
+
+        public Action<IServiceProvider, T> CompileStatic()
+        {
+            if (GetMethodInfo()?.IsStatic != true)
+                throw new NotSupportedException("Method must be a static method to compile as an static methods!");
+            var (body, parameters) = base.Compile(
+                typeof(T).GetTypeInfo());
+            var lambda = Expression.Lambda<Action<IServiceProvider, T>>(body, parameters);
             return ExpressionCompiler.CompileFast(lambda);
         }
     }

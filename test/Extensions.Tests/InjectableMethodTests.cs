@@ -115,5 +115,27 @@ namespace Rocket.Surgery.Extensions.Tests
 
             A.CallTo(() => serviceProviderMock.GetService(A<Type>.Ignored)).MustNotHaveHappened();
         }
+
+        public static class MethodFuncTestStatic
+        {
+            public static void Execute(IConfigured1 configured1)
+            {
+
+            }
+        }
+
+        [Fact]
+        public void HandlesStaticFunctions()
+        {
+            var serviceProviderMock = A.Fake<IServiceProvider>();
+            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(A.Fake<IConfigured1>());
+            var action = InjectableMethodBuilder
+                .Create(typeof(MethodFuncTestStatic), nameof(MethodFuncTestStatic.Execute))
+                .CompileStatic();
+
+            action(serviceProviderMock);
+
+            A.CallTo(() => serviceProviderMock.GetService(typeof(IConfigured1))).MustHaveHappened();
+        }
     }
 }

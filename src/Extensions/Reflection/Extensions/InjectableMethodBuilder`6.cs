@@ -23,6 +23,8 @@ namespace Rocket.Surgery.Reflection.Extensions
 
         public Func<object, IServiceProvider, T, T2, T3, T4, T5, TResult> Compile<TResult>()
         {
+            if (GetMethodInfo()?.IsStatic == true)
+                throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo(),
                 typeof(T2).GetTypeInfo(),
@@ -35,6 +37,8 @@ namespace Rocket.Surgery.Reflection.Extensions
 
         public Action<object, IServiceProvider, T, T2, T3, T4, T5> Compile()
         {
+            if (GetMethodInfo()?.IsStatic == true)
+                throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
             var (body, parameters) = base.Compile(
                 typeof(T).GetTypeInfo(),
                 typeof(T2).GetTypeInfo(),
@@ -43,6 +47,34 @@ namespace Rocket.Surgery.Reflection.Extensions
                 typeof(T5).GetTypeInfo());
             var lambda = Expression.Lambda<Action<object, IServiceProvider, T, T2, T3, T4, T5>>(body, parameters);
             return ExpressionCompiler.CompileFast<Action<object, IServiceProvider, T, T2, T3, T4, T5>>(lambda);
+        }
+
+        public Func<IServiceProvider, T, T2, T3, T4, T5, TResult> CompileStatic<TResult>()
+        {
+            if (GetMethodInfo()?.IsStatic != true)
+                throw new NotSupportedException("Method must be a static method to compile as an static methods!");
+            var (body, parameters) = base.Compile(
+                typeof(T).GetTypeInfo(),
+                typeof(T2).GetTypeInfo(),
+                typeof(T3).GetTypeInfo(),
+                typeof(T4).GetTypeInfo(),
+                typeof(T5).GetTypeInfo());
+            var lambda = Expression.Lambda<Func<object, IServiceProvider, T, T2, T3, T4, T5, TResult>>(body, parameters);
+            return ExpressionCompiler.CompileFast<Func<IServiceProvider, T, T2, T3, T4, T5, TResult>>(lambda);
+        }
+
+        public Action<IServiceProvider, T, T2, T3, T4, T5> CompileStatic()
+        {
+            if (GetMethodInfo()?.IsStatic != true)
+                throw new NotSupportedException("Method must be a static method to compile as an static methods!");
+            var (body, parameters) = base.Compile(
+                typeof(T).GetTypeInfo(),
+                typeof(T2).GetTypeInfo(),
+                typeof(T3).GetTypeInfo(),
+                typeof(T4).GetTypeInfo(),
+                typeof(T5).GetTypeInfo());
+            var lambda = Expression.Lambda<Action<object, IServiceProvider, T, T2, T3, T4, T5>>(body, parameters);
+            return ExpressionCompiler.CompileFast<Action<IServiceProvider, T, T2, T3, T4, T5>>(lambda);
         }
     }
 }
