@@ -1,6 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <!--<TargetFrameworks>netcoreapp1.1;netcoreapp2.0;net461</TargetFrameworks>-->
         <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
@@ -8,8 +7,4 @@
         <ProjectReference Include="..\..\src\Reactive.Extensions\Rocket.Surgery.Reactive.Extensions.csproj" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(Microsoft_Extensions_Configuration_Version)" />
     </ItemGroup>
-
-    <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.1'">
-        <Microsoft_Extensions_Configuration_Version>1.1.2</Microsoft_Extensions_Configuration_Version>
-    </PropertyGroup>
 </Project>

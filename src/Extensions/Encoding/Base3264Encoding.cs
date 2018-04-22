@@ -34,7 +34,7 @@ namespace Rocket.Surgery.Encoding
             switch (type)
             {
                 case EncodingType.Base64:
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
                     return Convert.ToBase64String(input);
 #else
                     return Convert.ToBase64String(input, Base64FormattingOptions.None);
@@ -96,7 +96,7 @@ namespace Rocket.Surgery.Encoding
             {
                 case EncodingType.Base64:
 
-#if NETSTANDARD1_3
+#if NETSTANDARD1_6
                     return Convert.ToBase64String(enc.GetBytes(input));
 #else
                     return Convert.ToBase64String(enc.GetBytes(input), Base64FormattingOptions.None);
