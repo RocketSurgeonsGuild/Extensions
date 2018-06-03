@@ -10,17 +10,14 @@
         <System_Interactive_Version>3.1.1</System_Interactive_Version>
         <System_Reactive_Version>3.1.1</System_Reactive_Version>
         <SourceLink_Version>2.8.1</SourceLink_Version>
-        <Microsoft_Extensions_Configuration_Version>2.0.0</Microsoft_Extensions_Configuration_Version>
-        <Microsoft_NET_Test_Sdk_Version>15.7.0</Microsoft_NET_Test_Sdk_Version>
+        <Microsoft_Extensions_Configuration_Version>2.1.0</Microsoft_Extensions_Configuration_Version>
+        <Microsoft_NET_Test_Sdk_Version>15.7.2</Microsoft_NET_Test_Sdk_Version>
         <xunit_Version>2.3.1</xunit_Version>
-        <FluentAssertions_Version>5.3.0</FluentAssertions_Version>
-        <FakeItEasy_Version>4.5.1</FakeItEasy_Version>
+        <FluentAssertions_Version>5.3.2</FluentAssertions_Version>
+        <FakeItEasy_Version>4.6.0</FakeItEasy_Version>
         <Autofac_FakeItEasy_Version>5.0.0</Autofac_FakeItEasy_Version>
-        <Bogus_Version>22.0.8</Bogus_Version>
-		<RSG_Testing_Version>0.4.1</RSG_Testing_Version>
-    </PropertyGroup>
-    <!-- Overrides -->
-    <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3' or '$(TargetFramework)'=='netstandard1.6' or '$(TargetFramework)'=='net451'">
-        <Microsoft_Extensions_Configuration_Version>1.1.2</Microsoft_Extensions_Configuration_Version>
+        <Bogus_Version>22.1.2</Bogus_Version>
+		<RSG_Testing_Version>0.5.0</RSG_Testing_Version>
+        <XunitXml_TestLogger_Version>2.0.0</XunitXml_TestLogger_Version>
     </PropertyGroup>
 </Project>

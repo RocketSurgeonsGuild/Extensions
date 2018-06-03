@@ -9,7 +9,7 @@
         <PackageReference Include="Autofac.Extras.FakeItEasy" Version="$(Autofac_FakeItEasy_Version)" />
         <PackageReference Include="Bogus" Version="$(Bogus_Version)" />
 		<PackageReference Include="Rocket.Surgery.Extensions.Testing" Version="$(RSG_Testing_Version)" />
-        <DotNetCliToolReference Include="dotnet-xunit" Version="$(xunit_Version)" />
+        <PackageReference Include="XunitXml.TestLogger" Version="$(XunitXml_TestLogger_Version)" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="xunit.runner.json">
