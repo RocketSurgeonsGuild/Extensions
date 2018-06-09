@@ -6,7 +6,7 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <PropertyGroup>
-        <RSG_Build_Version>2.0.0</RSG_Build_Version>
+        <RSG_Build_Version>2.1.0</RSG_Build_Version>
         <System_Interactive_Version>3.1.1</System_Interactive_Version>
         <System_Reactive_Version>4.0.0</System_Reactive_Version>
         <SourceLink_Version>2.8.1</SourceLink_Version>
