@@ -1,5 +1,6 @@
 <Project>
     <ItemGroup>
+		<PackageReference Include="Rocket.Surgery.Extensions.Testing" Version="$(RSG_Testing_Version)" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(Microsoft_NET_Test_Sdk_Version)" />
         <PackageReference Include="xunit.runner.visualstudio" Version="$(xunit_Version)" />
         <PackageReference Include="xunit" Version="$(xunit_Version)" />
@@ -8,8 +9,8 @@
         <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="$(FakeItEasy_Version)" />
         <PackageReference Include="Autofac.Extras.FakeItEasy" Version="$(Autofac_FakeItEasy_Version)" />
         <PackageReference Include="Bogus" Version="$(Bogus_Version)" />
-		<PackageReference Include="Rocket.Surgery.Extensions.Testing" Version="$(RSG_Testing_Version)" />
         <PackageReference Include="XunitXml.TestLogger" Version="$(XunitXml_TestLogger_Version)" />
+        <PackageReference Include="coverlet.msbuild" Version="$(coverlet_Version)" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="xunit.runner.json">

@@ -4,5 +4,12 @@
         <IsPackable>false</IsPackable>
         <PreserveCompilationContext>true</PreserveCompilationContext>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        <DebugType>full</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+
+        <CollectCoverage>true</CollectCoverage>
+        <CoverletOutputFormat>json,lcov,cobertura</CoverletOutputFormat>
+        <CoverletOutputDirectory>$([System.IO.Path]::GetDirectoryName($([MSBuild]::GetPathOfFileAbove('Common.Build.props', '$(MSBuildThisFileDirectory)../'))))/coverage/</CoverletOutputDirectory>
+        <CoverletOutputName>$(MSBuildProjectName)-$(TargetFramework)</CoverletOutputName>
     </PropertyGroup>
 </Project>
