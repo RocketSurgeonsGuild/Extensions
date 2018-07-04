@@ -8,9 +8,9 @@
         </AssemblyAttribute>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-        <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(Microsoft_Extensions_Configuration_Version)" />
-        <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+        <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="System.Collections.Immutable" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+        <PackageReference Condition="'$(TargetFramework)'=='netstandard2.0'" Include="System.Reflection.Emit.Lightweight" />
     </ItemGroup>
 </Project>

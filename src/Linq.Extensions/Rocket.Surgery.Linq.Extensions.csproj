@@ -3,7 +3,7 @@
         <TargetFrameworks>netstandard1.3;net451</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="System.Interactive.Providers" Version="$(System_Interactive_Version)" />
-        <PackageReference Include="System.Interactive.Async.Providers" Version="$(System_Interactive_Version)" />
+        <PackageReference Include="System.Interactive.Providers" />
+        <PackageReference Include="System.Interactive.Async.Providers" />
     </ItemGroup>
 </Project>
