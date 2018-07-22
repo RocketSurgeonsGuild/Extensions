@@ -3,9 +3,9 @@
         <PackageReference Update="Microsoft.Extensions.Configuration" Version="2.1.0" />
         <PackageReference Update="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.0" />
         <PackageReference Update="Newtonsoft.Json" Version="11.0.2" />
-        <PackageReference Update="System.Collections.Immutable" Version="1.4.0" />
-        <PackageReference Update="System.Interactive.Async.Providers" Version="3.1.1" />
-        <PackageReference Update="System.Interactive.Providers" Version="3.1.1" />
+        <PackageReference Update="System.Collections.Immutable" Version="1.5.0" />
+        <PackageReference Update="System.Interactive.Async.Providers" Version="3.2.0" />
+        <PackageReference Update="System.Interactive.Providers" Version="3.2.0" />
         <PackageReference Update="System.Reactive" Version="4.0.0" />
         <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.0.0" />
         <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.3.0" />
@@ -17,15 +17,15 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Update="Autofac.Extras.FakeItEasy" Version="5.0.1" />
-        <PackageReference Update="Bogus" Version="22.1.3" />
-        <PackageReference Update="coverlet.msbuild" Version="2.0.1" />
-        <PackageReference Update="FakeItEasy" Version="4.6.0" />
-        <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="4.6.0" />
+        <PackageReference Update="Bogus" Version="22.3.2" />
+        <PackageReference Update="coverlet.msbuild" Version="2.1.1" />
+        <PackageReference Update="FakeItEasy" Version="4.7.1" />
+        <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="4.7.1" />
         <PackageReference Update="FluentAssertions" Version="5.4.1" />
-        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="15.7.2" />
-        <PackageReference Update="Rocket.Surgery.Extensions.Testing" Version="0.8.0" />
-        <PackageReference Update="xunit" Version="2.3.1" />
-        <PackageReference Update="xunit.runner.visualstudio" Version="2.3.1" />
+        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+        <PackageReference Update="Rocket.Surgery.Extensions.Testing" Version="0.8.2" />
+        <PackageReference Update="xunit" Version="2.4.0" />
+        <PackageReference Update="xunit.runner.visualstudio" Version="2.4.0" />
         <PackageReference Update="XunitXml.TestLogger" Version="2.0.0" />
     </ItemGroup>
 </Project>
