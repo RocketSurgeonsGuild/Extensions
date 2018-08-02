@@ -1319,5 +1319,33 @@ namespace System.Reactive.Linq
         {
             return source.Aggregate(accumulator);
         }
+        
+        /// <summary>
+        /// Returns a <see cref="Unit"/> at the completion of an observable sequence.
+        /// </summary>
+        /// <param name="this">The observable sequence that requires a return value.</param>
+        /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static IObservable<Unit> ToSignal<TSource>(this IObservable<TSource> @this)
+        {
+            if (@this == null)
+            {
+                throw new ArgumentNullException(nameof(@this));
+            }
+            return @this
+                .Select(_ => Unit.Default);
+        }
+
+        /// <summary>
+        /// Applies a filter on an observable sequence returning only items from the sequence that are not null.
+        /// </summary>
+        /// <param name="this">The source observable sequence</param>
+        /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+        /// <returns></returns>
+        public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> @this)
+        {
+            return @this.Where(x => x != null);
+        }
     }
 }
