@@ -1319,33 +1319,34 @@ namespace System.Reactive.Linq
         {
             return source.Aggregate(accumulator);
         }
-        
+
         /// <summary>
         /// Returns a <see cref="Unit"/> at the completion of an observable sequence.
         /// </summary>
-        /// <param name="this">The observable sequence that requires a return value.</param>
+        /// <param name="source">The observable sequence that requires a return value.</param>
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static IObservable<Unit> ToSignal<TSource>(this IObservable<TSource> @this)
+        public static IObservable<Unit> ToSignal<TSource>(this IObservable<TSource> source)
         {
-            if (@this == null)
+            if (source == null)
             {
-                throw new ArgumentNullException(nameof(@this));
+                throw new ArgumentNullException(nameof(source));
             }
-            return @this
+
+            return source
                 .Select(_ => Unit.Default);
         }
 
         /// <summary>
         /// Applies a filter on an observable sequence returning only items from the sequence that are not null.
         /// </summary>
-        /// <param name="this">The source observable sequence</param>
+        /// <param name="source">The source observable sequence</param>
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
         /// <returns></returns>
-        public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> @this)
+        public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> source)
         {
-            return @this.Where(x => x != null);
+            return source.Where(x => x != null);
         }
     }
 }

@@ -10,26 +10,34 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Continues the <see cref="Task"/> return on any <see cref="IScheduler"/> context.
         /// </summary>
-        /// <param name="this">The this.</param>
+        /// <param name="task">The this.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">this</exception>
-        public static ConfiguredTaskAwaitable ContinueOnAnyContext(this Task @this)
+        public static ConfiguredTaskAwaitable ContinueOnAnyContext(this Task task)
         {
-            if (@this == null) throw new ArgumentNullException(nameof(@this));
-            return @this.ConfigureAwait(false);
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
+            return task.ConfigureAwait(false);
         }
 
         /// <summary>
         /// Continues the <see cref="Task"/> return on any <see cref="IScheduler"/> context.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="this">The this.</param>
+        /// <param name="task">The this.</param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException">this</exception>
-        public static ConfiguredTaskAwaitable<T> ContinueOnAnyContext<T>(this Task<T> @this)
+        public static ConfiguredTaskAwaitable<T> ContinueOnAnyContext<T>(this Task<T> task)
         {
-            if (@this == null) throw new ArgumentNullException(nameof(@this));
-            return @this.ConfigureAwait(false);
+            if (task == null)
+            {
+                throw new ArgumentNullException(nameof(task));
+            }
+
+            return task.ConfigureAwait(false);
         }
     }
 }
