@@ -9,6 +9,6 @@
 
         <CollectCoverage>true</CollectCoverage>
         <CoverletOutputFormat>json,lcov,cobertura</CoverletOutputFormat>
-        <CoverletOutput>$([System.IO.Path]::GetDirectoryName($([MSBuild]::GetPathOfFileAbove('Common.Build.props', '$(MSBuildThisFileDirectory)../'))))/coverage/$(MSBuildProjectName.Replace('.', '-'))-$(TargetFramework)</CoverletOutput>
+        <CoverletOutput>$([System.IO.Path]::GetDirectoryName($([MSBuild]::GetPathOfFileAbove('Common.Build.props', '$(MSBuildThisFileDirectory)../'))))/coverage/$(MSBuildProjectName.Replace('.', '-'))-$(TargetFramework)/</CoverletOutput>
     </PropertyGroup>
 </Project>
