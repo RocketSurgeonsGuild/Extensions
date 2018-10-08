@@ -9,6 +9,7 @@
 
         <CollectCoverage>true</CollectCoverage>
         <CoverletOutputFormat>json,lcov,cobertura</CoverletOutputFormat>
-        <CoverletOutput>$([System.IO.Path]::GetDirectoryName($([MSBuild]::GetPathOfFileAbove('Common.Build.props', '$(MSBuildThisFileDirectory)../'))))/coverage/$(MSBuildProjectName.Replace('.', '-'))-$(TargetFramework)/</CoverletOutput>
+        <CoverletOutput Condition="'$(TF_BUILD)'==''">$([System.IO.Path]::GetDirectoryName($([MSBuild]::GetPathOfFileAbove('Common.Build.props', '$(MSBuildThisFileDirectory)../'))))/coverage/$(MSBuildProjectName.Replace('.', '-'))/</CoverletOutput>
+        <CoverletOutput Condition="'$(TF_BUILD)'!=''">$(VstsCoverage)/$(MSBuildProjectName.Replace('.', '-'))/</CoverletOutput>
     </PropertyGroup>
 </Project>

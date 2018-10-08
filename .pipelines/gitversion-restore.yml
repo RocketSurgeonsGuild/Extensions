@@ -1,0 +1,16 @@
+parameters:
+  targetPath: "$(Build.ArtifactStagingDirectory)"
+
+steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: "Download GitVersion Variables"
+    inputs:
+      specificBuildWithTriggering: true
+      downloadType: single
+      artifactName: gitversion
+      pipelineId: GitVersion
+      targetPath: ${{ parameters.targetPath }}
+  - task: RocketSurgeonsGuild.variable-tools.DeserializeVariables.DeserializeVariables@1
+    displayName: 'Deserialize GitVersion'
+    inputs:
+      jsonfiles: ${{ format('{0}/**/meta.json', parameters.targetPath) }}

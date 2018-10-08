@@ -1,0 +1,27 @@
+parameters:
+  targetPath: "$(Build.ArtifactStagingDirectory)/gitversion/"
+  version: '4.0.0-beta0012'
+  NuGetVersion: ''
+
+steps:
+  - task: NuGetToolInstaller@0
+    displayName: "Get NuGet"
+    inputs:
+      versionSpec: ${{ parameters.NuGetVersion }}
+  - script: nuget install GitVersion.CommandLine -Version %VersionToInstall% -ExcludeVersion
+    displayName: Install GitVersion
+    env:
+      VersionToInstall: ${{ parameters.version }}
+  - script: GitVersion.exe /output buildserver
+    displayName: Run GitVersion
+    workingDirectory: GitVersion.CommandLine/tools/
+  - task: RocketSurgeonsGuild.variable-tools.SerializeVariables.SerializeVariables@1
+    displayName: "Serialize GitVersion Variables"
+    inputs:
+      filename: ${{ format('{0}/meta.json', parameters.targetPath) }}
+      prefixes: GITVERSION
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish GitVersion Variables"
+    inputs:
+      pathtoPublish: ${{ parameters.targetPath }}
+      artifactName: gitversion

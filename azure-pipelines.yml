@@ -1,0 +1,65 @@
+variables:
+  Configuration: Release
+  Verbosity: Normal
+  Coverage: "$(Agent.BuildDirectory)/c"
+  VstsCoverage: "$(Coverage)"
+  Artifacts: $(Build.ArtifactStagingDirectory)
+  VstsArtifacts: "$(Artifacts)"
+  # system.enableAccessToken: 'true'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
+  DotNetVersion: "2.1.403"
+  NuGetVersion: "4.7.1"
+  CakeVersion: "0.30.0"
+jobs:
+  - job: GitVersion
+    pool:
+      vmImage: "VS2017-Win2016"
+    steps:
+      - template: .pipelines/gitversion-store.yml
+        parameters:
+          NuGetVersion: "$(NuGetVersion)"
+
+  - job: macOS
+    dependsOn: GitVersion
+    pool:
+      vmImage: "macOS-10.13"
+    steps:
+      - template: .pipelines/gitversion-restore.yml
+      - template: .pipelines/dotnet-core.yml
+        parameters:
+          CakeVersion: "$(CakeVersion)"
+          DotNetVersion: "$(DotNetVersion)"
+      - template: .pipelines/azure-build.yml
+        parameters:
+          Configuration: "$(Configuration)"
+          Verbosity: "$(Verbosity)"
+
+  - job: Linux
+    dependsOn: GitVersion
+    pool:
+      vmImage: "Ubuntu-16.04"
+    steps:
+      - template: .pipelines/gitversion-restore.yml
+      - template: .pipelines/dotnet-core.yml
+        parameters:
+          CakeVersion: "$(CakeVersion)"
+          DotNetVersion: "$(DotNetVersion)"
+      - template: .pipelines/azure-build.yml
+        parameters:
+          Configuration: "$(Configuration)"
+          Verbosity: "$(Verbosity)"
+
+  - job: Windows
+    dependsOn: GitVersion
+    pool:
+      vmImage: "VS2017-Win2016"
+    steps:
+      - template: .pipelines/gitversion-restore.yml
+      - template: .pipelines/dotnet-core.yml
+        parameters:
+          CakeVersion: "$(CakeVersion)"
+          DotNetVersion: "$(DotNetVersion)"
+      - template: .pipelines/azure-build.yml
+        parameters:
+          Configuration: "$(Configuration)"
+          Verbosity: "$(Verbosity)"
