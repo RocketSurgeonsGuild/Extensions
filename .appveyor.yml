@@ -2,7 +2,7 @@ image: Visual Studio 2017
 init:
   - git config --global core.autocrlf input
 build_script:
-  - ps: .\build.ps1 -Verbosity Diagnostic
+  - ps: .\build.ps1
 test: off
 after_build:
   - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
