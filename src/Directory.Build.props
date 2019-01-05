@@ -3,11 +3,13 @@
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <RootNamespace>$(MSBuildProjectName.Replace('.Extensions', ''))</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Rocket.Surgery.Build.Metadata" />
-        <PackageReference Include="SourceLink.Create.CommandLine" />
-		<PackageReference Include="SourceLink.Copy.PdbFiles" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" />
+		<PackageReference Include="Microsoft.SourceLink.Vsts.Git" />
     </ItemGroup>
 </Project>
