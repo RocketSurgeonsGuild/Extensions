@@ -31,10 +31,52 @@ variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
 
 jobs:
-  - template: pipeline/cake.yml@rsg
+  - job: GitVersion
+    pool:
+      vmImage: vs2017-win2016
+    steps:
+      - template: gitversion/store.yml@rsg
+        parameters:
+          NuGetVersion: ${{ parameters.NuGetVersion }}
+
+  - template: cake-job.yml@rsg
     parameters:
-      Configuration: $(Configuration)
-      Verbosity: $(Verbosity)
-      DotNetVersion: $(DotNetVersion)
-      CakeVersion: $(CakeVersion)
-      NuGetVersion: $(NuGetVersion)
+      name: 'macOS'
+      dependsOn: GitVersion
+      vmImage: "macOS-10.13"
+      pushNuget: false
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      CakeVersion: ${{ parameters.CakeVersion }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}
+      Script: ${{ parameters.Script }}
+      Target: ${{ parameters.Target }}
+
+  - template: cake-job.yml@rsg
+    parameters:
+      name: 'Linux'
+      dependsOn: GitVersion
+      vmImage: "Ubuntu-16.04"
+      pushNuget: false
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      CakeVersion: ${{ parameters.CakeVersion }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}
+      Script: ${{ parameters.Script }}
+      Target: ${{ parameters.Target }}
+
+  - template: cake-job.yml@rsg
+    parameters:
+      name: 'Windows'
+      dependsOn: GitVersion
+      vmImage: "VS2017-Win2016"
+      pushNuget: true
+      Configuration: ${{ parameters.Configuration }}
+      Verbosity: ${{ parameters.Verbosity }}
+      CakeVersion: ${{ parameters.CakeVersion }}
+      DotNetVersion: ${{ parameters.DotNetVersion }}
+      NuGetVersion: ${{ parameters.NuGetVersion }}
+      Script: ${{ parameters.Script }}
+      Target: ${{ parameters.Target }}
