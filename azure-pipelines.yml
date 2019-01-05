@@ -3,6 +3,7 @@ trigger:
     include:
       - master
       - refs/tags/*
+
 pr:
   autoCancel: true
   branches:
