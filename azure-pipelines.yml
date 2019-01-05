@@ -39,7 +39,7 @@ jobs:
         parameters:
           NuGetVersion: ${{ parameters.NuGetVersion }}
 
-  - template: cake-job.yml@rsg
+  - template: pipeline/cake-job.yml@rsg
     parameters:
       name: 'macOS'
       dependsOn: GitVersion
@@ -53,7 +53,7 @@ jobs:
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
 
-  - template: cake-job.yml@rsg
+  - template: pipeline/cake-job.yml@rsg
     parameters:
       name: 'Linux'
       dependsOn: GitVersion
@@ -67,7 +67,7 @@ jobs:
       Script: ${{ parameters.Script }}
       Target: ${{ parameters.Target }}
 
-  - template: cake-job.yml@rsg
+  - template: pipeline/cake-job.yml@rsg
     parameters:
       name: 'Windows'
       dependsOn: GitVersion
