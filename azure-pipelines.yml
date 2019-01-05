@@ -32,8 +32,7 @@ variables:
 
 jobs:
   - job: GitVersion
-    pool:
-      vmImage: vs2017-win2016
+    pool: vs2017-win2016
     steps:
       - template: gitversion/store.yml@rsg
         parameters:
