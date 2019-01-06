@@ -7,9 +7,4 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <RootNamespace>$(MSBuildProjectName.Replace('.Extensions', ''))</RootNamespace>
     </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Rocket.Surgery.Build.Metadata" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" />
-		<PackageReference Include="Microsoft.SourceLink.Vsts.Git" />
-    </ItemGroup>
 </Project>
