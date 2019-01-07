@@ -18,7 +18,7 @@
     <ItemGroup>
         <PackageReference Update="Rocket.Surgery.Extensions.Testing" Version="0.17.0" />
         <PackageReference Update="Autofac.Extras.FakeItEasy" Version="5.0.1" />
-        <PackageReference Update="Bogus" Version="25.0.2" />
+        <PackageReference Update="Bogus" Version="25.0.3" />
         <PackageReference Update="coverlet.msbuild" Version="2.5.0" />
         <PackageReference Update="FakeItEasy" Version="4.9.2" />
         <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="4.9.2" />
