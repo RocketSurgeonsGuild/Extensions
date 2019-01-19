@@ -4,7 +4,6 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <RootNamespace>$(MSBuildProjectName.Replace('.Extensions', ''))</RootNamespace>
     </PropertyGroup>
 </Project>
