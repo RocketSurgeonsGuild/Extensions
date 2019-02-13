@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reactive.Concurrency;
 using System.Runtime.CompilerServices;
 
 // ReSharper disable once CheckNamespace
@@ -8,7 +7,7 @@ namespace System.Threading.Tasks
     public static class TaskExtensions
     {
         /// <summary>
-        /// Continues the <see cref="Task"/> return on any <see cref="IScheduler"/> context.
+        /// Continues the <see cref="Task"/> return on any scheduler context.
         /// </summary>
         /// <param name="task">The this.</param>
         /// <returns></returns>
@@ -24,7 +23,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Continues the <see cref="Task"/> return on any <see cref="IScheduler"/> context.
+        /// Continues the <see cref="Task"/> return on any scheduler context.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="task">The this.</param>
