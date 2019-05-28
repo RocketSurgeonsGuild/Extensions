@@ -3,6 +3,7 @@
         <TargetFrameworks>netstandard1.3</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="System.Interactive" />
         <PackageReference Include="System.Interactive.Async.Providers" />
         <PackageReference Include="System.Interactive.Providers" />
     </ItemGroup>
