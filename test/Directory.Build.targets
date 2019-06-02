@@ -12,5 +12,5 @@
         <PackageReference Include="xunit.runner.visualstudio" />
         <PackageReference Include="XunitXml.TestLogger" />
     </ItemGroup>
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Common.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
 </Project>
