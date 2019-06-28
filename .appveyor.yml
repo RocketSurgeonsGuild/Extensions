@@ -1,7 +1,8 @@
-image: Visual Studio 2017
+image: Visual Studio 2019
 init:
   - git config --global core.autocrlf input
 build_script:
+  - cmd: choco install dotnetcore-sdk --version=3.0.100-preview6-012264
   - ps: .\build.ps1
 test: off
 after_build:
@@ -14,7 +15,3 @@ cache:
   - tools -> build.cake, tools/packages.config
 nuget:
   project_feed: true
-notifications:
-  - provider: Slack
-    incoming_webhook:
-      secure: cErsDOKvAGCX+565j5eJH2sKFl4cghV4cDeIWj9a0rKD+sNmZlet0ubxvgofDtPgCRTLbsrf+IaNyZdkvQmhr4A08+e5S8GZSrjz+FXSXBU=
