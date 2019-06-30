@@ -4,13 +4,16 @@ using System.Runtime.CompilerServices;
 // ReSharper disable once CheckNamespace
 namespace System.Threading.Tasks
 {
+    /// <summary>
+    /// Class TaskExtensions.
+    /// </summary>
     public static class TaskExtensions
     {
         /// <summary>
-        /// Continues the <see cref="Task"/> return on any scheduler context.
+        /// Continues the <see cref="Task" /> return on any scheduler context.
         /// </summary>
         /// <param name="task">The this.</param>
-        /// <returns></returns>
+        /// <returns>ConfiguredTaskAwaitable.</returns>
         /// <exception cref="ArgumentNullException">this</exception>
         public static ConfiguredTaskAwaitable ContinueOnAnyContext(this Task task)
         {
@@ -23,11 +26,11 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Continues the <see cref="Task"/> return on any scheduler context.
+        /// Continues the <see cref="Task" /> return on any scheduler context.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="task">The this.</param>
-        /// <returns></returns>
+        /// <returns>ConfiguredTaskAwaitable&lt;T&gt;.</returns>
         /// <exception cref="ArgumentNullException">this</exception>
         public static ConfiguredTaskAwaitable<T> ContinueOnAnyContext<T>(this Task<T> task)
         {

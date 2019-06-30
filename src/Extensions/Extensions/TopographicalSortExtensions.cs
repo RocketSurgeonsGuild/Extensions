@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Rocket.Surgery.Extensions
 {
     /// <summary>
-    /// Class TopographicalSortExtensions.
+    /// TopographicalSortExtensions.
     /// </summary>
     /// TODO Edit XML Comment Template for TopographicalSortExtensions
     public static class TopographicalSortExtensions

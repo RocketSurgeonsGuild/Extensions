@@ -4,7 +4,7 @@ using System.Reflection;
 namespace Rocket.Surgery.Reflection.Extensions
 {
     /// <summary>
-    /// Class TypeInfoExtensions.
+    /// TypeInfoExtensions.
     /// </summary>
     /// TODO Edit XML Comment Template for TypeInfoExtensions
     public static class TypeInfoExtensions

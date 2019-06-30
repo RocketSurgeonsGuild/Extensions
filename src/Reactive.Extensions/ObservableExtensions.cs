@@ -6,6 +6,9 @@ using System.Threading;
 // ReSharper disable once CheckNamespace
 namespace System.Reactive.Linq
 {
+    /// <summary>
+    /// Class ObservableExtensions.
+    /// </summary>
     public static class ObservableExtensions
     {
         /// <summary>
@@ -84,8 +87,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, Task<TResult>> selector)
         {
             return source
@@ -102,9 +105,9 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <param name="maxConcurrent">Maximum number of inner observable sequences being subscribed to concurrently.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, Task<TResult>> selector, int maxConcurrent)
         {
             return source
@@ -120,8 +123,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TResult>> selector)
         {
             return source
@@ -138,9 +141,9 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <param name="maxConcurrent">Maximum number of inner observable sequences being subscribed to concurrently.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TResult>> selector, int maxConcurrent)
         {
             return source
@@ -156,8 +159,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TResult>> selector)
         {
             return source
@@ -174,9 +177,9 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <param name="maxConcurrent">Maximum number of inner observable sequences being subscribed to concurrently.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TResult>> selector, int maxConcurrent)
         {
             return source
@@ -192,8 +195,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TResult>> selector)
         {
             return source
@@ -210,9 +213,9 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <param name="maxConcurrent">Maximum number of inner observable sequences being subscribed to concurrently.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TResult>> selector, int maxConcurrent)
         {
             return source
@@ -682,8 +685,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, Task<TResult>> selector)
         {
             return source
@@ -699,8 +702,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TResult>> selector)
         {
             return source
@@ -716,8 +719,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TResult>> selector)
         {
             return source
@@ -733,8 +736,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TResult>> selector)
         {
             return source
@@ -995,8 +998,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, Task<TResult>> selector)
         {
             return source
@@ -1012,8 +1015,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TResult>> selector)
         {
             return source
@@ -1029,8 +1032,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TResult>> selector)
         {
             return source
@@ -1046,8 +1049,8 @@ namespace System.Reactive.Linq
         /// <param name="source">An observable sequence of elements to project.</param>
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
-        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
+        /// <remarks>This overload supports composition of observable sequences and tasks, without requiring manual conversion of the tasks to observable sequences using <see cref="M:System.Reactive.Threading.Tasks.TaskObservableExtensions.ToObservable``1(System.Threading.Tasks.Task{``0})" />.</remarks>
         public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TResult>> selector)
         {
             return source
@@ -1270,7 +1273,7 @@ namespace System.Reactive.Linq
 
         /// <summary>
         /// Applies an accumulator function over an observable sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value.
-        /// For aggregation behavior with incremental intermediate results, see <see cref="Observable.Scan{TSource, Accumulate}"/>.
+        /// For aggregation behavior with incremental intermediate results, see <see cref="Observable.Scan{TSource, Accumulate}" />.
         /// </summary>
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
         /// <typeparam name="TAccumulate">The type of the result of the aggregation.</typeparam>
@@ -1278,7 +1281,7 @@ namespace System.Reactive.Linq
         /// <param name="seed">The initial accumulator value.</param>
         /// <param name="accumulator">An accumulator function to be invoked on each element.</param>
         /// <returns>An observable sequence containing a single element with the final accumulator value.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="accumulator"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IEnumerable in order to retain asynchronous behavior.</remarks>
         public static IObservable<TAccumulate> Reduce<TSource, TAccumulate>(this IObservable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator)
         {
@@ -1297,7 +1300,7 @@ namespace System.Reactive.Linq
         /// <param name="accumulator">An accumulator function to be invoked on each element.</param>
         /// <param name="resultSelector">A function to transform the final accumulator value into the result value.</param>
         /// <returns>An observable sequence containing a single element with the final accumulator value.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="accumulator"/> or <paramref name="resultSelector"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IEnumerable in order to retain asynchronous behavior.</remarks>
         public static IObservable<TResult> Reduce<TSource, TAccumulate, TResult>(this IObservable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector)
         {
@@ -1306,13 +1309,13 @@ namespace System.Reactive.Linq
 
         /// <summary>
         /// Applies an accumulator function over an observable sequence, returning the result of the aggregation as a single element in the result sequence.
-        /// For aggregation behavior with incremental intermediate results, see <see cref="Observable.Scan{TSource}"/>.
+        /// For aggregation behavior with incremental intermediate results, see <see cref="Observable.Scan{TSource}" />.
         /// </summary>
         /// <typeparam name="TSource">The type of the elements in the source sequence and the result of the aggregation.</typeparam>
         /// <param name="source">An observable sequence to aggregate over.</param>
         /// <param name="accumulator">An accumulator function to be invoked on each element.</param>
         /// <returns>An observable sequence containing a single element with the final accumulator value.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="source"/> or <paramref name="accumulator"/> is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <exception cref="InvalidOperationException">(Asynchronous) The source sequence is empty.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IEnumerable in order to retain asynchronous behavior.</remarks>
         public static IObservable<TSource> Reduce<TSource>(this IObservable<TSource> source, Func<TSource, TSource, TSource> accumulator)
@@ -1321,12 +1324,12 @@ namespace System.Reactive.Linq
         }
 
         /// <summary>
-        /// Returns a <see cref="Unit"/> at the completion of an observable sequence.
+        /// Returns a <see cref="Unit" /> at the completion of an observable sequence.
         /// </summary>
-        /// <param name="source">The observable sequence that requires a return value.</param>
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="source">The observable sequence that requires a return value.</param>
+        /// <returns>IObservable&lt;Unit&gt;.</returns>
+        /// <exception cref="ArgumentNullException">source</exception>
         public static IObservable<Unit> ToSignal<TSource>(this IObservable<TSource> source)
         {
             if (source == null)
@@ -1341,9 +1344,9 @@ namespace System.Reactive.Linq
         /// <summary>
         /// Applies a filter on an observable sequence returning only items from the sequence that are not null.
         /// </summary>
-        /// <param name="source">The source observable sequence</param>
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
-        /// <returns></returns>
+        /// <param name="source">The source observable sequence</param>
+        /// <returns>IObservable&lt;TSource&gt;.</returns>
         public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> source)
         {
             return source.Where(x => x != null);
