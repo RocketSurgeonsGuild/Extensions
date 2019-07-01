@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace System.Threading.Tasks
 {
     /// <summary>
-    /// Class TaskExtensions.
+    ///  TaskExtensions.
     /// </summary>
     public static class TaskExtensions
     {

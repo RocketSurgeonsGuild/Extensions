@@ -7,7 +7,7 @@ using System.Threading;
 namespace System.Reactive.Linq
 {
     /// <summary>
-    /// Class ObservableExtensions.
+    ///  ObservableExtensions.
     /// </summary>
     public static class ObservableExtensions
     {

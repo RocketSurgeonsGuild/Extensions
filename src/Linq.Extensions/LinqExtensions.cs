@@ -4,7 +4,7 @@
 namespace System.Linq
 {
     /// <summary>
-    /// Class LinqExtensions.
+    ///  LinqExtensions.
     /// </summary>
     public static class LinqExtensions
     {

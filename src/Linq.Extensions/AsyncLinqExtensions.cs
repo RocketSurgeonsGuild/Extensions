@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Rocket.Surgery.Linq
 {
     /// <summary>
-    /// Class AsyncLinqExtensions.
+    ///  AsyncLinqExtensions.
     /// </summary>
     public static class AsyncLinqExtensions
     {
