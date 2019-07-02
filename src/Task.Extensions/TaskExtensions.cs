@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="task">The this.</param>
-        /// <returns>ConfiguredTaskAwaitable&lt;T&gt;.</returns>
+        /// <returns>ConfiguredTaskAwaitable{T}.</returns>
         /// <exception cref="ArgumentNullException">this</exception>
         public static ConfiguredTaskAwaitable<T> ContinueOnAnyContext<T>(this Task<T> task)
         {

@@ -1328,7 +1328,7 @@ namespace System.Reactive.Linq
         /// </summary>
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
         /// <param name="source">The observable sequence that requires a return value.</param>
-        /// <returns>IObservable&lt;Unit&gt;.</returns>
+        /// <returns>IObservable{Unit}.</returns>
         /// <exception cref="ArgumentNullException">source</exception>
         public static IObservable<Unit> ToSignal<TSource>(this IObservable<TSource> source)
         {
@@ -1346,7 +1346,7 @@ namespace System.Reactive.Linq
         /// </summary>
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
         /// <param name="source">The source observable sequence</param>
-        /// <returns>IObservable&lt;TSource&gt;.</returns>
+        /// <returns>IObservable{TSource}.</returns>
         public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> source)
         {
             return source.Where(x => x != null);
