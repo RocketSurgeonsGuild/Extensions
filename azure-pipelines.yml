@@ -15,29 +15,25 @@ resources:
     - repository: rsg
       type: github
       name: RocketSurgeonsGuild/AzureDevopsTemplates
-      ref: refs/tags/v0.5.11
+      ref: refs/tags/v0.6.0
       endpoint: github
 
 variables:
-  Configuration: Release
-  Verbosity: Normal
-  DotNetVersion: "2.2.300"
-  DotNet3Version: "3.0.100-preview6-012264"
-  CakeVersion: "0.33.0"
-  NuGetVersion: "5.1.0"
-  Coverage: "$(Agent.BuildDirectory)/c"
-  VstsCoverage: "$(Coverage)"
-  Artifacts: $(Build.ArtifactStagingDirectory)
-  VstsArtifacts: "$(Artifacts)"
+  CONFIGURATION: Release
+  VERBOSITY: Normal
+  DOTNETVERSION: "2.2.300"
+  DOTNET3VERSION: "3.0.100-preview6-012264"
+  NUGETVERSION: "5.1.0"
+  COVERAGE: "$(Agent.BuildDirectory)/c"
+  ARTIFACTS: $(Build.ArtifactStagingDirectory)
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
   CodeCovToken: '2c7f7e9a-1e75-42b3-b2d4-b7f6ad3d0132'
 
 jobs:
-  - template: pipeline/cake.yml@rsg
+  - template: pipeline/nuke.yml@rsg
     parameters:
       Configuration: $(Configuration)
       Verbosity: $(Verbosity)
       DotNetVersion: $(DotNetVersion)
       DotNet3Version: $(DotNet3Version)
-      CakeVersion: $(CakeVersion)
       NuGetVersion: $(NuGetVersion)
