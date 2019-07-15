@@ -203,3 +203,5 @@ project.lock.json
 
 # Rider
 .idea/
+
+codealike.json

@@ -15,25 +15,31 @@ resources:
     - repository: rsg
       type: github
       name: RocketSurgeonsGuild/AzureDevopsTemplates
-      ref: refs/tags/v0.6.0
+      ref: refs/tags/v0.7.8
       endpoint: github
 
 variables:
-  CONFIGURATION: Release
-  VERBOSITY: Normal
-  DOTNETVERSION: "2.2.300"
-  DOTNET3VERSION: "3.0.100-preview6-012264"
-  NUGETVERSION: "5.1.0"
-  COVERAGE: "$(Agent.BuildDirectory)/c"
-  ARTIFACTS: $(Build.ArtifactStagingDirectory)
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "true"
-  CodeCovToken: '2c7f7e9a-1e75-42b3-b2d4-b7f6ad3d0132'
+  - group: rsg-bot
+  - name: CONFIGURATION
+    value: Release
+  - name: VERBOSITY
+    value: Normal
+  - name: COVERAGE
+    value: "$(Agent.BuildDirectory)/c"
+  - name: ARTIFACTS
+    value: $(Build.ArtifactStagingDirectory)
+  - name: DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+    value: "true"
+  - name: CodeCovToken
+    value: '2c7f7e9a-1e75-42b3-b2d4-b7f6ad3d0132'
 
 jobs:
   - template: pipeline/nuke.yml@rsg
     parameters:
       Configuration: $(Configuration)
       Verbosity: $(Verbosity)
-      DotNetVersion: $(DotNetVersion)
-      DotNet3Version: $(DotNet3Version)
-      NuGetVersion: $(NuGetVersion)
+      GitHub: true
+      GitHubPackages: false
+      DotNetVersion: "2.2.300"
+      DotNet3Version: "3.0.100-preview6-012264"
+      NuGetVersion: "5.1.0"
