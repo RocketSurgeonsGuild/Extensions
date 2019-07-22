@@ -4,6 +4,6 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <RootNamespace>$(MSBuildProjectName.Replace('.Extensions', ''))</RootNamespace>
+        <RootNamespace>$(MSBuildProjectName.Replace('.Extensions', '').Replace('.Abstractions', ''))</RootNamespace>
     </PropertyGroup>
 </Project>

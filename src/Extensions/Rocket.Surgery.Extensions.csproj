@@ -8,6 +8,7 @@
         </AssemblyAttribute>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="../Extensions.Abstractions/Rocket.Surgery.Extensions.Abstractions.csproj" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
         <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="System.Collections.Immutable" />
