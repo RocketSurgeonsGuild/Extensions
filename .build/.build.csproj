@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Rocket.Surgery.Nuke" />
+    <PackageReference Include="Rocket.Surgery.Nuke.DotNetCore" />
     <PackageReference Include="Nuke.Common" />
     <PackageReference Include="GitVersion.CommandLine.DotNetCore" />
     <PackageReference Include="ReportGenerator" />
