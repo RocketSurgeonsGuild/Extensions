@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <ItemGroup>
-    <GlobalPackageReference Include="Rocket.Surgery.Build.Metadata" Version="3.3.7" Condition="'$(MSBuildProjectName)'!='.build'" />
+    <GlobalPackageReference Include="Rocket.Surgery.Build.Metadata" Version="3.3.9" Condition="'$(MSBuildProjectName)'!='.build'" />
     <!-- <GlobalPackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.3" /> -->
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" />
     <GlobalPackageReference Include="Roslynator.Analyzers" Version="2.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Nuke.Common" Version="0.21.1" />
-    <PackageReference Update="Rocket.Surgery.Nuke.DotNetCore" Version="0.2.8" />
-    <PackageReference Update="GitVersion.CommandLine.DotNetCore" Version="5.0.0-beta5.51" />
-    <PackageReference Update="ReportGenerator" Version="4.2.11" />
+    <PackageReference Update="Nuke.Common" Version="0.21.2" />
+    <PackageReference Update="Rocket.Surgery.Nuke.DotNetCore" Version="0.3.5" />
+    <PackageReference Update="GitVersion.CommandLine.DotNetCore" Version="5.0.1-beta1.14" />
+    <PackageReference Update="ReportGenerator" Version="4.2.12" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="2.1.0" />
@@ -32,7 +32,7 @@
     <PackageReference Update="coverlet.msbuild" Version="2.6.3" />
     <PackageReference Update="FakeItEasy" Version="5.1.1" />
     <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="5.1.1" />
-    <PackageReference Update="FluentAssertions" Version="5.7.0" />
+    <PackageReference Update="FluentAssertions" Version="5.8.0" />
     <PackageReference Update="FluentAssertions.Analyzers" Version="0.11.4" />
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageReference Update="xunit" Version="2.4.1" />
