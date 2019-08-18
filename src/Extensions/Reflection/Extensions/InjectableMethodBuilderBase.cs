@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,6 +7,9 @@ using System.Reflection;
 
 namespace Rocket.Surgery.Reflection.Extensions
 {
+    /// <summary>
+    /// Injectable method builder base
+    /// </summary>
     public abstract class InjectableMethodBuilderBase
     {
         internal InjectableMethodBuilderBase(Type container, ImmutableArray<string> methodNames)
@@ -20,10 +23,27 @@ namespace Rocket.Surgery.Reflection.Extensions
             MethodNames = ImmutableArray<string>.Empty;
         }
 
+        /// <summary>
+        /// Gets the container.
+        /// </summary>
+        /// <value>
+        /// The container.
+        /// </value>
         public TypeInfo Container { get; }
+
+        /// <summary>
+        /// Gets the method names.
+        /// </summary>
+        /// <value>
+        /// The method names.
+        /// </value>
         public ImmutableArray<string> MethodNames { get; }
 
-        protected MethodInfo GetMethodInfo()
+        /// <summary>
+        /// Gets the method information.
+        /// </summary>
+        /// <returns></returns>
+        protected MethodInfo? GetMethodInfo()
         {
             // Make this stupid simple
             // We allow multiple method names, but beyond that overloads are not allowed
@@ -34,6 +54,11 @@ namespace Rocket.Surgery.Reflection.Extensions
                 .FirstOrDefault();
         }
 
+        /// <summary>
+        /// Compiles the specified arguments.
+        /// </summary>
+        /// <param name="arguments">The arguments.</param>
+        /// <returns></returns>
         protected (MethodCallExpression body, IEnumerable<ParameterExpression> parameters) Compile(params TypeInfo[] arguments)
         {
             // Make this stupid simple
@@ -46,7 +71,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                 throw new MethodNotFoundException(MethodNames.ToArray());
             }
 
-            string GetParameterName(Type type)
+            static string? getParameterName(Type? type)
             {
                 if (type is null) return null;
                 if (type.GetTypeInfo().IsInterface && type.Name.StartsWith("I"))
@@ -61,7 +86,7 @@ namespace Rocket.Surgery.Reflection.Extensions
             var resolvedParameters = parameters
                 .Select(info => new
                 {
-                    expression = Expression.Parameter(info.ParameterType, GetParameterName(info.ParameterType)),
+                    expression = Expression.Parameter(info.ParameterType, getParameterName(info.ParameterType)),
                     info,
                     type = info.ParameterType,
                     index = Array.IndexOf((Array)parameters, info),

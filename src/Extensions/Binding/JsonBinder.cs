@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -221,7 +221,7 @@ namespace Rocket.Surgery.Binding
             return (T)root[key];
         }
 
-        private JToken GetValueFromToken(JToken root, string key)
+        private JToken? GetValueFromToken(JToken root, string key)
         {
             if (root is JArray arr)
             {

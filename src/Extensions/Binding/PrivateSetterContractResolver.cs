@@ -46,7 +46,7 @@ namespace Rocket.Surgery.Binding
             return base.CreateMemberValueProvider(member);
         }
 
-        private static FieldInfo GetBackingField(PropertyInfo pi)
+        private static FieldInfo? GetBackingField(PropertyInfo pi)
         {
             if (!pi.CanRead || !pi.GetMethod.IsDefined(typeof(CompilerGeneratedAttribute), inherit: true))
                 return null;

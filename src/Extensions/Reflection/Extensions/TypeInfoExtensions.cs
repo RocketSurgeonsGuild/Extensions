@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Reflection;
 
 namespace Rocket.Surgery.Reflection.Extensions
@@ -16,7 +16,7 @@ namespace Rocket.Surgery.Reflection.Extensions
         /// <param name="name">The name.</param>
         /// <returns>PropertyInfo.</returns>
         /// TODO Edit XML Comment Template for FindDeclaredProperty
-        public static PropertyInfo FindDeclaredProperty(this TypeInfo typeInfo, string name)
+        public static PropertyInfo? FindDeclaredProperty(this TypeInfo? typeInfo, string name)
         {
             while (typeInfo != null)
             {

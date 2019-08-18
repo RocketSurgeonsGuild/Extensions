@@ -10,16 +10,12 @@ namespace Rocket.Surgery.Encoding
     /// <summary>
     /// Base32Url is a standard base 32 encoder/decoder except that padding turned
     /// off and it is not case sensitive (by default).
-    ///
     /// If you turn padding and case sensitivity on it becomes a standard base32
     /// encoder/decoder giving you 8 character chunks right padded with equals symbols.
-    ///
     /// If you leave padding off and use Base32Url.ZBase32Alphabet you
     /// get a z-base-32 compatible encoder/decoder.
-    ///
     /// Note that the crockford base32 encoding doesn't support the crockford checksum
     /// mechanism.
-    ///
     /// See http://tools.ietf.org/html/rfc4648
     /// For more information see http://en.wikipedia.org/wiki/Base32
     /// </summary>
@@ -76,7 +72,7 @@ namespace Rocket.Surgery.Encoding
         public bool IgnoreWhiteSpaceWhenDecoding;
 
         private readonly CharMap[] _alphabet;
-        private Dictionary<string, uint> _index;
+        private Dictionary<string, uint>? _index;
 
         // alphabets may be used with varying case sensitivity, thus index must not ignore case
         private static Dictionary<string, Dictionary<string, uint>> _indexes = new Dictionary<string, Dictionary<string, uint>>(2, StringComparer.Ordinal);
@@ -276,13 +272,12 @@ namespace Rocket.Surgery.Encoding
 
                 for (int charOffset = 0; charOffset < chars; charOffset++)
                 {
-                    uint cbyte;
-                    if (!_index.TryGetValue(input.Substring(i + charOffset, 1), out cbyte))
+                    if (!_index!.TryGetValue(input.Substring(i + charOffset, 1), out var cbyte))
                     {
                         throw new ArgumentException("Invalid character '" + input.Substring(i + charOffset, 1) + "' in base32 string, valid characters are: " + _alphabet);
                     }
 
-                    val |= (((ulong)cbyte) << ((((bytes + 1) * 8) - (charOffset * 5)) - 5));
+                    val |= ((ulong)cbyte) << (((bytes + 1) * 8) - (charOffset * 5) - 5);
                 }
 
                 byte[] buff = BitConverter.GetBytes(val);
@@ -297,13 +292,11 @@ namespace Rocket.Surgery.Encoding
         {
             if (_index != null) return;
 
-            Dictionary<string, uint> cidx;
-
             var indexKey = (IsCaseSensitive ? "S" : "I") +
                 string.Join("", _alphabet.Select(t => t.Encode)) +
                 "_" + string.Join("", _alphabet.SelectMany(t => t.Decode).Select(c => c));
 
-            if (!_indexes.TryGetValue(indexKey, out cidx))
+            if (!_indexes.TryGetValue(indexKey, out var cidx))
             {
                 lock (_indexes)
                 {

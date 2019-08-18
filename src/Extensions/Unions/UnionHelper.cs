@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,26 +7,45 @@ using Newtonsoft.Json.Linq;
 
 namespace Rocket.Surgery.Unions
 {
-
+    /// <summary>
+    /// Union helper
+    /// </summary>
     public static class UnionHelper
     {
+        /// <summary>
+        /// Gets the type of the union enum.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         public static Type GetUnionEnumType(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             return GetUnionEnumType(type.GetTypeInfo());
         }
 
+        /// <summary>
+        /// Gets the type of the union enum.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         public static Type GetUnionEnumType(TypeInfo type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            type = GetRootType(type);
+            type = GetRootType(type)!;
 
-            if (type.GetCustomAttribute<UnionKeyAttribute>(false) == null)
+            if (type?.GetCustomAttribute<UnionKeyAttribute>(false) == null)
                 throw new ArgumentOutOfRangeException(nameof(type), "type must have a union key attribute");
+
             return type.GetDeclaredProperty(type.GetCustomAttribute<UnionKeyAttribute>(false).Key).PropertyType;
         }
 
+        /// <summary>
+        /// Gets the type of the union enum.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns></returns>
         public static Type GetUnionEnumType(Type type, string propertyName)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -35,31 +54,52 @@ namespace Rocket.Surgery.Unions
             return GetUnionEnumType(type.GetTypeInfo(), propertyName);
         }
 
+        /// <summary>
+        /// Gets the type of the union enum.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns></returns>
         public static Type GetUnionEnumType(TypeInfo type, string propertyName)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            type = GetRootType(type);
+            type = GetRootType(type)!;
 
             if (string.IsNullOrWhiteSpace(propertyName))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(propertyName));
-            return type.GetDeclaredProperty(propertyName).PropertyType;
+            return type?.GetDeclaredProperty(propertyName).PropertyType!;
         }
 
+        /// <summary>
+        /// Gets the union key.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
         public static string GetUnionKey(TypeInfo type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
             return type.GetCustomAttribute<UnionKeyAttribute>(false).Key;
         }
 
-        public static TypeInfo GetRootType(Type type)
+        /// <summary>
+        /// Gets the type of the root.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns></returns>
+        public static TypeInfo? GetRootType(Type type)
         {
             return GetRootType(type.GetTypeInfo());
         }
 
-        public static TypeInfo GetRootType(TypeInfo typeInfo)
+        /// <summary>
+        /// Gets the type of the root.
+        /// </summary>
+        /// <param name="typeInfo">The type information.</param>
+        /// <returns></returns>
+        public static TypeInfo? GetRootType(TypeInfo typeInfo)
         {
-            var rootType = typeInfo;
+            TypeInfo? rootType = typeInfo;
             while (rootType != null)
             {
                 if (rootType.GetCustomAttributes<UnionKeyAttribute>(false)?.Any() == true) break;
@@ -91,7 +131,7 @@ namespace Rocket.Surgery.Unions
             return typeInfo.Assembly.DefinedTypes
                 .Where(typeInfo.IsAssignableFrom)
                 .Where(x => !x.IsAbstract)
-                .Select(type => (type, @enum: type.GetCustomAttribute<UnionAttribute>()?.Value))
+                .Select(type => (type, @enum: type.GetCustomAttribute<UnionAttribute>()?.Value!))
                 .ToDictionary(
                     x => x.@enum,
                     x => x.type.AsType()

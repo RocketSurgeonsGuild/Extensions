@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Rocket.Surgery.Linq
+// ReSharper disable once CheckNamespace
+namespace System.Linq
 {
     /// <summary>
     ///  AsyncLinqExtensions.
@@ -73,7 +75,7 @@ namespace Rocket.Surgery.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IAsyncEnumerable<TResult> FlatMap<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, IAsyncEnumerable<TResult>> selector)
+        public static IAsyncEnumerable<TResult> MergeMap<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, IAsyncEnumerable<TResult>> selector)
         {
             return source.SelectMany(selector);
         }
@@ -87,7 +89,7 @@ namespace Rocket.Surgery.Linq
         /// <param name="selector">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> whose elements are the result of invoking the one-to-many transform function on each element of an input sequence.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IAsyncEnumerable<TResult> FlatMap<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, int, IAsyncEnumerable<TResult>> selector)
+        public static IAsyncEnumerable<TResult> MergeMap<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, int, IAsyncEnumerable<TResult>> selector)
         {
             return source.SelectMany(selector);
         }
@@ -103,7 +105,7 @@ namespace Rocket.Surgery.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> whose elements are the result of invoking the one-to-many transform function <paramref name="collectionSelector" /> on each element of <paramref name="source" /> and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IAsyncEnumerable<TResult> FlatMap<TSource, TCollection, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, IAsyncEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
+        public static IAsyncEnumerable<TResult> MergeMap<TSource, TCollection, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, IAsyncEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
             return source.SelectMany(collectionSelector, resultSelector);
         }
@@ -119,14 +121,16 @@ namespace Rocket.Surgery.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> whose elements are the result of invoking the one-to-many transform function <paramref name="collectionSelector" /> on each element of <paramref name="source" /> and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IAsyncEnumerable<TResult> FlatMap<TSource, TCollection, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, int, IAsyncEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
+        public static IAsyncEnumerable<TResult> MergeMap<TSource, TCollection, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, int, IAsyncEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
             return source.SelectMany(collectionSelector, resultSelector);
         }
 
+
+#if NETSTANDARD2_1
         /// <summary>
         /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value.
-        /// For aggregation behavior with incremental intermediate results, see <see cref="Observable.Scan{TSource, Accumulate}" />.
+        /// For aggregation behavior with incremental intermediate results.
         /// </summary>
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
         /// <typeparam name="TAccumulate">The type of the result of the aggregation.</typeparam>
@@ -136,10 +140,17 @@ namespace Rocket.Surgery.Linq
         /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
+        public static ValueTask<TAccumulate> ReduceAsync<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator)
+        {
+            return source.AggregateAsync(seed, accumulator);
+        }
+#else
         public static Task<TAccumulate> Reduce<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator)
         {
             return source.Aggregate(seed, accumulator);
         }
+#endif
+
 
         /// <summary>
         /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value,
@@ -155,14 +166,21 @@ namespace Rocket.Surgery.Linq
         /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
+#if NETSTANDARD2_1
+        public static ValueTask<TResult> ReduceAsync<TSource, TAccumulate, TResult>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector)
+        {
+            return source.AggregateAsync(seed, accumulator, resultSelector);
+        }
+#else
         public static Task<TResult> Reduce<TSource, TAccumulate, TResult>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector)
         {
             return source.Aggregate(seed, accumulator, resultSelector);
         }
+#endif
 
         /// <summary>
         /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence.
-        /// For aggregation behavior with incremental intermediate results, see <see cref="Observable.Scan{TSource}" />.
+        /// For aggregation behavior with incremental intermediate results.
         /// </summary>
         /// <typeparam name="TSource">The type of the elements in the source sequence and the result of the aggregation.</typeparam>
         /// <param name="source">An async sequence to aggregate over.</param>
@@ -171,9 +189,92 @@ namespace Rocket.Surgery.Linq
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <exception cref="InvalidOperationException">(Asynchronous) The source sequence is empty.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
+#if NETSTANDARD2_1
+        public static ValueTask<TSource> ReduceAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator)
+        {
+            return source.AggregateAsync(accumulator);
+        }
+#else
         public static Task<TSource> Reduce<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator)
         {
             return source.Aggregate(accumulator);
         }
+#endif
+
+        /// <summary>
+        /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value.
+        /// For aggregation behavior with incremental intermediate results.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+        /// <typeparam name="TAccumulate">The type of the result of the aggregation.</typeparam>
+        /// <param name="source">An async sequence to aggregate over.</param>
+        /// <param name="seed">The initial accumulator value.</param>
+        /// <param name="accumulator">An accumulator function to be invoked on each element.</param>
+        /// <param name="cancellationToken">The cancelation token</param>
+        /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
+        /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
+#if NETSTANDARD2_1
+        public static ValueTask<TAccumulate> ReduceAsync<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, CancellationToken cancellationToken)
+        {
+            return source.AggregateAsync(seed, accumulator, cancellationToken);
+        }
+#else
+        public static Task<TAccumulate> Reduce<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, CancellationToken cancellationToken)
+        {
+            return source.Aggregate(seed, accumulator, cancellationToken);
+        }
+#endif
+
+        /// <summary>
+        /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value,
+        /// and the specified result selector function is used to select the result value.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+        /// <typeparam name="TAccumulate">The type of the accumulator value.</typeparam>
+        /// <typeparam name="TResult">The type of the resulting value.</typeparam>
+        /// <param name="source">An async sequence to aggregate over.</param>
+        /// <param name="seed">The initial accumulator value.</param>
+        /// <param name="accumulator">An accumulator function to be invoked on each element.</param>
+        /// <param name="resultSelector">A function to transform the final accumulator value into the result value.</param>
+        /// <param name="cancellationToken">The cancelation token</param>
+        /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> or <paramref name="resultSelector" /> is null.</exception>
+        /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
+#if NETSTANDARD2_1
+        public static ValueTask<TResult> ReduceAsync<TSource, TAccumulate, TResult>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector, CancellationToken cancellationToken)
+        {
+            return source.AggregateAsync(seed, accumulator, resultSelector, cancellationToken);
+        }
+#else
+        public static Task<TResult> Reduce<TSource, TAccumulate, TResult>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector, CancellationToken cancellationToken)
+        {
+            return source.Aggregate(seed, accumulator, resultSelector, cancellationToken);
+        }
+#endif
+
+        /// <summary>
+        /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence.
+        /// For aggregation behavior with incremental intermediate results.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the elements in the source sequence and the result of the aggregation.</typeparam>
+        /// <param name="source">An async sequence to aggregate over.</param>
+        /// <param name="accumulator">An accumulator function to be invoked on each element.</param>
+        /// <param name="cancellationToken">The cancelation token</param>
+        /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
+        /// <exception cref="InvalidOperationException">(Asynchronous) The source sequence is empty.</exception>
+        /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
+#if NETSTANDARD2_1
+        public static ValueTask<TSource> ReduceAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator, CancellationToken cancellationToken)
+        {
+            return source.AggregateAsync(accumulator, cancellationToken);
+        }
+#else
+        public static Task<TSource> Reduce<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator, CancellationToken cancellationToken)
+        {
+            return source.Aggregate(accumulator, cancellationToken);
+        }
+#endif
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -121,77 +121,77 @@ namespace Rocket.Surgery.Extensions.Tests
             getter.TryGetPropertyDelegate(fixture, "Thing1.A", out _).Should().BeTrue();
         }
 
-        public static IEnumerable<object[]> ListData_ForNormal()
+        public static IEnumerable<object?[]> ListData_ForNormal()
         {
             foreach (var item in GetListFixtures())
             {
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[0].A",
                     "123"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[0].B",
                     1
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[0].C",
                     null
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[1].A",
                     "456"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[1].B",
                     2
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[1].C",
                     1L
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[2].A",
                     "789"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[2].B",
                     3
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[2].C",
                     null
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values[0]",
                     "1"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values[1]",
                     "2"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values[2]",
@@ -200,77 +200,77 @@ namespace Rocket.Surgery.Extensions.Tests
             }
         }
 
-        public static IEnumerable<object[]> ListData_ForSeperator()
+        public static IEnumerable<object?[]> ListData_ForSeperator()
         {
             foreach (var item in GetListFixtures())
             {
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__0__A",
                     "123"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__0__B",
                     1
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__0__C",
                     null
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__1__A",
                     "456"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__1__B",
                     2
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__1__C",
                     1L
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__2__A",
                     "789"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__2__B",
                     3
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things__2__C",
                     null
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values__0",
                     "1"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values__1",
                     "2"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values__2",
@@ -283,7 +283,7 @@ namespace Rocket.Surgery.Extensions.Tests
         {
             foreach (var item in GetListFixtures())
             {
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[hello world].A",
@@ -450,77 +450,77 @@ namespace Rocket.Surgery.Extensions.Tests
             };
         }
 
-        public static IEnumerable<object[]> DictionaryData()
+        public static IEnumerable<object?[]> DictionaryData()
         {
             foreach (var item in GetDictionaryFixtures())
             {
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[A].A",
                     "123"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[A].B",
                     1
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[A].C",
                     null
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[B].A",
                     "456"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[B].B",
                     2
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[B].C",
                     1L
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[C].A",
                     "789"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[C].B",
                     3
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Things[C].C",
                     null
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values[A]",
                     "1"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values[B]",
                     "2"
                 };
-                yield return new object[]
+                yield return new object?[]
                 {
                     item,
                     "Values[C]",

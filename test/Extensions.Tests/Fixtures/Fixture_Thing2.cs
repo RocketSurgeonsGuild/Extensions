@@ -1,4 +1,5 @@
-﻿namespace Rocket.Surgery.Extensions.Tests.Fixtures
+#nullable disable
+namespace Rocket.Surgery.Extensions.Tests.Fixtures
 {
     class Fixture_Thing2
     {

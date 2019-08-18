@@ -9,7 +9,7 @@ namespace Rocket.Surgery.Encoding
 	/// See http://tools.ietf.org/html/rfc4648
 	/// For more information see http://en.wikipedia.org/wiki/Base64
 	/// </summary>
-	public class Base64Url
+	public static class Base64Url
 	{
 		/// <summary>
 		/// Modified Base64 for URL applications ('base64url' encoding)

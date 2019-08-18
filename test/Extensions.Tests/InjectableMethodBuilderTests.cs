@@ -20,13 +20,13 @@ namespace Rocket.Surgery.Extensions.Tests
             var serviceProvider = A.Fake<IServiceProvider>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(new MethodFuncTest(), serviceProvider);
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -39,13 +39,13 @@ namespace Rocket.Surgery.Extensions.Tests
             var serviceProvider = A.Fake<IServiceProvider>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(new MethodFuncTest(), serviceProvider);
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -60,13 +60,13 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured1 = A.Fake<IConfigured1>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(new MethodFuncTest(), serviceProvider, configured1);
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -82,16 +82,16 @@ namespace Rocket.Surgery.Extensions.Tests
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
             var injected3 = A.Fake<IInjected3>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected3))).Returns(injected3);
             method(new MethodFuncTest(), serviceProvider, configured1);
 
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected3))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected3))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured2 = A.Fake<IConfigured2>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -118,8 +118,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured2
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -138,7 +138,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured3 = A.Fake<IConfigured3>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -149,8 +149,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured3
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -171,7 +171,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured4 = A.Fake<IConfigured4>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -183,8 +183,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured4
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -207,7 +207,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured5 = A.Fake<IConfigured5>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -220,8 +220,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured5
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -246,7 +246,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured6 = A.Fake<IConfigured6>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -260,8 +260,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured6
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -288,7 +288,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured7 = A.Fake<IConfigured7>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -303,8 +303,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured7
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -333,7 +333,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured8 = A.Fake<IConfigured8>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -349,8 +349,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured8
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -381,7 +381,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured9 = A.Fake<IConfigured9>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -398,8 +398,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured9
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -432,7 +432,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured10 = A.Fake<IConfigured10>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -450,8 +450,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured10
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -486,7 +486,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured11 = A.Fake<IConfigured11>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -505,8 +505,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured11
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -543,7 +543,7 @@ namespace Rocket.Surgery.Extensions.Tests
             var configured12 = A.Fake<IConfigured12>();
             var injected1 = A.Fake<IInjected1>();
             var injected2 = A.Fake<IInjected2>();
-            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
             A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
             method(
@@ -563,8 +563,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 configured12
             );
 
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappened(Repeated.Exactly.Once);
-            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).MustHaveHappenedOnceExactly();
+            A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
         }
 
         // #######
@@ -580,17 +580,17 @@ namespace Rocket.Surgery.Extensions.Tests
 
             action(methodFuncTestMock, A.Fake<IServiceProvider>());
 
-            A.CallTo(() => methodFuncTestMock.Execute()).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => methodFuncTestMock.Execute()).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
         public void MapsConfiguredParameterToAction()
         {
             var serviceProviderMock = A.Fake<IServiceProvider>();
-            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
             A.CallTo(() => serviceProviderMock.GetService(typeof(IInjected1))).Returns(A.Fake<IInjected1>());
             A.CallTo(() => serviceProviderMock.GetService(typeof(IInjected2))).Returns(A.Fake<IInjected2>());
-            A.CallTo(() => serviceProviderMock.GetService(typeof(IInjected3))).Returns(null);
+            A.CallTo(() => serviceProviderMock.GetService(typeof(IInjected3))).Returns(null!);
 
             var serviceProvider = serviceProviderMock;
             var methodFuncTestMock = A.Fake<MethodFuncTest>();
@@ -601,7 +601,7 @@ namespace Rocket.Surgery.Extensions.Tests
                 .Compile();
 
             action(methodFuncTestMock, serviceProvider, A.Fake<IConfigured1>());
-            A.CallTo(() => methodFuncTestMock.Execute1(A<IConfigured1>.Ignored, A<IInjected1>.Ignored, A<IInjected2>.Ignored, A<IInjected3>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+            A.CallTo(() => methodFuncTestMock.Execute1(A<IConfigured1>.Ignored, A<IInjected1>.Ignored, A<IInjected2>.Ignored, A<IInjected3>.Ignored)).MustHaveHappenedOnceExactly();
         }
     }
 }

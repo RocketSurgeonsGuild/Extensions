@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -6,11 +6,17 @@ using System.Runtime.CompilerServices;
 
 namespace Rocket.Surgery.Reflection.Extensions
 {
+    /// <summary>
+    /// The default backing field helper
+    /// </summary>
     public class BackingFieldHelper
     {
+        /// <summary>
+        /// A default instance
+        /// </summary>
         public static BackingFieldHelper Instance { get; } = new BackingFieldHelper();
         private readonly ConcurrentDictionary<(Type, string), FieldInfo> _backingFields = new ConcurrentDictionary<(Type, string), FieldInfo>();
-        private FieldInfo GetBackingField(PropertyInfo pi)
+        private FieldInfo? GetBackingField(PropertyInfo pi)
         {
             if (!pi.CanRead || !pi.GetMethod.IsDefined(typeof(CompilerGeneratedAttribute), inherit: true))
                 return null;
@@ -33,14 +39,22 @@ namespace Rocket.Surgery.Reflection.Extensions
                 if (property == null)
                     property = objectType.GetTypeInfo().GetProperty(name);
 
-                backingField = GetBackingField(property);
-                _backingFields.TryAdd((objectType, name), backingField);
+                backingField = GetBackingField(property)!;
+                _backingFields.TryAdd((objectType, name), backingField!);
             }
             if (backingField is null)
                 throw new NotSupportedException("Given Expression is not supported");
             return backingField;
         }
 
+        /// <summary>
+        /// Gets the backing field.
+        /// </summary>
+        /// <typeparam name="TInterface">The type of the interface.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="type">The type.</param>
+        /// <param name="expression">The expression.</param>
+        /// <returns></returns>
         public FieldInfo GetBackingField<TInterface, TValue>(Type type, Expression<Func<TInterface, TValue>> expression)
         {
             if (expression.Body is MemberExpression exp)
@@ -50,11 +64,19 @@ namespace Rocket.Surgery.Reflection.Extensions
             throw new NotSupportedException("Given Expression is not supported");
         }
 
+        /// <summary>
+        /// Sets the backing field.
+        /// </summary>
+        /// <typeparam name="TInterface">The type of the interface.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <param name="instance">The instance.</param>
+        /// <param name="expression">The expression.</param>
+        /// <param name="value">The value.</param>
         public void SetBackingField<TInterface, TValue>(TInterface instance, Expression<Func<TInterface, TValue>> expression, TValue value)
         {
             if (expression.Body is MemberExpression exp)
             {
-                var field = GetBackingField(instance.GetType(), expression);
+                var field = GetBackingField(instance!.GetType(), expression);
                 field.SetValue(instance, value);
                 return;
             }

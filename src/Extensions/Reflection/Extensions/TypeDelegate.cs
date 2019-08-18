@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Rocket.Surgery.Reflection.Extensions
 {
-    class TypeDelegate : IEquatable<TypeDelegate>
+    class TypeDelegate : IEquatable<TypeDelegate?>
     {
         private readonly string _separator;
         private readonly StringComparison _comparison;
@@ -66,7 +66,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                     if (!int.TryParse(part, out var intValue))
                     {
                         if (_shouldThrow) throw new Exception($"Could not parse integer value for indexer from '{part}'.");
-                        propertyDelegate = null;
+                        propertyDelegate = null!;
                         return false;
                     }
                     expression = Expression.ArrayIndex(expression, Expression.Constant(intValue, typeof(int)));
@@ -78,7 +78,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                     if (!int.TryParse(part, out var intValue))
                     {
                         if (_shouldThrow) throw new Exception($"Could not parse integer value for indexer from '{part}'.");
-                        propertyDelegate = null;
+                        propertyDelegate = null!;
                         return false;
                     }
 
@@ -111,7 +111,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                     if (!int.TryParse(part, out var intValue))
                     {
                         if (_shouldThrow) throw new Exception($"Could not parse integer value for indexer from '{part}'.");
-                        propertyDelegate = null;
+                        propertyDelegate = null!;
                         return false;
                     }
 
@@ -125,10 +125,10 @@ namespace Rocket.Surgery.Reflection.Extensions
                 if (!Info.TryGetInfo(innerType, part, _comparison, out var info))
                 {
                     if (_shouldThrow) throw new Exception($"Could not find property or field '{part}'.");
-                    propertyDelegate = null;
+                    propertyDelegate = null!;
                     return false;
                 }
-                innerType = info.Type;
+                innerType = info!.Type;
                 expression = Expression.PropertyOrField(expression, info.Name);
             }
 
@@ -150,14 +150,14 @@ namespace Rocket.Surgery.Reflection.Extensions
                 }
 
                 var fieldInfo = type.GetRuntimeFields()
-                    .FirstOrDefault(x => x.Name.Equals(name, comparison)); ;
+                    .FirstOrDefault(x => x.Name.Equals(name, comparison));
                 if (fieldInfo != null)
                 {
                     info = new Info(fieldInfo.FieldType, fieldInfo.Name);
                     return true;
                 }
 
-                info = null;
+                info = null!;
                 return false;
             }
 
@@ -171,12 +171,12 @@ namespace Rocket.Surgery.Reflection.Extensions
             public Type Type { get; }
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return Equals(obj as TypeDelegate);
         }
 
-        public bool Equals(TypeDelegate other)
+        public bool Equals(TypeDelegate? other)
         {
             return other != null &&
                    EqualityComparer<Type>.Default.Equals(Type, other.Type);
@@ -187,12 +187,12 @@ namespace Rocket.Surgery.Reflection.Extensions
             return 2049151605 + EqualityComparer<Type>.Default.GetHashCode(Type);
         }
 
-        public static bool operator ==(TypeDelegate delegate1, TypeDelegate delegate2)
+        public static bool operator ==(TypeDelegate? delegate1, TypeDelegate? delegate2)
         {
-            return EqualityComparer<TypeDelegate>.Default.Equals(delegate1, delegate2);
+            return EqualityComparer<TypeDelegate>.Default.Equals(delegate1!, delegate2!);
         }
 
-        public static bool operator !=(TypeDelegate delegate1, TypeDelegate delegate2)
+        public static bool operator !=(TypeDelegate? delegate1, TypeDelegate? delegate2)
         {
             return !(delegate1 == delegate2);
         }

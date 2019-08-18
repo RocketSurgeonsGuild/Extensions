@@ -32,7 +32,7 @@ namespace Rocket.Surgery.Extensions.Tests
         public void HandlesInheritedValues()
         {
             var serviceProviderMock = A.Fake<IServiceProvider>();
-            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
             var methodFuncTest= A.Fake <MethodFuncTest>();
             var action = InjectableMethodBuilder
                 .Create<MethodFuncTest>(nameof(MethodFuncTest.Execute))
@@ -59,7 +59,7 @@ namespace Rocket.Surgery.Extensions.Tests
         public void HandlesInheritedTypes()
         {
             var serviceProviderMock = A.Fake<IServiceProvider>();
-            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
             var methodFuncTest = A.Fake<MethodFuncTest2>();
             Action a = () =>
             {
@@ -87,7 +87,7 @@ namespace Rocket.Surgery.Extensions.Tests
         public void HandlesOutheritedTypes()
         {
             var serviceProviderMock = A.Fake<IServiceProvider>();
-            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
             var methodFuncTest = A.Fake<MethodFuncTest3>();
             var action = InjectableMethodBuilder
                 .Create<MethodFuncTest3>(nameof(MethodFuncTest3.Execute))
@@ -104,7 +104,7 @@ namespace Rocket.Surgery.Extensions.Tests
         public void HandlesOutheritedTypes2()
         {
             var serviceProviderMock = A.Fake<IServiceProvider>();
-            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
+            A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
             var methodFuncTest = A.Fake<MethodFuncTest3>();
             var action = InjectableMethodBuilder
                 .Create<MethodFuncTest3>(nameof(MethodFuncTest3.Execute2))

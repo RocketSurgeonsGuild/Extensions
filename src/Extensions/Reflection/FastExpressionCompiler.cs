@@ -23,9 +23,11 @@ THE SOFTWARE.
 */
 
 // ReSharper disable CoVariantArrayConversion
+#nullable disable
 
 namespace FastExpressionCompiler
 {
+#pragma warning disable IDE0065 // Misplaced using directive
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -33,6 +35,7 @@ namespace FastExpressionCompiler
     using System.Reflection;
     using System.Reflection.Emit;
     using System.Diagnostics;
+#pragma warning restore IDE0065 // Misplaced using directive
 
     /// <summary>Compiles expression to delegate ~20 times faster than Expression.Compile.
     /// Partial to extend with your things when used as source file.</summary>
@@ -942,8 +945,7 @@ namespace FastExpressionCompiler
             switch (exprNodeType)
             {
                 case ExpressionType.Constant:
-                    var constExprInfo = exprObj as ConstantExpressionInfo;
-                    var value = constExprInfo != null ? constExprInfo.Value : ((ConstantExpression)exprObj).Value;
+                    var value = exprObj is ConstantExpressionInfo constExprInfo ? constExprInfo.Value : ((ConstantExpression)exprObj).Value;
                     if (value is Delegate || IsBoundConstant(value))
                         (closure ?? (closure = new ClosureInfo())).AddConstant(exprObj, value, exprType);
                     return true;
@@ -960,8 +962,7 @@ namespace FastExpressionCompiler
                     return TryCollectCallExprConstants(ref closure, exprObj, paramExprs);
 
                 case ExpressionType.MemberAccess:
-                    var memberExprInfo = exprObj as MemberExpressionInfo;
-                    if (memberExprInfo != null)
+                    if (exprObj is MemberExpressionInfo memberExprInfo)
                     {
                         var maExpr = memberExprInfo.Expression;
                         return maExpr == null
@@ -973,15 +974,13 @@ namespace FastExpressionCompiler
                         || TryCollectBoundConstants(ref closure, memberExpr, memberExpr.NodeType, memberExpr.Type, paramExprs);
 
                 case ExpressionType.New:
-                    var newExprInfo = exprObj as NewExpressionInfo;
-                    return newExprInfo != null
+                    return exprObj is NewExpressionInfo newExprInfo
                         ? TryCollectBoundConstants(ref closure, newExprInfo.Arguments, paramExprs)
                         : TryCollectBoundConstants(ref closure, ((NewExpression)(Expression)exprObj).Arguments, paramExprs);
 
                 case ExpressionType.NewArrayBounds:
                 case ExpressionType.NewArrayInit:
-                    var newArrayInitInfo = exprObj as NewArrayExpressionInfo;
-                    if (newArrayInitInfo != null)
+                    if (exprObj is NewArrayExpressionInfo newArrayInitInfo)
                         return TryCollectBoundConstants(ref closure, newArrayInitInfo.Arguments, paramExprs);
                     return TryCollectBoundConstants(ref closure, ((NewArrayExpression)exprObj).Expressions, paramExprs);
 
@@ -992,8 +991,7 @@ namespace FastExpressionCompiler
                     return TryCompileNestedLambda(ref closure, exprObj, paramExprs);
 
                 case ExpressionType.Invoke:
-                    var invokeExpr = exprObj as InvocationExpression;
-                    if (invokeExpr != null)
+                    if (exprObj is InvocationExpression invokeExpr)
                     {
                         var lambda = invokeExpr.Expression;
                         return TryCollectBoundConstants(ref closure, lambda, lambda.NodeType, lambda.Type, paramExprs)
@@ -1063,8 +1061,7 @@ namespace FastExpressionCompiler
             Type bodyType;
             ClosureInfo nestedClosure = null;
 
-            var lambdaExprInfo = exprObj as LambdaExpressionInfo;
-            if (lambdaExprInfo != null)
+            if (exprObj is LambdaExpressionInfo lambdaExprInfo)
             {
                 var lambdaParamExprs = lambdaExprInfo.Parameters;
                 var body = lambdaExprInfo.Body;
@@ -1126,8 +1123,7 @@ namespace FastExpressionCompiler
 
         private static bool TryCollectMemberInitExprConstants(ref ClosureInfo closure, object exprObj, object[] paramExprs)
         {
-            var memberInitExprInfo = exprObj as MemberInitExpressionInfo;
-            if (memberInitExprInfo != null)
+            if (exprObj is MemberInitExpressionInfo memberInitExprInfo)
             {
                 var miNewInfo = memberInitExprInfo.ExpressionInfo;
                 if (!TryCollectBoundConstants(ref closure, miNewInfo, miNewInfo.NodeType, miNewInfo.Type, paramExprs))
@@ -1210,15 +1206,13 @@ namespace FastExpressionCompiler
         {
             if (exprObj is ExpressionInfo)
             {
-                var unaryExprInfo = exprObj as UnaryExpressionInfo;
-                if (unaryExprInfo != null)
+                if (exprObj is UnaryExpressionInfo unaryExprInfo)
                 {
                     var opInfo = unaryExprInfo.Operand;
                     return TryCollectBoundConstants(ref closure, opInfo, opInfo.NodeType, opInfo.Type, paramExprs);
                 }
 
-                var binInfo = exprObj as BinaryExpressionInfo;
-                if (binInfo != null)
+                if (exprObj is BinaryExpressionInfo binInfo)
                 {
                     var left = binInfo.Left;
                     var right = binInfo.Right;
@@ -1229,15 +1223,13 @@ namespace FastExpressionCompiler
                 return false;
             }
 
-            var unaryExpr = exprObj as UnaryExpression;
-            if (unaryExpr != null)
+            if (exprObj is UnaryExpression unaryExpr)
             {
                 var opExpr = unaryExpr.Operand;
                 return TryCollectBoundConstants(ref closure, opExpr, opExpr.NodeType, opExpr.Type, paramExprs);
             }
 
-            var binaryExpr = exprObj as BinaryExpression;
-            if (binaryExpr != null)
+            if (exprObj is BinaryExpression binaryExpr)
             {
                 var leftExpr = binaryExpr.Left;
                 var rightExpr = binaryExpr.Right;
@@ -1250,8 +1242,7 @@ namespace FastExpressionCompiler
 
         private static bool TryCollectCallExprConstants(ref ClosureInfo closure, object exprObj, object[] paramExprs)
         {
-            var callInfo = exprObj as MethodCallExpressionInfo;
-            if (callInfo != null)
+            if (exprObj is MethodCallExpressionInfo callInfo)
             {
                 var objInfo = callInfo.Object;
                 return (objInfo == null
@@ -1268,8 +1259,7 @@ namespace FastExpressionCompiler
 
         private static KeyValuePair<ExpressionType, Type> GetExpressionMeta(object exprObj)
         {
-            var expr = exprObj as Expression;
-            if (expr != null)
+            if (exprObj is Expression expr)
                 return new KeyValuePair<ExpressionType, Type>(expr.NodeType, expr.Type);
             var exprInfo = (ExpressionInfo)exprObj;
             return new KeyValuePair<ExpressionType, Type>(exprInfo.NodeType, exprInfo.Type);
@@ -1647,8 +1637,7 @@ namespace FastExpressionCompiler
 
             private static bool EmitBinary(object exprObj, object[] paramExprs, ILGenerator il, ClosureInfo closure)
             {
-                var exprInfo = exprObj as BinaryExpressionInfo;
-                if (exprInfo != null)
+                if (exprObj is BinaryExpressionInfo exprInfo)
                 {
                     var left = exprInfo.Left;
                     var right = exprInfo.Right;
@@ -1691,9 +1680,8 @@ namespace FastExpressionCompiler
             private static bool EmitConvert(
                 object exprObj, Type targetType, object[] paramExprs, ILGenerator il, ClosureInfo closure)
             {
-                var exprInfo = exprObj as UnaryExpressionInfo;
                 Type sourceType;
-                if (exprInfo != null)
+                if (exprObj is UnaryExpressionInfo exprInfo)
                 {
                     var opInfo = exprInfo.Operand;
                     if (!TryEmit(opInfo, opInfo.NodeType, opInfo.Type, paramExprs, il, closure))
@@ -1765,8 +1753,7 @@ namespace FastExpressionCompiler
             private static bool EmitConstant(
                 object exprObj, Type exprType, ILGenerator il, ClosureInfo closure)
             {
-                var constExprInfo = exprObj as ConstantExpressionInfo;
-                var constantValue = constExprInfo != null ? constExprInfo.Value : ((ConstantExpression)exprObj).Value;
+                var constantValue = exprObj is ConstantExpressionInfo constExprInfo ? constExprInfo.Value : ((ConstantExpression)exprObj).Value;
                 if (constantValue == null)
                 {
                     il.Emit(OpCodes.Ldnull);
@@ -1894,8 +1881,7 @@ namespace FastExpressionCompiler
                 LocalBuilder resultValueVar = null)
             {
                 ConstructorInfo ctor;
-                var exprInfo = exprObj as NewExpressionInfo;
-                if (exprInfo != null)
+                if (exprObj is NewExpressionInfo exprInfo)
                 {
                     if (!EmitMany(exprInfo.Arguments, paramExprs, il, closure))
                         return false;
@@ -1929,8 +1915,7 @@ namespace FastExpressionCompiler
             private static bool EmitNewArray(
                 object exprObj, Type arrayType, object[] paramExprs, ILGenerator il, ClosureInfo closure)
             {
-                var exprInfo = exprObj as NewArrayExpressionInfo;
-                if (exprInfo != null)
+                if (exprObj is NewArrayExpressionInfo exprInfo)
                     return EmitNewArrayInfo(exprInfo, arrayType, paramExprs, il, closure);
 
                 var expr = (NewArrayExpression)exprObj;
@@ -2045,8 +2030,7 @@ namespace FastExpressionCompiler
             private static bool EmitMemberInit(
                 object exprObj, Type exprType, object[] paramExprs, ILGenerator il, ClosureInfo closure)
             {
-                var exprInfo = exprObj as MemberInitExpressionInfo;
-                if (exprInfo != null)
+                if (exprObj is MemberInitExpressionInfo exprInfo)
                     return EmitMemberInitInfo(exprInfo, exprType, paramExprs, il, closure);
 
                 // todo: Use closureInfo Block to track the variable instead
@@ -2155,8 +2139,7 @@ namespace FastExpressionCompiler
                 object left, right;
                 ExpressionType leftNodeType, rightNodeType;
 
-                var expr = exprObj as BinaryExpression;
-                if (expr != null)
+                if (exprObj is BinaryExpression expr)
                 {
                     left = expr.Left;
                     right = expr.Right;
@@ -2278,12 +2261,10 @@ namespace FastExpressionCompiler
                         return true;
 
                     case ExpressionType.MemberAccess:
-
                         object objExpr;
                         MemberInfo member;
 
-                        var memberExpr = left as MemberExpression;
-                        if (memberExpr != null)
+                        if (left is MemberExpression memberExpr)
                         {
                             objExpr = memberExpr.Expression;
                             member = memberExpr.Member;
@@ -2449,8 +2430,7 @@ namespace FastExpressionCompiler
             {
                 MemberInfo member;
                 Type instanceType = null;
-                var exprInfo = exprObj as MemberExpressionInfo;
-                if (exprInfo != null)
+                if (exprObj is MemberExpressionInfo exprInfo)
                 {
                     var instance = exprInfo.Expression;
                     if (instance != null)
@@ -2694,9 +2674,8 @@ namespace FastExpressionCompiler
             private static bool EmitInvokeLambda(
                 object exprObj, object[] paramExprs, ILGenerator il, ClosureInfo closure)
             {
-                var expr = exprObj as InvocationExpression;
                 Type lambdaType;
-                if (expr != null)
+                if (exprObj is InvocationExpression expr)
                 {
                     var lambdaExpr = expr.Expression;
                     lambdaType = lambdaExpr.Type;
@@ -3100,16 +3079,14 @@ namespace FastExpressionCompiler
 
         public static T GetFirst<T>(this IEnumerable<T> source)
         {
-            var arr = source as T[];
-            return arr == null
+            return !(source is T[] arr)
                 ? source.FirstOrDefault()
                 : arr.Length != 0 ? arr[0] : default(T);
         }
 
         public static T GetFirst<T>(this IEnumerable<T> source, Func<T, bool> predicate)
         {
-            var arr = source as T[];
-            if (arr == null)
+            if (!(source is T[] arr))
                 return source.FirstOrDefault(predicate);
 
             var index = arr.GetFirstIndex(predicate);
