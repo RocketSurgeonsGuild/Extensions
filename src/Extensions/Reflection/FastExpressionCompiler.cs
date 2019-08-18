@@ -1023,8 +1023,8 @@ namespace FastExpressionCompiler
                     var indexExpr = (IndexExpression)exprObj;
                     var obj = indexExpr.Object;
                     return obj == null
-                        || TryCollectBoundConstants(ref closure, indexExpr.Object, indexExpr.Object.NodeType, indexExpr.Object.Type, paramExprs)
-                        && TryCollectBoundConstants(ref closure, indexExpr.Arguments, paramExprs);
+                        || (TryCollectBoundConstants(ref closure, indexExpr.Object, indexExpr.Object.NodeType, indexExpr.Object.Type, paramExprs)
+                        && TryCollectBoundConstants(ref closure, indexExpr.Arguments, paramExprs));
 
                 case ExpressionType.Try:
                     return TryCollectTryExprConstants(ref closure, exprObj, paramExprs);
@@ -3019,37 +3019,35 @@ namespace FastExpressionCompiler
         {
             if (returnType == typeof(void))
             {
-                switch (paramTypes.Length)
+                return paramTypes.Length switch
                 {
-                    case 0: return typeof(Action);
-                    case 1: return typeof(Action<>).MakeGenericType(paramTypes);
-                    case 2: return typeof(Action<,>).MakeGenericType(paramTypes);
-                    case 3: return typeof(Action<,,>).MakeGenericType(paramTypes);
-                    case 4: return typeof(Action<,,,>).MakeGenericType(paramTypes);
-                    case 5: return typeof(Action<,,,,>).MakeGenericType(paramTypes);
-                    case 6: return typeof(Action<,,,,,>).MakeGenericType(paramTypes);
-                    case 7: return typeof(Action<,,,,,,>).MakeGenericType(paramTypes);
-                    default:
-                        throw new NotSupportedException(
-                            string.Format("Action with so many ({0}) parameters is not supported!", paramTypes.Length));
-                }
+                    0 => typeof(Action),
+                    1 => typeof(Action<>).MakeGenericType(paramTypes),
+                    2 => typeof(Action<,>).MakeGenericType(paramTypes),
+                    3 => typeof(Action<,,>).MakeGenericType(paramTypes),
+                    4 => typeof(Action<,,,>).MakeGenericType(paramTypes),
+                    5 => typeof(Action<,,,,>).MakeGenericType(paramTypes),
+                    6 => typeof(Action<,,,,,>).MakeGenericType(paramTypes),
+                    7 => typeof(Action<,,,,,,>).MakeGenericType(paramTypes),
+                    _ => throw new NotSupportedException(
+                            string.Format("Action with so many ({0}) parameters is not supported!", paramTypes.Length)),
+                };
             }
 
             paramTypes = paramTypes.WithLast(returnType);
-            switch (paramTypes.Length)
+            return paramTypes.Length switch
             {
-                case 1: return typeof(Func<>).MakeGenericType(paramTypes);
-                case 2: return typeof(Func<,>).MakeGenericType(paramTypes);
-                case 3: return typeof(Func<,,>).MakeGenericType(paramTypes);
-                case 4: return typeof(Func<,,,>).MakeGenericType(paramTypes);
-                case 5: return typeof(Func<,,,,>).MakeGenericType(paramTypes);
-                case 6: return typeof(Func<,,,,,>).MakeGenericType(paramTypes);
-                case 7: return typeof(Func<,,,,,,>).MakeGenericType(paramTypes);
-                case 8: return typeof(Func<,,,,,,,>).MakeGenericType(paramTypes);
-                default:
-                    throw new NotSupportedException(
-                        string.Format("Func with so many ({0}) parameters is not supported!", paramTypes.Length));
-            }
+                1 => typeof(Func<>).MakeGenericType(paramTypes),
+                2 => typeof(Func<,>).MakeGenericType(paramTypes),
+                3 => typeof(Func<,,>).MakeGenericType(paramTypes),
+                4 => typeof(Func<,,,>).MakeGenericType(paramTypes),
+                5 => typeof(Func<,,,,>).MakeGenericType(paramTypes),
+                6 => typeof(Func<,,,,,>).MakeGenericType(paramTypes),
+                7 => typeof(Func<,,,,,,>).MakeGenericType(paramTypes),
+                8 => typeof(Func<,,,,,,,>).MakeGenericType(paramTypes),
+                _ => throw new NotSupportedException(
+                        string.Format("Func with so many ({0}) parameters is not supported!", paramTypes.Length)),
+            };
         }
 
         public static int GetFirstIndex<T>(this IList<T> source, object item)
@@ -3081,7 +3079,7 @@ namespace FastExpressionCompiler
         {
             return !(source is T[] arr)
                 ? source.FirstOrDefault()
-                : arr.Length != 0 ? arr[0] : default(T);
+                : arr.Length != 0 ? arr[0] : default!;
         }
 
         public static T GetFirst<T>(this IEnumerable<T> source, Func<T, bool> predicate)
@@ -3090,7 +3088,7 @@ namespace FastExpressionCompiler
                 return source.FirstOrDefault(predicate);
 
             var index = arr.GetFirstIndex(predicate);
-            return index == -1 ? default(T) : arr[index];
+            return index == -1 ? default! : arr[index];
         }
 
         public static R[] Project<T, R>(this T[] source, Func<T, R> project)

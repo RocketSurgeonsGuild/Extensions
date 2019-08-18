@@ -123,8 +123,8 @@ namespace Rocket.Surgery.Reflection.Extensions
         public override int GetHashCode()
         {
             var hashCode = -1835866237;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Type>.Default.GetHashCode(RootType);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Path);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<Type>.Default.GetHashCode(RootType);
+            hashCode = (hashCode * -1521134295) + EqualityComparer<string>.Default.GetHashCode(Path);
             return hashCode;
         }
 

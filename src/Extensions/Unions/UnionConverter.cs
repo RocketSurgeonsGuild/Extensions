@@ -29,7 +29,7 @@ namespace Rocket.Surgery.Unions
         {
             var obj = JToken.ReadFrom(reader);
             if (obj.Type == JTokenType.Null)
-                return null;
+                return null!;
 
             var context = GetContext(objectType);
             var instance = Activator.CreateInstance(context.GetTypeToDeserializeTo((JObject)obj));
@@ -42,11 +42,14 @@ namespace Rocket.Surgery.Unions
             if (!_contexts.TryGetValue(type, out var context))
             {
                 var rootType = UnionHelper.GetRootType(type);
-                if (!_contexts.TryGetValue(rootType.AsType(), out var rootContext))
+                if (rootType != null)
                 {
-                    rootContext = _contexts[rootType.AsType()] = new UnionContext(rootType);
+                    if (!_contexts.TryGetValue(rootType.AsType(), out var rootContext))
+                    {
+                        rootContext = _contexts[rootType.AsType()] = new UnionContext(rootType);
+                    }
+                    context = _contexts[type] = rootContext;
                 }
-                context = _contexts[type] = rootContext;
             }
 
             return context;

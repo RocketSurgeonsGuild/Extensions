@@ -76,7 +76,6 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding
 			}
 		}
 
-
 		public void CaseSensitiveDecodeError()
 		{
 			var enc = new Base32Url(true, true, false);

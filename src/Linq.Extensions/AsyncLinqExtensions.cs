@@ -127,7 +127,6 @@ namespace System.Linq
         }
 
 
-#if NETSTANDARD2_1
         /// <summary>
         /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value.
         /// For aggregation behavior with incremental intermediate results.
@@ -140,6 +139,7 @@ namespace System.Linq
         /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
+#if NETSTANDARD2_1
         public static ValueTask<TAccumulate> ReduceAsync<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator)
         {
             return source.AggregateAsync(seed, accumulator);

@@ -19,13 +19,32 @@ namespace Rocket.Surgery.Encoding
     /// See http://tools.ietf.org/html/rfc4648
     /// For more information see http://en.wikipedia.org/wiki/Base32
     /// </summary>
+    
     public class Base32Url
     {
+        /// <summary>
+        /// StandardPaddingChar 
+        /// </summary>
         public const char StandardPaddingChar = '=';
+
+        /// <summary>
+        /// Base32StandardAlphabet 
+        /// </summary>
         public const string Base32StandardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
+        /// <summary>
+        /// ZBase32Alphabet 
+        /// </summary>
         public const string ZBase32Alphabet = "ybndrfg8ejkmcpqxot1uwisza345h769";
+
+        /// <summary>
+        /// Base32LowProfanityAlphabet 
+        /// </summary>
         public const string Base32LowProfanityAlphabet = "ybndrfg8NjkmGpq2HtPRYSszT3J5h769";
 
+        /// <summary>
+        /// Base32CrockfordHumanFriendlyAlphabet 
+        /// </summary>
         public static readonly CharMap[] Base32CrockfordHumanFriendlyAlphabet =
         {
             new CharMap('0', "0Oo"), new CharMap('1', "1IiLl"), new CharMap('2', "2"), new CharMap('3', "3"), new CharMap('4', "4"),
@@ -36,9 +55,17 @@ namespace Rocket.Surgery.Encoding
             new CharMap('X', "Xx"), new CharMap('Y', "Yy"), new CharMap('Z', "Zz"),
         };
 
-        #region CharMap struct
+        #region CharMap struct        
+        /// <summary>
+        /// CharMap
+        /// </summary>
         public struct CharMap
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="CharMap" /> struct.
+            /// </summary>
+            /// <param name="encodeTo">The encode to.</param>
+            /// <param name="decodeFrom">The decode from.</param>
             public CharMap(char encodeTo, IEnumerable<char> decodeFrom)
             {
                 Encode = encodeTo.ToString();
@@ -61,21 +88,44 @@ namespace Rocket.Surgery.Encoding
                 }
             }
 
+            /// <summary>
+            /// Encode
+            /// </summary>
             public readonly string Encode;
+
+            /// <summary>
+            /// Decode
+            /// </summary>
             public readonly string[] Decode;
         }
         #endregion CharMap struct
 
+
+        /// <summary>
+        /// PaddingChar 
+        /// </summary>
         public char PaddingChar;
+
+        /// <summary>
+        /// UsePadding 
+        /// </summary>
         public bool UsePadding;
+
+        /// <summary>
+        /// IsCaseSensitive 
+        /// </summary>
         public bool IsCaseSensitive;
+
+        /// <summary>
+        /// IgnoreWhiteSpaceWhenDecoding 
+        /// </summary>
         public bool IgnoreWhiteSpaceWhenDecoding;
 
         private readonly CharMap[] _alphabet;
         private Dictionary<string, uint>? _index;
 
         // alphabets may be used with varying case sensitivity, thus index must not ignore case
-        private static Dictionary<string, Dictionary<string, uint>> _indexes = new Dictionary<string, Dictionary<string, uint>>(2, StringComparer.Ordinal);
+        private static readonly Dictionary<string, Dictionary<string, uint>> Indexes = new Dictionary<string, Dictionary<string, uint>>(2, StringComparer.Ordinal);
 
         /// <summary>
         /// Create case insensitive encoder/decoder using the standard base32 alphabet without padding.
@@ -296,11 +346,11 @@ namespace Rocket.Surgery.Encoding
                 string.Join("", _alphabet.Select(t => t.Encode)) +
                 "_" + string.Join("", _alphabet.SelectMany(t => t.Decode).Select(c => c));
 
-            if (!_indexes.TryGetValue(indexKey, out var cidx))
+            if (!Indexes.TryGetValue(indexKey, out var cidx))
             {
-                lock (_indexes)
+                lock (Indexes)
                 {
-                    if (!_indexes.TryGetValue(indexKey, out cidx))
+                    if (!Indexes.TryGetValue(indexKey, out cidx))
                     {
                         var equality = IsCaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
                         cidx = new Dictionary<string, uint>(_alphabet.Length, equality);
@@ -312,7 +362,7 @@ namespace Rocket.Surgery.Encoding
                             }
 
                         }
-                        _indexes.Add(indexKey, cidx);
+                        Indexes.Add(indexKey, cidx);
                     }
                 }
             }

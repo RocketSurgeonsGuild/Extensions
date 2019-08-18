@@ -27,7 +27,7 @@ namespace Rocket.Surgery.Unions
         public UnionAttribute(object value)
         {
             if (value == null || !value.GetType().GetTypeInfo().IsEnum)
-                throw new ArgumentOutOfRangeException(nameof(value), $"value must be an enum, got type {value.GetType().FullName}");
+                throw new ArgumentOutOfRangeException(nameof(value), $"value must be an enum, got type {value?.GetType().FullName}");
 
             Value = value;
         }

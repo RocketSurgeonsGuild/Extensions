@@ -1,4 +1,5 @@
-﻿using System;
+#nullable disable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -118,7 +119,7 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
 
         public static IEnumerable<object[]> Deserialize_Things_WithVariedNames_Data()
         {
-            IEnumerable<object[]> Assign(Func<string, string> transformName)
+            static IEnumerable<object[]> Assign(Func<string, string> transformName)
             {
                 foreach (var item in Deserialize_Things_Data())
                 {
@@ -185,9 +186,9 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
 
         public static IEnumerable<object[]> GetAllEnumDiscriminatorTypes()
         {
-            foreach (var type in UnionHelper.GetAll(typeof(UnionTests).GetTypeInfo().Assembly))
+            foreach (var (enumType, rootType, allImplemented) in UnionHelper.GetAll(typeof(UnionTests).GetTypeInfo().Assembly))
             {
-                yield return new object[] { type.rootType, type.allImplemented };
+                yield return new object[] { rootType, allImplemented };
             }
         }
     }
