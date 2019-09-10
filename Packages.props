@@ -33,7 +33,7 @@
     <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.2.0-preview.625" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Rocket.Surgery.Extensions.Testing" Version="1.2.1" />
+    <PackageReference Update="Rocket.Surgery.Extensions.Testing" Version="1.2.3" />
     <PackageReference Update="Autofac.Extras.FakeItEasy" Version="5.0.1" />
     <PackageReference Update="Bogus" Version="28.0.2" />
     <PackageReference Update="coverlet.collector" Version="1.0.1" />
