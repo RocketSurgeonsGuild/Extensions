@@ -15,8 +15,6 @@ namespace Rocket.Surgery.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="source">The source.</param>
         /// <param name="dependencies">The dependencies.</param>
-        /// <returns>IEnumerable{T}.</returns>
-        /// TODO Edit XML Comment Template for TopographicalSort`1
         public static IEnumerable<T> TopographicalSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies)
         {
             var sorted = new List<T>();
