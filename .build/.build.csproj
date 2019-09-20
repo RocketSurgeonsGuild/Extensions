@@ -7,13 +7,14 @@
     <RootNamespace></RootNamespace>
     <IsPackable>False</IsPackable>
     <NoWarn>CS0649;CS0169</NoWarn>
+    <EnableCentralPackageVersions>false</EnableCentralPackageVersions>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Rocket.Surgery.Nuke.DotNetCore" />
-    <PackageReference Include="Nuke.Common" />
-    <PackageReference Include="GitVersion.CommandLine.DotNetCore" />
-    <PackageReference Include="ReportGenerator" />
+    <PackageReference Include="Rocket.Surgery.Nuke.DotNetCore" Version="0.5.0" />
+    <PackageReference Include="Nuke.Common" Version="0.22.0" />
+    <PackageReference Include="GitVersion.CommandLine.DotNetCore" Version="5.0.1" />
+    <PackageReference Include="ReportGenerator" Version="4.2.20" />
   </ItemGroup>
 
   <ItemGroup>
