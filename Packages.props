@@ -9,7 +9,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Nuke.Common" Version="0.21.2" />
-    <PackageReference Update="Rocket.Surgery.Nuke.DotNetCore" Version="0.4.1" />
+    <PackageReference Update="Rocket.Surgery.Nuke.DotNetCore" Version="0.5.0" />
     <PackageReference Update="GitVersion.CommandLine.DotNetCore" Version="5.0.1" />
     <PackageReference Update="ReportGenerator" Version="4.2.20" />
   </ItemGroup>
