@@ -20,6 +20,8 @@
     <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.3' and '$(TargetFramework)'!='netstandard2.0' and '$(TargetFramework)'!='netcoreapp2.1'">
+    <PackageReference Update="Microsoft.Extensions.Configuration" Version="3.0.0-rc1.19456.10" />
+    <PackageReference Update="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-rc1.19456.10" />
     <PackageReference Update="System.Interactive" Version="4.0.0-preview.8.build.9" />
     <PackageReference Update="System.Interactive.Async.Providers" Version="4.0.0-preview.8.build.9" />
     <PackageReference Update="System.Interactive.Providers" Version="4.0.0-preview.8.build.9" />
@@ -27,16 +29,16 @@
     <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.2.0-preview.625" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Update="Rocket.Surgery.Extensions.Testing" Version="1.2.3" />
+    <PackageReference Update="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="2.0.0" />
     <PackageReference Update="Autofac.Extras.FakeItEasy" Version="5.0.1" />
-    <PackageReference Update="Bogus" Version="28.2.1" />
-    <PackageReference Update="coverlet.collector" Version="1.0.1" />
-    <PackageReference Update="coverlet.msbuild" Version="2.6.3" />
+    <PackageReference Update="Bogus" Version="28.3.1" />
+    <PackageReference Update="coverlet.collector" Version="1.1.0" />
+    <PackageReference Update="coverlet.msbuild" Version="2.7.0" />
     <PackageReference Update="FakeItEasy" Version="5.2.0" />
     <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="5.2.0" />
     <PackageReference Update="FluentAssertions" Version="5.9.0" />
     <PackageReference Update="FluentAssertions.Analyzers" Version="0.11.4" />
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.3.0" />
     <PackageReference Update="xunit" Version="2.4.1" />
     <PackageReference Update="xunit.analyzers" Version="0.10.0" />
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.1" />

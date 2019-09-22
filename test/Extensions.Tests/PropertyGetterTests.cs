@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests
 {
-    public class PropertyGetterTests : AutoTestBase
+    public class PropertyGetterTests : AutoFakeTest
     {
         public PropertyGetterTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {

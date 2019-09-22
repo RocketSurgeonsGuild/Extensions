@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests
 {
-    public class DeconstructorExtensionsTests : AutoTestBase
+    public class DeconstructorExtensionsTests : AutoFakeTest
     {
         public DeconstructorExtensionsTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {

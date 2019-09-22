@@ -12,7 +12,7 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding
     /// TODO: Anyone feels like it some more comprehensive testing of the crockford encoding would be helpful. Cheers, Mhano
     /// TODO: Tests evolved a bit over time, refactoring to organise might be needed if adding significant test cases.
     /// </summary>
-    public class Base3264EncodingTests : AutoTestBase
+    public class Base3264EncodingTests : AutoFakeTest
     {
         private const string Chars = @"!""#$%&'()*+,-./:;<=>?@[\]^_`{|}~€‚ƒ„…†‡ˆ‰Š‹Œ¼½¾¿ÀÁÂÃÄÅÆÇÈÏÐÑÕ×ØÛÜÝÞßåæçéíðñõö÷øüýþÿabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ electricity 電	电	電 red 紅	红	紅";
 

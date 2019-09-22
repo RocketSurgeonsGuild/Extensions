@@ -11,7 +11,7 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding
     /// TODO: Anyone feels like it some more comprehensive testing of the crockford encoding would be helpful. Cheers, Mhano
     /// TODO: Tests evolved a bit over time, refactoring to organise might be needed if adding significant test cases.
     /// </summary>
-    public class Base32UrlTests : AutoTestBase
+    public class Base32UrlTests : AutoFakeTest
 	{
 		private static readonly string[][] rfc4684TestVectors = {
 																new []{"f", "MY======"},

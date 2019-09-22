@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests
 {
-    public class JsonBinderTests : AutoTestBase
+    public class JsonBinderTests : AutoFakeTest
     {
         public JsonBinderTests(ITestOutputHelper outputHelper) : base(outputHelper)
         {
