@@ -20,8 +20,8 @@
     <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.3' and '$(TargetFramework)'!='netstandard2.0' and '$(TargetFramework)'!='netcoreapp2.1'">
-    <PackageReference Update="Microsoft.Extensions.Configuration" Version="3.0.0-rc1.19456.10" />
-    <PackageReference Update="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-rc1.19456.10" />
+    <PackageReference Update="Microsoft.Extensions.Configuration" Version="3.0.0" />
+    <PackageReference Update="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0" />
     <PackageReference Update="System.Interactive" Version="4.0.0-preview.8.build.9" />
     <PackageReference Update="System.Interactive.Async.Providers" Version="4.0.0-preview.8.build.9" />
     <PackageReference Update="System.Interactive.Providers" Version="4.0.0-preview.8.build.9" />
