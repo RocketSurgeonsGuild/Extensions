@@ -11,10 +11,10 @@
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="2.1.0" />
     <PackageReference Update="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.0" />
     <PackageReference Update="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Update="System.Collections.Immutable" Version="1.5.0" />
-    <PackageReference Update="System.Interactive" Version="3.2.0" />
-    <PackageReference Update="System.Interactive.Async.Providers" Version="3.2.0" />
-    <PackageReference Update="System.Interactive.Providers" Version="3.2.0" />
+    <PackageReference Update="System.Collections.Immutable" Version="1.6.0" />
+    <PackageReference Update="System.Interactive" Version="4.0.0" />
+    <PackageReference Update="System.Interactive.Async.Providers" Version="4.0.0" />
+    <PackageReference Update="System.Interactive.Providers" Version="4.0.0" />
     <PackageReference Update="System.Reactive" Version="4.1.6" />
     <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.1.6" />
     <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.3.0" />
@@ -22,11 +22,7 @@
   <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.3' and '$(TargetFramework)'!='netstandard2.0' and '$(TargetFramework)'!='netcoreapp2.1'">
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="3.0.0" />
     <PackageReference Update="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0" />
-    <PackageReference Update="System.Interactive" Version="4.0.0-preview.8.build.9" />
-    <PackageReference Update="System.Interactive.Async.Providers" Version="4.0.0-preview.8.build.9" />
-    <PackageReference Update="System.Interactive.Providers" Version="4.0.0-preview.8.build.9" />
-    <PackageReference Update="System.Reactive" Version="4.2.0-preview.625" />
-    <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.2.0-preview.625" />
+    <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="2.0.2" />

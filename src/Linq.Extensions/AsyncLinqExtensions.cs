@@ -139,17 +139,10 @@ namespace System.Linq
         /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
-#if NETSTANDARD2_1
         public static ValueTask<TAccumulate> ReduceAsync<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator)
         {
             return source.AggregateAsync(seed, accumulator);
         }
-#else
-        public static Task<TAccumulate> Reduce<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator)
-        {
-            return source.Aggregate(seed, accumulator);
-        }
-#endif
 
 
         /// <summary>
@@ -166,17 +159,10 @@ namespace System.Linq
         /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
-#if NETSTANDARD2_1
         public static ValueTask<TResult> ReduceAsync<TSource, TAccumulate, TResult>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector)
         {
             return source.AggregateAsync(seed, accumulator, resultSelector);
         }
-#else
-        public static Task<TResult> Reduce<TSource, TAccumulate, TResult>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector)
-        {
-            return source.Aggregate(seed, accumulator, resultSelector);
-        }
-#endif
 
         /// <summary>
         /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence.
@@ -189,17 +175,10 @@ namespace System.Linq
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <exception cref="InvalidOperationException">(Asynchronous) The source sequence is empty.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
-#if NETSTANDARD2_1
         public static ValueTask<TSource> ReduceAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator)
         {
             return source.AggregateAsync(accumulator);
         }
-#else
-        public static Task<TSource> Reduce<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator)
-        {
-            return source.Aggregate(accumulator);
-        }
-#endif
 
         /// <summary>
         /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value.
@@ -214,17 +193,10 @@ namespace System.Linq
         /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
-#if NETSTANDARD2_1
         public static ValueTask<TAccumulate> ReduceAsync<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, CancellationToken cancellationToken)
         {
             return source.AggregateAsync(seed, accumulator, cancellationToken);
         }
-#else
-        public static Task<TAccumulate> Reduce<TSource, TAccumulate>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, CancellationToken cancellationToken)
-        {
-            return source.Aggregate(seed, accumulator, cancellationToken);
-        }
-#endif
 
         /// <summary>
         /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value,
@@ -241,17 +213,10 @@ namespace System.Linq
         /// <returns>An async sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
-#if NETSTANDARD2_1
         public static ValueTask<TResult> ReduceAsync<TSource, TAccumulate, TResult>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector, CancellationToken cancellationToken)
         {
             return source.AggregateAsync(seed, accumulator, resultSelector, cancellationToken);
         }
-#else
-        public static Task<TResult> Reduce<TSource, TAccumulate, TResult>(this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector, CancellationToken cancellationToken)
-        {
-            return source.Aggregate(seed, accumulator, resultSelector, cancellationToken);
-        }
-#endif
 
         /// <summary>
         /// Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence.
@@ -265,16 +230,9 @@ namespace System.Linq
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <exception cref="InvalidOperationException">(Asynchronous) The source sequence is empty.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
-#if NETSTANDARD2_1
         public static ValueTask<TSource> ReduceAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator, CancellationToken cancellationToken)
         {
             return source.AggregateAsync(accumulator, cancellationToken);
         }
-#else
-        public static Task<TSource> Reduce<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator, CancellationToken cancellationToken)
-        {
-            return source.Aggregate(accumulator, cancellationToken);
-        }
-#endif
     }
 }

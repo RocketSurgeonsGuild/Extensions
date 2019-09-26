@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.1;netstandard2.0;netstandard1.3</TargetFrameworks>
+        <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="System.Collections.Immutable" />
         <PackageReference Include="System.Interactive" />
         <PackageReference Include="System.Interactive.Async.Providers" />
         <PackageReference Include="System.Interactive.Providers" />

@@ -6,7 +6,7 @@
         <InternalsVisibleTo Include="Rocket.Surgery.Extensions.Tests" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../Extensions.Abstractions/Rocket.Surgery.Extensions.Abstractions.csproj" />
-        <PackageReference Include="System.Collections.Immutable" />
+        <ProjectReference Include="../Extensions/Rocket.Surgery.Extensions.csproj" />
+        <PackageReference Include="System.Reflection.Emit.Lightweight" />
     </ItemGroup>
 </Project>
