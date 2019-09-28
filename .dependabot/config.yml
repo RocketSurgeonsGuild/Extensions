@@ -21,3 +21,5 @@ update_configs:
           dependency_name: Microsoft.AspNetCore.*
       - match:
           dependency_name: System.Diagnostics.*
+      - match:
+          dependency_name: System.Reflection.*
