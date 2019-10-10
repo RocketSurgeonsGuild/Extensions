@@ -17,7 +17,7 @@
     <PackageReference Update="System.Interactive.Providers" Version="4.0.0" />
     <PackageReference Update="System.Reactive" Version="4.1.6" />
     <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.1.6" />
-    <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+    <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.3' and '$(TargetFramework)'!='netstandard2.0' and '$(TargetFramework)'!='netcoreapp2.1'">
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="3.0.0" />
@@ -27,7 +27,7 @@
   <ItemGroup>
     <PackageReference Update="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="2.1.2" />
     <PackageReference Update="Autofac.Extras.FakeItEasy" Version="5.0.1" />
-    <PackageReference Update="Bogus" Version="28.3.1" />
+    <PackageReference Update="Bogus" Version="28.3.2" />
     <PackageReference Update="coverlet.collector" Version="1.1.0" />
     <PackageReference Update="coverlet.msbuild" Version="2.7.0" />
     <PackageReference Update="FakeItEasy" Version="5.2.0" />
