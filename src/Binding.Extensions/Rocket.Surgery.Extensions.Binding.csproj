@@ -9,6 +9,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Extensions/Rocket.Surgery.Extensions.csproj" />
+        <ProjectReference Include="../Reflection.Extensions/Rocket.Surgery.Reflection.Extensions.csproj" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
         <PackageReference Include="Newtonsoft.Json" />
     </ItemGroup>
