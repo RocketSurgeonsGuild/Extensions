@@ -2,10 +2,12 @@ using Nuke.Common;
 using Nuke.Common.Execution;
 using Rocket.Surgery.Nuke.DotNetCore;
 using Rocket.Surgery.Nuke;
+using JetBrains.Annotations;
 
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
 [PackageIcon("https://raw.githubusercontent.com/RocketSurgeonsGuild/graphics/master/png/social-square-thrust-rounded.png")]
+[PublicAPI]
 class Solution : DotNetCoreBuild, IDotNetCoreBuild
 {
     /// <summary>
@@ -33,4 +35,3 @@ class Solution : DotNetCoreBuild, IDotNetCoreBuild
 
     public new Target Pack => _ => _.With(DotNetCoreBuild.Pack, this);
 }
-
