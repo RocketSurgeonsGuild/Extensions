@@ -8,6 +8,12 @@
     <GlobalPackageReference Include="Roslynator.Analyzers" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Update="GitVersion.Tool" Version="5.1.1" />
+    <PackageReference Update="Nuke.Common" Version="0.23.3" />
+    <PackageReference Update="ReportGenerator" Version="4.3.5" />
+    <PackageReference Update="Rocket.Surgery.Nuke.DotNetCore" Version="0.7.1" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="2.1.0" />
     <PackageReference Update="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.0" />
     <PackageReference Update="Newtonsoft.Json" Version="12.0.2" />
