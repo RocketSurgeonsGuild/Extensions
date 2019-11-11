@@ -4,10 +4,11 @@ using Rocket.Surgery.Nuke.DotNetCore;
 using Rocket.Surgery.Nuke;
 using JetBrains.Annotations;
 
+[PublicAPI]
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
 [PackageIcon("https://raw.githubusercontent.com/RocketSurgeonsGuild/graphics/master/png/social-square-thrust-rounded.png")]
-[PublicAPI]
+[EnsurePackageSourceHasCredentials("RocketSurgeonsGuild")]
 class Solution : DotNetCoreBuild, IDotNetCoreBuild
 {
     /// <summary>
@@ -27,11 +28,11 @@ class Solution : DotNetCoreBuild, IDotNetCoreBuild
         .DependsOn(Pack)
         ;
 
-    public new Target Restore => _ => _.With(DotNetCoreBuild.Restore, this);
+    public new Target Restore => _ => _.With(this, DotNetCoreBuild.Restore);
 
-    public new Target Build => _ => _.With(DotNetCoreBuild.Build, this);
+    public new Target Build => _ => _.With(this, DotNetCoreBuild.Build);
 
-    public new Target Test => _ => _.With(DotNetCoreBuild.Test, this);
+    public new Target Test => _ => _.With(this, DotNetCoreBuild.Test);
 
-    public new Target Pack => _ => _.With(DotNetCoreBuild.Pack, this);
+    public new Target Pack => _ => _.With(this, DotNetCoreBuild.Pack);
 }
