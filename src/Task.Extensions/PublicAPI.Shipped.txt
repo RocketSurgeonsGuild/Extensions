@@ -1,0 +1,3 @@
+System.Threading.Tasks.TaskExtensions
+static System.Threading.Tasks.TaskExtensions.ContinueOnAnyContext(this System.Threading.Tasks.Task task) -> System.Runtime.CompilerServices.ConfiguredTaskAwaitable
+static System.Threading.Tasks.TaskExtensions.ContinueOnAnyContext<T>(this System.Threading.Tasks.Task<T> task) -> System.Runtime.CompilerServices.ConfiguredTaskAwaitable<T>

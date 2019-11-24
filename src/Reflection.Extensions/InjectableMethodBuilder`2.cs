@@ -1,15 +1,16 @@
-using FastExpressionCompiler;
 using System;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Reflection;
+using JetBrains.Annotations;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     /// <summary>
     /// Injectable method builder
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [PublicAPI]
     public class InjectableMethodBuilder<T> : InjectableMethodBuilderBase
     {
         internal InjectableMethodBuilder(TypeInfo containerType, ImmutableArray<string> methodNames) : base(containerType.AsType(), methodNames) { }

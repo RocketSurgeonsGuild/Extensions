@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -9,6 +10,7 @@ namespace Rocket.Surgery.Binding
     /// <summary>
     /// Extension methods for <see cref="IJsonBinder"/>
     /// </summary>
+    [PublicAPI]
     public static class JsonBinderExtensions
     {
         private static IEnumerable<KeyValuePair<string, string>> GetValues(IConfiguration configuration) =>
@@ -22,9 +24,14 @@ namespace Rocket.Surgery.Binding
         /// <typeparam name="T"></typeparam>
         /// <param name="binder">The binder.</param>
         /// <param name="configuration">The configuration.</param>
-        public static T Bind<T>(this IJsonBinder binder, IConfiguration configuration)
+        public static T Bind<T>([NotNull] this IJsonBinder binder, IConfiguration configuration)
             where T : class, new()
         {
+            if (binder == null)
+            {
+                throw new ArgumentNullException(nameof(binder));
+            }
+
             return binder.Bind<T>(GetValues(configuration));
         }
 
@@ -35,9 +42,14 @@ namespace Rocket.Surgery.Binding
         /// <param name="binder">The binder.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="serializer">The serializer.</param>
-        public static T Bind<T>(this IJsonBinder binder, IConfiguration configuration, JsonSerializer serializer)
+        public static T Bind<T>([NotNull] this IJsonBinder binder, IConfiguration configuration, JsonSerializer serializer)
             where T : class, new()
         {
+            if (binder == null)
+            {
+                throw new ArgumentNullException(nameof(binder));
+            }
+
             return binder.Bind<T>(GetValues(configuration), serializer);
         }
 
@@ -47,8 +59,13 @@ namespace Rocket.Surgery.Binding
         /// <param name="binder">The binder.</param>
         /// <param name="objectType"></param>
         /// <param name="configuration">The configuration.</param>
-        public static object Bind(this IJsonBinder binder, Type objectType, IConfiguration configuration)
+        public static object Bind([NotNull] this IJsonBinder binder, Type objectType, IConfiguration configuration)
         {
+            if (binder == null)
+            {
+                throw new ArgumentNullException(nameof(binder));
+            }
+
             return binder.Bind(objectType, GetValues(configuration));
         }
 
@@ -59,8 +76,13 @@ namespace Rocket.Surgery.Binding
         /// <param name="objectType"></param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="serializer">The serializer.</param>
-        public static object Bind(this IJsonBinder binder, Type objectType, IConfiguration configuration, JsonSerializer serializer)
+        public static object Bind([NotNull] this IJsonBinder binder, Type objectType, IConfiguration configuration, JsonSerializer serializer)
         {
+            if (binder == null)
+            {
+                throw new ArgumentNullException(nameof(binder));
+            }
+
             return binder.Bind(objectType, GetValues(configuration), serializer);
         }
 
@@ -71,9 +93,14 @@ namespace Rocket.Surgery.Binding
         /// <param name="binder">The binder.</param>
         /// <param name="value">The value.</param>
         /// <param name="configuration">The configuration.</param>
-        public static T Populate<T>(this IJsonBinder binder, T value, IConfiguration configuration)
+        public static T Populate<T>([NotNull] this IJsonBinder binder, T value, IConfiguration configuration)
             where T : class
         {
+            if (binder == null)
+            {
+                throw new ArgumentNullException(nameof(binder));
+            }
+
             return binder.Populate(value, GetValues(configuration));
         }
 
@@ -85,9 +112,14 @@ namespace Rocket.Surgery.Binding
         /// <param name="value">The value.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="serializer">The serializer.</param>
-        public static T Populate<T>(this IJsonBinder binder, T value, IConfiguration configuration, JsonSerializer serializer)
+        public static T Populate<T>([NotNull] this IJsonBinder binder, T value, IConfiguration configuration, JsonSerializer serializer)
             where T : class
         {
+            if (binder == null)
+            {
+                throw new ArgumentNullException(nameof(binder));
+            }
+
             return binder.Populate(value, GetValues(configuration), serializer);
         }
     }

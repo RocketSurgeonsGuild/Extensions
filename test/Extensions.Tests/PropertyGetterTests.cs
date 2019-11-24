@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
-using Rocket.Surgery.Reflection.Extensions;
+using Rocket.Surgery.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -283,11 +283,10 @@ namespace Rocket.Surgery.Extensions.Tests
         {
             foreach (var item in GetListFixtures())
             {
-                yield return new object?[]
+                yield return new[]
                 {
                     item,
-                    "Things[hello world].A",
-                    "123"
+                    "Things[hello world].A"
                 };
             }
         }
@@ -626,7 +625,7 @@ namespace Rocket.Surgery.Extensions.Tests
         }
 
         [Theory, MemberData(nameof(ListData_ForFailureCases))]
-        public void Fixture_IndexInvalid(object fixture, string path, object expected)
+        public void Fixture_IndexInvalid(object fixture, string path)
         {
             var getter = new PropertyGetter();
 

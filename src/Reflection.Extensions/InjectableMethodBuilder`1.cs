@@ -1,14 +1,15 @@
-using FastExpressionCompiler;
 using System;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
+using JetBrains.Annotations;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     /// <summary>
     /// Injectable method builder
     /// </summary>
     /// <seealso cref="InjectableMethodBuilderBase" />
+    [PublicAPI]
     public class InjectableMethodBuilder : InjectableMethodBuilderBase
     {
         /// <summary>

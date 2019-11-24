@@ -2,14 +2,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     /// <summary>
     /// Property getter
     /// </summary>
     public class PropertyGetter
     {
-        private readonly string _separator;
+        private readonly string? _separator;
         private readonly StringComparison _comparison;
         private readonly ConcurrentDictionary<Type, TypeDelegate> _cachedTypeDelegates = new ConcurrentDictionary<Type, TypeDelegate>();
 

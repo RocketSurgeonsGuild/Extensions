@@ -3,7 +3,11 @@
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
-        <RootNamespace>$(MSBuildProjectName.Replace('.Extensions', '').Replace('.Abstractions', ''))</RootNamespace>        
+        <RootNamespace>$(MSBuildProjectName.Replace('.Extensions', '').Replace('.Abstractions', ''))</RootNamespace>
         <NoWarn>NU5105;$(NoWarn)</NoWarn>
     </PropertyGroup>
+    <ItemGroup>
+        <AdditionalFiles Condition="Exists('PublicAPI.Shipped.txt')" Include="PublicAPI.Shipped.txt" />
+        <AdditionalFiles Condition="Exists('PublicAPI.Unshipped.txt')" Include="PublicAPI.Unshipped.txt" />
+    </ItemGroup>
 </Project>

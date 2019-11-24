@@ -1,7 +1,6 @@
-using System.Linq;
 using System.Reflection;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     /// <summary>
     /// TypeInfoExtensions.

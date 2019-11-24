@@ -1,9 +1,14 @@
 using System;
 using FakeItEasy;
 using FluentAssertions;
+using JetBrains.Annotations;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
-using Rocket.Surgery.Reflection.Extensions;
+using Rocket.Surgery.Reflection;
 using Xunit;
+// ReSharper disable MemberCanBePrivate.Global
+#pragma warning disable CA1040 // Avoid empty interfaces
+#pragma warning disable CA1034 // Nested types should not be visible
+#pragma warning disable CS0436 // Type conflicts with imported type
 
 namespace Rocket.Surgery.Extensions.Tests
 {
@@ -11,16 +16,18 @@ namespace Rocket.Surgery.Extensions.Tests
     {
         public interface IConfigured1Sub : IConfigured1 { }
 
-        class Configured1 : IConfigured1 { }
-        class Configured1Sub : IConfigured1Sub { }
+        private class Configured1 : IConfigured1 { }
 
-        public abstract class AbstractBase{ }
+        private class Configured1Sub : IConfigured1Sub { }
+
+        public abstract class AbstractBase { }
 
         public class DerivedA : AbstractBase { }
 
         public class DerivedB : AbstractBase { }
 
-        public class MethodFuncTest
+        [UsedImplicitly]
+        public abstract class MethodFuncTest
         {
             public virtual void Execute(IConfigured1 configured1)
             {
@@ -33,7 +40,7 @@ namespace Rocket.Surgery.Extensions.Tests
         {
             var serviceProviderMock = A.Fake<IServiceProvider>();
             A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
-            var methodFuncTest= A.Fake <MethodFuncTest>();
+            var methodFuncTest = A.Fake<MethodFuncTest>();
             var action = InjectableMethodBuilder
                 .Create<MethodFuncTest>(nameof(MethodFuncTest.Execute))
                 .WithParameter<IConfigured1>()
@@ -47,7 +54,8 @@ namespace Rocket.Surgery.Extensions.Tests
             A.CallTo(() => serviceProviderMock.GetService(A<Type>.Ignored)).MustNotHaveHappened();
         }
 
-        public class MethodFuncTest2
+        [UsedImplicitly]
+        public abstract class MethodFuncTest2
         {
             public virtual void Execute(IConfigured1Sub configured1)
             {
@@ -71,7 +79,8 @@ namespace Rocket.Surgery.Extensions.Tests
             a.Should().Throw<ArgumentException>();
         }
 
-        public class MethodFuncTest3
+        [UsedImplicitly]
+        public abstract class MethodFuncTest3
         {
             public virtual void Execute(IConfigured1 configured1)
             {
@@ -120,7 +129,10 @@ namespace Rocket.Surgery.Extensions.Tests
         {
             public static void Execute(IConfigured1 configured1)
             {
-
+                if (configured1 is null)
+                {
+                    throw new ArgumentNullException(nameof(configured1));
+                }
             }
         }
 

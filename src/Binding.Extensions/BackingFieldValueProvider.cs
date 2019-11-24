@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -8,6 +9,7 @@ namespace Rocket.Surgery.Binding
     /// <summary>
     /// Allows Newtonsoft.Json to set the underlying backing field for a given readonly autoprop
     /// </summary>
+    [PublicAPI]
     public class BackingFieldValueProvider : IValueProvider
     {
         private readonly FieldInfo _backingField;
@@ -25,8 +27,13 @@ namespace Rocket.Surgery.Binding
         }
 
         /// <inheritdoc />
-        public void SetValue(object target, object value)
+        public void SetValue([NotNull] object target, object? value)
         {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
             try
             {
                 _backingField.SetValue(target, value);
@@ -38,8 +45,13 @@ namespace Rocket.Surgery.Binding
         }
 
         /// <inheritdoc />
-        public object GetValue(object target)
+        public object GetValue([NotNull] object target)
         {
+            if (target == null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
             try
             {
                 return _backingField.GetValue(target);

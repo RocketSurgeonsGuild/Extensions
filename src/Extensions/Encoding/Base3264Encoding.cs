@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Text;
+#pragma warning disable CA1055 // Uri return values should not be strings
 
 namespace Rocket.Surgery.Encoding
 {
@@ -31,27 +32,16 @@ namespace Rocket.Surgery.Encoding
         /// <exception cref="ArgumentException">If encoding type is None, UriData, UriPathData or Uri</exception>
         public static string Encode(EncodingType type, byte[] input)
         {
-            switch (type)
+            return type switch
             {
-                case EncodingType.Base64:
-#if NETSTANDARD1_6
-                    return Convert.ToBase64String(input);
-#else
-                    return Convert.ToBase64String(input, Base64FormattingOptions.None);
-#endif
-                case EncodingType.Base64Url:
-                    return Base64Url.ToBase64ForUrlString(input);
-                case EncodingType.Base32Url:
-                    return Base32Url.ToBase32String(input);
-                case EncodingType.ZBase32:
-                    return new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Encode(input);
-                case EncodingType.Base32LowProfanity:
-                    return new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Encode(input);
-                case EncodingType.Base32Crockford:
-                    return new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Encode(input);
-                default:
-                    throw new NotImplementedException("Encoding type not implemented: " + type);
-            }
+                EncodingType.Base64 => Convert.ToBase64String(input, Base64FormattingOptions.None),
+                EncodingType.Base64Url => Base64Url.ToBase64ForUrlString(input),
+                EncodingType.Base32Url => Base32Url.ToBase32String(input),
+                EncodingType.ZBase32 => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Encode(input),
+                EncodingType.Base32LowProfanity => new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Encode(input),
+                EncodingType.Base32Crockford => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Encode(input),
+                _ => throw new NotImplementedException("Encoding type not implemented: " + type),
+            };
         }
 
         /// <summary>
@@ -61,26 +51,16 @@ namespace Rocket.Surgery.Encoding
         /// <param name="input">Encoded string</param>
         /// <returns>Original byte[]</returns>
         /// <exception cref="ArgumentException">If encoding type is None, UriData, UriPathData or Uri</exception>
-        public static byte[] Decode(EncodingType type, string input)
+        public static byte[] Decode(EncodingType type, string input) => type switch
         {
-            switch (type)
-            {
-                case EncodingType.Base64:
-                    return Convert.FromBase64String(input);
-                case EncodingType.Base64Url:
-                    return Base64Url.FromBase64ForUrlString(input);
-                case EncodingType.Base32Url:
-                    return Base32Url.FromBase32String(input);
-                case EncodingType.ZBase32:
-                    return new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Decode(input);
-                case EncodingType.Base32LowProfanity:
-                    return new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Decode(input);
-                case EncodingType.Base32Crockford:
-                    return new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Decode(input);
-                default:
-                    throw new NotImplementedException("Encoding type not implemented: " + type);
-            }
-        }
+            EncodingType.Base64 => Convert.FromBase64String(input),
+            EncodingType.Base64Url => Base64Url.FromBase64ForUrlString(input),
+            EncodingType.Base32Url => Base32Url.FromBase32String(input),
+            EncodingType.ZBase32 => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Decode(input),
+            EncodingType.Base32LowProfanity => new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Decode(input),
+            EncodingType.Base32Crockford => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Decode(input),
+            _ => throw new NotImplementedException("Encoding type not implemented: " + type),
+        };
 
         /// <summary>
         /// Encodes a string to specified format encoding (base 32/64/etc), strings are first converted to a bom-free utf8 byte[] then to relevant encoding.
@@ -92,28 +72,16 @@ namespace Rocket.Surgery.Encoding
         {
             var enc = new UTF8Encoding(false, true);
 
-            switch (type)
+            return type switch
             {
-                case EncodingType.Base64:
-
-#if NETSTANDARD1_6
-                    return Convert.ToBase64String(enc.GetBytes(input));
-#else
-                    return Convert.ToBase64String(enc.GetBytes(input), Base64FormattingOptions.None);
-#endif
-                case EncodingType.Base64Url:
-                    return Base64Url.ToBase64ForUrlString(enc.GetBytes(input));
-                case EncodingType.Base32Url:
-                    return Base32Url.ToBase32String(enc.GetBytes(input));
-                case EncodingType.ZBase32:
-                    return new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Encode(enc.GetBytes(input));
-                case EncodingType.Base32LowProfanity:
-                    return new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Encode(enc.GetBytes(input));
-                case EncodingType.Base32Crockford:
-                    return new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Encode(enc.GetBytes(input));
-                default:
-                    throw new NotImplementedException("Encoding type not implemented: " + type);
-            }
+                EncodingType.Base64 => Convert.ToBase64String(enc.GetBytes(input), Base64FormattingOptions.None),
+                EncodingType.Base64Url => Base64Url.ToBase64ForUrlString(enc.GetBytes(input)),
+                EncodingType.Base32Url => Base32Url.ToBase32String(enc.GetBytes(input)),
+                EncodingType.ZBase32 => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Encode(enc.GetBytes(input)),
+                EncodingType.Base32LowProfanity => new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Encode(enc.GetBytes(input)),
+                EncodingType.Base32Crockford => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Encode(enc.GetBytes(input)),
+                _ => throw new NotImplementedException("Encoding type not implemented: " + type),
+            };
         }
 
         /// <summary>
@@ -126,216 +94,144 @@ namespace Rocket.Surgery.Encoding
         {
             var enc = new UTF8Encoding(false, true);
 
-            switch (type)
+            return type switch
             {
-                case EncodingType.Base64:
-                    return enc.GetString(Convert.FromBase64String(input));
-                case EncodingType.Base64Url:
-                    return enc.GetString(Base64Url.FromBase64ForUrlString(input));
-                case EncodingType.Base32Url:
-                    return enc.GetString(Base32Url.FromBase32String(input));
-                case EncodingType.ZBase32:
-                    return enc.GetString(new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Decode(input));
-                case EncodingType.Base32LowProfanity:
-                    return enc.GetString(new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Decode(input));
-                case EncodingType.Base32Crockford:
-                    return enc.GetString(new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Decode(input));
-                default:
-                    throw new NotImplementedException("Encoding type not implemented: " + type);
-            }
+                EncodingType.Base64 => enc.GetString(Convert.FromBase64String(input)),
+                EncodingType.Base64Url => enc.GetString(Base64Url.FromBase64ForUrlString(input)),
+                EncodingType.Base32Url => enc.GetString(Base32Url.FromBase32String(input)),
+                EncodingType.ZBase32 => enc.GetString(
+                    new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Decode(input)
+                ),
+                EncodingType.Base32LowProfanity => enc.GetString(
+                    new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Decode(input)
+                ),
+                EncodingType.Base32Crockford => enc.GetString(
+                    new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Decode(input)
+                ),
+                _ => throw new NotImplementedException("Encoding type not implemented: " + type)
+            };
         }
 
         /// <summary>
         /// Binary to standard base 64 (not url/uri safe)
         /// </summary>
-        public static string ToBase64(byte[] input)
-        {
-            return Encode(EncodingType.Base64, input);
-        }
+        public static string ToBase64(byte[] input) => Encode(EncodingType.Base64, input);
 
         /// <summary>
         /// String to standard base 64 (not url/uri safe) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string ToBase64(string input)
-        {
-            return EncodeString(EncodingType.Base64, input);
-        }
+        public static string ToBase64(string input) => EncodeString(EncodingType.Base64, input);
 
         /// <summary>
         /// Binary to "base64-url" per rfc standard (url safe 63rd/64th characters and no padding)
         /// </summary>
-        public static string ToBase64Url(byte[] input)
-        {
-            return Encode(EncodingType.Base64Url, input);
-        }
+        public static string ToBase64Url(byte[] input) => Encode(EncodingType.Base64Url, input);
+
         /// <summary>
         /// String to "base64-url" per rfc standard (url safe 63rd/64th characters and no padding) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string ToBase64Url(string input)
-        {
-            return EncodeString(EncodingType.Base64Url, input);
-        }
+        public static string ToBase64Url(string input) => EncodeString(EncodingType.Base64Url, input);
 
         /// <summary>
         /// Binary to "base32 url" per rfc (standard base 32 without padding, no padding, case insensitive)
         /// </summary>
-        public static string ToBase32Url(byte[] input)
-        {
-            return Encode(EncodingType.Base32Url, input);
-        }
+        public static string ToBase32Url(byte[] input) => Encode(EncodingType.Base32Url, input);
 
         /// <summary>
         /// String to "base32 url" per rfc (standard base 32 without padding, no padding, case insensitive) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string ToBase32Url(string input)
-        {
-            return EncodeString(EncodingType.Base32Url, input);
-        }
+        public static string ToBase32Url(string input) => EncodeString(EncodingType.Base32Url, input);
 
         /// <summary>
         /// Binary to zbase32 (no padding, case insensitive)
         /// </summary>
-        public static string ToZBase32(byte[] input)
-        {
-            return Encode(EncodingType.ZBase32, input);
-        }
+        public static string ToZBase32(byte[] input) => Encode(EncodingType.ZBase32, input);
 
         /// <summary>
         /// String to zbase32 (no padding, case insensitive) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string ToZBase32(string input)
-        {
-            return EncodeString(EncodingType.ZBase32, input);
-        }
+        public static string ToZBase32(string input) => EncodeString(EncodingType.ZBase32, input);
 
         /// <summary>
         /// Binary to base32 encoding with alphabet designed to reduce accidental profanity in output (no padding, case SENSITIVE)
         /// </summary>
-        public static string ToBase32LowProfanity(byte[] input)
-        {
-            return Encode(EncodingType.Base32LowProfanity, input);
-        }
+        public static string ToBase32LowProfanity(byte[] input) => Encode(EncodingType.Base32LowProfanity, input);
 
         /// <summary>
         /// String to base32 encoding with alphabet designed to reduce accidental profanity in output (no padding, case SENSITIVE) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string ToBase32LowProfanity(string input)
-        {
-            return EncodeString(EncodingType.Base32LowProfanity, input);
-        }
+        public static string ToBase32LowProfanity(string input) => EncodeString(EncodingType.Base32LowProfanity, input);
 
         /// <summary>
         /// Binary to base32 encoding designed for human readability or OCR / hand writing recognition situations (non symmetric conversion - i.e. 1IiLl all mean the same thing). Case insensitive, no padding.
         /// </summary>
-        public static string ToBase32Crockford(byte[] input)
-        {
-            return Encode(EncodingType.Base32Crockford, input);
-        }
+        public static string ToBase32Crockford(byte[] input) => Encode(EncodingType.Base32Crockford, input);
 
         /// <summary>
         /// String to base32 encoding designed for human readability or OCR / hand writing recognition situations (non symmetric conversion - i.e. 1IiLl all mean the same thing). Case insensitive, no padding.
         /// Uses bom-free utf8 for string to binary encoding.
         /// </summary>
-        public static string ToBase32Crockford(string input)
-        {
-            return EncodeString(EncodingType.Base32Crockford, input);
-        }
+        public static string ToBase32Crockford(string input) => EncodeString(EncodingType.Base32Crockford, input);
 
         /// <summary>
         /// To binary from standard base 64 (not url/uri safe)
         /// </summary>
-        public static byte[] FromBase64(string input)
-        {
-            return Decode(EncodingType.Base64, input);
-        }
+        public static byte[] FromBase64(string input) => Decode(EncodingType.Base64, input);
 
         /// <summary>
         /// To string from base 64 (not url/uri safe) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string FromBase64ToString(string input)
-        {
-            return DecodeToString(EncodingType.Base64, input);
-        }
+        public static string FromBase64ToString(string input) => DecodeToString(EncodingType.Base64, input);
 
         /// <summary>
         /// To binary from "base64-url" per rfc standard (url safe 63rd/64th characters and no padding)
         /// </summary>
-        public static byte[] FromBase64Url(string input)
-        {
-            return Decode(EncodingType.Base64Url, input);
-        }
+        public static byte[] FromBase64Url(string input) => Decode(EncodingType.Base64Url, input);
 
         /// <summary>
         /// To string from "base64-url" per rfc standard (url safe 63rd/64th characters and no padding) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string FromBase64UrlToString(string input)
-        {
-            return DecodeToString(EncodingType.Base64Url, input);
-        }
+        public static string FromBase64UrlToString(string input) => DecodeToString(EncodingType.Base64Url, input);
 
         /// <summary>
         /// To binary from "base32 url" per rfc (standard base 32 without padding, no padding, case insensitive)
         /// </summary>
-        public static byte[] FromBase32Url(string input)
-        {
-            return Decode(EncodingType.Base32Url, input);
-        }
+        public static byte[] FromBase32Url(string input) => Decode(EncodingType.Base32Url, input);
 
         /// <summary>
         /// To string from "base32 url" per rfc (standard base 32 without padding, no padding, case insensitive) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string FromBase32UrlToString(string input)
-        {
-            return DecodeToString(EncodingType.Base32Url, input);
-        }
+        public static string FromBase32UrlToString(string input) => DecodeToString(EncodingType.Base32Url, input);
 
         /// <summary>
         /// To binary from zbase32 (no padding, case insensitive) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static byte[] FromZBase32(string input)
-        {
-            return Decode(EncodingType.ZBase32, input);
-        }
+        public static byte[] FromZBase32(string input) => Decode(EncodingType.ZBase32, input);
 
         /// <summary>
         /// to string from zbase32 (no padding, case insensitive) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string FromZBase32ToString(string input)
-        {
-            return DecodeToString(EncodingType.ZBase32, input);
-        }
+        public static string FromZBase32ToString(string input) => DecodeToString(EncodingType.ZBase32, input);
 
         /// <summary>
         /// To binary from base32 encoding with alphabet designed to reduce accidental profanity in output (no padding, case SENSITIVE)
         /// </summary>
-        public static byte[] FromBase32LowProfanity(string input)
-        {
-            return Decode(EncodingType.Base32LowProfanity, input);
-        }
+        public static byte[] FromBase32LowProfanity(string input) => Decode(EncodingType.Base32LowProfanity, input);
 
         /// <summary>
         /// To string from base32 encoding with alphabet designed to reduce accidental profanity in output (no padding, case SENSITIVE) - uses bom-free utf8 for string to binary encoding
         /// </summary>
-        public static string FromBase32LowProfanityToString(string input)
-        {
-            return DecodeToString(EncodingType.Base32LowProfanity, input);
-        }
+        public static string FromBase32LowProfanityToString(string input) => DecodeToString(EncodingType.Base32LowProfanity, input);
 
         /// <summary>
         /// To binary from base32 encoding designed for human readability or OCR / hand writing recognition situations (non symmetric conversion - i.e. 1IiLl all mean the same thing). Case insensitive, no padding.
         /// </summary>
-        public static byte[] FromBase32Crockford(string input)
-        {
-            return Decode(EncodingType.Base32Crockford, input);
-        }
+        public static byte[] FromBase32Crockford(string input) => Decode(EncodingType.Base32Crockford, input);
 
         /// <summary>
         /// To string from base32 encoding designed for human readability or OCR / hand writing recognition situations (non symmetric conversion - i.e. 1IiLl all mean the same thing). Case insensitive, no padding.
         /// Uses bom-free utf8 for string to binary encoding.
         /// </summary>
-        public static string FromBase32CrockfordToString(string input)
-        {
-            return DecodeToString(EncodingType.Base32Crockford, input);
-        }
+        public static string FromBase32CrockfordToString(string input) => DecodeToString(EncodingType.Base32Crockford, input);
     }
 }

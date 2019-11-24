@@ -6,16 +6,16 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     class TypeDelegate : IEquatable<TypeDelegate?>
     {
-        private readonly string _separator;
+        private readonly string? _separator;
         private readonly StringComparison _comparison;
         private readonly bool _shouldThrow;
         private readonly ConcurrentDictionary<string, PropertyDelegate> _propertyGetters = new ConcurrentDictionary<string, PropertyDelegate>();
 
-        public TypeDelegate(Type type, string separator, StringComparison comparison, bool shouldThrow = false)
+        public TypeDelegate(Type type, string? separator, StringComparison comparison, bool shouldThrow = false)
         {
             _separator = separator;
             _comparison = comparison;

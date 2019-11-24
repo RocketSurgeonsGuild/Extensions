@@ -1,12 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Rocket.Surgery.Extensions
 {
     /// <summary>
     /// TopographicalSortExtensions.
     /// </summary>
-    /// TODO Edit XML Comment Template for TopographicalSortExtensions
+    [PublicAPI]
     public static class TopographicalSortExtensions
     {
         /// <summary>
@@ -15,8 +16,13 @@ namespace Rocket.Surgery.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="source">The source.</param>
         /// <param name="dependencies">The dependencies.</param>
-        public static IEnumerable<T> TopographicalSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies)
+        public static IEnumerable<T> TopographicalSort<T>([NotNull] this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
             var sorted = new List<T>();
             var visited = new HashSet<T>();
 
@@ -40,7 +46,7 @@ namespace Rocket.Surgery.Extensions
             else
             {
                 if (!sorted.Contains(item))
-                    throw new NotSupportedException(string.Format("Cyclic dependency found {0}", item));
+                    throw new NotSupportedException($"Cyclic dependency found {item}");
             }
         }
     }

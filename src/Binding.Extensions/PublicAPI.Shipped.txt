@@ -1,0 +1,45 @@
+Rocket.Surgery.Binding.BackingFieldValueProvider
+Rocket.Surgery.Binding.BackingFieldValueProvider.BackingFieldValueProvider(System.Reflection.MemberInfo memberInfo, System.Reflection.FieldInfo backingField) -> void
+Rocket.Surgery.Binding.BackingFieldValueProvider.GetValue(object target) -> object
+Rocket.Surgery.Binding.BackingFieldValueProvider.SetValue(object target, object value) -> void
+Rocket.Surgery.Binding.IJsonBinder
+Rocket.Surgery.Binding.IJsonBinder.Bind(System.Type objectType, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values) -> object
+Rocket.Surgery.Binding.IJsonBinder.Bind(System.Type objectType, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values, Newtonsoft.Json.JsonSerializer serializer) -> object
+Rocket.Surgery.Binding.IJsonBinder.Bind<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values) -> T
+Rocket.Surgery.Binding.IJsonBinder.Bind<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values, Newtonsoft.Json.JsonSerializer serializer) -> T
+Rocket.Surgery.Binding.IJsonBinder.From<T>(T value) -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>>
+Rocket.Surgery.Binding.IJsonBinder.From<T>(T value, Newtonsoft.Json.JsonSerializer serializer) -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>>
+Rocket.Surgery.Binding.IJsonBinder.GetValues<T>(T value) -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, Newtonsoft.Json.Linq.JValue>>
+Rocket.Surgery.Binding.IJsonBinder.GetValues<T>(T value, Newtonsoft.Json.JsonSerializer serializer) -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, Newtonsoft.Json.Linq.JValue>>
+Rocket.Surgery.Binding.IJsonBinder.Parse(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values) -> Newtonsoft.Json.Linq.JObject
+Rocket.Surgery.Binding.IJsonBinder.Populate<T>(T value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values) -> T
+Rocket.Surgery.Binding.IJsonBinder.Populate<T>(T value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values, Newtonsoft.Json.JsonSerializer serializer) -> T
+Rocket.Surgery.Binding.JsonBinder
+Rocket.Surgery.Binding.JsonBinder.Bind(System.Type objectType, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values) -> object
+Rocket.Surgery.Binding.JsonBinder.Bind(System.Type objectType, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values, Newtonsoft.Json.JsonSerializer serializer) -> object
+Rocket.Surgery.Binding.JsonBinder.Bind<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values) -> T
+Rocket.Surgery.Binding.JsonBinder.Bind<T>(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values, Newtonsoft.Json.JsonSerializer serializer) -> T
+Rocket.Surgery.Binding.JsonBinder.From<T>(T value) -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>>
+Rocket.Surgery.Binding.JsonBinder.From<T>(T value, Newtonsoft.Json.JsonSerializer serializer) -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>>
+Rocket.Surgery.Binding.JsonBinder.GetValues<T>(T value) -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, Newtonsoft.Json.Linq.JValue>>
+Rocket.Surgery.Binding.JsonBinder.GetValues<T>(T value, Newtonsoft.Json.JsonSerializer serializer) -> System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, Newtonsoft.Json.Linq.JValue>>
+Rocket.Surgery.Binding.JsonBinder.JsonBinder() -> void
+Rocket.Surgery.Binding.JsonBinder.JsonBinder(Newtonsoft.Json.JsonSerializerSettings settings) -> void
+Rocket.Surgery.Binding.JsonBinder.JsonBinder(char separator) -> void
+Rocket.Surgery.Binding.JsonBinder.JsonBinder(string separator) -> void
+Rocket.Surgery.Binding.JsonBinder.JsonBinder(string separator, Newtonsoft.Json.JsonSerializer serializer) -> void
+Rocket.Surgery.Binding.JsonBinder.JsonBinder(string separator, Newtonsoft.Json.JsonSerializerSettings settings) -> void
+Rocket.Surgery.Binding.JsonBinder.Parse(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values) -> Newtonsoft.Json.Linq.JObject
+Rocket.Surgery.Binding.JsonBinder.Populate<T>(T value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values) -> T
+Rocket.Surgery.Binding.JsonBinder.Populate<T>(T value, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>> values, Newtonsoft.Json.JsonSerializer serializer) -> T
+Rocket.Surgery.Binding.JsonBinderExtensions
+Rocket.Surgery.Binding.PrivateSetterContractResolver
+Rocket.Surgery.Binding.PrivateSetterContractResolver.PrivateSetterContractResolver() -> void
+override Rocket.Surgery.Binding.PrivateSetterContractResolver.CreateMemberValueProvider(System.Reflection.MemberInfo member) -> Newtonsoft.Json.Serialization.IValueProvider
+override Rocket.Surgery.Binding.PrivateSetterContractResolver.CreateProperty(System.Reflection.MemberInfo member, Newtonsoft.Json.MemberSerialization memberSerialization) -> Newtonsoft.Json.Serialization.JsonProperty
+static Rocket.Surgery.Binding.JsonBinderExtensions.Bind(this Rocket.Surgery.Binding.IJsonBinder binder, System.Type objectType, Microsoft.Extensions.Configuration.IConfiguration configuration) -> object
+static Rocket.Surgery.Binding.JsonBinderExtensions.Bind(this Rocket.Surgery.Binding.IJsonBinder binder, System.Type objectType, Microsoft.Extensions.Configuration.IConfiguration configuration, Newtonsoft.Json.JsonSerializer serializer) -> object
+static Rocket.Surgery.Binding.JsonBinderExtensions.Bind<T>(this Rocket.Surgery.Binding.IJsonBinder binder, Microsoft.Extensions.Configuration.IConfiguration configuration) -> T
+static Rocket.Surgery.Binding.JsonBinderExtensions.Bind<T>(this Rocket.Surgery.Binding.IJsonBinder binder, Microsoft.Extensions.Configuration.IConfiguration configuration, Newtonsoft.Json.JsonSerializer serializer) -> T
+static Rocket.Surgery.Binding.JsonBinderExtensions.Populate<T>(this Rocket.Surgery.Binding.IJsonBinder binder, T value, Microsoft.Extensions.Configuration.IConfiguration configuration) -> T
+static Rocket.Surgery.Binding.JsonBinderExtensions.Populate<T>(this Rocket.Surgery.Binding.IJsonBinder binder, T value, Microsoft.Extensions.Configuration.IConfiguration configuration, Newtonsoft.Json.JsonSerializer serializer) -> T

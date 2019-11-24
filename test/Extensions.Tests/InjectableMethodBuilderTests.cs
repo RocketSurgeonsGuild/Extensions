@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using FakeItEasy;
 using FluentAssertions;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
-using Rocket.Surgery.Reflection.Extensions;
+using Rocket.Surgery.Reflection;
 using Xunit;
 
 namespace Rocket.Surgery.Extensions.Tests

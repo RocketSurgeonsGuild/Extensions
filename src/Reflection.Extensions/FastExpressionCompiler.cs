@@ -23,18 +23,20 @@ THE SOFTWARE.
 */
 
 // ReSharper disable CoVariantArrayConversion
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Reflection.Emit;
+
 #nullable disable
 
-namespace FastExpressionCompiler
+namespace Rocket.Surgery.Reflection
 {
 #pragma warning disable IDE0065 // Misplaced using directive
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Reflection;
-    using System.Reflection.Emit;
-    using System.Diagnostics;
 #pragma warning restore IDE0065 // Misplaced using directive
 
     /// <summary>Compiles expression to delegate ~20 times faster than Expression.Compile.
@@ -2967,7 +2969,7 @@ namespace FastExpressionCompiler
 
         private static class EmptyArray<T>
         {
-            public static readonly T[] Value = new T[0];
+            public static readonly T[] Value = global::System.Array.Empty<T>();
         }
 
         public static T[] Empty<T>() => EmptyArray<T>.Value;

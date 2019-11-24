@@ -1,7 +1,7 @@
 #nullable disable
 using System;
 using FluentAssertions;
-using Rocket.Surgery.Reflection.Extensions;
+using Rocket.Surgery.Reflection;
 using Xunit;
 
 namespace Rocket.Surgery.Extensions.Tests
@@ -47,10 +47,19 @@ namespace Rocket.Surgery.Extensions.Tests
         }
         class ExplictField2 : IBackingField
         {
+#pragma warning disable RCS1169 // Make field read-only.
+#pragma warning disable IDE0044 // Add readonly modifier
+#pragma warning disable 649
             private string _value;
+#pragma warning restore 649
+#pragma warning restore IDE0044 // Add readonly modifier
+#pragma warning restore RCS1169 // Make field read-only.
+            // ReSharper disable once ConvertToAutoProperty
             string IBackingField.Value
             {
+#pragma warning disable IDE0025 // Use expression body for properties
                 get => _value;
+#pragma warning restore IDE0025 // Use expression body for properties
             }
         }
 

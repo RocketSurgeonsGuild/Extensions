@@ -1,10 +1,10 @@
-using FastExpressionCompiler;
 using System;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Reflection;
+using JetBrains.Annotations;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     /// <summary>
     /// Injectable method builder
@@ -13,6 +13,7 @@ namespace Rocket.Surgery.Reflection.Extensions
     /// <typeparam name="T2">The type of the 2.</typeparam>
     /// <typeparam name="T3">The type of the 3.</typeparam>
     /// <typeparam name="T4">The type of the 4.</typeparam>
+    [PublicAPI]
     public class InjectableMethodBuilder<T, T2, T3, T4> : InjectableMethodBuilderBase
     {
         internal InjectableMethodBuilder(TypeInfo containerType, ImmutableArray<string> methodNames) : base(containerType.AsType(), methodNames) { }

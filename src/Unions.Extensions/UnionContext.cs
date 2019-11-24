@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 
 namespace Rocket.Surgery.Unions
 {
-    class UnionContext
+    internal class UnionContext
     {
         private readonly IReadOnlyDictionary<object, Type> _enumTypeList;
 

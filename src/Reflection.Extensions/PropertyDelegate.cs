@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using FastExpressionCompiler;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     /// <summary>
     /// Property delegate
@@ -81,7 +80,7 @@ namespace Rocket.Surgery.Reflection.Extensions
                     _stronglyTypedExpression ??
                     (_stronglyTypedExpression = (Expression)CreateStronglyTypedExpressionMethod
                         .MakeGenericMethod(RootType, PropertyType)
-                        .Invoke(this, new object[0]));
+                        .Invoke(this, Array.Empty<object>()) );
 
         private Expression CreateStronglyTypedExpression<TType, TProperty>()
         {

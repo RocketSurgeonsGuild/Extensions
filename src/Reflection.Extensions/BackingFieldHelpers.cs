@@ -3,8 +3,9 @@ using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     /// <summary>
     /// The default backing field helper
@@ -16,7 +17,8 @@ namespace Rocket.Surgery.Reflection.Extensions
         /// </summary>
         public static BackingFieldHelper Instance { get; } = new BackingFieldHelper();
         private readonly ConcurrentDictionary<(Type, string), FieldInfo> _backingFields = new ConcurrentDictionary<(Type, string), FieldInfo>();
-        private FieldInfo? GetBackingField(PropertyInfo pi)
+
+        private static FieldInfo? GetBackingField(PropertyInfo pi)
         {
             if (!pi.CanRead || !pi.GetMethod.IsDefined(typeof(CompilerGeneratedAttribute), inherit: true))
                 return null;
@@ -35,9 +37,9 @@ namespace Rocket.Surgery.Reflection.Extensions
         {
             if (!_backingFields.TryGetValue((objectType, name), out var backingField))
             {
-                var property = objectType.GetTypeInfo().GetProperty($"{interfaceType.FullName.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (property == null)
-                    property = objectType.GetTypeInfo().GetProperty(name);
+#pragma warning disable CA1307 // Specify StringComparison
+                var property = objectType.GetTypeInfo().GetProperty($"{interfaceType.FullName.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance) ?? objectType.GetTypeInfo().GetProperty(name);
+#pragma warning restore CA1307 // Specify StringComparison
 
                 backingField = GetBackingField(property)!;
                 _backingFields.TryAdd((objectType, name), backingField!);
@@ -55,8 +57,13 @@ namespace Rocket.Surgery.Reflection.Extensions
         /// <param name="type">The type.</param>
         /// <param name="expression">The expression.</param>
         /// <returns></returns>
-        public FieldInfo GetBackingField<TInterface, TValue>(Type type, Expression<Func<TInterface, TValue>> expression)
+        public FieldInfo GetBackingField<TInterface, TValue>(Type type, [NotNull] Expression<Func<TInterface, TValue>> expression)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             if (expression.Body is MemberExpression exp)
             {
                 return GetBackingField(type, typeof(TInterface), exp.Member.Name);
@@ -72,8 +79,13 @@ namespace Rocket.Surgery.Reflection.Extensions
         /// <param name="instance">The instance.</param>
         /// <param name="expression">The expression.</param>
         /// <param name="value">The value.</param>
-        public void SetBackingField<TInterface, TValue>(TInterface instance, Expression<Func<TInterface, TValue>> expression, TValue value)
+        public void SetBackingField<TInterface, TValue>(TInterface instance, [NotNull] Expression<Func<TInterface, TValue>> expression, TValue value)
         {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
             if (expression.Body is MemberExpression exp)
             {
                 var field = GetBackingField(instance!.GetType(), expression);

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
 namespace System.Threading.Tasks
@@ -7,6 +8,7 @@ namespace System.Threading.Tasks
     /// <summary>
     ///  TaskExtensions.
     /// </summary>
+    [PublicAPI]
     public static class TaskExtensions
     {
         /// <summary>

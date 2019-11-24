@@ -10,6 +10,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Rocket.Surgery.Unions;
 using Xunit;
+#pragma warning disable CA1062 // Validate arguments of public methods
 
 namespace Rocket.Surgery.Extensions.Tests.Unions
 {
@@ -57,14 +58,6 @@ namespace Rocket.Surgery.Extensions.Tests.Unions
 
     public class UnionTests
     {
-        private readonly JsonSerializer _serializer = JsonSerializer.Create(new JsonSerializerSettings()
-        {
-            Converters = new List<JsonConverter>()
-            {
-                new StringEnumConverter()
-            }
-        });
-
         private readonly JsonSerializerSettings _settings = new JsonSerializerSettings()
         {
             Converters = new List<JsonConverter>()

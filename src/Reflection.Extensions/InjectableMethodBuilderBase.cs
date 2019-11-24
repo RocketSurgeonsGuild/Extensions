@@ -4,12 +4,14 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using JetBrains.Annotations;
 
-namespace Rocket.Surgery.Reflection.Extensions
+namespace Rocket.Surgery.Reflection
 {
     /// <summary>
     /// Injectable method builder base
     /// </summary>
+    [PublicAPI]
     public abstract class InjectableMethodBuilderBase
     {
         internal InjectableMethodBuilderBase(Type container, ImmutableArray<string> methodNames)
@@ -74,7 +76,7 @@ namespace Rocket.Surgery.Reflection.Extensions
             static string? getParameterName(Type? type)
             {
                 if (type is null) return null;
-                if (type.GetTypeInfo().IsInterface && type.Name.StartsWith("I"))
+                if (type.GetTypeInfo().IsInterface && type.Name.StartsWith("I", StringComparison.OrdinalIgnoreCase))
                 {
                     return type.Name.Substring(1, 1).ToLower() + type.Name.Substring(2);
                 }

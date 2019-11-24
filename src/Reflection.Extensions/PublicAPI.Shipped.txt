@@ -1,0 +1,143 @@
+Rocket.Surgery.Reflection.BackingFieldHelper
+Rocket.Surgery.Reflection.BackingFieldHelper.BackingFieldHelper() -> void
+Rocket.Surgery.Reflection.BackingFieldHelper.GetBackingField<TInterface, TValue>(System.Type type, System.Linq.Expressions.Expression<System.Func<TInterface, TValue>> expression) -> System.Reflection.FieldInfo
+Rocket.Surgery.Reflection.BackingFieldHelper.SetBackingField<TInterface, TValue>(TInterface instance, System.Linq.Expressions.Expression<System.Func<TInterface, TValue>> expression, TValue value) -> void
+Rocket.Surgery.Reflection.InjectableMethodBuilder
+Rocket.Surgery.Reflection.InjectableMethodBuilder.Compile() -> System.Action<object, System.IServiceProvider>
+Rocket.Surgery.Reflection.InjectableMethodBuilder.Compile<TResult>() -> System.Func<object, System.IServiceProvider, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder.CompileStatic() -> System.Action<System.IServiceProvider>
+Rocket.Surgery.Reflection.InjectableMethodBuilder.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder
+Rocket.Surgery.Reflection.InjectableMethodBuilder.InjectableMethodBuilder(System.Type container) -> void
+Rocket.Surgery.Reflection.InjectableMethodBuilder.InjectableMethodBuilder(System.Type container, System.Collections.Immutable.ImmutableArray<string> methodNames) -> void
+Rocket.Surgery.Reflection.InjectableMethodBuilder.WithParameter<T>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, T10, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, T9, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, T8, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, T5, T6, T7, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4, T5, T6>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, T5, T6, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6>.CompileCompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4, T5, T6>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, T5, T6, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, T6, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4, T5>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, T5, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4, T5>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, T5, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, T5, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3, T4>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, T4, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3, T4>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, T4, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, T4, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3>.Compile() -> System.Action<object, System.IServiceProvider, T, T2, T3>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, T3, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2, T3>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, T3, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, T3, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2>.Compile() -> System.Action<object, System.IServiceProvider, T, T2>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, T2, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2>.CompileStatic() -> System.Action<System.IServiceProvider, T, T2>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, T2, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, T2, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T>.Compile() -> System.Action<object, System.IServiceProvider, T>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T>.Compile<TResult>() -> System.Func<object, System.IServiceProvider, T, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T>.CompileStatic() -> System.Action<System.IServiceProvider, T>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T>.CompileStatic<TResult>() -> System.Func<System.IServiceProvider, T, TResult>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T>.ForMethod(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T>
+Rocket.Surgery.Reflection.InjectableMethodBuilder<T>.WithParameter<TNext>() -> Rocket.Surgery.Reflection.InjectableMethodBuilder<T, TNext>
+Rocket.Surgery.Reflection.InjectableMethodBuilderBase
+Rocket.Surgery.Reflection.InjectableMethodBuilderBase.Container.get -> System.Reflection.TypeInfo
+Rocket.Surgery.Reflection.InjectableMethodBuilderBase.MethodNames.get -> System.Collections.Immutable.ImmutableArray<string>
+Rocket.Surgery.Reflection.MethodNotFoundException
+Rocket.Surgery.Reflection.MethodNotFoundException.MethodNames.get -> string[]
+Rocket.Surgery.Reflection.MethodNotFoundException.MethodNotFoundException(string[] methodNames) -> void
+Rocket.Surgery.Reflection.MethodNotFoundException.MethodNotFoundException(string[] methodNames, System.Exception innerException) -> void
+Rocket.Surgery.Reflection.PropertyDelegate
+Rocket.Surgery.Reflection.PropertyDelegate.Delegate.get -> System.Delegate
+Rocket.Surgery.Reflection.PropertyDelegate.Equals(Rocket.Surgery.Reflection.PropertyDelegate other) -> bool
+Rocket.Surgery.Reflection.PropertyDelegate.Path.get -> string
+Rocket.Surgery.Reflection.PropertyDelegate.PropertyType.get -> System.Type
+Rocket.Surgery.Reflection.PropertyDelegate.RootType.get -> System.Type
+Rocket.Surgery.Reflection.PropertyDelegate.StronglyTypedExpression.get -> System.Linq.Expressions.Expression
+Rocket.Surgery.Reflection.PropertyGetter
+Rocket.Surgery.Reflection.PropertyGetter.Get(object instance, string path) -> object
+Rocket.Surgery.Reflection.PropertyGetter.Get<T>(object instance, string path) -> T
+Rocket.Surgery.Reflection.PropertyGetter.GetExpression(System.Type type, string path) -> System.Linq.Expressions.Expression
+Rocket.Surgery.Reflection.PropertyGetter.GetExpression(object instance, string path) -> System.Linq.Expressions.Expression
+Rocket.Surgery.Reflection.PropertyGetter.GetPropertyDelegate(System.Type type, string path) -> Rocket.Surgery.Reflection.PropertyDelegate
+Rocket.Surgery.Reflection.PropertyGetter.GetPropertyDelegate(object instance, string path) -> Rocket.Surgery.Reflection.PropertyDelegate
+Rocket.Surgery.Reflection.PropertyGetter.GetPropertyType(System.Type type, string path) -> System.Type
+Rocket.Surgery.Reflection.PropertyGetter.GetPropertyType(object instance, string path) -> System.Type
+Rocket.Surgery.Reflection.PropertyGetter.Getter(System.Type type, string path) -> System.Func<object, object>
+Rocket.Surgery.Reflection.PropertyGetter.Getter<T>(System.Type type, string path) -> System.Func<object, T>
+Rocket.Surgery.Reflection.PropertyGetter.PropertyGetter(string separator = null, System.StringComparison comparison = System.StringComparison.Ordinal) -> void
+Rocket.Surgery.Reflection.PropertyGetter.TryGet(object instance, string path, out object value) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGet<T>(object instance, string path, out T value) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGetExpression(System.Type type, string path, out System.Linq.Expressions.Expression expression) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGetExpression(object instance, string path, out System.Linq.Expressions.Expression expression) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGetPropertyDelegate(System.Type type, string path, out Rocket.Surgery.Reflection.PropertyDelegate propertyDelegate) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGetPropertyDelegate(object instance, string path, out Rocket.Surgery.Reflection.PropertyDelegate propertyDelegate) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGetPropertyType(System.Type type, string path, out System.Type propertyType) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGetPropertyType(object instance, string path, out System.Type type) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGetter(System.Type type, string path, out System.Func<object, object> getter) -> bool
+Rocket.Surgery.Reflection.PropertyGetter.TryGetter<T>(System.Type type, string path, out System.Func<object, T> getter) -> bool
+Rocket.Surgery.Reflection.TypeInfoExtensions
+Rocket.Surgery.Reflection.ValueExtensions
+override Rocket.Surgery.Reflection.PropertyDelegate.Equals(object obj) -> bool
+override Rocket.Surgery.Reflection.PropertyDelegate.GetHashCode() -> int
+static Rocket.Surgery.Reflection.BackingFieldHelper.Instance.get -> Rocket.Surgery.Reflection.BackingFieldHelper
+static Rocket.Surgery.Reflection.InjectableMethodBuilder.Create(System.Type container, string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder
+static Rocket.Surgery.Reflection.InjectableMethodBuilder.Create<TContainer>(string methodName) -> Rocket.Surgery.Reflection.InjectableMethodBuilder
+static Rocket.Surgery.Reflection.PropertyDelegate.operator !=(Rocket.Surgery.Reflection.PropertyDelegate delegate1, Rocket.Surgery.Reflection.PropertyDelegate delegate2) -> bool
+static Rocket.Surgery.Reflection.PropertyDelegate.operator ==(Rocket.Surgery.Reflection.PropertyDelegate delegate1, Rocket.Surgery.Reflection.PropertyDelegate delegate2) -> bool
+static Rocket.Surgery.Reflection.TypeInfoExtensions.FindDeclaredProperty(this System.Reflection.TypeInfo typeInfo, string name) -> System.Reflection.PropertyInfo
+static Rocket.Surgery.Reflection.ValueExtensions.SetBackingValue<T, TV>(this T instance, System.Linq.Expressions.Expression<System.Func<T, TV>> expression, TV value) -> T

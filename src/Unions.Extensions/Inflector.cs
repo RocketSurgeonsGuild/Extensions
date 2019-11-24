@@ -1,4 +1,4 @@
-﻿//The Inflector class was cloned from Inflector (https://github.com/srkirkland/Inflector)
+//The Inflector class was cloned from Inflector (https://github.com/srkirkland/Inflector)
 
 //The MIT License (MIT)
 
@@ -25,7 +25,7 @@ using System.Text.RegularExpressions;
 
 namespace Rocket.Surgery.Unions
 {
-    static class Inflector
+    internal static class Inflector
     {
         /// <summary>
         /// By default, pascalize converts strings to UpperCamelCase also removing underscores

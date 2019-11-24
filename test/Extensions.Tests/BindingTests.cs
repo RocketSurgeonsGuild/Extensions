@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -12,6 +13,8 @@ using Rocket.Surgery.Binding;
 using Rocket.Surgery.Extensions.Testing;
 using Xunit;
 using Xunit.Abstractions;
+#pragma warning disable CA1062 // Validate arguments of public methods
+#pragma warning disable CS0436 // Type conflicts with imported type
 
 namespace Rocket.Surgery.Extensions.Tests
 {
@@ -21,7 +24,7 @@ namespace Rocket.Surgery.Extensions.Tests
         {
         }
 
-        class AutoProperty
+        private class AutoProperty
         {
             public string Value { get; set; }
         }
@@ -47,7 +50,7 @@ namespace Rocket.Surgery.Extensions.Tests
                 );
         }
 
-        class ReadonlyAutoProperty
+        private class ReadonlyAutoProperty
         {
             public string Value { get; }
         }
@@ -73,7 +76,8 @@ namespace Rocket.Surgery.Extensions.Tests
                 );
         }
 
-        class PrivateSetterProperty
+        [UsedImplicitly]
+        private class PrivateSetterProperty
         {
             public string Value { get; }
         }
@@ -99,7 +103,7 @@ namespace Rocket.Surgery.Extensions.Tests
                 );
         }
 
-        class ComplexProperty
+        private class ComplexProperty
         {
             public AutoProperty AutoProperty { get; set; }
             public string Value { get; set; }
@@ -173,27 +177,27 @@ namespace Rocket.Surgery.Extensions.Tests
                 );
         }
 
-        class ArrayProperties
+        private class ArrayProperties
         {
             public AutoProperty[] Values { get; set; }
         }
 
-        class SimpleArrayProperties
+        private class SimpleArrayProperties
         {
             public string[] Values { get; set; }
         }
 
-        class EnumerableProperties
+        private class EnumerableProperties
         {
             public IEnumerable<AutoProperty> Values { get; set; }
         }
 
-        class IListProperties
+        private class IListProperties
         {
             public IList<AutoProperty> Values { get; set; }
         }
 
-        class ListProperties
+        private class ListProperties
         {
             public List<AutoProperty> Values { get; set; }
         }
@@ -348,12 +352,12 @@ namespace Rocket.Surgery.Extensions.Tests
             values.Should().Contain(x => x.Key == "a__b__value");
         }
 
-        class DerivedComplexProperty : ComplexProperty
+        private class DerivedComplexProperty : ComplexProperty
         {
             [JsonExtensionData] public IDictionary<string, JToken> CustomFields { get; set; }
         }
 
-        class ExtraProperties
+        private class ExtraProperties
         {
             public DerivedComplexProperty ComplexProperty { get; }
             [JsonExtensionData] public IDictionary<string, JToken> CustomFields { get; set; }
@@ -394,7 +398,7 @@ namespace Rocket.Surgery.Extensions.Tests
                 );
         }
 
-        class PopulatesFixture
+        private class PopulatesFixture
         {
             public string A { get; set; }
             public int B { get; set; }
@@ -508,27 +512,27 @@ namespace Rocket.Surgery.Extensions.Tests
             };
         }
 
-        static object Populate(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object Populate(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             return binder.Populate(value, values);
         }
 
-        static object PopulateJsonSerializer(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object PopulateJsonSerializer(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             return binder.Populate(value, values, serializer);
         }
 
-        static object Bind(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object Bind(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             return binder.Bind(objectType, values);
         }
 
-        static object BindJsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object BindJsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             return binder.Bind(objectType, values, serializer);
         }
 
-        static object Bind2(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object Bind2(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             var method = typeof(JsonBinderTests).GetTypeInfo()
                 .GetMethod(nameof(BindGeneric), BindingFlags.Static | BindingFlags.NonPublic);
@@ -540,7 +544,7 @@ namespace Rocket.Surgery.Extensions.Tests
                 });
         }
 
-        static object Bind2JsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object Bind2JsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             var method = typeof(JsonBinderTests).GetTypeInfo()
                 .GetMethod(nameof(BindGenericJsonSerializer), BindingFlags.Static | BindingFlags.NonPublic);
@@ -552,47 +556,47 @@ namespace Rocket.Surgery.Extensions.Tests
                 });
         }
 
-        static T BindGeneric<T>(JsonBinder binder, IEnumerable<KeyValuePair<string, string>> values)
+        private static T BindGeneric<T>(JsonBinder binder, IEnumerable<KeyValuePair<string, string>> values)
             where T : class, new()
         {
             return binder.Bind<T>(values);
         }
 
-        static T BindGenericJsonSerializer<T>(JsonBinder binder, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static T BindGenericJsonSerializer<T>(JsonBinder binder, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
             where T : class, new()
         {
             return binder.Bind<T>(values, serializer);
         }
 
-        static object PopulateConfiguration(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object PopulateConfiguration(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             var config = new ConfigurationBuilder();
             config.AddInMemoryCollection(values);
             return binder.Populate(value, config.Build());
         }
 
-        static object PopulateConfigurationJsonSerializer(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object PopulateConfigurationJsonSerializer(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             var config = new ConfigurationBuilder();
             config.AddInMemoryCollection(values);
             return binder.Populate(value, config.Build(), serializer);
         }
 
-        static object BindConfiguration(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object BindConfiguration(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             var config = new ConfigurationBuilder();
             config.AddInMemoryCollection(values);
             return binder.Bind(objectType, config.Build());
         }
 
-        static object BindConfigurationJsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object BindConfigurationJsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             var config = new ConfigurationBuilder();
             config.AddInMemoryCollection(values);
             return binder.Bind(objectType, config.Build(), serializer);
         }
 
-        static object Bind2Configuration(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object Bind2Configuration(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             var method = typeof(JsonBinderTests).GetTypeInfo()
                 .GetMethod(nameof(BindConfigurationGeneric), BindingFlags.Static | BindingFlags.NonPublic);
@@ -604,7 +608,7 @@ namespace Rocket.Surgery.Extensions.Tests
                 });
         }
 
-        static object Bind2ConfigurationJsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static object Bind2ConfigurationJsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
         {
             var method = typeof(JsonBinderTests).GetTypeInfo()
                 .GetMethod(nameof(BindConfigurationGenericJsonSerializer), BindingFlags.Static | BindingFlags.NonPublic);
@@ -616,7 +620,7 @@ namespace Rocket.Surgery.Extensions.Tests
                 });
         }
 
-        static T BindConfigurationGeneric<T>(JsonBinder binder, IEnumerable<KeyValuePair<string, string>> values)
+        private static T BindConfigurationGeneric<T>(JsonBinder binder, IEnumerable<KeyValuePair<string, string>> values)
             where T : class, new()
         {
             var config = new ConfigurationBuilder();
@@ -624,7 +628,7 @@ namespace Rocket.Surgery.Extensions.Tests
             return binder.Bind<T>(config.Build());
         }
 
-        static T BindConfigurationGenericJsonSerializer<T>(JsonBinder binder, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
+        private static T BindConfigurationGenericJsonSerializer<T>(JsonBinder binder, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
             where T : class, new()
         {
             var config = new ConfigurationBuilder();

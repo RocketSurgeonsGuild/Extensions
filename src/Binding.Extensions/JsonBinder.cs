@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -49,29 +50,37 @@ namespace Rocket.Surgery.Binding
         }
 
         /// <inheritdoc />
-        public T Bind<T>(IEnumerable<KeyValuePair<string, string>> values)
+        public T Bind<T>([NotNull] IEnumerable<KeyValuePair<string, string>> values)
             where T : class, new()
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return Parse(values).ToObject<T>(_serializer);
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         /// <inheritdoc />
         public T Bind<T>(IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
             where T : class, new()
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return Parse(values).ToObject<T>(serializer);
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         /// <inheritdoc />
         public object Bind(Type objectType, IEnumerable<KeyValuePair<string, string>> values)
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return Parse(values).ToObject(objectType, _serializer);
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         /// <inheritdoc />
         public object Bind(Type objectType, IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
         {
+#pragma warning disable CS8603 // Possible null reference return.
             return Parse(values).ToObject(objectType, serializer);
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         /// <inheritdoc />
@@ -86,13 +95,18 @@ namespace Rocket.Surgery.Binding
         public T Populate<T>(T value, IEnumerable<KeyValuePair<string, string>> values, JsonSerializer serializer)
             where T : class
         {
-            serializer.Populate(Parse(values).CreateReader(), value);
+            serializer?.Populate(Parse(values).CreateReader(), value);
             return value;
         }
 
         /// <inheritdoc />
-        public JObject Parse(IEnumerable<KeyValuePair<string, string>> values)
+        public JObject Parse([NotNull] IEnumerable<KeyValuePair<string, string>> values)
         {
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
             var result = new JObject();
             foreach (var item in values)
             {
@@ -196,7 +210,7 @@ namespace Rocket.Surgery.Binding
                         if (arr.Count <= index)
                         {
                             while (arr.Count < index)
-                                arr.Add(null);
+                                arr.Add(null!);
                             arr.Add(value);
                         }
                         else
@@ -218,10 +232,12 @@ namespace Rocket.Surgery.Binding
             {
                 return (T)arr2[i];
             }
-            return (T)root[key];
+#pragma warning disable CS8603 // Possible null reference return.
+            return root[key] as T;
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
-        private JToken? GetValueFromToken(JToken root, string key)
+        private static JToken? GetValueFromToken(JToken root, string key)
         {
             if (root is JArray arr)
             {

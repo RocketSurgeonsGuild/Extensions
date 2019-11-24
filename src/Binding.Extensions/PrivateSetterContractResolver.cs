@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Rocket.Surgery.Reflection.Extensions;
 
 namespace Rocket.Surgery.Binding
 {

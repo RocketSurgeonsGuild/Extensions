@@ -1,0 +1,68 @@
+Rocket.Surgery.Encoding.Base3264Encoding
+Rocket.Surgery.Encoding.Base32Url
+Rocket.Surgery.Encoding.Base32Url.Base32Url() -> void
+Rocket.Surgery.Encoding.Base32Url.Base32Url(bool padding) -> void
+Rocket.Surgery.Encoding.Base32Url.Base32Url(bool padding, bool caseSensitive) -> void
+Rocket.Surgery.Encoding.Base32Url.Base32Url(bool padding, bool caseSensitive, bool ignoreWhiteSpaceWhenDecoding) -> void
+Rocket.Surgery.Encoding.Base32Url.Base32Url(bool padding, bool caseSensitive, bool ignoreWhiteSpaceWhenDecoding, Rocket.Surgery.Encoding.Base32Url.CharMap[] alphabet) -> void
+Rocket.Surgery.Encoding.Base32Url.Base32Url(bool padding, bool caseSensitive, bool ignoreWhiteSpaceWhenDecoding, string alternateAlphabet) -> void
+Rocket.Surgery.Encoding.Base32Url.Base32Url(string alternateAlphabet) -> void
+Rocket.Surgery.Encoding.Base32Url.CharMap
+Rocket.Surgery.Encoding.Base32Url.CharMap.CharMap(char encodeTo, System.Collections.Generic.IEnumerable<char> decodeFrom) -> void
+Rocket.Surgery.Encoding.Base32Url.Decode(string input) -> byte[]
+Rocket.Surgery.Encoding.Base32Url.Encode(byte[] data) -> string
+Rocket.Surgery.Encoding.Base32Url.IgnoreWhiteSpaceWhenDecoding -> bool
+Rocket.Surgery.Encoding.Base32Url.IsCaseSensitive -> bool
+Rocket.Surgery.Encoding.Base32Url.PaddingChar -> char
+Rocket.Surgery.Encoding.Base32Url.UsePadding -> bool
+Rocket.Surgery.Encoding.Base64Url
+Rocket.Surgery.Encoding.EncodingType
+Rocket.Surgery.Encoding.EncodingType.Base32Crockford = 6 -> Rocket.Surgery.Encoding.EncodingType
+Rocket.Surgery.Encoding.EncodingType.Base32LowProfanity = 5 -> Rocket.Surgery.Encoding.EncodingType
+Rocket.Surgery.Encoding.EncodingType.Base32Url = 3 -> Rocket.Surgery.Encoding.EncodingType
+Rocket.Surgery.Encoding.EncodingType.Base64 = 1 -> Rocket.Surgery.Encoding.EncodingType
+Rocket.Surgery.Encoding.EncodingType.Base64Url = 2 -> Rocket.Surgery.Encoding.EncodingType
+Rocket.Surgery.Encoding.EncodingType.ZBase32 = 4 -> Rocket.Surgery.Encoding.EncodingType
+Rocket.Surgery.Extensions.TopographicalSortExtensions
+System.Collections.Generic.DeconstructorExtensions
+const Rocket.Surgery.Encoding.Base32Url.Base32LowProfanityAlphabet = "ybndrfg8NjkmGpq2HtPRYSszT3J5h769" -> string
+const Rocket.Surgery.Encoding.Base32Url.Base32StandardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567" -> string
+const Rocket.Surgery.Encoding.Base32Url.StandardPaddingChar = '=' -> char
+const Rocket.Surgery.Encoding.Base32Url.ZBase32Alphabet = "ybndrfg8ejkmcpqxot1uwisza345h769" -> string
+readonly Rocket.Surgery.Encoding.Base32Url.CharMap.Decode -> string[]
+readonly Rocket.Surgery.Encoding.Base32Url.CharMap.Encode -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.Decode(Rocket.Surgery.Encoding.EncodingType type, string input) -> byte[]
+static Rocket.Surgery.Encoding.Base3264Encoding.DecodeToString(Rocket.Surgery.Encoding.EncodingType type, string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.Encode(Rocket.Surgery.Encoding.EncodingType type, byte[] input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.EncodeString(Rocket.Surgery.Encoding.EncodingType type, string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase32Crockford(string input) -> byte[]
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase32CrockfordToString(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase32LowProfanity(string input) -> byte[]
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase32LowProfanityToString(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase32Url(string input) -> byte[]
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase32UrlToString(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase64(string input) -> byte[]
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase64ToString(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase64Url(string input) -> byte[]
+static Rocket.Surgery.Encoding.Base3264Encoding.FromBase64UrlToString(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.FromZBase32(string input) -> byte[]
+static Rocket.Surgery.Encoding.Base3264Encoding.FromZBase32ToString(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase32Crockford(byte[] input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase32Crockford(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase32LowProfanity(byte[] input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase32LowProfanity(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase32Url(byte[] input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase32Url(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase64(byte[] input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase64(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase64Url(byte[] input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToBase64Url(string input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToZBase32(byte[] input) -> string
+static Rocket.Surgery.Encoding.Base3264Encoding.ToZBase32(string input) -> string
+static Rocket.Surgery.Encoding.Base32Url.FromBase32String(string input) -> byte[]
+static Rocket.Surgery.Encoding.Base32Url.ToBase32String(byte[] data) -> string
+static Rocket.Surgery.Encoding.Base64Url.FromBase64ForUrlString(string base64ForUrlInput) -> byte[]
+static Rocket.Surgery.Encoding.Base64Url.ToBase64ForUrlString(byte[] input) -> string
+static Rocket.Surgery.Extensions.TopographicalSortExtensions.TopographicalSort<T>(this System.Collections.Generic.IEnumerable<T> source, System.Func<T, System.Collections.Generic.IEnumerable<T>> dependencies) -> System.Collections.Generic.IEnumerable<T>
+static readonly Rocket.Surgery.Encoding.Base32Url.Base32CrockfordHumanFriendlyAlphabet -> Rocket.Surgery.Encoding.Base32Url.CharMap[]
+static System.Collections.Generic.DeconstructorExtensions.Deconstruct<TK, TV>(this System.Collections.Generic.KeyValuePair<TK, TV> kvp, out TK key, out TV value) -> void

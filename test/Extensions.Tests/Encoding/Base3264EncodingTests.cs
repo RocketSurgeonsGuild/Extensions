@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Rocket.Surgery.Encoding;
 using Rocket.Surgery.Extensions.Testing;
 using Xunit;
@@ -23,7 +24,7 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding
         {
             var bytes = System.Text.Encoding.UTF8.GetBytes(Chars);
 
-            foreach (EncodingType encType in Enum.GetValues(typeof(EncodingType)))
+            foreach (var encType in Enum.GetValues(typeof(EncodingType)).OfType<EncodingType>())
             {
                 var enc = Base3264Encoding.Encode(encType, bytes);
                 var dec = Base3264Encoding.Decode(encType, enc);

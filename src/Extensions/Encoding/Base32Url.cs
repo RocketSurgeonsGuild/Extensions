@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace Rocket.Surgery.Encoding
 {
@@ -19,31 +20,31 @@ namespace Rocket.Surgery.Encoding
     /// See http://tools.ietf.org/html/rfc4648
     /// For more information see http://en.wikipedia.org/wiki/Base32
     /// </summary>
-    
+    [PublicAPI]
     public class Base32Url
     {
         /// <summary>
-        /// StandardPaddingChar 
+        /// StandardPaddingChar
         /// </summary>
         public const char StandardPaddingChar = '=';
 
         /// <summary>
-        /// Base32StandardAlphabet 
+        /// Base32StandardAlphabet
         /// </summary>
         public const string Base32StandardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
         /// <summary>
-        /// ZBase32Alphabet 
+        /// ZBase32Alphabet
         /// </summary>
         public const string ZBase32Alphabet = "ybndrfg8ejkmcpqxot1uwisza345h769";
 
         /// <summary>
-        /// Base32LowProfanityAlphabet 
+        /// Base32LowProfanityAlphabet
         /// </summary>
         public const string Base32LowProfanityAlphabet = "ybndrfg8NjkmGpq2HtPRYSszT3J5h769";
 
         /// <summary>
-        /// Base32CrockfordHumanFriendlyAlphabet 
+        /// Base32CrockfordHumanFriendlyAlphabet
         /// </summary>
         public static readonly CharMap[] Base32CrockfordHumanFriendlyAlphabet =
         {
@@ -55,11 +56,15 @@ namespace Rocket.Surgery.Encoding
             new CharMap('X', "Xx"), new CharMap('Y', "Yy"), new CharMap('Z', "Zz"),
         };
 
-        #region CharMap struct        
-        /// <summary>
-        /// CharMap
-        /// </summary>
+        #region CharMap struct
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+#pragma warning disable CA1034 // Nested types should not be visible
+                              /// <summary>
+                              /// CharMap
+                              /// </summary>
         public struct CharMap
+#pragma warning restore CA1034 // Nested types should not be visible
+#pragma warning restore CA1815 // Override equals and operator equals on value types
         {
             /// <summary>
             /// Initializes a new instance of the <see cref="CharMap" /> struct.
@@ -88,6 +93,7 @@ namespace Rocket.Surgery.Encoding
                 }
             }
 
+#pragma warning disable CA1051 // Do not declare visible instance fields
             /// <summary>
             /// Encode
             /// </summary>
@@ -97,29 +103,31 @@ namespace Rocket.Surgery.Encoding
             /// Decode
             /// </summary>
             public readonly string[] Decode;
+#pragma warning restore CA1051 // Do not declare visible instance fields
         }
         #endregion CharMap struct
 
-
+#pragma warning disable CA1051 // Do not declare visible instance fields
         /// <summary>
-        /// PaddingChar 
+        /// PaddingChar
         /// </summary>
         public char PaddingChar;
 
         /// <summary>
-        /// UsePadding 
+        /// UsePadding
         /// </summary>
         public bool UsePadding;
 
         /// <summary>
-        /// IsCaseSensitive 
+        /// IsCaseSensitive
         /// </summary>
         public bool IsCaseSensitive;
 
         /// <summary>
-        /// IgnoreWhiteSpaceWhenDecoding 
+        /// IgnoreWhiteSpaceWhenDecoding
         /// </summary>
         public bool IgnoreWhiteSpaceWhenDecoding;
+#pragma warning restore CA1051 // Do not declare visible instance fields
 
         private readonly CharMap[] _alphabet;
         private Dictionary<string, uint>? _index;
@@ -190,29 +198,34 @@ namespace Rocket.Surgery.Encoding
         ///           like this to provide a unique mapping during decoding, thus to create a crockford style map you must always include the upper and lower
         ///           decode mappings of any case insensitive decode characters required.
         /// </param>
-        public Base32Url(bool padding, bool caseSensitive, bool ignoreWhiteSpaceWhenDecoding, CharMap[] alphabet)
+        public Base32Url(bool padding, bool caseSensitive, bool ignoreWhiteSpaceWhenDecoding, [NotNull] CharMap[] alphabet)
         {
+            if (alphabet == null)
+            {
+                throw new ArgumentNullException(nameof(alphabet));
+            }
+
             if (alphabet.Length != 32)
             {
                 throw new ArgumentException("Alphabet must be exactly 32 characters long for base 32 encoding.");
             }
             if (alphabet.Any(t => t.Decode == null || t.Decode.Length == 0))
             {
-                throw new ArgumentException("Alphabet must contain at least one decoding character for any given encoding chharacter.");
+                throw new ArgumentException("Alphabet must contain at least one decoding character for any given encoding character.");
             }
             var equality = caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
             var encodingChars = alphabet.Select(t => t.Encode).GroupBy(k => k, equality).ToArray();
             if (encodingChars.Any(g => g.Count() > 1))
             {
-                throw new ArgumentException("Case " + (caseSensitive ? "sensitive" : "insensitive") + " alphabet contains duplicate encoding characters: "
+                throw new ArgumentException("Case " + ( caseSensitive ? "sensitive" : "insensitive" ) + " alphabet contains duplicate encoding characters: "
                     + string.Join(", ", encodingChars.Where(g => g.Count() > 1).Select(g => g.Key)));
             }
 
             var decodingChars = alphabet.SelectMany(t => t.Decode.Select(c => c)).GroupBy(k => k, equality).ToArray();
             if (decodingChars.Any(g => g.Count() > 1))
             {
-                throw new ArgumentException("Case " + (caseSensitive ? "sensitive" : "insensitive") + " alphabet contains duplicate decoding characters: "
+                throw new ArgumentException("Case " + ( caseSensitive ? "sensitive" : "insensitive" ) + " alphabet contains duplicate decoding characters: "
                     + string.Join(", ", decodingChars.Where(g => g.Count() > 1).Select(g => g.Key)));
             }
 
@@ -253,31 +266,36 @@ namespace Rocket.Surgery.Encoding
         /// <returns>base 32 string</returns>
         public string Encode(byte[] data)
         {
+            if (data is null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             var result = new StringBuilder(Math.Max((int)Math.Ceiling(data.Length * 8 / 5.0), 1));
 
             var emptyBuff = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
             var buff = new byte[8];
 
             // take input five bytes at a time to chunk it up for encoding
-            for (int i = 0; i < data.Length; i += 5)
+            for (var i = 0; i < data.Length; i += 5)
             {
-                int bytes = Math.Min(data.Length - i, 5);
+                var bytes = Math.Min(data.Length - i, 5);
 
                 // parse five bytes at a time using an 8 byte ulong
                 Array.Copy(emptyBuff, buff, emptyBuff.Length);
-                Array.Copy(data, i, buff, buff.Length - (bytes + 1), bytes);
+                Array.Copy(data, i, buff, buff.Length - ( bytes + 1 ), bytes);
                 Array.Reverse(buff);
-                ulong val = BitConverter.ToUInt64(buff, 0);
+                var val = BitConverter.ToUInt64(buff, 0);
 
-                for (int bitOffset = ((bytes + 1) * 8) - 5; bitOffset > 3; bitOffset -= 5)
+                for (var bitOffset = ( ( bytes + 1 ) * 8 ) - 5; bitOffset > 3; bitOffset -= 5)
                 {
-                    result.Append(_alphabet[(int)((val >> bitOffset) & 0x1f)].Encode);
+                    result.Append(_alphabet[(int)( ( val >> bitOffset ) & 0x1f )].Encode);
                 }
             }
 
             if (UsePadding)
             {
-                result.Append(string.Empty.PadRight((result.Length % 8) == 0 ? 0 : (8 - (result.Length % 8)), PaddingChar));
+                result.Append(string.Empty.PadRight(( result.Length % 8 ) == 0 ? 0 : ( 8 - ( result.Length % 8 ) ), PaddingChar));
             }
 
             return result.ToString();
@@ -289,8 +307,13 @@ namespace Rocket.Surgery.Encoding
         /// <param name="input">base32 string</param>
         /// <returns>byte[] of data originally encoded with Encode method</returns>
         /// <exception cref="ArgumentException">Thrown when string is invalid length if padding is expected or invalid (not in the base32 decoding set) characters are provided.</exception>
-        public byte[] Decode(string input)
+        public byte[] Decode([NotNull] string input)
         {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
             if (IgnoreWhiteSpaceWhenDecoding)
             {
                 input = Regex.Replace(input, "\\s+", "");
@@ -309,30 +332,30 @@ namespace Rocket.Surgery.Encoding
             // index the alphabet for decoding only when needed
             EnsureAlphabetIndexed();
 
-            var ms = new MemoryStream(Math.Max((int)Math.Ceiling(input.Length * 5 / 8.0), 1));
+            using var ms = new MemoryStream(Math.Max((int)Math.Ceiling(input.Length * 5 / 8.0), 1));
 
             // take input eight bytes at a time to chunk it up for encoding
-            for (int i = 0; i < input.Length; i += 8)
+            for (var i = 0; i < input.Length; i += 8)
             {
-                int chars = Math.Min(input.Length - i, 8);
+                var chars = Math.Min(input.Length - i, 8);
 
                 ulong val = 0;
 
-                int bytes = (int)Math.Floor(chars * (5 / 8.0));
+                var bytes = (int)Math.Floor(chars * ( 5 / 8.0 ));
 
-                for (int charOffset = 0; charOffset < chars; charOffset++)
+                for (var charOffset = 0; charOffset < chars; charOffset++)
                 {
                     if (!_index!.TryGetValue(input.Substring(i + charOffset, 1), out var cbyte))
                     {
                         throw new ArgumentException("Invalid character '" + input.Substring(i + charOffset, 1) + "' in base32 string, valid characters are: " + _alphabet);
                     }
 
-                    val |= ((ulong)cbyte) << (((bytes + 1) * 8) - (charOffset * 5) - 5);
+                    val |= ( (ulong)cbyte ) << ( ( ( bytes + 1 ) * 8 ) - ( charOffset * 5 ) - 5 );
                 }
 
-                byte[] buff = BitConverter.GetBytes(val);
+                var buff = BitConverter.GetBytes(val);
                 Array.Reverse(buff);
-                ms.Write(buff, buff.Length - (bytes + 1), bytes);
+                ms.Write(buff, buff.Length - ( bytes + 1 ), bytes);
             }
 
             return ms.ToArray();
@@ -342,7 +365,7 @@ namespace Rocket.Surgery.Encoding
         {
             if (_index != null) return;
 
-            var indexKey = (IsCaseSensitive ? "S" : "I") +
+            var indexKey = ( IsCaseSensitive ? "S" : "I" ) +
                 string.Join("", _alphabet.Select(t => t.Encode)) +
                 "_" + string.Join("", _alphabet.SelectMany(t => t.Decode).Select(c => c));
 
@@ -354,7 +377,7 @@ namespace Rocket.Surgery.Encoding
                     {
                         var equality = IsCaseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
                         cidx = new Dictionary<string, uint>(_alphabet.Length, equality);
-                        for (int i = 0; i < _alphabet.Length; i++)
+                        for (var i = 0; i < _alphabet.Length; i++)
                         {
                             foreach (var c in _alphabet[i].Decode.Select(c => c))
                             {
