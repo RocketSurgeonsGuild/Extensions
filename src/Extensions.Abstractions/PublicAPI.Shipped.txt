@@ -1,8 +1,0 @@
-Rocket.Surgery.NotFoundException
-Rocket.Surgery.NotFoundException.NotFoundException() -> void
-Rocket.Surgery.NotFoundException.NotFoundException(string message) -> void
-Rocket.Surgery.NotFoundException.NotFoundException(string message, System.Exception innerException) -> void
-Rocket.Surgery.RequestException
-Rocket.Surgery.RequestException.RequestException() -> void
-Rocket.Surgery.RequestException.RequestException(string message) -> void
-Rocket.Surgery.RequestException.RequestException(string message, System.Exception innerException) -> void
