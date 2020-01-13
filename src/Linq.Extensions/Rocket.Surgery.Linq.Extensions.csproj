@@ -5,7 +5,6 @@
     <ItemGroup>
         <PackageReference Include="System.Collections.Immutable" />
         <PackageReference Include="System.Interactive" />
-        <PackageReference Include="System.Interactive.Async.Providers" />
-        <PackageReference Include="System.Interactive.Providers" />
+        <PackageReference Include="System.Interactive.Async" />
     </ItemGroup>
 </Project>

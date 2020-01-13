@@ -25,8 +25,7 @@
     <PackageReference Update="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Update="System.Collections.Immutable" Version="1.7.0" />
     <PackageReference Update="System.Interactive" Version="4.0.0" />
-    <PackageReference Update="System.Interactive.Async.Providers" Version="4.0.0" />
-    <PackageReference Update="System.Interactive.Providers" Version="4.0.0" />
+    <PackageReference Update="System.Interactive.Async" Version="4.0.0" />
     <PackageReference Update="System.Reactive" Version="4.3.2" />
     <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.3.2" />
     <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.7.0" />
