@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.Reflection.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.System", "src\System\Rocket.Surgery.System.csproj", "{6A3C0DBA-F498-43F8-B256-5CC545D7B8EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.DependencyInjection.Extensions", "src\DependencyInjection.Extensions\Rocket.Surgery.DependencyInjection.Extensions.csproj", "{1EA431B1-B8BF-4743-93FF-7592C60C5640}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -179,6 +181,18 @@ Global
 		{6A3C0DBA-F498-43F8-B256-5CC545D7B8EF}.Release|x64.Build.0 = Release|Any CPU
 		{6A3C0DBA-F498-43F8-B256-5CC545D7B8EF}.Release|x86.ActiveCfg = Release|Any CPU
 		{6A3C0DBA-F498-43F8-B256-5CC545D7B8EF}.Release|x86.Build.0 = Release|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Debug|x64.Build.0 = Debug|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Debug|x86.Build.0 = Debug|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Release|x64.ActiveCfg = Release|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Release|x64.Build.0 = Release|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Release|x86.ActiveCfg = Release|Any CPU
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -195,6 +209,7 @@ Global
 		{13A1B128-7082-4594-AE4C-1104713859C3} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{EB4ECE84-AD36-4443-9AD6-FC41C862BA18} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{6A3C0DBA-F498-43F8-B256-5CC545D7B8EF} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
+		{1EA431B1-B8BF-4743-93FF-7592C60C5640} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {439897C2-CCBD-44FE-B2DC-A3E4670ADA59}

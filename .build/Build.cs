@@ -7,6 +7,12 @@ using JetBrains.Annotations;
 [PublicAPI]
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
+[AzurePipelinesSteps(
+    InvokedTargets = new[] { nameof(Restore), nameof(Build), nameof(Test), nameof(Pack) },
+    NonEntryTargets = new[] { nameof(BuildVersion), nameof(Generate_Code_Coverage_Reports) },
+    ExcludedTargets = new[] { nameof(Clean), nameof(Restore), nameof(DotnetToolRestore) },
+    Parameters = new[] { nameof(CoverageDirectory), nameof(ArtifactsDirectory), nameof(Verbosity), nameof(Configuration) }
+)]
 [PackageIcon("https://raw.githubusercontent.com/RocketSurgeonsGuild/graphics/master/png/social-square-thrust-rounded.png")]
 [EnsurePackageSourceHasCredentials("RocketSurgeonsGuild")]
 [EnsureGitHooks(GitHook.PreCommit)]

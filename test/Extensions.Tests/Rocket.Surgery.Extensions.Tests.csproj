@@ -8,6 +8,7 @@
         <ProjectReference Include="..\..\src\Unions.Extensions\Rocket.Surgery.Extensions.Unions.csproj" />
         <ProjectReference Include="..\..\src\Extensions\Rocket.Surgery.Extensions.csproj" />
         <ProjectReference Include="..\..\src\Reactive.Extensions\Rocket.Surgery.Reactive.Extensions.csproj" />
+        <ProjectReference Include="..\..\src\DependencyInjection.Extensions\Rocket.Surgery.DependencyInjection.Extensions.csproj" />
         <PackageReference Include="Microsoft.Extensions.Configuration" />
     </ItemGroup>
 </Project>
