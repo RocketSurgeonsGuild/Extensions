@@ -14,7 +14,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -25,7 +25,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -36,7 +36,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -47,7 +47,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -65,7 +65,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -79,7 +79,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -93,7 +93,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -107,7 +107,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -128,7 +128,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -143,7 +143,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -158,7 +158,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -173,7 +173,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -195,7 +195,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -211,7 +211,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -227,7 +227,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -243,7 +243,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -266,7 +266,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -283,7 +283,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -300,7 +300,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -317,7 +317,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -341,7 +341,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -359,7 +359,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -377,7 +377,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();
@@ -395,7 +395,7 @@ namespace Rocket.Surgery.DependencyInjection
         {
             if (action is null)
             {
-                throw new System.ArgumentNullException(nameof(action));
+                throw new ArgumentNullException(nameof(action));
             }
 
             using var scope = _serviceScopeFactory.CreateScope();

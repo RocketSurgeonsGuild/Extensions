@@ -13,7 +13,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// </summary>
         /// <param name="serviceScopeFactory">The service scope factory</param>
         /// <typeparam name="T" />
-        public static IExecuteScoped<T> Scoped<T>(this IServiceScopeFactory serviceScopeFactory) =>
+        public static IExecuteScoped<T> WithScoped<T>(this IServiceScopeFactory serviceScopeFactory) =>
             new ExecuteScoped<T>(serviceScopeFactory);
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// </summary>
         /// <param name="serviceProvider">The service scope factory</param>
         /// <typeparam name="T" />
-        public static IExecuteScoped<T> Scoped<T>(this IServiceProvider serviceProvider) =>
+        public static IExecuteScoped<T> WithScoped<T>(this IServiceProvider serviceProvider) =>
             new ExecuteScoped<T>(serviceProvider.GetService<IServiceScopeFactory>());
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <param name="serviceScopeFactory">The service scope factory</param>
         /// <typeparam name="T1" />
         /// <typeparam name="T2" />
-        public static IExecuteScoped<T1, T2> Scoped<T1, T2>(this IServiceScopeFactory serviceScopeFactory) =>
+        public static IExecuteScoped<T1, T2> WithScoped<T1, T2>(this IServiceScopeFactory serviceScopeFactory) =>
             new ExecuteScoped<T1, T2>(serviceScopeFactory);
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <param name="serviceProvider">The service scope factory</param>
         /// <typeparam name="T1" />
         /// <typeparam name="T2" />
-        public static IExecuteScoped<T1, T2> Scoped<T1, T2>(this IServiceProvider serviceProvider) =>
+        public static IExecuteScoped<T1, T2> WithScoped<T1, T2>(this IServiceProvider serviceProvider) =>
             new ExecuteScoped<T1, T2>(serviceProvider.GetService<IServiceScopeFactory>());
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <typeparam name="T1" />
         /// <typeparam name="T2" />
         /// <typeparam name="T3" />
-        public static IExecuteScoped<T1, T2, T3> Scoped<T1, T2, T3>(this IServiceScopeFactory serviceScopeFactory) =>
+        public static IExecuteScoped<T1, T2, T3> WithScoped<T1, T2, T3>(this IServiceScopeFactory serviceScopeFactory) =>
             new ExecuteScoped<T1, T2, T3>(serviceScopeFactory);
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <typeparam name="T1" />
         /// <typeparam name="T2" />
         /// <typeparam name="T3" />
-        public static IExecuteScoped<T1, T2, T3> Scoped<T1, T2, T3>(this IServiceProvider serviceProvider) =>
+        public static IExecuteScoped<T1, T2, T3> WithScoped<T1, T2, T3>(this IServiceProvider serviceProvider) =>
             new ExecuteScoped<T1, T2, T3>(serviceProvider.GetService<IServiceScopeFactory>());
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <typeparam name="T2" />
         /// <typeparam name="T3" />
         /// <typeparam name="T4" />
-        public static IExecuteScoped<T1, T2, T3, T4> Scoped<T1, T2, T3, T4>(this IServiceScopeFactory serviceScopeFactory) =>
+        public static IExecuteScoped<T1, T2, T3, T4> WithScoped<T1, T2, T3, T4>(this IServiceScopeFactory serviceScopeFactory) =>
             new ExecuteScoped<T1, T2, T3, T4>(serviceScopeFactory);
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <typeparam name="T2" />
         /// <typeparam name="T3" />
         /// <typeparam name="T4" />
-        public static IExecuteScoped<T1, T2, T3, T4> Scoped<T1, T2, T3, T4>(this IServiceProvider serviceProvider) =>
+        public static IExecuteScoped<T1, T2, T3, T4> WithScoped<T1, T2, T3, T4>(this IServiceProvider serviceProvider) =>
             new ExecuteScoped<T1, T2, T3, T4>(serviceProvider.GetService<IServiceScopeFactory>());
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <typeparam name="T3" />
         /// <typeparam name="T4" />
         /// <typeparam name="T5" />
-        public static IExecuteScoped<T1, T2, T3, T4, T5> Scoped<T1, T2, T3, T4, T5>(this IServiceScopeFactory serviceScopeFactory) =>
+        public static IExecuteScoped<T1, T2, T3, T4, T5> WithScoped<T1, T2, T3, T4, T5>(this IServiceScopeFactory serviceScopeFactory) =>
             new ExecuteScoped<T1, T2, T3, T4, T5>(serviceScopeFactory);
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <typeparam name="T3" />
         /// <typeparam name="T4" />
         /// <typeparam name="T5" />
-        public static IExecuteScoped<T1, T2, T3, T4, T5> Scoped<T1, T2, T3, T4, T5>(this IServiceProvider serviceProvider) =>
+        public static IExecuteScoped<T1, T2, T3, T4, T5> WithScoped<T1, T2, T3, T4, T5>(this IServiceProvider serviceProvider) =>
             new ExecuteScoped<T1, T2, T3, T4, T5>(serviceProvider.GetService<IServiceScopeFactory>());
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <typeparam name="T4" />
         /// <typeparam name="T5" />
         /// <typeparam name="T6" />
-        public static IExecuteScoped<T1, T2, T3, T4, T5, T6> Scoped<T1, T2, T3, T4, T5, T6>(this IServiceScopeFactory serviceScopeFactory) =>
+        public static IExecuteScoped<T1, T2, T3, T4, T5, T6> WithScoped<T1, T2, T3, T4, T5, T6>(this IServiceScopeFactory serviceScopeFactory) =>
             new ExecuteScoped<T1, T2, T3, T4, T5, T6>(serviceScopeFactory);
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Rocket.Surgery.DependencyInjection
         /// <typeparam name="T4" />
         /// <typeparam name="T5" />
         /// <typeparam name="T6" />
-        public static IExecuteScoped<T1, T2, T3, T4, T5, T6> Scoped<T1, T2, T3, T4, T5, T6>(this IServiceProvider serviceProvider) =>
+        public static IExecuteScoped<T1, T2, T3, T4, T5, T6> WithScoped<T1, T2, T3, T4, T5, T6>(this IServiceProvider serviceProvider) =>
             new ExecuteScoped<T1, T2, T3, T4, T5, T6>(serviceProvider.GetService<IServiceScopeFactory>());
 
     }
