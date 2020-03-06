@@ -23,6 +23,25 @@ namespace Rocket.Surgery.Extensions.Tests.Observables
 
         public static string GetMarbles(this ITestableObserver<char> observer) => ToMarbles(observer.Messages);
 
+        public static IObserver<Unit> CreateUnitObserver(this IObserver<char> observer) => new UnitObserver(observer);
+
+        class UnitObserver : IObserver<Unit> {
+            private readonly IObserver<char> _observer;
+            private char _next;
+
+            public UnitObserver(IObserver<char> observer)
+            {
+                _observer = observer;
+                _next = 'a';
+            }
+
+            public void OnCompleted() => _observer.OnCompleted();
+
+            public void OnError(Exception error) => _observer.OnError(error);
+
+            public void OnNext(Unit value) => _observer.OnNext(_next++);
+        }
+
         private static IEnumerable<Recorded<Notification<char>>> FromMarbles(string marbles)
         {
             var time = 0L;

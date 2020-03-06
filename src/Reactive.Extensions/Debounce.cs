@@ -2,7 +2,7 @@
 
 namespace System.Reactive.Linq
 {
-    internal class Debounce<T> : ObserverBase<T>, IObserver<Unit>
+    internal class Debounce<T> : ObserverBase<T>, IObserver<Debounce<T>>
     {
         private readonly object _gate = new object();
         private T _value;
@@ -12,8 +12,8 @@ namespace System.Reactive.Linq
         private readonly IScheduler _scheduler;
         private IDisposable? _serialCancelable;
         private ulong _id;
-        readonly IObservable<Unit> _notifier;
-        readonly IObserver<T> _destination;
+        private readonly IObservable<Debounce<T>> _notifier;
+        private readonly IObserver<T> _destination;
 
         public Debounce(IObserver<T> destination, IObservable<Unit> notifier, bool leading,
                         bool trailing, IScheduler scheduler)
@@ -21,7 +21,7 @@ namespace System.Reactive.Linq
             _leading = leading;
             _trailing = trailing;
             _scheduler = scheduler;
-            _notifier = notifier;
+            _notifier = notifier.SubscribeOn(_scheduler).ObserveOn(_scheduler).Select(z => this);
             _destination = destination;
             _value = default!;
         }
@@ -99,17 +99,17 @@ namespace System.Reactive.Linq
             _value = default!;
         }
 
-        void IObserver<Unit>.OnCompleted()
+        void IObserver<Debounce<T>>.OnCompleted()
         {
             Done();
         }
 
-        void IObserver<Unit>.OnError(Exception error)
+        void IObserver<Debounce<T>>.OnError(Exception error)
         {
             OnError(error);
         }
 
-        void IObserver<Unit>.OnNext(Unit value)
+        void IObserver<Debounce<T>>.OnNext(Debounce<T> value)
         {
             Done();
         }

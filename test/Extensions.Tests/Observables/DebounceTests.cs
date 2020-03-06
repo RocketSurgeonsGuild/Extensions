@@ -33,6 +33,20 @@ namespace Rocket.Surgery.Extensions.Tests.Observables
         }
 
         [Fact]
+        public void Should_Debounce_With_Unit()
+        {
+            var input = " a-b-c-d-|";
+            var output = "a-b--c--d--|";
+            var observable = _scheduler.CreateHotObservable(input).ToSignal();
+
+            var receiver = _scheduler.CreateObserver<char>();
+            observable.Debounce(TimeSpan.FromTicks(15), leading: true, trailing: true, scheduler: _scheduler).Subscribe(receiver.CreateUnitObserver());
+            _scheduler.Start();
+
+            receiver.GetMarbles().Should().Be(output);
+        }
+
+        [Fact]
         public void Should_Debounce_On_Trailing_Edge()
         {
             var input = " a-b-c-d-|";

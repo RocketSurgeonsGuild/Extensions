@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using FluentAssertions;
@@ -28,6 +29,20 @@ namespace Rocket.Surgery.Extensions.Tests.Observables
 
             var receiver = _scheduler.CreateObserver<char>();
             observable.RealThrottle(TimeSpan.FromTicks(20), scheduler: _scheduler).Subscribe(receiver);
+            _scheduler.Start();
+
+            receiver.GetMarbles().Should().Be(output);
+        }
+
+        [Fact]
+        public void Should_Throttle_With_Unit()
+        {
+            var input = " a-b-c-d-|";
+            var output = "a-b--c--d-|";
+            var observable = _scheduler.CreateHotObservable(input).ToSignal();
+
+            var receiver = _scheduler.CreateObserver<char>();
+            observable.RealThrottle(TimeSpan.FromTicks(5), leading: false, trailing: true, scheduler: _scheduler).Subscribe(receiver.CreateUnitObserver());
             _scheduler.Start();
 
             receiver.GetMarbles().Should().Be(output);
