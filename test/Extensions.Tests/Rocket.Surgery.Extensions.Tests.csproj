@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;netcoreapp2.1</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\Binding.Extensions\Rocket.Surgery.Extensions.Binding.csproj" />
@@ -10,5 +10,6 @@
         <ProjectReference Include="..\..\src\Reactive.Extensions\Rocket.Surgery.Reactive.Extensions.csproj" />
         <ProjectReference Include="..\..\src\DependencyInjection.Extensions\Rocket.Surgery.DependencyInjection.Extensions.csproj" />
         <PackageReference Include="Microsoft.Extensions.Configuration" />
+        <PackageReference Include="Microsoft.Reactive.Testing" />
     </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reactive.Concurrency;
 using System.Threading.Tasks;
 using System.Reactive.Observable.Aliases;
 using System.Threading;
@@ -23,7 +24,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, IObservable<TResult>> selector) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IObservable<TResult>> selector
+        ) => source
            .Map(selector)
            .Merge();
 
@@ -38,7 +42,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, IObservable<TResult>> selector, int maxConcurrent) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IObservable<TResult>> selector,
+            int maxConcurrent
+        ) => source
            .Map(selector)
            .Merge(maxConcurrent);
 
@@ -51,7 +59,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, IObservable<TResult>> selector) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IObservable<TResult>> selector
+        ) => source
            .Map(selector)
            .Merge();
 
@@ -66,7 +77,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, IObservable<TResult>> selector, int maxConcurrent) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IObservable<TResult>> selector,
+            int maxConcurrent
+        ) => source
            .Map(selector)
            .Merge(maxConcurrent);
 
@@ -79,8 +94,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, Task<TResult>> selector) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, Task<TResult>> selector
+        ) => source
            .Map((outer) => Observable.FromAsync(() => selector(outer)))
            .Merge();
 
@@ -95,8 +112,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, Task<TResult>> selector, int maxConcurrent) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, Task<TResult>> selector,
+            int maxConcurrent
+        ) => source
            .Map((outer) => Observable.FromAsync(() => selector(outer)))
            .Merge(maxConcurrent);
 
@@ -109,8 +129,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TResult>> selector) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, Task<TResult>> selector
+        ) => source
            .Map((outer, index) => Observable.FromAsync(() => selector(outer, index)))
            .Merge();
 
@@ -125,8 +147,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TResult>> selector, int maxConcurrent) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, Task<TResult>> selector,
+            int maxConcurrent
+        ) => source
            .Map((outer, index) => Observable.FromAsync(() => selector(outer, index)))
            .Merge(maxConcurrent);
 
@@ -139,8 +164,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TResult>> selector) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TResult>> selector
+        ) => source
            .Map((outer) => Observable.FromAsync(ct => selector(outer, ct)))
            .Merge();
 
@@ -155,8 +182,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TResult>> selector, int maxConcurrent) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TResult>> selector,
+            int maxConcurrent
+        ) => source
            .Map((outer) => Observable.FromAsync(ct => selector(outer, ct)))
            .Merge(maxConcurrent);
 
@@ -169,8 +199,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TResult>> selector) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, CancellationToken, Task<TResult>> selector
+        ) => source
            .Map((outer, index) => Observable.FromAsync(ct => selector(outer, index, ct)))
            .Merge();
 
@@ -185,8 +217,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TResult>> selector, int maxConcurrent) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, CancellationToken, Task<TResult>> selector,
+            int maxConcurrent
+        ) => source
            .Map((outer, index) => Observable.FromAsync(ct => selector(outer, index, ct)))
            .Merge(maxConcurrent);
 
@@ -201,12 +236,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, IObservable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return collectionSelector(outer)
-                   .Map((inner) => resultSelector(outer, inner));
-            }).Merge();
+        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IObservable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return collectionSelector(outer)
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            ).Merge();
 
         /// <summary>
         /// Projects each element of an observable sequence to an observable sequence, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
@@ -221,12 +262,19 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, IObservable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector, int maxConcurrent) => source
-           .Map((outer) =>
-            {
-                return collectionSelector(outer)
-                   .Map((inner) => resultSelector(outer, inner));
-            }).Merge(maxConcurrent);
+        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IObservable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector,
+            int maxConcurrent
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return collectionSelector(outer)
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            ).Merge(maxConcurrent);
 
         /// <summary>
         /// Projects each element of an observable sequence to an observable sequence by incorporating the element's index, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
@@ -239,12 +287,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element and the fourth parameter represents the index of the intermediate element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, int, IObservable<TCollection>> collectionSelector, Func<TSource, int, TCollection, int, TResult> resultSelector) => source
-           .Map((outer, outerIndex) =>
-            {
-                return collectionSelector(outer, outerIndex)
-                   .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
-            }).Merge();
+        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IObservable<TCollection>> collectionSelector,
+            Func<TSource, int, TCollection, int, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, outerIndex) =>
+                {
+                    return collectionSelector(outer, outerIndex)
+                       .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
+                }
+            ).Merge();
 
         /// <summary>
         /// Projects each element of an observable sequence to an observable sequence by incorporating the element's index, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
@@ -259,12 +313,19 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, int, IObservable<TCollection>> collectionSelector, Func<TSource, int, TCollection, int, TResult> resultSelector, int maxConcurrent) => source
-           .Map((outer, outerIndex) =>
-            {
-                return collectionSelector(outer, outerIndex)
-                   .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
-            }).Merge(maxConcurrent);
+        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IObservable<TCollection>> collectionSelector,
+            Func<TSource, int, TCollection, int, TResult> resultSelector,
+            int maxConcurrent
+        ) => source
+           .Map(
+                (outer, outerIndex) =>
+                {
+                    return collectionSelector(outer, outerIndex)
+                       .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
+                }
+            ).Merge(maxConcurrent);
 
         /// <summary>
         /// Projects each element of an observable sequence to a task, invokes the result selector for the source element and the task result, and merges the results into one observable sequence.
@@ -277,13 +338,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, Task<TTaskResult>> taskSelector, Func<TSource, TTaskResult, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return Observable.FromAsync(() => taskSelector(outer))
-                   .Map((inner) => resultSelector(outer, inner));
-            })
+        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, Task<TTaskResult>> taskSelector,
+            Func<TSource, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return Observable.FromAsync(() => taskSelector(outer))
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            )
            .Merge();
 
         /// <summary>
@@ -299,13 +365,19 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, Task<TTaskResult>> taskSelector, Func<TSource, TTaskResult, TResult> resultSelector, int maxConcurrent) => source
-           .Map((outer) =>
-            {
-                return Observable.FromAsync(() => taskSelector(outer))
-                   .Map((inner) => resultSelector(outer, inner));
-            })
+        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, Task<TTaskResult>> taskSelector,
+            Func<TSource, TTaskResult, TResult> resultSelector,
+            int maxConcurrent
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return Observable.FromAsync(() => taskSelector(outer))
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            )
            .Merge(maxConcurrent);
 
         /// <summary>
@@ -319,12 +391,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TTaskResult>> taskSelector, Func<TSource, int, TTaskResult, TResult> resultSelector) => source
-           .Map((outer, index) =>
-            {
-                return Observable.FromAsync(() => taskSelector(outer, index))
-                   .Map((inner) => resultSelector(outer, index, inner));
-            })
+        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, Task<TTaskResult>> taskSelector,
+            Func<TSource, int, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, index) =>
+                {
+                    return Observable.FromAsync(() => taskSelector(outer, index))
+                       .Map((inner) => resultSelector(outer, index, inner));
+                }
+            )
            .Merge();
 
         /// <summary>
@@ -340,12 +418,19 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TTaskResult>> taskSelector, Func<TSource, int, TTaskResult, TResult> resultSelector, int maxConcurrent) => source
-           .Map((outer, index) =>
-            {
-                return Observable.FromAsync(() => taskSelector(outer, index))
-                   .Map((inner) => resultSelector(outer, index, inner));
-            })
+        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, Task<TTaskResult>> taskSelector,
+            Func<TSource, int, TTaskResult, TResult> resultSelector,
+            int maxConcurrent
+        ) => source
+           .Map(
+                (outer, index) =>
+                {
+                    return Observable.FromAsync(() => taskSelector(outer, index))
+                       .Map((inner) => resultSelector(outer, index, inner));
+                }
+            )
            .Merge(maxConcurrent);
 
         /// <summary>
@@ -359,12 +444,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TTaskResult>> taskSelector, Func<TSource, TTaskResult, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return Observable.FromAsync(ct => taskSelector(outer, ct))
-                   .Map((inner) => resultSelector(outer, inner));
-            })
+        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TTaskResult>> taskSelector,
+            Func<TSource, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return Observable.FromAsync(ct => taskSelector(outer, ct))
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            )
            .Merge();
 
         /// <summary>
@@ -380,13 +471,19 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TTaskResult>> taskSelector, Func<TSource, TTaskResult, TResult> resultSelector, int maxConcurrent) => source
-           .Map((outer) =>
-            {
-                return Observable.FromAsync(ct => taskSelector(outer, ct))
-                   .Map((inner) => resultSelector(outer, inner));
-            })
+        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TTaskResult>> taskSelector,
+            Func<TSource, TTaskResult, TResult> resultSelector,
+            int maxConcurrent
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return Observable.FromAsync(ct => taskSelector(outer, ct))
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            )
            .Merge(maxConcurrent);
 
         /// <summary>
@@ -400,13 +497,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TTaskResult>> taskSelector, Func<TSource, int, TTaskResult, TResult> resultSelector) => source
-           .Map((outer, index) =>
-            {
-                return Observable.FromAsync(ct => taskSelector(outer, index, ct))
-                   .Map((inner) => resultSelector(outer, index, inner));
-            })
+        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, CancellationToken, Task<TTaskResult>> taskSelector,
+            Func<TSource, int, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, index) =>
+                {
+                    return Observable.FromAsync(ct => taskSelector(outer, index, ct))
+                       .Map((inner) => resultSelector(outer, index, inner));
+                }
+            )
            .Merge();
 
         /// <summary>
@@ -422,13 +524,19 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TTaskResult>> taskSelector, Func<TSource, int, TTaskResult, TResult> resultSelector, int maxConcurrent) => source
-           .Map((outer, index) =>
-            {
-                return Observable.FromAsync(ct => taskSelector(outer, index, ct))
-                   .Map((inner) => resultSelector(outer, index, inner));
-            })
+        public static IObservable<TResult> MergeMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, CancellationToken, Task<TTaskResult>> taskSelector,
+            Func<TSource, int, TTaskResult, TResult> resultSelector,
+            int maxConcurrent
+        ) => source
+           .Map(
+                (outer, index) =>
+                {
+                    return Observable.FromAsync(ct => taskSelector(outer, index, ct))
+                       .Map((inner) => resultSelector(outer, index, inner));
+                }
+            )
            .Merge(maxConcurrent);
 
         /// <summary>
@@ -440,8 +548,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, IEnumerable<TResult>> selector) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IEnumerable<TResult>> selector
+        ) => source
            .Map((outer) => selector(outer).ToObservable())
            .Merge();
 
@@ -456,8 +566,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, IEnumerable<TResult>> selector, int maxConcurrent) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IEnumerable<TResult>> selector,
+            int maxConcurrent
+        ) => source
            .Map((outer) => selector(outer).ToObservable())
            .Merge(maxConcurrent);
 
@@ -470,8 +583,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IEnumerable<TResult>> selector
+        ) => source
            .Map((outer, index) => selector(outer, index).ToObservable())
            .Merge();
 
@@ -486,8 +601,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector, int maxConcurrent) => source
+        public static IObservable<TResult> MergeMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IEnumerable<TResult>> selector,
+            int maxConcurrent
+        ) => source
            .Map((outer, index) => selector(outer, index).ToObservable())
            .Merge(maxConcurrent);
 
@@ -502,14 +620,19 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return collectionSelector(outer)
-                   .ToObservable()
-                   .Map((inner) => resultSelector(outer, inner));
-            }).Merge();
+        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return collectionSelector(outer)
+                       .ToObservable()
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            ).Merge();
 
         /// <summary>
         /// Projects each element of an observable sequence to an enumerable sequence, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
@@ -524,14 +647,20 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxConcurrent" /> is less than or equal to zero.</exception>
-        
-        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector, int maxConcurrent) => source
-           .Map((outer) =>
-            {
-                return collectionSelector(outer)
-                   .ToObservable()
-                   .Map((inner) => resultSelector(outer, inner));
-            }).Merge(maxConcurrent);
+        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector,
+            int maxConcurrent
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return collectionSelector(outer)
+                       .ToObservable()
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            ).Merge(maxConcurrent);
 
         /// <summary>
         /// Merges elements from all inner observable sequences into a single observable sequence, limiting the number of concurrent subscriptions to inner sequences.
@@ -544,13 +673,19 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element and the fourth parameter represents the index of the intermediate element.</param>
         /// <returns>The observable sequence that merges the elements of the inner sequences.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> is null.</exception>
-        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, int, TCollection, int, TResult> resultSelector) => source
-           .Map((outer, outerIndex) =>
-            {
-                return collectionSelector(outer, outerIndex)
-                   .ToObservable()
-                   .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
-            }).Merge();
+        public static IObservable<TResult> MergeMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, int, TCollection, int, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, outerIndex) =>
+                {
+                    return collectionSelector(outer, outerIndex)
+                       .ToObservable()
+                       .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
+                }
+            ).Merge();
 
         /// <summary>
         /// Projects each element of an observable sequence to an observable sequence and merges the resulting observable sequences into one observable sequence.
@@ -561,7 +696,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, IObservable<TResult>> selector) => source
+        public static IObservable<TResult> ConcatMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IObservable<TResult>> selector
+        ) => source
            .Map(selector)
            .Concat();
 
@@ -574,7 +712,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, IObservable<TResult>> selector) => source
+        public static IObservable<TResult> ConcatMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IObservable<TResult>> selector
+        ) => source
            .Map(selector)
            .Concat();
 
@@ -587,8 +728,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, Task<TResult>> selector) => source
+        public static IObservable<TResult> ConcatMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, Task<TResult>> selector
+        ) => source
            .Map((outer) => Observable.FromAsync(() => selector(outer)))
            .Concat();
 
@@ -601,8 +744,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TResult>> selector) => source
+        public static IObservable<TResult> ConcatMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, Task<TResult>> selector
+        ) => source
            .Map((outer, index) => Observable.FromAsync(() => selector(outer, index)))
            .Concat();
 
@@ -615,8 +760,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TResult>> selector) => source
+        public static IObservable<TResult> ConcatMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TResult>> selector
+        ) => source
            .Map((outer) => Observable.FromAsync(ct => selector(outer, ct)))
            .Concat();
 
@@ -629,8 +776,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TResult>> selector) => source
+        public static IObservable<TResult> ConcatMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, CancellationToken, Task<TResult>> selector
+        ) => source
            .Map((outer, index) => Observable.FromAsync(ct => selector(outer, index, ct)))
            .Concat();
 
@@ -645,12 +794,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IObservable<TResult> ConcatMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, IObservable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return collectionSelector(outer)
-                   .Map((inner) => resultSelector(outer, inner));
-            }).Concat();
+        public static IObservable<TResult> ConcatMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IObservable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return collectionSelector(outer)
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            ).Concat();
 
         /// <summary>
         /// Projects each element of an observable sequence to an observable sequence by incorporating the element's index, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
@@ -663,12 +818,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element and the fourth parameter represents the index of the intermediate element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IObservable<TResult> ConcatMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, int, IObservable<TCollection>> collectionSelector, Func<TSource, int, TCollection, int, TResult> resultSelector) => source
-           .Map((outer, outerIndex) =>
-            {
-                return collectionSelector(outer, outerIndex)
-                   .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
-            }).Concat();
+        public static IObservable<TResult> ConcatMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IObservable<TCollection>> collectionSelector,
+            Func<TSource, int, TCollection, int, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, outerIndex) =>
+                {
+                    return collectionSelector(outer, outerIndex)
+                       .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
+                }
+            ).Concat();
 
         /// <summary>
         /// Projects each element of an observable sequence to a task, invokes the result selector for the source element and the task result, and merges the results into one observable sequence.
@@ -681,13 +842,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, Task<TTaskResult>> taskSelector, Func<TSource, TTaskResult, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return Observable.FromAsync(() => taskSelector(outer))
-                   .Map((inner) => resultSelector(outer, inner));
-            })
+        public static IObservable<TResult> ConcatMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, Task<TTaskResult>> taskSelector,
+            Func<TSource, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return Observable.FromAsync(() => taskSelector(outer))
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            )
            .Concat();
 
         /// <summary>
@@ -701,13 +867,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TTaskResult>> taskSelector, Func<TSource, int, TTaskResult, TResult> resultSelector) => source
-           .Map((outer, index) =>
-            {
-                return Observable.FromAsync(() => taskSelector(outer, index))
-                   .Map((inner) => resultSelector(outer, index, inner));
-            })
+        public static IObservable<TResult> ConcatMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, Task<TTaskResult>> taskSelector,
+            Func<TSource, int, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, index) =>
+                {
+                    return Observable.FromAsync(() => taskSelector(outer, index))
+                       .Map((inner) => resultSelector(outer, index, inner));
+                }
+            )
            .Concat();
 
         /// <summary>
@@ -721,13 +892,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TTaskResult>> taskSelector, Func<TSource, TTaskResult, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return Observable.FromAsync(ct => taskSelector(outer, ct))
-                   .Map((inner) => resultSelector(outer, inner));
-            })
+        public static IObservable<TResult> ConcatMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TTaskResult>> taskSelector,
+            Func<TSource, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return Observable.FromAsync(ct => taskSelector(outer, ct))
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            )
            .Concat();
 
         /// <summary>
@@ -741,13 +917,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TTaskResult>> taskSelector, Func<TSource, int, TTaskResult, TResult> resultSelector) => source
-           .Map((outer, index) =>
-            {
-                return Observable.FromAsync(ct => taskSelector(outer, index, ct))
-                   .Map((inner) => resultSelector(outer, index, inner));
-            })
+        public static IObservable<TResult> ConcatMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, CancellationToken, Task<TTaskResult>> taskSelector,
+            Func<TSource, int, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, index) =>
+                {
+                    return Observable.FromAsync(ct => taskSelector(outer, index, ct))
+                       .Map((inner) => resultSelector(outer, index, inner));
+                }
+            )
            .Concat();
 
         /// <summary>
@@ -759,8 +940,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, IEnumerable<TResult>> selector) => source
+        public static IObservable<TResult> ConcatMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IEnumerable<TResult>> selector
+        ) => source
            .Map((outer) => selector(outer).ToObservable())
            .Concat();
 
@@ -773,8 +956,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector) => source
+        public static IObservable<TResult> ConcatMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IEnumerable<TResult>> selector
+        ) => source
            .Map((outer, index) => selector(outer, index).ToObservable())
            .Concat();
 
@@ -789,14 +974,19 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> ConcatMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return collectionSelector(outer)
-                   .ToObservable()
-                   .Map((inner) => resultSelector(outer, inner));
-            }).Concat();
+        public static IObservable<TResult> ConcatMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return collectionSelector(outer)
+                       .ToObservable()
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            ).Concat();
 
         /// <summary>
         /// Merges elements from all inner observable sequences into a single observable sequence, limiting the number of concurrent subscriptions to inner sequences.
@@ -809,13 +999,19 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element and the fourth parameter represents the index of the intermediate element.</param>
         /// <returns>The observable sequence that merges the elements of the inner sequences.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> is null.</exception>
-        public static IObservable<TResult> ConcatMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, int, TCollection, int, TResult> resultSelector) => source
-           .Map((outer, outerIndex) =>
-            {
-                return collectionSelector(outer, outerIndex)
-                   .ToObservable()
-                   .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
-            }).Concat();
+        public static IObservable<TResult> ConcatMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, int, TCollection, int, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, outerIndex) =>
+                {
+                    return collectionSelector(outer, outerIndex)
+                       .ToObservable()
+                       .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
+                }
+            ).Concat();
 
         /// <summary>
         /// Projects each element of an observable sequence to an observable sequence and merges the resulting observable sequences into one observable sequence.
@@ -826,7 +1022,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, IObservable<TResult>> selector) => source
+        public static IObservable<TResult> SwitchMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IObservable<TResult>> selector
+        ) => source
            .Map(selector)
            .Switch();
 
@@ -839,7 +1038,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, IObservable<TResult>> selector) => source
+        public static IObservable<TResult> SwitchMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IObservable<TResult>> selector
+        ) => source
            .Map(selector)
            .Switch();
 
@@ -852,8 +1054,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, Task<TResult>> selector) => source
+        public static IObservable<TResult> SwitchMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, Task<TResult>> selector
+        ) => source
            .Map((outer) => Observable.FromAsync(() => selector(outer)))
            .Switch();
 
@@ -866,8 +1070,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TResult>> selector) => source
+        public static IObservable<TResult> SwitchMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, Task<TResult>> selector
+        ) => source
            .Map((outer, index) => Observable.FromAsync(() => selector(outer, index)))
            .Switch();
 
@@ -880,8 +1086,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TResult>> selector) => source
+        public static IObservable<TResult> SwitchMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TResult>> selector
+        ) => source
            .Map((outer) => Observable.FromAsync(ct => selector(outer, ct)))
            .Switch();
 
@@ -894,8 +1102,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of the tasks executed for each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TResult>> selector) => source
+        public static IObservable<TResult> SwitchMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, CancellationToken, Task<TResult>> selector
+        ) => source
            .Map((outer, index) => Observable.FromAsync(ct => selector(outer, index, ct)))
            .Switch();
 
@@ -910,12 +1120,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IObservable<TResult> SwitchMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, IObservable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return collectionSelector(outer)
-                   .Map((inner) => resultSelector(outer, inner));
-            }).Switch();
+        public static IObservable<TResult> SwitchMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IObservable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return collectionSelector(outer)
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            ).Switch();
 
         /// <summary>
         /// Projects each element of an observable sequence to an observable sequence by incorporating the element's index, invokes the result selector for the source element and each of the corresponding inner sequence's elements, and merges the results into one observable sequence.
@@ -928,12 +1144,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element and the fourth parameter represents the index of the intermediate element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        public static IObservable<TResult> SwitchMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, int, IObservable<TCollection>> collectionSelector, Func<TSource, int, TCollection, int, TResult> resultSelector) => source
-           .Map((outer, outerIndex) =>
-            {
-                return collectionSelector(outer, outerIndex)
-                   .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
-            }).Switch();
+        public static IObservable<TResult> SwitchMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IObservable<TCollection>> collectionSelector,
+            Func<TSource, int, TCollection, int, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, outerIndex) =>
+                {
+                    return collectionSelector(outer, outerIndex)
+                       .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
+                }
+            ).Switch();
 
         /// <summary>
         /// Projects each element of an observable sequence to a task, invokes the result selector for the source element and the task result, and merges the results into one observable sequence.
@@ -946,13 +1168,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, Task<TTaskResult>> taskSelector, Func<TSource, TTaskResult, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return Observable.FromAsync(() => taskSelector(outer))
-                   .Map((inner) => resultSelector(outer, inner));
-            })
+        public static IObservable<TResult> SwitchMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, Task<TTaskResult>> taskSelector,
+            Func<TSource, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return Observable.FromAsync(() => taskSelector(outer))
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            )
            .Switch();
 
         /// <summary>
@@ -966,13 +1193,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, int, Task<TTaskResult>> taskSelector, Func<TSource, int, TTaskResult, TResult> resultSelector) => source
-           .Map((outer, index) =>
-            {
-                return Observable.FromAsync(() => taskSelector(outer, index))
-                   .Map((inner) => resultSelector(outer, index, inner));
-            })
+        public static IObservable<TResult> SwitchMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, Task<TTaskResult>> taskSelector,
+            Func<TSource, int, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, index) =>
+                {
+                    return Observable.FromAsync(() => taskSelector(outer, index))
+                       .Map((inner) => resultSelector(outer, index, inner));
+                }
+            )
            .Switch();
 
         /// <summary>
@@ -986,13 +1218,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, CancellationToken, Task<TTaskResult>> taskSelector, Func<TSource, TTaskResult, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return Observable.FromAsync(ct => taskSelector(outer, ct))
-                   .Map((inner) => resultSelector(outer, inner));
-            })
+        public static IObservable<TResult> SwitchMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, CancellationToken, Task<TTaskResult>> taskSelector,
+            Func<TSource, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return Observable.FromAsync(ct => taskSelector(outer, ct))
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            )
            .Switch();
 
         /// <summary>
@@ -1006,13 +1243,18 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of obtaining a task for each element of the input sequence and then mapping the task's result and its corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="taskSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TTaskResult, TResult>(this IObservable<TSource> source, Func<TSource, int, CancellationToken, Task<TTaskResult>> taskSelector, Func<TSource, int, TTaskResult, TResult> resultSelector) => source
-           .Map((outer, index) =>
-            {
-                return Observable.FromAsync(ct => taskSelector(outer, index, ct))
-                   .Map((inner) => resultSelector(outer, index, inner));
-            })
+        public static IObservable<TResult> SwitchMap<TSource, TTaskResult, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, CancellationToken, Task<TTaskResult>> taskSelector,
+            Func<TSource, int, TTaskResult, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, index) =>
+                {
+                    return Observable.FromAsync(ct => taskSelector(outer, index, ct))
+                       .Map((inner) => resultSelector(outer, index, inner));
+                }
+            )
            .Switch();
 
         /// <summary>
@@ -1024,8 +1266,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, IEnumerable<TResult>> selector) => source
+        public static IObservable<TResult> SwitchMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IEnumerable<TResult>> selector
+        ) => source
            .Map((outer) => selector(outer).ToObservable())
            .Switch();
 
@@ -1038,8 +1282,10 @@ namespace System.Reactive.Linq
         /// <param name="selector">A transform function to apply to each element; the second parameter of the function represents the index of the source element.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TResult>(this IObservable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector) => source
+        public static IObservable<TResult> SwitchMap<TSource, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IEnumerable<TResult>> selector
+        ) => source
            .Map((outer, index) => selector(outer, index).ToObservable())
            .Switch();
 
@@ -1054,14 +1300,19 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
         /// <returns>An observable sequence whose elements are the result of invoking the one-to-many transform function collectionSelector on each element of the input sequence and then mapping each of those sequence elements and their corresponding source element to a result element.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-        
-        public static IObservable<TResult> SwitchMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector) => source
-           .Map((outer) =>
-            {
-                return collectionSelector(outer)
-                   .ToObservable()
-                   .Map((inner) => resultSelector(outer, inner));
-            }).Switch();
+        public static IObservable<TResult> SwitchMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer) =>
+                {
+                    return collectionSelector(outer)
+                       .ToObservable()
+                       .Map((inner) => resultSelector(outer, inner));
+                }
+            ).Switch();
 
         /// <summary>
         /// Merges elements from all inner observable sequences into a single observable sequence, limiting the number of concurrent subscriptions to inner sequences.
@@ -1074,13 +1325,19 @@ namespace System.Reactive.Linq
         /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence; the second parameter of the function represents the index of the source element and the fourth parameter represents the index of the intermediate element.</param>
         /// <returns>The observable sequence that merges the elements of the inner sequences.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> is null.</exception>
-        public static IObservable<TResult> SwitchMap<TSource, TCollection, TResult>(this IObservable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, int, TCollection, int, TResult> resultSelector) => source
-           .Map((outer, outerIndex) =>
-            {
-                return collectionSelector(outer, outerIndex)
-                   .ToObservable()
-                   .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
-            }).Switch();
+        public static IObservable<TResult> SwitchMap<TSource, TCollection, TResult>(
+            this IObservable<TSource> source,
+            Func<TSource, int, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, int, TCollection, int, TResult> resultSelector
+        ) => source
+           .Map(
+                (outer, outerIndex) =>
+                {
+                    return collectionSelector(outer, outerIndex)
+                       .ToObservable()
+                       .Map((inner, innerIndex) => resultSelector(outer, outerIndex, inner, innerIndex));
+                }
+            ).Switch();
 
         /// <summary>
         /// Applies an accumulator function over an observable sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value.
@@ -1094,7 +1351,11 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IEnumerable in order to retain asynchronous behavior.</remarks>
-        public static IObservable<TAccumulate> Reduce<TSource, TAccumulate>(this IObservable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator) => source.Aggregate(seed, accumulator);
+        public static IObservable<TAccumulate> Reduce<TSource, TAccumulate>(
+            this IObservable<TSource> source,
+            TAccumulate seed,
+            Func<TAccumulate, TSource, TAccumulate> accumulator
+        ) => source.Aggregate(seed, accumulator);
 
         /// <summary>
         /// Applies an accumulator function over an observable sequence, returning the result of the aggregation as a single element in the result sequence. The specified seed value is used as the initial accumulator value,
@@ -1110,7 +1371,12 @@ namespace System.Reactive.Linq
         /// <returns>An observable sequence containing a single element with the final accumulator value.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> or <paramref name="resultSelector" /> is null.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IEnumerable in order to retain asynchronous behavior.</remarks>
-        public static IObservable<TResult> Reduce<TSource, TAccumulate, TResult>(this IObservable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector) => source.Aggregate(seed, accumulator, resultSelector);
+        public static IObservable<TResult> Reduce<TSource, TAccumulate, TResult>(
+            this IObservable<TSource> source,
+            TAccumulate seed,
+            Func<TAccumulate, TSource, TAccumulate> accumulator,
+            Func<TAccumulate, TResult> resultSelector
+        ) => source.Aggregate(seed, accumulator, resultSelector);
 
         /// <summary>
         /// Applies an accumulator function over an observable sequence, returning the result of the aggregation as a single element in the result sequence.
@@ -1123,7 +1389,10 @@ namespace System.Reactive.Linq
         /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
         /// <exception cref="InvalidOperationException">(Asynchronous) The source sequence is empty.</exception>
         /// <remarks>The return type of this operator differs from the corresponding operator on IEnumerable in order to retain asynchronous behavior.</remarks>
-        public static IObservable<TSource> Reduce<TSource>(this IObservable<TSource> source, Func<TSource, TSource, TSource> accumulator) => source.Aggregate(accumulator);
+        public static IObservable<TSource> Reduce<TSource>(
+            this IObservable<TSource> source,
+            Func<TSource, TSource, TSource> accumulator
+        ) => source.Aggregate(accumulator);
 
         /// <summary>
         /// Returns a <see cref="Unit" /> at the completion of an observable sequence.
@@ -1140,7 +1409,7 @@ namespace System.Reactive.Linq
             }
 
             return source
-                .Select(_ => Unit.Default);
+               .Select(_ => Unit.Default);
         }
 
         /// <summary>
@@ -1149,6 +1418,147 @@ namespace System.Reactive.Linq
         /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
         /// <param name="source">The source observable sequence</param>
         /// <returns>IObservable{TSource}.</returns>
-        public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> source) => source.Where(x => x != null);
+        public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> source)
+            => source.Where(x => x != null);
+
+        /// <summary>
+        /// Applies a throttle that will notify on either the leading and/or trailing edge.
+        /// </summary>
+        /// <remarks>
+        /// This will always emit at least once within the given window / notifier
+        /// </remarks>
+        /// <param name="observable"></param>
+        /// <param name="dueTime"></param>
+        /// <param name="leading"></param>
+        /// <param name="trailing"></param>
+        /// <param name="scheduler"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IObservable<T> RealThrottle<T>(
+            this IObservable<T> observable,
+            TimeSpan dueTime,
+            bool leading = true,
+            bool trailing = false,
+            IScheduler? scheduler = null
+        )
+        {
+            scheduler ??= DefaultScheduler.Instance;
+            return Observable.Create<T>(
+                observer => observable.Subscribe(
+                    new Throttle<T>(
+                        observer,
+                        Observable.Timer(dueTime, scheduler).ToSignal(),
+                        leading,
+                        trailing,
+                        scheduler
+                    )
+                )
+            );
+        }
+
+        /// <summary>
+        /// Applies a throttle that will notify on either the leading and/or trailing edge.
+        /// </summary>
+        /// <remarks>
+        /// This will always emit at least once within the given window / notifier
+        /// </remarks>
+        /// <param name="observable"></param>
+        /// <param name="notifier"></param>
+        /// <param name="leading"></param>
+        /// <param name="trailing"></param>
+        /// <param name="scheduler"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IObservable<T> RealThrottle<T>(
+            this IObservable<T> observable,
+            IObservable<Unit> notifier,
+            bool leading = true,
+            bool trailing = false,
+            IScheduler? scheduler = null
+        )
+        {
+            scheduler ??= DefaultScheduler.Instance;
+            return Observable.Create<T>(
+                observer => observable.Subscribe(
+                    new Throttle<T>(
+                        observer,
+                        notifier,
+                        leading,
+                        trailing,
+                        scheduler
+                    )
+                )
+            );
+        }
+
+        /// <summary>
+        /// Applies a debounce that will notify on either the leading and/or trailing edge.
+        /// </summary>
+        /// <remarks>
+        /// This will only emit when there have been no new events within the given window / notifier
+        /// </remarks>
+        /// <param name="observable"></param>
+        /// <param name="dueTime"></param>
+        /// <param name="leading"></param>
+        /// <param name="trailing"></param>
+        /// <param name="scheduler"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IObservable<T> Debounce<T>(
+            this IObservable<T> observable,
+            TimeSpan dueTime,
+            bool leading = false,
+            bool trailing = true,
+            IScheduler? scheduler = null
+        )
+        {
+            scheduler ??= DefaultScheduler.Instance;
+            return Observable.Create<T>(
+                observer => observable.Subscribe(
+                    new Debounce<T>(
+                        observer,
+                        Observable.Timer(dueTime, scheduler).ToSignal(),
+                        leading,
+                        trailing,
+                        scheduler
+                    )
+                )
+            );
+        }
+
+        /// <summary>
+        /// Applies a debounce that will notify on either the leading and/or trailing edge.
+        /// </summary>
+        /// <remarks>
+        /// This will only emit when there have been no new events within the given window / notifier
+        /// </remarks>
+        /// <param name="observable"></param>
+        /// <param name="notifier"></param>
+        /// <param name="leading"></param>
+        /// <param name="trailing"></param>
+        /// <param name="scheduler"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IObservable<T> Debounce<T>(
+            this IObservable<T> observable,
+            IObservable<Unit> notifier,
+            bool leading = true,
+            bool trailing = false,
+            IScheduler? scheduler = null
+        )
+        {
+            scheduler ??= DefaultScheduler.Instance;
+            return Observable.Create<T>(
+                observer => observable.Subscribe(
+                    new Debounce<T>(
+                        observer,
+                        notifier,
+                        leading,
+                        trailing,
+                        scheduler
+                    )
+                )
+            );
+        }
     }
 }
