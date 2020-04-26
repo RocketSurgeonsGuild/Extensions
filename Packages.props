@@ -14,10 +14,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="GitVersion.Tool" Version="5.2.4" />
-    <PackageReference Update="JetBrains.ReSharper.CommandLineTools" Version="2019.3.4" />
-    <PackageReference Update="Nuke.Common" Version="0.24.7" />
-    <PackageReference Update="ReportGenerator" Version="4.5.2" />
-    <PackageReference Update="Rocket.Surgery.Nuke.DotNetCore" Version="0.13.4" />
+    <PackageReference Update="JetBrains.ReSharper.CommandLineTools" Version="2020.1.0" />
+    <PackageReference Update="Nuke.Common" Version="0.24.9" />
+    <PackageReference Update="ReportGenerator" Version="4.5.6" />
+    <PackageReference Update="Rocket.Surgery.Nuke.DotNetCore" Version="0.13.5" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="3.1.0" />
@@ -25,23 +25,23 @@
     <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
     <PackageReference Update="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Update="System.Collections.Immutable" Version="1.7.0" />
-    <PackageReference Update="System.Interactive" Version="4.0.0" />
-    <PackageReference Update="System.Interactive.Async" Version="4.0.0" />
-    <PackageReference Update="System.Reactive" Version="4.3.2" />
-    <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.3.2" />
+    <PackageReference Update="System.Interactive" Version="4.1.1" />
+    <PackageReference Update="System.Interactive.Async" Version="4.1.1" />
+    <PackageReference Update="System.Reactive" Version="4.4.1" />
+    <PackageReference Update="System.Reactive.Observable.Aliases" Version="4.4.1" />
     <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageReference Update="Microsoft.Reactive.Testing" Version="4.3.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Bogus" Version="29.0.1" />
     <PackageReference Update="coverlet.collector" Version="1.2.0" />
-    <PackageReference Update="coverlet.msbuild" Version="2.8.0" />
-    <PackageReference Update="FakeItEasy" Version="6.0.0" />
+    <PackageReference Update="coverlet.msbuild" Version="2.8.1" />
+    <PackageReference Update="FakeItEasy" Version="6.0.1" />
     <PackageReference Update="FakeItEasy.Analyzer.CSharp" Version="6.0.0" />
     <PackageReference Update="FluentAssertions" Version="5.10.3" />
     <PackageReference Update="FluentAssertions.Analyzers" Version="0.11.4" />
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.5.0" />
-    <PackageReference Update="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="5.0.0" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.6.0" />
+    <PackageReference Update="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="5.1.0" />
     <PackageReference Update="xunit" Version="2.4.1" />
     <PackageReference Update="xunit.analyzers" Version="0.10.0" />
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.1" />
