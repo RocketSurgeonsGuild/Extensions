@@ -1,45 +1,72 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Nuke.Common;
 using Nuke.Common.Execution;
-using Rocket.Surgery.Nuke.DotNetCore;
+using Nuke.Common.Git;
+using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.GitVersion;
+using Nuke.Common.Tools.MSBuild;
 using Rocket.Surgery.Nuke;
-using JetBrains.Annotations;
+using Rocket.Surgery.Nuke.DotNetCore;
 
 [PublicAPI]
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
-[AzurePipelinesSteps(
-    InvokedTargets = new[] { nameof(Default) },
-    NonEntryTargets = new[] { nameof(BuildVersion), nameof(Generate_Code_Coverage_Reports), nameof(Default) },
-    ExcludedTargets = new[] { nameof(Restore), nameof(DotnetToolRestore) },
-    Parameters = new[] { nameof(CoverageDirectory), nameof(ArtifactsDirectory), nameof(Verbosity), nameof(Configuration) }
-)]
 [PackageIcon("https://raw.githubusercontent.com/RocketSurgeonsGuild/graphics/master/png/social-square-thrust-rounded.png")]
-[EnsurePackageSourceHasCredentials("RocketSurgeonsGuild")]
 [EnsureGitHooks(GitHook.PreCommit)]
-class Solution : DotNetCoreBuild, IDotNetCoreBuild
+[DotNetVerbosityMapping]
+[MSBuildVerbosityMapping]
+[NuGetVerbosityMapping]
+public partial class Solution : NukeBuild,
+                        ICanRestoreWithDotNetCore,
+                        ICanBuildWithDotNetCore,
+                        ICanTestWithDotNetCore,
+                        ICanPackWithDotNetCore,
+                        IHaveDataCollector,
+                        ICanClean,
+                        ICanUpdateReadme,
+                        IGenerateCodeCoverageReport,
+                        IGenerateCodeCoverageSummary,
+                        IGenerateCodeCoverageBadges,
+                        IHaveConfiguration<Configuration>,
+                        ICanLint
 {
     /// <summary>
     /// Support plugins are available for:
-    ///   - JetBrains ReSharper        https://nuke.build/resharper
-    ///   - JetBrains Rider            https://nuke.build/rider
-    ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-    ///   - Microsoft VSCode           https://nuke.build/vscode
+    /// - JetBrains ReSharper        https://nuke.build/resharper
+    /// - JetBrains Rider            https://nuke.build/rider
+    /// - Microsoft VisualStudio     https://nuke.build/visualstudio
+    /// - Microsoft VSCode           https://nuke.build/vscode
     /// </summary>
-
     public static int Main() => Execute<Solution>(x => x.Default);
 
-    Target Default => _ => _
-        .DependsOn(Restore)
-        .DependsOn(Build)
-        .DependsOn(Test)
-        .DependsOn(Pack)
-        ;
+    [OptionalGitRepository]
+    public GitRepository? GitRepository { get; }
 
-    public new Target Restore => _ => _.With(this, DotNetCoreBuild.Restore);
+    private Target Default => _ => _
+       .DependsOn(Restore)
+       .DependsOn(Build)
+       .DependsOn(Test)
+       .DependsOn(Pack);
 
-    public new Target Build => _ => _.With(this, DotNetCoreBuild.Build);
+    public Target Build => _ => _.Inherit<ICanBuildWithDotNetCore>(x => x.CoreBuild);
 
-    public new Target Test => _ => _.With(this, DotNetCoreBuild.Test);
+    public Target Pack => _ => _.Inherit<ICanPackWithDotNetCore>(x => x.CorePack)
+       .DependsOn(Clean);
 
-    public new Target Pack => _ => _.With(this, DotNetCoreBuild.Pack);
+    [ComputedGitVersion]
+    public GitVersion GitVersion { get; } = null!;
+
+    public Target Clean => _ => _.Inherit<ICanClean>(x => x.Clean);
+    public Target Restore => _ => _.Inherit<ICanRestoreWithDotNetCore>(x => x.CoreRestore);
+    public Target Test => _ => _.Inherit<ICanTestWithDotNetCore>(x => x.CoreTest);
+
+    public Target BuildVersion => _ => _.Inherit<IHaveBuildVersion>(x => x.BuildVersion)
+       .Before(Default)
+       .Before(Clean);
+
+    [Parameter("Configuration to build")]
+    public Configuration Configuration { get; } = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 }
