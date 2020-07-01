@@ -6,7 +6,6 @@
         <ProjectReference Include="../Linq.Extensions/Rocket.Surgery.Linq.Extensions.csproj" />
         <ProjectReference Include="../Reactive.Extensions/Rocket.Surgery.Reactive.Extensions.csproj" />
         <ProjectReference Include="../Extensions/Rocket.Surgery.Extensions.csproj" />
-        <ProjectReference Include="../Extensions.Abstractions/Rocket.Surgery.Extensions.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="System.Collections.Immutable"/>
