@@ -55,6 +55,8 @@ jobs:
       GitHubAuthVariableGroup: rsg-bot
       AzureDevOpsPackages: true
       AzureDevOpsFeed: 'Libraries/Packages'
+      AzureDevOpsPreviewPackages: true
+      AzureDevOpsPreviewFeed: 'Libraries/Preview'
       PublishNuGetPackagesFromArtifact: 'NuGet - Windows'
 
   - job: Build
