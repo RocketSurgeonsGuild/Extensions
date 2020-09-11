@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+        <PackageDescription>Provides the ability to provide configuration to the hosted application by convention.</PackageDescription>
+        <PackageTags>$(PackageTags);config;configuration</PackageTags>
+    </PropertyGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="Rocket.Surgery.Extensions.Configuration" />
+        <InternalsVisibleTo Include="Rocket.Surgery.Hosting" />
+        <InternalsVisibleTo Include="Rocket.Surgery.Hosting.TestHost" />
+        <InternalsVisibleTo Include="Rocket.Surgery.WebAssembly.Hosting" />
+        <InternalsVisibleTo Include="Rocket.Surgery.WebAssembly.Hosting.TestHost" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    </ItemGroup>
+</Project>

@@ -9,6 +9,17 @@
         <ProjectReference Include="..\..\src\Extensions\Rocket.Surgery.Extensions.csproj" />
         <ProjectReference Include="..\..\src\Reactive.Extensions\Rocket.Surgery.Reactive.Extensions.csproj" />
         <ProjectReference Include="..\..\src\DependencyInjection.Extensions\Rocket.Surgery.DependencyInjection.Extensions.csproj" />
+        <ProjectReference Include="..\..\src\Configuration\Rocket.Surgery.Extensions.Configuration.csproj" />
+        <ProjectReference Include="..\..\src\Configuration.Ini\Rocket.Surgery.Extensions.Configuration.Ini.csproj" />
+        <ProjectReference Include="..\..\src\Configuration.Json\Rocket.Surgery.Extensions.Configuration.Json.csproj" />
+        <ProjectReference Include="..\..\src\Configuration.Yaml\Rocket.Surgery.Extensions.Configuration.Yaml.csproj" />
+        <ProjectReference Include="..\..\src\Extensions.Abstractions\Rocket.Surgery.Extensions.Abstractions.csproj" />
+        <ProjectReference Include="..\..\src\Linq.Extensions\Rocket.Surgery.Linq.Extensions.csproj" />
+        <ProjectReference Include="..\..\src\Logging\Rocket.Surgery.Extensions.Logging.csproj" />
+        <ProjectReference Include="..\..\src\System\Rocket.Surgery.System.csproj" />
+        <ProjectReference Include="..\..\src\Task.Extensions\Rocket.Surgery.Task.Extensions.csproj" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Configuration" />
         <PackageReference Include="Microsoft.Reactive.Testing" />
     </ItemGroup>

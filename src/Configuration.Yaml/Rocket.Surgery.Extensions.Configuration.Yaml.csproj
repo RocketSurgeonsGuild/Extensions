@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+        <PackageDescription>Provides the ability to provide configuration to the hosted application by convention.</PackageDescription>
+        <PackageTags>$(PackageTags);config;configuration</PackageTags>
+        <RootNamespace>Rocket.Surgery.Extensions.Configuration</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Configuration\Rocket.Surgery.Extensions.Configuration.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="NetEscapades.Configuration.Yaml" />
+    </ItemGroup>
+</Project>
