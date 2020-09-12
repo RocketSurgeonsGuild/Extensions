@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+        <PackageDescription>Adds support for adding logging to the hosted application by convention.</PackageDescription>
+        <PackageTags>$(PackageTags);logging</PackageTags>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    </ItemGroup>
+</Project>
