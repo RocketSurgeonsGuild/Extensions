@@ -29,7 +29,7 @@
     <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5" />
     <PackageReference Update="NetEscapades.Configuration.Yaml" Version="2.0.1" />
     <PackageReference Update="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Update="System.Collections.Immutable" Version="1.7.1" />
+    <PackageReference Update="System.Collections.Immutable" Version="5.0.0" />
     <PackageReference Update="System.Interactive" Version="4.1.1" />
     <PackageReference Update="System.Interactive.Async" Version="4.1.1" />
     <PackageReference Update="System.Reactive" Version="4.4.1" />
