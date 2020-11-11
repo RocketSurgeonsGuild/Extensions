@@ -15,9 +15,9 @@
   <ItemGroup>
     <PackageReference Update="GitVersion.Tool" Version="5.5.0" />
     <PackageReference Update="JetBrains.ReSharper.CommandLineTools" Version="2020.2.4" />
-    <PackageReference Update="Nuke.Common" Version="0.25.0-alpha0334" />
+    <PackageReference Update="Nuke.Common" Version="0.25.0" />
     <PackageReference Update="ReportGenerator" Version="4.7.1" />
-    <PackageReference Update="Rocket.Surgery.Nuke" Version="0.14.0-beta.31" />
+    <PackageReference Update="Rocket.Surgery.Nuke" Version="0.14.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.Extensions.Configuration" Version="3.1.5" />
@@ -52,4 +52,5 @@
     <PackageReference Update="xunit.analyzers" Version="0.10.0" />
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.3" />
   </ItemGroup>
+  <Import Project="$(MSBuildThisFileDirectory)/Packages.support.props" Condition="Exists('$(MSBuildThisFileDirectory)/Packages.support.props')" />
 </Project>
