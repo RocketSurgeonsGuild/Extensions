@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.1;netstandard2.0;net5.0</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Linq.Extensions/Rocket.Surgery.Linq.Extensions.csproj" />
@@ -8,10 +8,10 @@
         <ProjectReference Include="../Extensions/Rocket.Surgery.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="System.Collections.Immutable"/>
-        <PackageReference Include="System.Interactive"/>
-        <PackageReference Include="System.Interactive.Async"/>
-        <PackageReference Include="System.Reactive"/>
-        <PackageReference Include="System.Reactive.Observable.Aliases"/>
+        <PackageReference Include="System.Collections.Immutable" />
+        <PackageReference Include="System.Interactive" />
+        <PackageReference Include="System.Interactive.Async" />
+        <PackageReference Include="System.Reactive" />
+        <PackageReference Include="System.Reactive.Observable.Aliases" />
     </ItemGroup>
 </Project>
