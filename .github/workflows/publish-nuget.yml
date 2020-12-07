@@ -3,10 +3,6 @@ name: publish-nuget
 on:
   workflow_run:
     workflows: ['ci']
-    branches:
-      - master
-      - main
-      - v*
     types:
       - completed
 
