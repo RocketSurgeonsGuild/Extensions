@@ -1,0 +1,34 @@
+name: publish-nuget
+
+on:
+  workflow_run:
+    workflows: ['ci']
+    types:
+      - completed
+
+jobs:
+  PublishNuGet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: nuget/setup-nuget@v1
+        with:
+          nuget-version: '5.x'
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: nuget
+
+      - name: nuget.org
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          dotnet nuget push *.nupkg --skip-duplicate --api-key ${{ secrets.RSG_NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+      - name: dev.azure.com
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+        run: |
+          dotnet nuget push *.nupkg --skip-duplicate --api-key ${{ secrets.RSG_AZURE_DEVOPS }} --source https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Packages/nuget/v3/index.json
+
+      - name: preview.dev.azure.com
+        run: |
+          dotnet nuget push *.nupkg --skip-duplicate --api-key ${{ secrets.RSG_AZURE_DEVOPS }} --source https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Preview/nuget/v3/index.json
