@@ -28,7 +28,7 @@ jobs:
       #     name: nuget
 
       - name: nuget.org
-        continue-on-error: true
+        # continue-on-error: true
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           ApiKey: ${{ secrets.RSG_NUGET_API_KEY }}
@@ -37,7 +37,7 @@ jobs:
           dotnet nuget push **/*.nupkg --skip-duplicate -k $ENV:ApiKey -s https://api.nuget.org/v3/index.json
 
       - name: dev.azure.com
-        continue-on-error: true
+        # continue-on-error: true
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         env:
           ApiKey: ${{ secrets.RSG_AZURE_DEVOPS }}
@@ -46,7 +46,8 @@ jobs:
           dotnet nuget push **/*.nupkg --skip-duplicate -k $ENV:ApiKey -s https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Packages/nuget/v3/index.json
 
       - name: preview.dev.azure.com
-        continue-on-error: true
+        # continue-on-error: true
+        if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main'
         env:
           ApiKey: ${{ secrets.RSG_AZURE_DEVOPS }}
         shell: pwsh
