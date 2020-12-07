@@ -34,7 +34,7 @@ jobs:
           ApiKey: ${{ secrets.RSG_NUGET_API_KEY }}
         shell: pwsh
         run: |
-          dotnet nuget push **/*.nupkg --skip-duplicate -k $ENV:ApiKey -s https://api.nuget.org/v3/index.json
+          dotnet nuget push **/*.nupkg --skip-duplicate --api-key $ENV:ApiKey --source nuget.org
 
       - name: dev.azure.com
         # continue-on-error: true
@@ -43,7 +43,8 @@ jobs:
           ApiKey: ${{ secrets.RSG_AZURE_DEVOPS }}
         shell: pwsh
         run: |
-          dotnet nuget push **/*.nupkg --skip-duplicate -k $ENV:ApiKey -s https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Packages/nuget/v3/index.json
+          dotnet nuget add source https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Packages/nuget/v3/index.json --store-password-in-clear-text --name Packages --username azuredevops --password $ENV:ApiKey
+          dotnet nuget push **/*.nupkg --skip-duplicate --source Packages
 
       - name: preview.dev.azure.com
         # continue-on-error: true
@@ -52,4 +53,5 @@ jobs:
           ApiKey: ${{ secrets.RSG_AZURE_DEVOPS }}
         shell: pwsh
         run: |
-          dotnet nuget push **/*.nupkg --skip-duplicate -k $ENV:ApiKey -s https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Preview/nuget/v3/index.json
+          dotnet nuget add source https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Preview/nuget/v3/index.json --store-password-in-clear-text --name Preview --username azuredevops --password $ENV:ApiKey
+          dotnet nuget push **/*.nupkg --skip-duplicate --source Preview
