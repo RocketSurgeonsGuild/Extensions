@@ -43,8 +43,8 @@ jobs:
           ApiKey: ${{ secrets.RSG_AZURE_DEVOPS }}
         shell: pwsh
         run: |
-          dotnet nuget add source https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Packages/nuget/v3/index.json --store-password-in-clear-text --name Packages --username azuredevops --password $ENV:ApiKey
-          dotnet nuget push **/*.nupkg --skip-duplicate --source Packages
+          dotnet nuget add source https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Packages/nuget/v3/index.json --store-password-in-clear-text --name LibrariesPackages --username azuredevops --password $ENV:ApiKey
+          dotnet nuget push **/*.nupkg --skip-duplicate --source LibrariesPackages
 
       - name: preview.dev.azure.com
         # continue-on-error: true
@@ -53,5 +53,5 @@ jobs:
           ApiKey: ${{ secrets.RSG_AZURE_DEVOPS }}
         shell: pwsh
         run: |
-          dotnet nuget add source https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Preview/nuget/v3/index.json --store-password-in-clear-text --name Preview --username azuredevops --password $ENV:ApiKey
-          dotnet nuget push **/*.nupkg --skip-duplicate --source Preview
+          dotnet nuget add source https://rocketsurgeonsguild.pkgs.visualstudio.com/Libraries/_packaging/Preview/nuget/v3/index.json --store-password-in-clear-text --name LibrariesPreview --username azuredevops --password $ENV:ApiKey
+          dotnet nuget push **/*.nupkg --skip-duplicate --source LibrariesPreview
