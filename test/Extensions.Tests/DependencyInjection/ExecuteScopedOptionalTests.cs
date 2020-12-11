@@ -12,12 +12,12 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.DependencyInjection
 {
-    public class ExecuteScopedTests : LoggerTest
+    public class ExecuteScopedOptionalTests : LoggerTest
     {
         private int _value;
         private readonly IServiceProvider _serviceProvider;
 
-        public ExecuteScopedTests(ITestOutputHelper outputHelper) : base(outputHelper, LogLevel.Information)
+        public ExecuteScopedOptionalTests(ITestOutputHelper outputHelper) : base(outputHelper, LogLevel.Information)
         {
             _value = 0;
             _serviceProvider = new ServiceCollection()
@@ -35,7 +35,7 @@ namespace Rocket.Surgery.Extensions.Tests.DependencyInjection
         [Fact]
         public async Task Work_With_One_Service()
         {
-            var executor = _serviceProvider.WithScoped<Service1>();
+            var executor = _serviceProvider.WithScopedOptional<Service1>();
             executor.Invoke(s => s.ScopedValue).Value.Should().Be(0);
             executor.Invoke(s => { s.ScopedValue.Value.Should().Be(1); });
             ( await executor.Invoke(async s => s.ScopedValue.Value).ConfigureAwait(false) ).Should().Be(2);
@@ -45,7 +45,7 @@ namespace Rocket.Surgery.Extensions.Tests.DependencyInjection
         [Fact]
         public async Task Work_With_Two_Services()
         {
-            var executor = _serviceProvider.WithScoped<Service1, Service2>();
+            var executor = _serviceProvider.WithScopedOptional<Service1, Service2>();
             executor.Invoke((s1, s2) =>
             {
                 s2.Service.Should().BeSameAs(s1);
@@ -71,7 +71,7 @@ namespace Rocket.Surgery.Extensions.Tests.DependencyInjection
         [Fact]
         public async Task Work_With_Three_Services()
         {
-            var executor = _serviceProvider.WithScoped<Service1, Service2, Service3>();
+            var executor = _serviceProvider.WithScopedOptional<Service1, Service2, Service3>();
             executor.Invoke((s1, s2, s3) =>
             {
                 s3.Service.Should().BeSameAs(s2);
@@ -101,7 +101,7 @@ namespace Rocket.Surgery.Extensions.Tests.DependencyInjection
         [Fact]
         public async Task Work_With_Four_Services()
         {
-            var executor = _serviceProvider.WithScoped<Service1, Service2, Service3, Service4>();
+            var executor = _serviceProvider.WithScopedOptional<Service1, Service2, Service3, Service4>();
             executor.Invoke((s1, s2, s3, s4) =>
             {
                 s4.Service.Should().BeSameAs(s3);
@@ -135,7 +135,7 @@ namespace Rocket.Surgery.Extensions.Tests.DependencyInjection
         [Fact]
         public async Task Work_With_Five_Services()
         {
-            var executor = _serviceProvider.WithScoped<Service1, Service2, Service3, Service4, Service5>();
+            var executor = _serviceProvider.WithScopedOptional<Service1, Service2, Service3, Service4, Service5>();
             executor.Invoke((s1, s2, s3, s4, s5) =>
             {
                 s5.Service.Should().BeSameAs(s4);
@@ -173,7 +173,7 @@ namespace Rocket.Surgery.Extensions.Tests.DependencyInjection
         [Fact]
         public async Task Work_With_Six_Services()
         {
-            var executor = _serviceProvider.WithScoped<Service1, Service2, Service3, Service4, Service5, Service6>();
+            var executor = _serviceProvider.WithScopedOptional<Service1, Service2, Service3, Service4, Service5, Service6>();
             executor.Invoke((s1, s2, s3, s4, s5, s6) =>
             {
                 s6.Service.Should().BeSameAs(s5);
@@ -213,13 +213,13 @@ namespace Rocket.Surgery.Extensions.Tests.DependencyInjection
         }
 
         [Theory]
-        [InlineData(typeof(IExecuteScoped<Service1>), typeof(ExecuteScoped<Service1>))]
-        [InlineData(typeof(IExecuteScoped<Service1, Service2>), typeof(ExecuteScoped<Service1, Service2>))]
-        [InlineData(typeof(IExecuteScoped<Service1, Service2, Service3>), typeof(ExecuteScoped<Service1, Service2, Service3>))]
-        [InlineData(typeof(IExecuteScoped<Service1, Service2, Service3, Service4>), typeof(ExecuteScoped<Service1, Service2, Service3, Service4>))]
-        [InlineData(typeof(IExecuteScoped<Service1, Service2, Service3, Service4, Service5>), typeof(ExecuteScoped<Service1, Service2, Service3, Service4, Service5>))]
-        [InlineData(typeof(IExecuteScoped<Service1, Service2, Service3, Service4, Service5, Service6>), typeof(ExecuteScoped<Service1, Service2, Service3, Service4, Service5, Service6>))]
-        public async Task Should_Resolve_ExecuteScoped(Type serviceType, Type implementationType)
+        [InlineData(typeof(IExecuteScopedOptional<Service1>), typeof(ExecuteScopedOptional<Service1>))]
+        [InlineData(typeof(IExecuteScopedOptional<Service1, Service2>), typeof(ExecuteScopedOptional<Service1, Service2>))]
+        [InlineData(typeof(IExecuteScopedOptional<Service1, Service2, Service3>), typeof(ExecuteScopedOptional<Service1, Service2, Service3>))]
+        [InlineData(typeof(IExecuteScopedOptional<Service1, Service2, Service3, Service4>), typeof(ExecuteScopedOptional<Service1, Service2, Service3, Service4>))]
+        [InlineData(typeof(IExecuteScopedOptional<Service1, Service2, Service3, Service4, Service5>), typeof(ExecuteScopedOptional<Service1, Service2, Service3, Service4, Service5>))]
+        [InlineData(typeof(IExecuteScopedOptional<Service1, Service2, Service3, Service4, Service5, Service6>), typeof(ExecuteScopedOptional<Service1, Service2, Service3, Service4, Service5, Service6>))]
+        public async Task Should_Resolve_ExecuteScopedOptional(Type serviceType, Type implementationType)
         {
             _serviceProvider.GetService(serviceType).Should().BeOfType(implementationType);
         }
