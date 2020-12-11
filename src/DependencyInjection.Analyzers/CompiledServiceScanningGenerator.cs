@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -20,7 +21,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
         }
 
-        static SourceText staticScanSourceText = SourceText.From(
+        static SourceText staticScanSourceTextWithAssemblyLoadContext = SourceText.From(
             @"
 using System;
 using System.Runtime.CompilerServices;
@@ -84,7 +85,45 @@ namespace Microsoft.Extensions.DependencyInjection
             Encoding.UTF8
         );
 
-        static SourceText populateSourceText = SourceText.From(
+        static SourceText staticScanSourceText = SourceText.From(
+            @"
+using System;
+using System.Runtime.CompilerServices;
+using Scrutor;
+using Rocket.Surgery.DependencyInjection.Compiled;
+namespace Microsoft.Extensions.DependencyInjection
+{
+    internal static class CompiledServiceScanningExtensions
+    {
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        )
+        {
+            return PopulateExtensions.Populate(services, RegistrationStrategy.Append, filePath, memberName, lineNumber);
+        }
+
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            RegistrationStrategy strategy,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        )
+        {
+            return PopulateExtensions.Populate(services, strategy, filePath, memberName, lineNumber);
+        }
+    }
+}
+",
+            Encoding.UTF8
+        );
+
+        static SourceText populateSourceTextWithAssemblyLoadContext = SourceText.From(
             @"
 using System;
 using System.Reflection;
@@ -106,6 +145,27 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             Encoding.UTF8
         );
 
+        static SourceText populateSourceText = SourceText.From(
+            @"
+using System;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using Scrutor;
+
+namespace Rocket.Surgery.DependencyInjection.Compiled
+{
+    internal static class PopulateExtensions
+    {
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
+        {
+            return services;
+        }
+    }
+}
+",
+            Encoding.UTF8
+        );
+
         public void Execute(GeneratorExecutionContext context)
         {
             if (!( context.SyntaxReceiver is SyntaxReceiver syntaxReceiver ))
@@ -114,12 +174,27 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             }
 
             var compilation = ( context.Compilation as CSharpCompilation )!;
-            var compilationWithMethod = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(staticScanSourceText), CSharpSyntaxTree.ParseText(populateSourceText));
+            var parseOptions = (CSharpParseOptions)context.ParseOptions;
+            var useAssemblyLoad =
+                context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("compiled_scan_assembly_load", out var v) ? v.Equals("true", StringComparison.OrdinalIgnoreCase) :
+                compilation.GetTypeByMetadataName("System.Runtime.Loader.AssemblyLoadContext") is null;
+            var compilationWithMethod = compilation.AddSyntaxTrees(
+                CSharpSyntaxTree.ParseText(
+                    useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext,
+                    parseOptions,
+                    path: "CompiledServiceScanningExtensions.cs"
+                ),
+                CSharpSyntaxTree.ParseText(
+                    useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext,
+                    parseOptions,
+                    path: "PopulateExtensions.cs"
+                )
+            );
 
-            context.AddSource("CompiledServiceScanningExtensions.cs", staticScanSourceText);
+            context.AddSource("CompiledServiceScanningExtensions.cs", useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext);
             if (syntaxReceiver.ScanCompiledExpressions.Count == 0)
             {
-                context.AddSource("PopulateExtensions.cs", populateSourceText);
+                context.AddSource("PopulateExtensions.cs", useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext);
                 return;
             }
 
@@ -169,7 +244,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                    .OfType<InvocationExpressionSyntax>()
                    .First(
                         ies => ies.Expression is MemberAccessExpressionSyntax mae
-                         && mae.Name.ToFullString().EndsWith("ScanCompiled", StringComparison.Ordinal)
+                         && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
                     );
 
                 groups.Add(
@@ -220,7 +295,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                         strategyName,
                         serviceCollectionName,
                         lifetime,
-                        privateAssemblies
+                        privateAssemblies,
+                        useAssemblyLoad
                     );
 
                     blocks.Add(( filePath, memberName, localBlock ));
@@ -303,10 +379,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 
 
             {
-                var root = CSharpSyntaxTree.ParseText(populateSourceText).GetCompilationUnitRoot();
+                var root = CSharpSyntaxTree.ParseText(useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext, parseOptions).GetCompilationUnitRoot();
                 var method = root.DescendantNodes().OfType<MethodDeclarationSyntax>().Single();
-
-                var assemblyContext = IdentifierName("context");
 
                 var newMethod = method
                    .WithBody(block.AddStatements(switchStatement).AddStatements(method.Body!.Statements.ToArray()));
@@ -334,7 +408,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             IdentifierNameSyntax strategyName,
             IdentifierNameSyntax serviceCollectionName,
             ExpressionSyntax lifetime,
-            HashSet<IAssemblySymbol> privateAssemblies
+            HashSet<IAssemblySymbol> privateAssemblies,
+            bool useAssemblyLoad
         )
         {
             var asSelf = serviceTypes.OfType<SelfServiceTypeDescriptor>().Any() || !serviceTypes.Any();
@@ -445,7 +520,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                             serviceCollectionName,
                                             type,
                                             type,
-                                            lifetimeValue
+                                            lifetimeValue,
+                                            useAssemblyLoad
                                         )
                                     )
                                 );
@@ -470,7 +546,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                                 serviceCollectionName,
                                                 @interface,
                                                 type,
-                                                lifetimeValue
+                                                lifetimeValue,
+                                                useAssemblyLoad
                                             )
                                         )
                                     );
@@ -490,7 +567,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                                 serviceCollectionName,
                                                 baseType,
                                                 type,
-                                                lifetimeValue
+                                                lifetimeValue,
+                                                useAssemblyLoad
                                             )
                                         )
                                     );
@@ -520,7 +598,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                             serviceCollectionName,
                                             attributeServiceType,
                                             type,
-                                            lifetimeValue
+                                            lifetimeValue,
+                                            useAssemblyLoad
                                         )
                                         : StatementGeneration.GenerateServiceType(
                                             compilation,
@@ -528,7 +607,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                             serviceCollectionName,
                                             attributeServiceType,
                                             type,
-                                            lifetimeValue
+                                            lifetimeValue,
+                                            useAssemblyLoad
                                         )
                                 )
                             );
@@ -552,7 +632,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                 serviceCollectionName,
                                 type,
                                 type,
-                                lifetime
+                                lifetime,
+                                useAssemblyLoad
                             )
                         )
                     );
@@ -579,7 +660,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                         serviceCollectionName,
                                         @interface,
                                         type,
-                                        lifetime
+                                        lifetime,
+                                        useAssemblyLoad
                                     )
                                     : StatementGeneration.GenerateServiceFactory(
                                         compilation,
@@ -587,7 +669,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                         serviceCollectionName,
                                         @interface,
                                         type,
-                                        lifetime
+                                        lifetime,
+                                        useAssemblyLoad
                                     )
                             )
                         );
@@ -615,7 +698,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                             serviceCollectionName,
                                             @interface,
                                             type,
-                                            lifetime
+                                            lifetime,
+                                            useAssemblyLoad
                                         )
                                         : StatementGeneration.GenerateServiceFactory(
                                             compilation,
@@ -623,7 +707,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                             serviceCollectionName,
                                             @interface,
                                             type,
-                                            lifetime
+                                            lifetime,
+                                            useAssemblyLoad
                                         )
                                 )
                             );
@@ -650,7 +735,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                         serviceCollectionName,
                                         asType,
                                         type,
-                                        lifetime
+                                        lifetime,
+                                        useAssemblyLoad
                                     )
                                     : StatementGeneration.GenerateServiceFactory(
                                         compilation,
@@ -658,7 +744,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                         serviceCollectionName,
                                         asType,
                                         type,
-                                        lifetime
+                                        lifetime,
+                                        useAssemblyLoad
                                     )
                             )
                         );
@@ -750,8 +837,12 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                 types = filter.Filter switch
                 {
                     NamespaceFilter.Exact => types.RemoveAll(toSymbol => !filter.Namespaces.Any(ns => toSymbol.ContainingNamespace.ToDisplayString() == ns)),
-                    NamespaceFilter.In => types.RemoveAll(toSymbol => !filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))),
-                    NamespaceFilter.NotIn => types.RemoveAll(toSymbol => filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))),
+                    NamespaceFilter.In => types.RemoveAll(
+                        toSymbol => !filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))
+                    ),
+                    NamespaceFilter.NotIn => types.RemoveAll(
+                        toSymbol => filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))
+                    ),
                     _ => types
                 };
             }
@@ -779,7 +870,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                 if (syntaxNode is InvocationExpressionSyntax ies)
                 {
                     if (ies.Expression is MemberAccessExpressionSyntax mae
-                     && mae.Name.ToFullString().EndsWith("ScanCompiled", StringComparison.Ordinal)
+                     && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
                      && ies.ArgumentList.Arguments.Count is 1 or 2)
                     {
                         ScanCompiledExpressions.Add(ies.ArgumentList.Arguments[0].Expression);

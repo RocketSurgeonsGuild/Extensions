@@ -15,16 +15,16 @@ using Xunit.Sdk;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests
 {
-    public class StaticScanningTests : GeneratorTest
+    public class StaticScanning_WithAssemblyLoadTests : GeneratorTest
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public StaticScanningTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper, LogLevel.Trace)
+        public StaticScanning_WithAssemblyLoadTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper, LogLevel.Trace)
         {
             _testOutputHelper = testOutputHelper;
             WithGenerator<CompiledServiceScanningGenerator>();
-            IgnoreOutputFile($@"CompiledServiceScanningExtensions.cs");
-            AddGlobalOption("compiled_scan_assembly_load", "false");
+            IgnoreOutputFile("CompiledServiceScanningExtensions.cs");
+            AddGlobalOption("compiled_scan_assembly_load", "true");
         }
 
         [Fact]
@@ -67,7 +67,6 @@ public static class Program {
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -75,7 +74,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -153,7 +152,6 @@ namespace TestProject
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -161,13 +159,13 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
                 case 14:
-                    strategy.Apply(services, ServiceDescriptor.Describe(context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service""), context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service""), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService), _ => _.GetRequiredService(context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service"")) as RootDependencyProject.IService, ServiceLifetime.Singleton));
+                    strategy.Apply(services, ServiceDescriptor.Describe(Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service""), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service""), ServiceLifetime.Singleton));
+                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService), _ => _.GetRequiredService(Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service"")) as RootDependencyProject.IService, ServiceLifetime.Singleton));
                     break;
             }
 
@@ -232,7 +230,6 @@ public static class Program {
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -240,7 +237,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -314,7 +311,6 @@ public static class Program {
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -322,13 +318,13 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
                 case 11:
-                    strategy.Apply(services, ServiceDescriptor.Describe(context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService<>), context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), ServiceLifetime.Scoped));
+                    strategy.Apply(services, ServiceDescriptor.Describe(Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), ServiceLifetime.Scoped));
+                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService<>), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), ServiceLifetime.Scoped));
                     break;
             }
 
@@ -406,7 +402,6 @@ namespace TestProject
 
             var expected = @"using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -414,7 +409,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -492,7 +487,6 @@ namespace TestProject
 
             var expected = @"using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -500,12 +494,12 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
                 case 14:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IRequestHandler<, >).MakeGenericType(context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Request""), context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Response"")), context.LoadFromAssemblyName(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.RequestHandler""), ServiceLifetime.Singleton));
+                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IRequestHandler<, >).MakeGenericType(Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Request""), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Response"")), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.RequestHandler""), ServiceLifetime.Singleton));
                     break;
             }
 
@@ -564,7 +558,6 @@ public static class Program {
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -572,7 +565,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -633,7 +626,6 @@ public static class Program {
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -641,7 +633,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -823,7 +815,6 @@ namespace TestProject
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -831,15 +822,15 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
                 case 15:
                     strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.Service), typeof(TestProject.Service), ServiceLifetime.Scoped));
                     strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProject.IService), _ => _.GetRequiredService<TestProject.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(context.LoadFromAssemblyName(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service""), context.LoadFromAssemblyName(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service""), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProject.IService), _ => _.GetRequiredService(context.LoadFromAssemblyName(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service"")) as DependencyProject.IService, ServiceLifetime.Scoped));
+                    strategy.Apply(services, ServiceDescriptor.Describe(Assembly.Load(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service""), Assembly.Load(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service""), ServiceLifetime.Scoped));
+                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProject.IService), _ => _.GetRequiredService(Assembly.Load(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service"")) as DependencyProject.IService, ServiceLifetime.Scoped));
                     break;
             }
 
@@ -1014,7 +1005,6 @@ public static class Program {{
             var expected = $@"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1022,7 +1012,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {{
     internal static class PopulateExtensions
     {{
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {{
             switch (lineNumber)
             {{
@@ -1138,7 +1128,6 @@ public static class Program2 {
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1146,7 +1135,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1227,7 +1216,6 @@ public static class Program {
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1235,7 +1223,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1300,7 +1288,6 @@ public static class Program {
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1308,7 +1295,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1380,7 +1367,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1388,7 +1374,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1456,7 +1442,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1464,7 +1449,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1532,7 +1517,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1540,7 +1524,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1608,7 +1592,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1616,7 +1599,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1683,7 +1666,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1691,7 +1673,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1758,7 +1740,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1766,7 +1747,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1838,7 +1819,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1846,7 +1826,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1918,7 +1898,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -1926,7 +1905,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -1997,7 +1976,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -2005,7 +1983,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -2078,7 +2056,6 @@ public static class Program {{
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -2086,7 +2063,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -2190,7 +2167,6 @@ public static class Program {{
             var expected = $@"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -2198,7 +2174,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {{
     internal static class PopulateExtensions
     {{
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {{
             switch (lineNumber)
             {{
@@ -2312,7 +2288,6 @@ public static class Program {{
             var expected = $@"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -2320,7 +2295,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {{
     internal static class PopulateExtensions
     {{
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {{
             switch (lineNumber)
             {{
@@ -2455,7 +2430,6 @@ namespace TestProject
             var expected = @"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -2463,7 +2437,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     internal static class PopulateExtensions
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {
             switch (lineNumber)
             {
@@ -2605,7 +2579,6 @@ namespace TestProject
             var expected = $@"
 using System;
 using System.Reflection;
-using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
@@ -2613,7 +2586,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 {{
     internal static class PopulateExtensions
     {{
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
         {{
             switch (lineNumber)
             {{
