@@ -12,7 +12,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
     {
         public static void HandleInvocationExpressionSyntax(
             GeneratorExecutionContext context,
-            CSharpCompilation compilation,
             SemanticModel semanticModel,
             ExpressionSyntax rootExpression,
             List<IAssemblyDescriptor> assemblies,

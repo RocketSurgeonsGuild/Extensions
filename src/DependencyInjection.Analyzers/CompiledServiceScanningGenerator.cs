@@ -174,22 +174,24 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             }
 
             var compilation = ( context.Compilation as CSharpCompilation )!;
-            var parseOptions = (CSharpParseOptions)context.ParseOptions;
+            var parseOptions = compilation.SyntaxTrees.Select(z => z.Options).OfType<CSharpParseOptions>().First();
             var useAssemblyLoad =
-                context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("compiled_scan_assembly_load", out var v) ? v.Equals("true", StringComparison.OrdinalIgnoreCase) :
-                compilation.GetTypeByMetadataName("System.Runtime.Loader.AssemblyLoadContext") is null;
-            var compilationWithMethod = compilation.AddSyntaxTrees(
-                CSharpSyntaxTree.ParseText(
-                    useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext,
-                    parseOptions,
-                    path: "CompiledServiceScanningExtensions.cs"
-                ),
-                CSharpSyntaxTree.ParseText(
-                    useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext,
-                    parseOptions,
-                    path: "PopulateExtensions.cs"
-                )
-            );
+                context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("compiled_scan_assembly_load", out var v)
+                    ? v.Equals("true", StringComparison.OrdinalIgnoreCase)
+                    : compilation.GetTypeByMetadataName("System.Runtime.Loader.AssemblyLoadContext") is null;
+            var compilationWithMethod = compilation
+               .AddSyntaxTrees(
+                    CSharpSyntaxTree.ParseText(
+                        useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext,
+                        CSharpParseOptions.Default,
+                        path: "CompiledServiceScanningExtensions.cs"
+                    ),
+                    CSharpSyntaxTree.ParseText(
+                        useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext,
+                        parseOptions,
+                        path: "PopulateExtensions.cs"
+                    )
+                );
 
             context.AddSource("CompiledServiceScanningExtensions.cs", useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext);
             if (syntaxReceiver.ScanCompiledExpressions.Count == 0)
