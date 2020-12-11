@@ -51,7 +51,7 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService)))
@@ -136,7 +136,7 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanStatic(
+	        services.ScanCompiled(
             z => z
 			    .FromAssemblies()
 			    .AddClasses(x => x.AssignableTo<IService>())
@@ -217,7 +217,7 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService<>)))
@@ -298,7 +298,7 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService<>)))
@@ -391,7 +391,7 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanStatic(
+	        services.ScanCompiled(
             z => z
 			    .FromAssemblies()
 			    .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
@@ -477,7 +477,7 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanStatic(
+	        services.ScanCompiled(
             z => z
 			    .FromAssemblies()
 			    .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
@@ -548,7 +548,7 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService)))
@@ -618,7 +618,7 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService)))
@@ -747,7 +747,7 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanStatic(
+	        services.ScanCompiled(
             z => z
 			    .FromAssemblies()
 			    .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
@@ -806,7 +806,7 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanStatic(
+	        services.ScanCompiled(
             z => z
 			    .FromAssemblies()
 			    .AddClasses(x => x.AssignableTo<IService>())
@@ -924,7 +924,7 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanStatic(
+	        services.ScanCompiled(
             z => z
 			    .FromAssemblies()
 			    .AddClasses(x => x.AssignableTo<IService>())
@@ -986,7 +986,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo<IService>())
@@ -996,7 +996,7 @@ public static class Program {{
                         serviceLifetime
                     }Lifetime()
         );
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo<IServiceB>(), false)
@@ -1102,7 +1102,7 @@ public static class Program {
     static void Main() {}
     static IServiceCollection Method()
     {
-	    Services.ScanStatic(z => z
+	    Services.ScanCompiled(z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService)), false)
             .AsSelf()
@@ -1123,7 +1123,7 @@ public static class Program2 {
 
     static IServiceCollection Method()
     {
-	    Services.ScanStatic(z => z
+	    Services.ScanCompiled(z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo<IServiceB>(), false)
             .AsSelf()
@@ -1211,7 +1211,7 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>())
@@ -1284,7 +1284,7 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
@@ -1366,7 +1366,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.WithAttribute{
@@ -1446,7 +1446,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService)).WithoutAttribute{
@@ -1528,7 +1528,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
@@ -1609,7 +1609,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
@@ -1706,7 +1706,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.{
@@ -1830,7 +1830,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.{
@@ -1982,7 +1982,7 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {{
             var services = new ServiceCollection();
-	        services.ScanStatic(
+	        services.ScanCompiled(
             z => z
                 .FromAssemblyOf{
                         ( useTypeof ? $"(typeof(IServiceB))" : $"<IServiceB>()" )
@@ -2132,7 +2132,7 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {{
             var services = new ServiceCollection();
-	        services.ScanStatic(
+	        services.ScanCompiled(
             z => z
 			    .FromAssemblyDependenciesOf{
                         ( useTypeof ? $"(typeof({className}))" : $"<{className}>()" )
@@ -2217,7 +2217,7 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => { 
                z.FromAssemblies()
 			    .AddClasses(x => x.AssignableTo(typeof(IService)))
@@ -2255,7 +2255,7 @@ public static class Program {
     {
         var type = typeof(IService);
         var services = new ServiceCollection();
-	    services.ScanStatic(z => z.FromAssemblies()
+	    services.ScanCompiled(z => z.FromAssemblies()
 			  .AddClasses(x => x.AssignableTo(type))
               .AsSelf()
               .AsImplementedInterfaces()
@@ -2290,7 +2290,7 @@ public static class Program {
     {
         var ns = ""MyNamespace""); 
         var services = new ServiceCollection();
-	    services.ScanStatic(z => z.FromAssemblies()
+	    services.ScanCompiled(z => z.FromAssemblies()
 			  .AddClasses(x => x.InNamespaces(ns))
               .AsSelf()
               .AsImplementedInterfaces()
@@ -2327,7 +2327,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService)))
@@ -2368,7 +2368,7 @@ public static class Program {{
     static IServiceCollection LoadServices()
     {{
         var services = new ServiceCollection();
-	    services.ScanStatic(
+	    services.ScanCompiled(
         z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo(typeof(IService)))

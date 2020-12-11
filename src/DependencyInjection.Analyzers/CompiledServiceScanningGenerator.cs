@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     internal static class CompiledServiceScanningExtensions
     {
-        public static IServiceCollection ScanStatic(
+        public static IServiceCollection ScanCompiled(
             this IServiceCollection services,
             Action<ICompiledAssemblySelector> action,
 	        [CallerFilePathAttribute] string filePath = """",
@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return PopulateExtensions.Populate(services, RegistrationStrategy.Append, AssemblyLoadContext.GetLoadContext(typeof(CompiledServiceScanningExtensions).Assembly) ?? AssemblyLoadContext.Default, filePath, memberName, lineNumber);
         }
 
-        public static IServiceCollection ScanStatic(
+        public static IServiceCollection ScanCompiled(
             this IServiceCollection services,
             Action<ICompiledAssemblySelector> action,
             RegistrationStrategy strategy,
@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return PopulateExtensions.Populate(services, strategy, AssemblyLoadContext.GetLoadContext(typeof(CompiledServiceScanningExtensions).Assembly) ?? AssemblyLoadContext.Default, filePath, memberName, lineNumber);
         }
 
-        public static IServiceCollection ScanStatic(
+        public static IServiceCollection ScanCompiled(
             this IServiceCollection services,
             Action<ICompiledAssemblySelector> action,
             AssemblyLoadContext context,
@@ -66,7 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return PopulateExtensions.Populate(services, RegistrationStrategy.Append, context, filePath, memberName, lineNumber);
         }
 
-        public static IServiceCollection ScanStatic(
+        public static IServiceCollection ScanCompiled(
             this IServiceCollection services,
             Action<ICompiledAssemblySelector> action,
             RegistrationStrategy strategy,
@@ -108,7 +108,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!(context.SyntaxReceiver is SyntaxReceiver syntaxReceiver) || syntaxReceiver.ScanStaticExpressions.Count == 0)
+            if (!(context.SyntaxReceiver is SyntaxReceiver syntaxReceiver))
             {
                 return;
             }
@@ -117,6 +117,11 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             var compilationWithMethod = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(staticScanSourceText), CSharpSyntaxTree.ParseText(populateSourceText));
 
             context.AddSource("CompiledServiceScanningExtensions.cs", staticScanSourceText);
+            if (syntaxReceiver.ScanCompiledExpressions.Count == 0)
+            {
+                context.AddSource("PopulateExtensions.cs", populateSourceText);
+                return;
+            }
 
             var groups =
                 new List<(
@@ -131,7 +136,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                     ExpressionSyntax lifetime
                     )>();
 
-            foreach (var rootExpression in syntaxReceiver.ScanStaticExpressions)
+            foreach (var rootExpression in syntaxReceiver.ScanCompiledExpressions)
             {
                 var semanticModel = compilationWithMethod.GetSemanticModel(rootExpression.SyntaxTree);
 
@@ -164,7 +169,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                     .OfType<InvocationExpressionSyntax>()
                     .First(
                         ies => ies.Expression is MemberAccessExpressionSyntax mae
-                               && mae.Name.ToFullString().EndsWith("ScanStatic", StringComparison.Ordinal)
+                               && mae.Name.ToFullString().EndsWith("ScanCompiled", StringComparison.Ordinal)
                     );
 
                 groups.Add(
@@ -316,7 +321,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                     root = root.ReplaceNode(@class, @class.AddMembers(privateAssemblyNodes.ToArray()));
                 }
 
-                context.AddSource("Rocket.Surgery.DependencyInjection.Compiled.Populate.cs", root.NormalizeWhitespace().GetText(Encoding.UTF8));
+                context.AddSource("PopulateExtensions.cs", root.NormalizeWhitespace().GetText(Encoding.UTF8));
             }
         }
 
@@ -743,17 +748,17 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
         internal class SyntaxReceiver : ISyntaxReceiver
         {
-            public List<ExpressionSyntax> ScanStaticExpressions { get; } = new List<ExpressionSyntax>();
+            public List<ExpressionSyntax> ScanCompiledExpressions { get; } = new List<ExpressionSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
                 if (syntaxNode is InvocationExpressionSyntax ies)
                 {
                     if (ies.Expression is MemberAccessExpressionSyntax mae
-                     && mae.Name.ToFullString().EndsWith("ScanStatic", StringComparison.Ordinal)
+                     && mae.Name.ToFullString().EndsWith("ScanCompiled", StringComparison.Ordinal)
                      && ies.ArgumentList.Arguments.Count is 1 or 2)
                     {
-                        ScanStaticExpressions.Add(ies.ArgumentList.Arguments[0].Expression);
+                        ScanCompiledExpressions.Add(ies.ArgumentList.Arguments[0].Expression);
                     }
                 }
             }
