@@ -114,8 +114,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             }
 
             var compilation = ( context.Compilation as CSharpCompilation )!;
-            var parseOptions = new CSharpParseOptions(compilation.LanguageVersion);
-            var compilationWithMethod = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(staticScanSourceText, parseOptions), CSharpSyntaxTree.ParseText(populateSourceText, parseOptions));
+            var parseOptions = compilation.SyntaxTrees.Any() ? (CSharpParseOptions)compilation.SyntaxTrees[0].Options : new CSharpParseOptions(compilation.LanguageVersion);
+            var compilationWithMethod = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(staticScanSourceText, parseOptions, path: "CompiledServiceScanningExtensions.cs"), CSharpSyntaxTree.ParseText(populateSourceText, parseOptions, path: "PopulateExtensions.cs"));
 
             context.AddSource("CompiledServiceScanningExtensions.cs", staticScanSourceText);
             if (syntaxReceiver.ScanCompiledExpressions.Count == 0)
