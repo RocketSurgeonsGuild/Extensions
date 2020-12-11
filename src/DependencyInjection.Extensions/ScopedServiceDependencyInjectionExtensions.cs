@@ -1,6 +1,7 @@
 using System;
 using Rocket.Surgery.DependencyInjection;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
@@ -19,12 +20,18 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return services
-                .AddTransient(typeof(IExecuteScoped<>), typeof(ExecuteScoped<>))
-                .AddTransient(typeof(IExecuteScoped<,>), typeof(ExecuteScoped<,>))
-                .AddTransient(typeof(IExecuteScoped<,,>), typeof(ExecuteScoped<,,>))
-                .AddTransient(typeof(IExecuteScoped<,,,>), typeof(ExecuteScoped<,,,>))
-                .AddTransient(typeof(IExecuteScoped<,,,,>), typeof(ExecuteScoped<,,,,>))
-                .AddTransient(typeof(IExecuteScoped<,,,,,>), typeof(ExecuteScoped<,,,,,>));
+               .AddTransient(typeof(IExecuteScoped<>), typeof(ExecuteScoped<>))
+               .AddTransient(typeof(IExecuteScoped<,>), typeof(ExecuteScoped<,>))
+               .AddTransient(typeof(IExecuteScoped<,,>), typeof(ExecuteScoped<,,>))
+               .AddTransient(typeof(IExecuteScoped<,,,>), typeof(ExecuteScoped<,,,>))
+               .AddTransient(typeof(IExecuteScoped<,,,,>), typeof(ExecuteScoped<,,,,>))
+               .AddTransient(typeof(IExecuteScoped<,,,,,>), typeof(ExecuteScoped<,,,,,>))
+               .AddTransient(typeof(IExecuteScopedOptional<>), typeof(ExecuteScopedOptional<>))
+               .AddTransient(typeof(IExecuteScopedOptional<,>), typeof(ExecuteScopedOptional<,>))
+               .AddTransient(typeof(IExecuteScopedOptional<,,>), typeof(ExecuteScopedOptional<,,>))
+               .AddTransient(typeof(IExecuteScopedOptional<,,,>), typeof(ExecuteScopedOptional<,,,>))
+               .AddTransient(typeof(IExecuteScopedOptional<,,,,>), typeof(ExecuteScopedOptional<,,,,>))
+               .AddTransient(typeof(IExecuteScopedOptional<,,,,,>), typeof(ExecuteScopedOptional<,,,,,>));
         }
     }
 }

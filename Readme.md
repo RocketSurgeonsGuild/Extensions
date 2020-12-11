@@ -18,6 +18,7 @@
 <!-- nuget packages -->
 | Package | NuGet |
 | ------- | ----- |
+| Rocket.Surgery.DependencyInjection.Analyzers | [![nuget-version-mahhzufm7qfq-badge]![nuget-downloads-mahhzufm7qfq-badge]][nuget-mahhzufm7qfq] |
 | Rocket.Surgery.DependencyInjection.Extensions | [![nuget-version-h8f6bnu7ceoa-badge]![nuget-downloads-h8f6bnu7ceoa-badge]][nuget-h8f6bnu7ceoa] |
 | Rocket.Surgery.Extensions | [![nuget-version-dogpqyf/emhg-badge]![nuget-downloads-dogpqyf/emhg-badge]][nuget-dogpqyf/emhg] |
 | Rocket.Surgery.Extensions.Abstractions | [![nuget-version-/ei2knddlveg-badge]![nuget-downloads-/ei2knddlveg-badge]][nuget-/ei2knddlveg] |
@@ -49,6 +50,9 @@ TBD
 [github]: https://github.com/RocketSurgeonsGuild/Extensions/actions?query=workflow%3Aci
 [github-badge]: https://img.shields.io/github/workflow/status/RocketSurgeonsGuild/Extensions/ci.svg?label=github&logo=github&color=b845fc&logoColor=b845fc&style=flat "GitHub Actions Status"
 [github-history-badge]: https://buildstats.info/github/chart/RocketSurgeonsGuild/Extensions?includeBuildsFromPullRequest=false "GitHub Actions History"
+[nuget-mahhzufm7qfq]: https://www.nuget.org/packages/Rocket.Surgery.DependencyInjection.Analyzers/
+[nuget-version-mahhzufm7qfq-badge]: https://img.shields.io/nuget/v/Rocket.Surgery.DependencyInjection.Analyzers.svg?color=004880&logo=nuget&style=flat-square "NuGet Version"
+[nuget-downloads-mahhzufm7qfq-badge]: https://img.shields.io/nuget/dt/Rocket.Surgery.DependencyInjection.Analyzers.svg?color=004880&logo=nuget&style=flat-square "NuGet Downloads"
 [nuget-h8f6bnu7ceoa]: https://www.nuget.org/packages/Rocket.Surgery.DependencyInjection.Extensions/
 [nuget-version-h8f6bnu7ceoa-badge]: https://img.shields.io/nuget/v/Rocket.Surgery.DependencyInjection.Extensions.svg?color=004880&logo=nuget&style=flat-square "NuGet Version"
 [nuget-downloads-h8f6bnu7ceoa-badge]: https://img.shields.io/nuget/dt/Rocket.Surgery.DependencyInjection.Extensions.svg?color=004880&logo=nuget&style=flat-square "NuGet Downloads"
