@@ -6,4 +6,10 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals
         In = 2,
         NotIn = 3
     }
+    public enum TextDirectionFilter
+    {
+        StartsWith,
+        EndsWith,
+        Contains
+    }
 }

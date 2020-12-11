@@ -3,9 +3,7 @@ using System.Collections.Generic;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals
 {
-    interface ITypeFilterDescriptor
-    {
-    }
+    interface ITypeFilterDescriptor { }
 
     struct NamespaceFilterDescriptor : ITypeFilterDescriptor
     {
@@ -16,6 +14,18 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals
         {
             Filter = filter;
             Namespaces = namespaces;
+        }
+    }
+
+    struct NameFilterDescriptor : ITypeFilterDescriptor
+    {
+        public TextDirectionFilter Filter { get; }
+        public IEnumerable<string> Names { get; }
+
+        public NameFilterDescriptor(TextDirectionFilter filter, IEnumerable<string> names)
+        {
+            Names = names;
+            Filter = filter;
         }
     }
 

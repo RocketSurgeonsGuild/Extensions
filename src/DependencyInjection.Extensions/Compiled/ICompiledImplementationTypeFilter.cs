@@ -27,6 +27,70 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         ICompiledImplementationTypeFilter AssignableToAny(Type first, params Type[] types);
 
         /// <summary>
+        /// Will match all types with the given suffixes
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        ICompiledImplementationTypeFilter Suffix(string value, params string[] values);
+
+        /// <summary>
+        /// Will match all types with the given postfixes
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        ICompiledImplementationTypeFilter Postfix(string value, params string[] values);
+
+        /// <summary>
+        /// Will match all types that end with
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        ICompiledImplementationTypeFilter EndsWith(string value, params string[] values);
+
+        /// <summary>
+        /// Will match all types with the given prefixes
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        ICompiledImplementationTypeFilter Prefix(string value, params string[] values);
+
+        /// <summary>
+        /// Will match all types with the given affixes
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        ICompiledImplementationTypeFilter Affix(string value, params string[] values);
+
+        /// <summary>
+        /// Will match all types that end with
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        ICompiledImplementationTypeFilter StartsWith(string value, params string[] values);
+
+        /// <summary>
+        /// Will match all types that contain the given values
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        ICompiledImplementationTypeFilter Contains(string value, params string[] values);
+
+        /// <summary>
+        /// Will match all types that contain the given values
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        ICompiledImplementationTypeFilter Includes(string value, params string[] values);
+
+        /// <summary>
         /// Will match all types in the exact same namespace as the type <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T">The type in the namespace to include</typeparam>

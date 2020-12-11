@@ -113,7 +113,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests.Helpers
             return this;
         }
 
-        public GeneratorTester IgnoreOutputFilePath(string path)
+        public GeneratorTester IgnoreOutputFile(string path)
         {
             _ignoredFilePaths.Add(path);
             return this;
@@ -282,7 +282,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests.Helpers
                     new GenerationTestResult(
                         ( outputCompilation as CSharpCompilation )!,
                         diagnostics,
-                        trees.Where(z => !_ignoredFilePaths.Contains(z.FilePath)).ToImmutableArray(),
+                        trees.Where(z => !_ignoredFilePaths.Any(x => z.FilePath.Contains(x))).ToImmutableArray(),
                         Logger
                     )
                 );

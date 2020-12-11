@@ -471,48 +471,97 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
                     yield break;
                 }
 
-                NamespaceFilter? filter = null;
-                if (simpleNameSyntax.ToFullString() == "InExactNamespaces" ||
-                    simpleNameSyntax.Identifier.ToFullString() == "InExactNamespaceOf")
                 {
-                    filter = NamespaceFilter.Exact;
-                }
+                    NamespaceFilter? filter = null;
+                    if (simpleNameSyntax.ToFullString() == "InExactNamespaces" ||
+                        simpleNameSyntax.Identifier.ToFullString() == "InExactNamespaceOf")
+                    {
+                        filter = NamespaceFilter.Exact;
+                    }
 
-                if (simpleNameSyntax.ToFullString() == "InNamespaces" ||
-                    simpleNameSyntax.Identifier.ToFullString() == "InNamespaceOf")
-                {
-                    filter = NamespaceFilter.In;
-                }
+                    if (simpleNameSyntax.ToFullString() == "InNamespaces" ||
+                        simpleNameSyntax.Identifier.ToFullString() == "InNamespaceOf")
+                    {
+                        filter = NamespaceFilter.In;
+                    }
 
-                if (simpleNameSyntax.ToFullString() == "NotInNamespaces" ||
-                    simpleNameSyntax.Identifier.ToFullString() == "NotInNamespaceOf")
-                {
-                    filter = NamespaceFilter.NotIn;
-                }
+                    if (simpleNameSyntax.ToFullString() == "NotInNamespaces" ||
+                        simpleNameSyntax.Identifier.ToFullString() == "NotInNamespaceOf")
+                    {
+                        filter = NamespaceFilter.NotIn;
+                    }
 
-                if (filter.HasValue)
-                {
-                    var namespaces = expression.ArgumentList.Arguments
-                        .Select(argument =>
-                        {
-                            switch (argument.Expression)
-                            {
-                                case LiteralExpressionSyntax literalExpressionSyntax when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
-                                    return literalExpressionSyntax.Token.ValueText!;
-                                case TypeOfExpressionSyntax typeOfExpressionSyntax:
+                    if (filter.HasValue)
+                    {
+                        var namespaces = expression.ArgumentList.Arguments
+                           .Select(
+                                argument =>
                                 {
-                                    var symbol = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type!;
-                                    return symbol.ContainingNamespace.ToDisplayString()!;
+                                    switch (argument.Expression)
+                                    {
+                                        case LiteralExpressionSyntax literalExpressionSyntax when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
+                                            return literalExpressionSyntax.Token.ValueText!;
+                                        case InvocationExpressionSyntax  { Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } } } invocationExpressionSyntax when invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax identifierNameSyntax:
+                                            return identifierNameSyntax.Identifier.Text;
+                                        case TypeOfExpressionSyntax typeOfExpressionSyntax:
+                                        {
+                                            var symbol = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type!;
+                                            return symbol.ContainingNamespace.ToDisplayString()!;
+                                        }
+                                        default:
+                                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation()));
+                                            return null!;
+                                    }
                                 }
-                                default:
-                                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation()));
-                                    return null!;
-                            }
-                        })
-                        .Where(z => !string.IsNullOrWhiteSpace(z))
-                        .ToArray();
+                            )
+                           .Where(z => !string.IsNullOrWhiteSpace(z))
+                           .ToArray();
 
-                    yield return new NamespaceFilterDescriptor(filter.Value, namespaces);
+                        yield return new NamespaceFilterDescriptor(filter.Value, namespaces);
+                    }
+                }
+
+
+                {
+                    TextDirectionFilter? filter = null;
+                    if (simpleNameSyntax.ToString() is "Suffix" or "Postfix" or "EndsWith")
+                    {
+                        filter = TextDirectionFilter.EndsWith;
+                    }
+
+                    if (simpleNameSyntax.ToFullString() is "Affix" or "Prefix" or "StartsWith")
+                    {
+                        filter = TextDirectionFilter.StartsWith;
+                    }
+
+                    if (simpleNameSyntax.ToFullString() is "Contains" or "Includes")
+                    {
+                        filter = TextDirectionFilter.Contains;
+                    }
+
+                    if (filter.HasValue)
+                    {
+                        var stringValues = expression.ArgumentList.Arguments
+                           .Select(
+                                argument =>
+                                {
+                                    switch (argument.Expression)
+                                    {
+                                        case LiteralExpressionSyntax literalExpressionSyntax when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
+                                            return literalExpressionSyntax.Token.ValueText!;
+                                        case InvocationExpressionSyntax  { Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } } } invocationExpressionSyntax when invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax identifierNameSyntax:
+                                            return identifierNameSyntax.Identifier.Text;
+                                        default:
+                                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation()));
+                                            return null!;
+                                    }
+                                }
+                            )
+                           .Where(z => !string.IsNullOrWhiteSpace(z))
+                           .ToArray();
+
+                        yield return new NameFilterDescriptor(filter.Value, stringValues);
+                    }
                 }
             }
         }

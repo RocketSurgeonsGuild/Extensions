@@ -108,12 +108,12 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!(context.SyntaxReceiver is SyntaxReceiver syntaxReceiver))
+            if (!( context.SyntaxReceiver is SyntaxReceiver syntaxReceiver ))
             {
                 return;
             }
 
-            var compilation = (context.Compilation as CSharpCompilation)!;
+            var compilation = ( context.Compilation as CSharpCompilation )!;
             var compilationWithMethod = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(staticScanSourceText), CSharpSyntaxTree.ParseText(populateSourceText));
 
             context.AddSource("CompiledServiceScanningExtensions.cs", staticScanSourceText);
@@ -166,10 +166,10 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                 var containingMethod = rootExpression.Ancestors().OfType<MethodDeclarationSyntax>().First();
 
                 var methodCallSyntax = rootExpression.Ancestors()
-                    .OfType<InvocationExpressionSyntax>()
-                    .First(
+                   .OfType<InvocationExpressionSyntax>()
+                   .First(
                         ies => ies.Expression is MemberAccessExpressionSyntax mae
-                               && mae.Name.ToFullString().EndsWith("ScanCompiled", StringComparison.Ordinal)
+                         && mae.Name.ToFullString().EndsWith("ScanCompiled", StringComparison.Ordinal)
                     );
 
                 groups.Add(
@@ -223,7 +223,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                         privateAssemblies
                     );
 
-                    blocks.Add((filePath, memberName, localBlock));
+                    blocks.Add(( filePath, memberName, localBlock ));
                 }
 
                 static SwitchSectionSyntax CreateNestedSwitchSections<T>(
@@ -238,8 +238,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                     {
                         var (_, _, localBlock) = blocks[0];
                         return SwitchSection()
-                            .AddStatements(localBlock.Statements.ToArray())
-                            .AddStatements(BreakStatement());
+                           .AddStatements(localBlock.Statements.ToArray())
+                           .AddStatements(BreakStatement());
                     }
 
                     var section = SwitchStatement(identifier);
@@ -262,7 +262,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                 Literal(value)
                             )
                     )
-                    .AddLabels(
+                   .AddLabels(
                         CaseSwitchLabel(
                             LiteralExpression(
                                 SyntaxKind.NumericLiteralExpression,
@@ -271,8 +271,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                         )
                     );
 
-                static SwitchSectionSyntax GenerateFilePathSwitchStatement(IGrouping<string, (string filePath, string memberName, BlockSyntax block)> innerGroup) =>
-                    CreateNestedSwitchSections(
+                static SwitchSectionSyntax GenerateFilePathSwitchStatement(IGrouping<string, (string filePath, string memberName, BlockSyntax block)> innerGroup)
+                    => CreateNestedSwitchSections(
                         innerGroup.ToArray(),
                         IdentifierName("memberName"),
                         x => x.memberName,
@@ -284,9 +284,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                             )
                     );
 
-                static SwitchSectionSyntax GenerateMemberNameSwitchStatement(IGrouping<string, (string filePath, string memberName, BlockSyntax block)> innerGroup) =>
-                    SwitchSection()
-                        .AddLabels(
+                static SwitchSectionSyntax GenerateMemberNameSwitchStatement(IGrouping<string, (string filePath, string memberName, BlockSyntax block)> innerGroup)
+                    => SwitchSection()
+                       .AddLabels(
                             CaseSwitchLabel(
                                 LiteralExpression(
                                     SyntaxKind.StringLiteralExpression,
@@ -294,8 +294,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                 )
                             )
                         )
-                        .AddStatements(innerGroup.FirstOrDefault().block?.Statements.ToArray() ?? Array.Empty<StatementSyntax>())
-                        .AddStatements(BreakStatement());
+                       .AddStatements(innerGroup.FirstOrDefault().block?.Statements.ToArray() ?? Array.Empty<StatementSyntax>())
+                       .AddStatements(BreakStatement());
 
 
                 switchStatement = switchStatement.AddSections(lineSwitchSection);
@@ -309,7 +309,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                 var assemblyContext = IdentifierName("context");
 
                 var newMethod = method
-                    .WithBody(block.AddStatements(switchStatement).AddStatements(method.Body!.Statements.ToArray()));
+                   .WithBody(block.AddStatements(switchStatement).AddStatements(method.Body!.Statements.ToArray()));
 
                 root = root.ReplaceNode(method, newMethod);
 
@@ -317,7 +317,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                 {
                     var @class = root.DescendantNodes().OfType<ClassDeclarationSyntax>().Single();
                     var privateAssemblyNodes = privateAssemblies
-                        .SelectMany(StatementGeneration.AssemblyDeclaration);
+                       .SelectMany(StatementGeneration.AssemblyDeclaration);
                     root = root.ReplaceNode(@class, @class.AddMembers(privateAssemblyNodes.ToArray()));
                 }
 
@@ -360,30 +360,39 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                 if (usingAttributes)
                 {
                     var attributeDataElements = type.GetAttributes()
-                        .Where(attribute => attribute.AttributeClass != null &&
-                            (SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceDescriptorAttribute) ||
-                                SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceRegistrationAttribute) ))
-                        .ToArray();
+                       .Where(
+                            attribute => attribute.AttributeClass != null &&
+                                ( SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceDescriptorAttribute) ||
+                                    SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceRegistrationAttribute) )
+                        )
+                       .ToArray();
 
                     var duplicates = attributeDataElements
-                        .Where(attribute => attribute.ConstructorArguments.Length > 0 && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Type)
-                        .GroupBy(attribute => attribute.ConstructorArguments[0].Value as INamedTypeSymbol!, SymbolEqualityComparer.Default)
-                        .SelectMany(grp => grp.Skip(1))
-                        .ToArray();
+                       .Where(attribute => attribute.ConstructorArguments.Length > 0 && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Type)
+                       .GroupBy(attribute => attribute.ConstructorArguments[0].Value as INamedTypeSymbol!, SymbolEqualityComparer.Default)
+                       .SelectMany(grp => grp.Skip(1))
+                       .ToArray();
                     foreach (var duplicate in duplicates)
                     {
                         // If there is no syntax it is probably not our code
-                        if (duplicate.ApplicationSyntaxReference == null) continue;
-                        context.ReportDiagnostic(Diagnostic.Create(Diagnostics.DuplicateServiceDescriptorAttribute,
-                            Location.Create(duplicate.ApplicationSyntaxReference.SyntaxTree, duplicate.ApplicationSyntaxReference.Span)));
+                        if (duplicate.ApplicationSyntaxReference == null)
+                            continue;
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                Diagnostics.DuplicateServiceDescriptorAttribute,
+                                Location.Create(duplicate.ApplicationSyntaxReference.SyntaxTree, duplicate.ApplicationSyntaxReference.Span)
+                            )
+                        );
                     }
 
                     foreach (var attribute in attributeDataElements)
                     {
-                        if (attribute.AttributeClass == null) continue;
+                        if (attribute.AttributeClass == null)
+                            continue;
                         var isServiceDescriptor = SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceDescriptorAttribute);
                         var isServiceRegistration = SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceRegistrationAttribute);
-                        if (!(isServiceDescriptor || isServiceRegistration)) continue;
+                        if (!( isServiceDescriptor || isServiceRegistration ))
+                            continue;
 
                         INamedTypeSymbol? attributeServiceType = null;
                         var lifetimeValue = lifetime;
@@ -391,12 +400,12 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                         if (attribute.ConstructorArguments.Length == 1 && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Enum)
                         {
                             var members = attribute.ConstructorArguments[0].Type!
-                                .GetMembers()
-                                .OfType<IFieldSymbol>();
+                               .GetMembers()
+                               .OfType<IFieldSymbol>();
                             if (attribute.ConstructorArguments[0].Value is int v)
                             {
                                 var value = members
-                                    .First(z => z.ConstantValue is int i && i == v);
+                                   .First(z => z.ConstantValue is int i && i == v);
                                 lifetimeValue = MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     IdentifierName("ServiceLifetime"),
@@ -407,12 +416,12 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                         else if (attribute.ConstructorArguments.Length == 2 && attribute.ConstructorArguments[1].Kind == TypedConstantKind.Enum)
                         {
                             var members = attribute.ConstructorArguments[1].Type!
-                                .GetMembers()
-                                .OfType<IFieldSymbol>();
+                               .GetMembers()
+                               .OfType<IFieldSymbol>();
                             if (attribute.ConstructorArguments[1].Value is int v)
                             {
                                 var value = members
-                                    .First(z => z.ConstantValue is int i && i == v);
+                                   .First(z => z.ConstantValue is int i && i == v);
                                 lifetimeValue = MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     IdentifierName("ServiceLifetime"),
@@ -422,8 +431,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                         }
 
                         if (attribute.ConstructorArguments.Length == 0 ||
-                            (isServiceRegistration && attribute.ConstructorArguments.Length == 1 && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Enum) ||
-                            (isServiceDescriptor && attribute.ConstructorArguments.Length == 2 && attribute.ConstructorArguments[1].Kind == TypedConstantKind.Enum && attribute.ConstructorArguments[0].Value == null))
+                            ( isServiceRegistration && attribute.ConstructorArguments.Length == 1 && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Enum ) ||
+                            ( isServiceDescriptor && attribute.ConstructorArguments.Length == 2 && attribute.ConstructorArguments[1].Kind == TypedConstantKind.Enum
+                             && attribute.ConstructorArguments[0].Value == null ))
                         {
                             if (!emittedTypes.Contains(type))
                             {
@@ -676,21 +686,28 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             else
             {
                 var assemblyReferences = assemblies
-                    .OfType<CompiledAssemblyDependenciesDescriptor>()
-                    .SelectMany(descriptor => compilation.References
-                        .Select(compilation.GetAssemblyOrModuleSymbol)
-                        .SelectMany(z => z is IAssemblySymbol assemblySymbol ? assemblySymbol.Modules :
-                            z is IModuleSymbol moduleSymbol ? new[] {moduleSymbol} : Array.Empty<IModuleSymbol>())
-                        .Where(module => module.ReferencedAssemblySymbols.Any(reference =>
-                            SymbolEqualityComparer.Default.Equals(descriptor.TypeFromAssembly.ContainingAssembly, reference)))
-                        .Select(z => z.ContainingAssembly)
-                        .Distinct(SymbolEqualityComparer.Default)
+                   .OfType<CompiledAssemblyDependenciesDescriptor>()
+                   .SelectMany(
+                        descriptor => compilation.References
+                           .Select(compilation.GetAssemblyOrModuleSymbol)
+                           .SelectMany(
+                                z => z is IAssemblySymbol assemblySymbol ? assemblySymbol.Modules :
+                                    z is IModuleSymbol moduleSymbol ? new[] { moduleSymbol } : Array.Empty<IModuleSymbol>()
+                            )
+                           .Where(
+                                module => module.ReferencedAssemblySymbols.Any(
+                                    reference =>
+                                        SymbolEqualityComparer.Default.Equals(descriptor.TypeFromAssembly.ContainingAssembly, reference)
+                                )
+                            )
+                           .Select(z => z.ContainingAssembly)
+                           .Distinct(SymbolEqualityComparer.Default)
                     )
-                    .ToArray();
+                   .ToArray();
 
                 var allAssemblyReferences = assemblyReferences
-                    .Concat(assemblies.OfType<CompiledAssemblyDescriptor>().Select(z => z.TypeFromAssembly.ContainingAssembly))
-                    .Distinct(SymbolEqualityComparer.Default);
+                   .Concat(assemblies.OfType<CompiledAssemblyDescriptor>().Select(z => z.TypeFromAssembly.ContainingAssembly))
+                   .Distinct(SymbolEqualityComparer.Default);
 
                 types = TypeSymbolVisitor.GetTypes(compilation, allAssemblyReferences);
             }
@@ -732,20 +749,27 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             {
                 types = filter.Filter switch
                 {
-                    NamespaceFilter.Exact => types.RemoveAll(toSymbol => !filter.Namespaces.Any(@namespace => toSymbol.ContainingNamespace.ToDisplayString() == @namespace)),
-                    NamespaceFilter.In => types.RemoveAll(toSymbol =>
-                        !filter.Namespaces.Any(@namespace => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(@namespace, StringComparison.Ordinal))),
-                    NamespaceFilter.NotIn => types.RemoveAll(toSymbol =>
-                        filter.Namespaces.Any(@namespace => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(@namespace, StringComparison.Ordinal))),
+                    NamespaceFilter.Exact => types.RemoveAll(toSymbol => !filter.Namespaces.Any(ns => toSymbol.ContainingNamespace.ToDisplayString() == ns)),
+                    NamespaceFilter.In => types.RemoveAll(toSymbol => !filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))),
+                    NamespaceFilter.NotIn => types.RemoveAll(toSymbol => filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))),
                     _ => types
                 };
             }
 
-            // foreach (var filter in typeFilters.OfType<CompiledAttributeFilterDescriptor>())
-            // {
-            // }
+            foreach (var filter in typeFilters.OfType<NameFilterDescriptor>())
+            {
+                types = filter.Filter switch
+                {
+                    TextDirectionFilter.Contains   => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.Contains(name))),
+                    TextDirectionFilter.StartsWith => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.StartsWith(name, StringComparison.Ordinal))),
+                    TextDirectionFilter.EndsWith   => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.EndsWith(name, StringComparison.Ordinal))),
+                    _                              => types
+                };
+            }
+
             return types;
         }
+
         internal class SyntaxReceiver : ISyntaxReceiver
         {
             public List<ExpressionSyntax> ScanCompiledExpressions { get; } = new List<ExpressionSyntax>();
