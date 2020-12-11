@@ -114,7 +114,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             }
 
             var compilation = ( context.Compilation as CSharpCompilation )!;
-            var compilationWithMethod = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(staticScanSourceText), CSharpSyntaxTree.ParseText(populateSourceText));
+            var parseOptions = new CSharpParseOptions(compilation.LanguageVersion);
+            var compilationWithMethod = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(staticScanSourceText, parseOptions), CSharpSyntaxTree.ParseText(populateSourceText, parseOptions));
 
             context.AddSource("CompiledServiceScanningExtensions.cs", staticScanSourceText);
             if (syntaxReceiver.ScanCompiledExpressions.Count == 0)
@@ -169,7 +170,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                    .OfType<InvocationExpressionSyntax>()
                    .First(
                         ies => ies.Expression is MemberAccessExpressionSyntax mae
-                         && mae.Name.ToFullString().EndsWith("ScanCompiled", StringComparison.Ordinal)
+                         && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
                     );
 
                 groups.Add(
@@ -779,7 +780,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                 if (syntaxNode is InvocationExpressionSyntax ies)
                 {
                     if (ies.Expression is MemberAccessExpressionSyntax mae
-                     && mae.Name.ToFullString().EndsWith("ScanCompiled", StringComparison.Ordinal)
+                     && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
                      && ies.ArgumentList.Arguments.Count is 1 or 2)
                     {
                         ScanCompiledExpressions.Add(ies.ArgumentList.Arguments[0].Expression);
