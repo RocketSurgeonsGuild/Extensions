@@ -24,7 +24,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests
             _testOutputHelper = testOutputHelper;
             WithGenerator<CompiledServiceScanningGenerator>();
             IgnoreOutputFilePath(
-                @"Rocket.Surgery.DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator\CompiledServiceScanningExtensions.cs"
+                $@"Rocket.Surgery.DependencyInjection.Analyzer{Environment.NewLine}Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator{Environment.NewLine}CompiledServiceScanningExtensions.cs"
             );
         }
 
