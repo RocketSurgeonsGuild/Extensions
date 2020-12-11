@@ -21,21 +21,25 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
             NameSyntax serviceCollectionName,
             INamedTypeSymbol serviceType,
             INamedTypeSymbol implementationType,
-            ExpressionSyntax lifetime
+            ExpressionSyntax lifetime,
+            bool useAssemblyLoad
         )
         {
-            var serviceTypeExpression = GetTypeOfExpression(compilation, serviceType, implementationType);
+            var serviceTypeExpression = GetTypeOfExpression(compilation, serviceType, implementationType, useAssemblyLoad);
             var isAccessible = compilation.IsSymbolAccessibleWithin(implementationType, compilation.Assembly);
 
             if (isAccessible)
             {
                 var implementationTypeExpression = SimpleLambdaExpression(Parameter(Identifier("_")))
-                    .WithExpressionBody(
+                   .WithExpressionBody(
                         InvocationExpression(
-                            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("_"), GenericName("GetRequiredService")
-                                .WithTypeArgumentList(
-                                    TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(Helpers.GetGenericDisplayName(implementationType))))
-                                )
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("_"),
+                                GenericName("GetRequiredService")
+                                   .WithTypeArgumentList(
+                                        TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(Helpers.GetGenericDisplayName(implementationType))))
+                                    )
                             )
                         )
                     );
@@ -45,14 +49,14 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
             else
             {
                 var implementationTypeExpression = SimpleLambdaExpression(Parameter(Identifier("_")))
-                    .WithExpressionBody(
+                   .WithExpressionBody(
                         BinaryExpression(
                             SyntaxKind.AsExpression,
                             InvocationExpression(
                                     MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("_"), IdentifierName("GetRequiredService"))
                                 )
-                                .WithArgumentList(
-                                    ArgumentList(SingletonSeparatedList(Argument(GetTypeOfExpression(compilation, implementationType, serviceType))))
+                               .WithArgumentList(
+                                    ArgumentList(SingletonSeparatedList(Argument(GetTypeOfExpression(compilation, implementationType, serviceType, useAssemblyLoad))))
                                 ),
                             IdentifierName(Helpers.GetGenericDisplayName(serviceType))
                         )
@@ -67,11 +71,12 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
             NameSyntax serviceCollectionName,
             INamedTypeSymbol serviceType,
             INamedTypeSymbol implementationType,
-            ExpressionSyntax lifetime
+            ExpressionSyntax lifetime,
+            bool useAssemblyLoad
         )
         {
-            var serviceTypeExpression = GetTypeOfExpression(compilation, serviceType, implementationType);
-            var implementationTypeExpression = GetTypeOfExpression(compilation, implementationType, serviceType);
+            var serviceTypeExpression = GetTypeOfExpression(compilation, serviceType, implementationType, useAssemblyLoad);
+            var implementationTypeExpression = GetTypeOfExpression(compilation, implementationType, serviceType, useAssemblyLoad);
             return GenerateServiceType(strategyName, serviceCollectionName, serviceTypeExpression, implementationTypeExpression, lifetime);
         }
 
@@ -88,7 +93,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
                     IdentifierName("Apply")
                 )
             )
-            .WithArgumentList(
+           .WithArgumentList(
                 ArgumentList(
                     SeparatedList(
                         new[]
@@ -96,7 +101,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
                             Argument(serviceCollectionName),
                             Argument(
                                 InvocationExpression(Describe)
-                                    .WithArgumentList(
+                                   .WithArgumentList(
                                         ArgumentList(
                                             SeparatedList(
                                                 new[]
@@ -119,26 +124,30 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
             var name = Helpers.AssemblyVariableName(symbol);
             var assemblyName = LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(symbol.Identity.GetDisplayName(true)));
 
-            yield return FieldDeclaration(VariableDeclaration(IdentifierName("AssemblyName"))
-                    .WithVariables(SingletonSeparatedList(
-                        VariableDeclarator(Identifier($"_{name}"))
-                    ))
+            yield return FieldDeclaration(
+                    VariableDeclaration(IdentifierName("AssemblyName"))
+                       .WithVariables(
+                            SingletonSeparatedList(
+                                VariableDeclarator(Identifier($"_{name}"))
+                            )
+                        )
                 )
-                .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.StaticKeyword)));
+               .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.StaticKeyword)));
             yield return PropertyDeclaration(IdentifierName("AssemblyName"), Identifier(name))
-                .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.StaticKeyword)))
-                .WithExpressionBody(
+               .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.StaticKeyword)))
+               .WithExpressionBody(
                     ArrowExpressionClause(
                         AssignmentExpression(
                             SyntaxKind.CoalesceAssignmentExpression,
                             IdentifierName(Identifier($"_{name}")),
                             ObjectCreationExpression(IdentifierName("AssemblyName"))
-                                .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(assemblyName)))
+                               .WithArgumentList(
+                                    ArgumentList(SingletonSeparatedList(Argument(assemblyName)))
                                 )
                         )
                     )
                 )
-                .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+               .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
         }
 
         public static bool RemoveImplicitGenericConversion(
@@ -147,22 +156,23 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
             INamedTypeSymbol type
         )
         {
-            if (SymbolEqualityComparer.Default.Equals(assignableToType, type)) return true;
+            if (SymbolEqualityComparer.Default.Equals(assignableToType, type))
+                return true;
             if (assignableToType.Arity > 0 && assignableToType.IsUnboundGenericType)
             {
                 var matchingBaseTypes = Helpers.GetBaseTypes(compilation, type)
-                    .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
-                    .Where(z => z is not null)
-                    .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
+                   .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
+                   .Where(z => z is not null)
+                   .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
                 if (matchingBaseTypes.Any())
                 {
                     return false;
                 }
 
                 var matchingInterfaces = type.AllInterfaces
-                    .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
-                    .Where(z => z is not null)
-                    .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
+                   .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
+                   .Where(z => z is not null)
+                   .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
                 if (matchingInterfaces.Any())
                 {
                     return false;
@@ -174,7 +184,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
             return !compilation.HasImplicitConversion(type, assignableToType);
         }
 
-        private static ExpressionSyntax GetTypeOfExpression(CSharpCompilation compilation, INamedTypeSymbol type, INamedTypeSymbol? relatedType)
+        private static ExpressionSyntax GetTypeOfExpression(CSharpCompilation compilation, INamedTypeSymbol type, INamedTypeSymbol? relatedType, bool useAssemblyLoad)
         {
             if (type.IsUnboundGenericType && relatedType != null)
             {
@@ -210,53 +220,80 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
                     var name = ParseTypeName(type.ConstructUnboundGenericType().ToDisplayString());
                     if (name is GenericNameSyntax genericNameSyntax)
                     {
-                        name = genericNameSyntax.WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>(
-                            genericNameSyntax.TypeArgumentList.Arguments.Select(_ => OmittedTypeArgument()).ToArray()
-                        )));
+                        name = genericNameSyntax.WithTypeArgumentList(
+                            TypeArgumentList(
+                                SeparatedList<TypeSyntax>(
+                                    genericNameSyntax.TypeArgumentList.Arguments.Select(_ => OmittedTypeArgument()).ToArray()
+                                )
+                            )
+                        );
                     }
 
                     return InvocationExpression(
-                            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, TypeOfExpression(name), IdentifierName("MakeGenericType")))
-                        .WithArgumentList(ArgumentList(SeparatedList(
-                            type.TypeArguments
-                                .Select(t => Argument(GetTypeOfExpression(compilation, (t as INamedTypeSymbol)!, null)))
-                        )));
+                            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, TypeOfExpression(name), IdentifierName("MakeGenericType"))
+                        )
+                       .WithArgumentList(
+                            ArgumentList(
+                                SeparatedList(
+                                    type.TypeArguments
+                                       .Select(t => Argument(GetTypeOfExpression(compilation, ( t as INamedTypeSymbol )!, null, useAssemblyLoad)))
+                                )
+                            )
+                        );
                 }
             }
 
-            return GetPrivateType(compilation, type);
+            return GetPrivateType(compilation, type, useAssemblyLoad);
         }
 
-        private static InvocationExpressionSyntax GetPrivateType(CSharpCompilation compilation, INamedTypeSymbol type)
+        private static InvocationExpressionSyntax GetPrivateType(CSharpCompilation compilation, INamedTypeSymbol type, bool useAssemblyLoad)
         {
             var expression = InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
                         InvocationExpression(
-                                MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierName("context"),
-                                    IdentifierName("LoadFromAssemblyName"))
+                                useAssemblyLoad
+                                    ? MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        IdentifierName("Assembly"),
+                                        IdentifierName("Load")
+                                    )
+                                    : MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        IdentifierName("context"),
+                                        IdentifierName("LoadFromAssemblyName")
+                                    )
                             )
-                            .WithArgumentList(ArgumentList(SingletonSeparatedList(
-                                Argument(IdentifierName(Helpers.AssemblyVariableName(type.ContainingAssembly)))
-                            ))),
+                           .WithArgumentList(
+                                ArgumentList(
+                                    SingletonSeparatedList(
+                                        Argument(IdentifierName(Helpers.AssemblyVariableName(type.ContainingAssembly)))
+                                    )
+                                )
+                            ),
                         IdentifierName("GetType")
                     )
                 )
-                .WithArgumentList(
-                    ArgumentList(SingletonSeparatedList(
-                        Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(Helpers.GetFullMetadataName(type))))
-                    ))
+               .WithArgumentList(
+                    ArgumentList(
+                        SingletonSeparatedList(
+                            Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(Helpers.GetFullMetadataName(type))))
+                        )
+                    )
                 );
             if (type.IsGenericType && !type.IsOpenGenericType())
             {
                 return InvocationExpression(
-                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
-                    .WithArgumentList(ArgumentList(SeparatedList(
-                        type.TypeArguments
-                            .Select(t => Argument(GetTypeOfExpression(compilation, (t as INamedTypeSymbol)!, null)))
-                    )));
+                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType"))
+                    )
+                   .WithArgumentList(
+                        ArgumentList(
+                            SeparatedList(
+                                type.TypeArguments
+                                   .Select(t => Argument(GetTypeOfExpression(compilation, ( t as INamedTypeSymbol )!, null, useAssemblyLoad)))
+                            )
+                        )
+                    );
             }
 
             return expression;
@@ -264,7 +301,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
 
         public static bool IsOpenGenericType(this INamedTypeSymbol type)
         {
-            return type.IsGenericType && (type.IsUnboundGenericType || type.TypeArguments.All(z => z.TypeKind == TypeKind.TypeParameter));
+            return type.IsGenericType && ( type.IsUnboundGenericType || type.TypeArguments.All(z => z.TypeKind == TypeKind.TypeParameter) );
         }
     }
 }

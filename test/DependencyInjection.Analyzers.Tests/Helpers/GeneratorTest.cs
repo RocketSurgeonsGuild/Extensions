@@ -1,6 +1,7 @@
 using Castle.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,6 +79,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests.Helpers
         private readonly List<SourceText> _sources = new();
         private GenerationTestResults? _lastResult;
         private readonly HashSet<string> _ignoredFilePaths = new();
+        private readonly OptionsProvider _optionsProvider = new OptionsProvider();
 
         public GeneratorTester(string projectName, AssemblyLoadContext assemblyLoadContext, ITestOutputHelper testOutputHelper, LogLevel minLevel = LogLevel.Trace) : base(
             testOutputHelper,
@@ -187,6 +189,24 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests.Helpers
             return this;
         }
 
+        public GeneratorTester AddGlobalOption(string key, string? value)
+        {
+            _optionsProvider.AddGlobalOption(key, value);
+            return this;
+        }
+
+        public GeneratorTester AddOption(SyntaxTree tree, string? value)
+        {
+            _optionsProvider.AddOption(tree, value);
+            return this;
+        }
+
+        public GeneratorTester AddOption(AdditionalText key, string? value)
+        {
+            _optionsProvider.AddOption(key, value);
+            return this;
+        }
+
         public CSharpCompilation Compile() => GenerateAsync().ConfigureAwait(false).GetAwaiter().GetResult().FinalCompilation;
 
         private Assembly? Emit(CSharpCompilation compilation, string? outputName = null)
@@ -251,7 +271,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests.Helpers
             {
                 Logger.LogInformation("--- {Generator} ---", generatorType.FullName);
                 var generator = ( Activator.CreateInstance(generatorType) as ISourceGenerator )!;
-                var driver = CSharpGeneratorDriver.Create(generator);
+                var driver = CSharpGeneratorDriver.Create(new [] {generator }, optionsProvider: _optionsProvider);
 
                 driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out diagnostics);
 
@@ -295,6 +315,49 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests.Helpers
                 };
 
             return _lastResult = results with { Results = builder.ToImmutable()};
+        }
+
+        class OptionsProvider : AnalyzerConfigOptionsProvider
+        {
+            private readonly Dictionary<string, string?> _options = new ();
+            private readonly Dictionary<string, string?> _globalOptions;
+
+            public OptionsProvider()
+            {
+                _globalOptions = new();
+                GlobalOptions = new Options(_globalOptions);
+            }
+            public override AnalyzerConfigOptions GetOptions(SyntaxTree tree) => throw new NotImplementedException();
+
+            public override AnalyzerConfigOptions GetOptions(AdditionalText textFile) => throw new NotImplementedException();
+
+            public override AnalyzerConfigOptions GlobalOptions { get; }
+
+            public void AddOption(SyntaxTree tree, string? value)
+            {
+                _options.Add(tree.FilePath, value);
+            }
+
+            public void AddOption(AdditionalText tree, string? value)
+            {
+                _options.Add(tree.Path, value);
+            }
+
+            public void AddGlobalOption(string key, string? value)
+            {
+                _globalOptions.Add(key, value);
+            }
+        }
+
+        class Options : AnalyzerConfigOptions
+        {
+            private readonly IReadOnlyDictionary<string, string?> _options;
+
+            public Options(IReadOnlyDictionary<string, string?> options)
+            {
+                _options = options;
+            }
+            public override bool TryGetValue(string key, out string? value) => _options.TryGetValue(key, out value);
         }
     }
 }
