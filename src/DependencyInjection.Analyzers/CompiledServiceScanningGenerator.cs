@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -174,6 +173,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             }
 
             var compilation = ( context.Compilation as CSharpCompilation )!;
+            // Debugger.Launch();
             var parseOptions = compilation.SyntaxTrees.Select(z => z.Options).OfType<CSharpParseOptions>().First();
             var useAssemblyLoad =
                 context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("compiled_scan_assembly_load", out var v)
@@ -183,7 +183,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                .AddSyntaxTrees(
                     CSharpSyntaxTree.ParseText(
                         useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext,
-                        CSharpParseOptions.Default,
+                        parseOptions,
                         path: "CompiledServiceScanningExtensions.cs"
                     ),
                     CSharpSyntaxTree.ParseText(
@@ -853,9 +853,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             {
                 types = filter.Filter switch
                 {
-                    TextDirectionFilter.Contains   => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.Contains(name))),
-                    TextDirectionFilter.StartsWith => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.StartsWith(name, StringComparison.Ordinal))),
-                    TextDirectionFilter.EndsWith   => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.EndsWith(name, StringComparison.Ordinal))),
+                    TextDirectionFilter.Contains   => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.Contains(name) && toSymbol.Arity == 0)),
+                    TextDirectionFilter.StartsWith => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.StartsWith(name, StringComparison.Ordinal) && toSymbol.Arity == 0)),
+                    TextDirectionFilter.EndsWith   => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.EndsWith(name, StringComparison.Ordinal) && toSymbol.Arity == 0)),
                     _                              => types
                 };
             }

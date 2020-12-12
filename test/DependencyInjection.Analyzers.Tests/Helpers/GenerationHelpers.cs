@@ -14,7 +14,10 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests.Helpers
         internal const string CSharpDefaultFileExt = "cs";
         internal const string TestProjectName = "TestProject";
 
-        public static Project CreateProject(string projectName, IEnumerable<MetadataReference> metadataReferences, params SourceText[] sources)
+        public static Project CreateProject(
+            string projectName,
+            IEnumerable<MetadataReference> metadataReferences,
+            params SourceText[] sources)
         {
             var projectId = ProjectId.CreateNewId(projectName);
             var solution = new AdhocWorkspace()
