@@ -23,12 +23,14 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers
         static SourceText staticScanSourceTextWithAssemblyLoadContext = SourceText.From(
             @"
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using Scrutor;
 using Rocket.Surgery.DependencyInjection.Compiled;
 namespace Microsoft.Extensions.DependencyInjection
 {
+    [CompilerGenerated, ExcludeFromCodeCoverage]
     internal static class CompiledServiceScanningExtensions
     {
         public static IServiceCollection ScanCompiled(
@@ -87,11 +89,13 @@ namespace Microsoft.Extensions.DependencyInjection
         static SourceText staticScanSourceText = SourceText.From(
             @"
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Scrutor;
 using Rocket.Surgery.DependencyInjection.Compiled;
 namespace Microsoft.Extensions.DependencyInjection
 {
+    [CompilerGenerated, ExcludeFromCodeCoverage]
     internal static class CompiledServiceScanningExtensions
     {
         public static IServiceCollection ScanCompiled(
@@ -125,13 +129,16 @@ namespace Microsoft.Extensions.DependencyInjection
         static SourceText populateSourceTextWithAssemblyLoadContext = SourceText.From(
             @"
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
+    [CompilerGenerated, ExcludeFromCodeCoverage]
     internal static class PopulateExtensions
     {
         public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
@@ -147,12 +154,15 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         static SourceText populateSourceText = SourceText.From(
             @"
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
+    [CompilerGenerated, ExcludeFromCodeCoverage]
     internal static class PopulateExtensions
     {
         public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
