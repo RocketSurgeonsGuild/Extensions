@@ -4,11 +4,6 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-interface A
-{
-    private bool C => false;
-}
-
 namespace Rocket.Surgery.Experimental.Analyzers.Tests
 {
     public class AutoImplementTests : GeneratorTest
@@ -24,7 +19,7 @@ namespace Rocket.Surgery.Experimental.Analyzers.Tests
         }
 
         [Fact]
-        public async Task Should_Emit_Assembly_Attributes()
+        public async Task Should_Emit_Extension_Class()
         {
             AddSources(
                 @"using Rocket.Surgery;
@@ -66,6 +61,65 @@ namespace Other
         }
 
         public string InverseColor => string.Join("""", Color.Reverse());
+        public string GetP() => ""abcd"";
+    }
+}"
+            );
+            result.AssertGenerationWasSuccessful();
+
+            // result.AssertCompilationWasSuccessful();
+        }
+
+
+        [Fact]
+        public async Task Should_Emit_Extension_Class_Across_Assemblies()
+        {
+            var reference = new GeneratorTester("Library", AssemblyLoadContext, _testOutputHelper);
+            reference.WithGenerator<AutoImplementGenerator>();
+            reference.AddSources(
+                @"using Rocket.Surgery;
+using System.Linq;
+using System.Collections.Generic;
+namespace Data
+{
+    [AutoImplement]
+    public interface IColorize
+    {
+        string Color { get; set; }
+        public string InverseColor => Color[1..];
+        public string GetP() => ""abcd"";
+    }
+}"
+            );
+
+            AddSources(
+                @"using Data;
+namespace Other
+{
+    partial class Colorable : IColorize
+    {
+    }
+}"
+            );
+
+            AddCompilationReference(reference.Compile());
+            var result = await GenerateAsync();
+            result.AssertGeneratedAsExpected<AutoImplementGenerator>(
+                @"using Rocket.Surgery;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace Other
+{
+    partial class Colorable : IColorize
+    {
+        public string Color
+        {
+            get;
+            set;
+        }
+
+        public string InverseColor => Color[1..];
         public string GetP() => ""abcd"";
     }
 }"
