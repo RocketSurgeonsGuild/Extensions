@@ -78,48 +78,89 @@ namespace Rocket.Surgery.Experimental.Analyzers
 
                 TypeDeclarationSyntax? declarationSyntax = null;
                 var namespaces = new List<UsingDirectiveSyntax>();
-                var possibleMixins = symbol.AllInterfaces
-                   .Concat(
-                        symbol.GetAttributes()
-                           .Where(z => z.AttributeClass?.Name is "AutoImplementAttribute" or "MixinAttribute")
-                           .Where(z => z.ConstructorArguments is { Length: 1 })
-                           .Where(z => z.ConstructorArguments[0] is { Kind:TypedConstantKind.Type, Value: INamedTypeSymbol })
-                           .Select(z => z.ConstructorArguments[0].Value!)
-                           .OfType<INamedTypeSymbol>()
-                    );
 
-                foreach (var @interface in possibleMixins)
+                var syntaxes = symbol.DeclaringSyntaxReferences
+                   .Select(x => x.GetSyntax())
+                   .OfType<TypeDeclarationSyntax>()
+                   .ToImmutableArray();
+
+                foreach (var @interface in GetMixins(symbol))
                 {
-                    if (!_interfaces.TryGetValue(@interface.GetFullMetadataName(), out var interfaceSyntax))
-                        continue;
+                    TypeDeclarationSyntaxes(
+                        _context,
+                        @interface,
+                        _interfaces,
+                        ref syntaxes,
+                        namespaces,
+                        ref declarationSyntax
+                    );
+                }
 
-                    var syntaxes = symbol.DeclaringSyntaxReferences
-                       .Select(x => x.GetSyntax())
-                       .OfType<TypeDeclarationSyntax>()
-                       .ToImmutableArray();
+
+                static void TypeDeclarationSyntaxes(
+                    GeneratorExecutionContext context,
+                    INamedTypeSymbol namedTypeSymbol,
+                    ImmutableDictionary<string, TypeDeclarationSyntax> interfaces,
+                    ref ImmutableArray<TypeDeclarationSyntax> syntaxes,
+                    List<UsingDirectiveSyntax> namespaces,
+                    ref TypeDeclarationSyntax? declarationSyntax
+                )
+                {
+                    if (!interfaces.TryGetValue(namedTypeSymbol.GetFullMetadataName(), out var interfaceSyntax))
+                        return;
 
                     foreach (var syntax in syntaxes)
                     {
                         if (!syntax.Modifiers.Any(z => z.IsKind(SyntaxKind.PartialKeyword)))
                         {
-                            _context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBePartial, syntax.Identifier.GetLocation(), syntax.GetFullMetadataName()));
+                            context.ReportDiagnostic(
+                                Diagnostic.Create(Diagnostics.MustBePartial, syntax.Identifier.GetLocation(), syntax.GetFullMetadataName())
+                            );
                         }
                     }
 
                     declarationSyntax ??= syntaxes[0]
                        .WithMembers(List(ImmutableArray<MemberDeclarationSyntax>.Empty))
                        .WithAttributeLists(List(ImmutableArray<AttributeListSyntax>.Empty))
-                       .WithConstraintClauses(List(Array.Empty<TypeParameterConstraintClauseSyntax>()));
-                    declarationSyntax = declarationSyntax
-                       .AddMembers(@interfaceSyntax.Members.ToArray())
-                       .AddAttributeLists(interfaceSyntax.AttributeLists.ToArray());
+                       .WithConstraintClauses(List(Array.Empty<TypeParameterConstraintClauseSyntax>()))
+                       .WithBaseList(null);
+
                     var rewriter = new InterfaceSyntaxRewriter(syntaxes);
-                    declarationSyntax = (TypeDeclarationSyntax)rewriter.Visit(declarationSyntax);
-                    namespaces.AddRange(@interfaceSyntax.SyntaxTree.GetCompilationUnitRoot().Usings);
+                    namespaces.AddRange(interfaceSyntax.SyntaxTree.GetCompilationUnitRoot().Usings);
+                    interfaceSyntax = (TypeDeclarationSyntax)rewriter.Visit(interfaceSyntax);
+                    declarationSyntax = (TypeDeclarationSyntax)declarationSyntax
+                       .AddMembers(interfaceSyntax.Members.ToArray())
+                       .AddAttributeLists(interfaceSyntax.AttributeLists.ToArray())
+                       .AddBaseListTypes(interfaceSyntax.BaseList is null ? Array.Empty<BaseTypeSyntax>() : @interfaceSyntax.BaseList.Types.ToArray());
+                    syntaxes = syntaxes.Add(declarationSyntax);
+
+                    foreach (var symbol in GetMixins(namedTypeSymbol))
+                    {
+                        TypeDeclarationSyntaxes(context, symbol, interfaces, ref syntaxes, namespaces, ref declarationSyntax);
+                    }
                 }
+
 
                 if (declarationSyntax is { })
                 {
+                    if (declarationSyntax.BaseList?.Types.Any() == true)
+                    {
+                        var baseTypes =
+                            declarationSyntax.BaseList.Types
+                               .GroupBy(z => z.Type.GetSyntaxName())
+                               .Select(z => z.First())
+                               .ToArray();
+                        if (baseTypes.Length > 0)
+                        {
+                            declarationSyntax = declarationSyntax.WithBaseList(BaseList(SeparatedList(baseTypes)));
+                        }
+                    }
+
+                    if (declarationSyntax is { BaseList: { Types: { Count: 0 } } })
+                    {
+                        declarationSyntax = declarationSyntax.WithBaseList(null);
+                    }
+
                     var root = declarationSyntax.ReparentDeclaration(_context, (TypeDeclarationSyntax)symbol.DeclaringSyntaxReferences[0].GetSyntax());
 
                     var cu = CompilationUnit(
@@ -127,16 +168,37 @@ namespace Rocket.Surgery.Experimental.Analyzers
                         List(ImmutableArray<UsingDirectiveSyntax>.Empty),
                         List<AttributeListSyntax>(),
                         SingletonList<MemberDeclarationSyntax>(
-                            NamespaceDeclaration(ParseName(symbol.ContainingNamespace.ToDisplayString()))
-                               .WithMembers(SingletonList<MemberDeclarationSyntax>(root))
+                            _context.Compilation.GlobalNamespace.ToDisplayString() == symbol.ContainingNamespace.ToDisplayString()
+                                ? root
+                                : NamespaceDeclaration(ParseName(symbol.ContainingNamespace.ToDisplayString()))
+                                   .WithMembers(SingletonList<MemberDeclarationSyntax>(root))
                         )
-                    ).AddUsings(namespaces.ToArray());
+                    ).AddUsings(
+                        namespaces
+                           .GroupBy(z => z.Name.ToFullString().Trim())
+                           .Select(z => z.First())
+                           .ToArray()
+                    );
+                    // if (!SymbolEqualityComparer.Default.Equals(_context.Compilation.GlobalNamespace, symbol.ContainingNamespace))
+                    // {
+                    //     cu = cu.AddUsings(UsingDirective(ParseName(symbol.ContainingNamespace.ToString())));
+                    // }
 
                     _context.AddSource($"Extension_{symbol.ToDisplayString()}.cs", cu.NormalizeWhitespace().GetText(Encoding.UTF8));
                 }
             }
 
             Accept(symbol.GetMembers());
+
+            static IEnumerable<INamedTypeSymbol> GetMixins(INamedTypeSymbol symbol) => symbol.AllInterfaces
+               .Concat(
+                    symbol.GetAttributes()
+                       .Where(z => z.AttributeClass?.Name is "AutoImplementAttribute" or "MixinAttribute")
+                       .Where(z => z.ConstructorArguments is { Length: 1 })
+                       .Where(z => z.ConstructorArguments[0] is { Kind: TypedConstantKind.Type, Value: INamedTypeSymbol })
+                       .Select(z => z.ConstructorArguments[0].Value!)
+                       .OfType<INamedTypeSymbol>()
+                );
         }
     }
 }

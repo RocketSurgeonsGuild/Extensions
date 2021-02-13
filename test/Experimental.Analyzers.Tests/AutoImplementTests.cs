@@ -49,10 +49,11 @@ namespace Other
                 @"using Rocket.Surgery;
 using System.Linq;
 using System.Collections.Generic;
+using Data;
 
 namespace Other
 {
-    partial class Colorable : IColorize
+    partial class Colorable
     {
         public string Color
         {
@@ -108,10 +109,11 @@ namespace Other
                 @"using Rocket.Surgery;
 using System.Linq;
 using System.Collections.Generic;
+using Data;
 
 namespace Other
 {
-    partial class Colorable : IColorize
+    partial class Colorable
     {
         public string Color
         {
@@ -162,6 +164,7 @@ namespace Other
                 @"using Rocket.Surgery;
 using System.Linq;
 using System.Collections.Generic;
+using Data;
 
 namespace Other
 {
@@ -175,6 +178,214 @@ namespace Other
 
         public string InverseColor => string.Join("""", Color.Reverse());
         public string GetP() => ""abcd"";
+    }
+}"
+            );
+            result.AssertGenerationWasSuccessful();
+        }
+
+
+        [Fact]
+        public async Task Supports_Base_Types()
+        {
+            AddSources(
+                @"using Rocket.Surgery;
+using System.Linq;
+using System.Collections.Generic;
+namespace Data
+{
+    [AutoImplement]
+    public interface IColorize
+    {
+        string Color { get; set; }
+    }
+    [AutoImplement]
+    public interface IColorizeOther
+    {
+        string ColorOther { get; set; }
+        public string InverseColor => string.Join("""", Color.Reverse());
+        public string GetP() => ""abcd"";
+    }
+    [AutoImplement]
+    public interface Colorize : IColorize, IColorizeOther
+    {
+    }
+}",
+                @"using Data;
+using Rocket.Surgery;
+namespace Other
+{
+    [AutoImplement(typeof(Colorize))]
+    partial class Colorable
+    {
+    }
+}"
+            );
+
+            var result = await GenerateAsync();
+            result.AssertGeneratedAsExpected<AutoImplementGenerator>(
+                @"using Rocket.Surgery;
+using System.Linq;
+using System.Collections.Generic;
+using Data;
+
+namespace Other
+{
+    partial class Colorable : IColorize, IColorizeOther
+    {
+        public string Color
+        {
+            get;
+            set;
+        }
+
+        public string ColorOther
+        {
+            get;
+            set;
+        }
+
+        public string InverseColor => string.Join("""", Color.Reverse());
+        public string GetP() => ""abcd"";
+    }
+}"
+            );
+            result.AssertGenerationWasSuccessful();
+        }
+
+
+        [Fact]
+        public async Task Supports_Explicit_Implementations()
+        {
+            AddSources(
+                @"using Rocket.Surgery;
+using System.Linq;
+using System.Collections.Generic;
+namespace Data
+{
+    [AutoImplement]
+    public interface IColorize
+    {
+        string Color { get; set; }
+    }
+    [AutoImplement]
+    public interface IColorizeOther : IColorize
+    {
+        string IColorize.Color { get => ""123""; set => {} }
+        string ColorOther { get; set; }
+        public string InverseColor => string.Join("""", Color.Reverse());
+        public string GetP() => ""abcd"";
+    }
+    [AutoImplement]
+    public interface Colorize : IColorize, IColorizeOther
+    {
+    }
+}",
+                @"using Data;
+using Rocket.Surgery;
+namespace Other
+{
+    [AutoImplement(typeof(Colorize))]
+    partial class Colorable
+    {
+    }
+}"
+            );
+
+            var result = await GenerateAsync();
+            result.AssertGeneratedAsExpected<AutoImplementGenerator>(
+                @"using Rocket.Surgery;
+using System.Linq;
+using System.Collections.Generic;
+using Data;
+
+namespace Other
+{
+    partial class Colorable : IColorize, IColorizeOther
+    {
+        public string Color
+        {
+            get => ""123"";
+            set =>
+            {
+            }
+        }
+
+        public string ColorOther
+        {
+            get;
+            set;
+        }
+
+        public string InverseColor => string.Join("""", Color.Reverse());
+        public string GetP() => ""abcd"";
+    }
+}"
+            );
+            result.AssertGenerationWasSuccessful();
+        }
+
+        [Fact]
+        public async Task Supports_Duplicate_Base_Types()
+        {
+            AddSources(
+                @"using Rocket.Surgery;
+using System.Linq;
+using System.Collections.Generic;
+namespace Data
+{
+    [AutoImplement]
+    public interface IColorize
+    {
+        string Color { get; set; }
+    }
+    [AutoImplement]
+    public interface IColorizeOther : IColorize
+    {
+        string ColorOther { get; set; }
+        public string InverseColor => string.Join("""", Color.Reverse());
+        public string GetP() => ""abcd"";
+    }
+    [AutoImplement]
+    public interface Colorize : IColorize, IColorizeOther
+    {
+    }
+}",
+                @"using Data;
+using Rocket.Surgery;
+namespace Other
+{
+    [AutoImplement(typeof(Colorize))]
+    partial class Colorable
+    {
+    }
+}"
+            );
+
+            var result = await GenerateAsync();
+            result.AssertGeneratedAsExpected<AutoImplementGenerator>(
+                @"using Rocket.Surgery;
+using System.Linq;
+using System.Collections.Generic;
+using Data;
+
+namespace Other
+{
+    partial class Colorable : IColorize, IColorizeOther
+    {
+        public string ColorOther
+        {
+            get;
+            set;
+        }
+
+        public string InverseColor => string.Join("""", Color.Reverse());
+        public string GetP() => ""abcd"";
+        public string Color
+        {
+            get;
+            set;
+        }
     }
 }"
             );
@@ -227,13 +438,11 @@ namespace Other
                 @"using Rocket.Surgery;
 using System.Linq;
 using System.Collections.Generic;
-using Rocket.Surgery;
-using System.Linq;
-using System.Collections.Generic;
+using Data;
 
 namespace Other
 {
-    partial class Colorable : IColorize, ISizeable
+    partial class Colorable
     {
         public string Color
         {

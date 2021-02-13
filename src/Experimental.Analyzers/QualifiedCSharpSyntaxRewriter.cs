@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Rocket.Surgery.Experimental.Analyzers
 {
@@ -34,58 +35,58 @@ namespace Rocket.Surgery.Experimental.Analyzers
             return base.VisitAttributeList(node);
         }
 
-        public override SyntaxNode? VisitPropertyDeclaration(PropertyDeclarationSyntax node)
-        {
-            var type = _semanticModel.GetDeclaredSymbol(node);
-            return base.VisitPropertyDeclaration(
-                type is null
-                    ? node
-                    : node.WithType(
-                        SyntaxFactory.ParseTypeName(type.Type.ToDisplayString())
-                    )
-            );
-        }
-
-        public override SyntaxNode? VisitFieldDeclaration(FieldDeclarationSyntax node)
-        {
-            var type = _semanticModel.GetDeclaredSymbol(node);
-
-            return base.VisitFieldDeclaration(
-                type is null
-                    ? node
-                    : node.WithDeclaration(
-                        node.Declaration.WithType(SyntaxFactory.ParseTypeName(type.ToDisplayString()))
-                    )
-            );
-        }
-
-        public override SyntaxNode? VisitSimpleBaseType(SimpleBaseTypeSyntax node)
-        {
-            var type = _semanticModel.GetDeclaredSymbol(node);
-
-            return base.VisitSimpleBaseType(
-                type is null
-                    ? node
-                    : node.WithType(SyntaxFactory.ParseTypeName(type.ToDisplayString()))
-            );
-        }
-
-        public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
-        {
-            var type = _semanticModel.GetDeclaredSymbol(node.ReturnType);
-            return base.VisitMethodDeclaration(type is null ? node : node.WithReturnType(SyntaxFactory.ParseTypeName(type.ToDisplayString())));
-        }
-
-        public override SyntaxNode? VisitParameter(ParameterSyntax node)
-        {
-            var type = _semanticModel.GetDeclaredSymbol(node);
-            return base.VisitParameter(
-                type is null
-                    ? node
-                    : node.WithType(
-                        SyntaxFactory.ParseTypeName(type.Type.ToDisplayString())
-                    )
-            );
-        }
+        // public override SyntaxNode? VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+        // {
+        //     var type = _semanticModel.GetDeclaredSymbol(node);
+        //     return base.VisitPropertyDeclaration(
+        //         type is null
+        //             ? node
+        //             : node.WithType(
+        //                 ParseTypeName(type.Type.ToDisplayString())
+        //             )
+        //     );
+        // }
+        //
+        // public override SyntaxNode? VisitFieldDeclaration(FieldDeclarationSyntax node)
+        // {
+        //     var type = _semanticModel.GetDeclaredSymbol(node);
+        //
+        //     return base.VisitFieldDeclaration(
+        //         type is null
+        //             ? node
+        //             : node.WithDeclaration(
+        //                 node.Declaration.WithType(ParseTypeName(type.ToDisplayString()))
+        //             )
+        //     );
+        // }
+        //
+        // public override SyntaxNode? VisitSimpleBaseType(SimpleBaseTypeSyntax node)
+        // {
+        //     var type = _semanticModel.GetDeclaredSymbol(node);
+        //
+        //     return base.VisitSimpleBaseType(
+        //         type is null
+        //             ? node
+        //             : node.WithType(ParseTypeName(type.ToDisplayString()))
+        //     );
+        // }
+        //
+        // public override SyntaxNode? VisitMethodDeclaration(MethodDeclarationSyntax node)
+        // {
+        //     var type = _semanticModel.GetDeclaredSymbol(node.ReturnType);
+        //     return base.VisitMethodDeclaration(type is null ? node : node.WithReturnType(ParseTypeName(type.ToDisplayString())));
+        // }
+        //
+        // public override SyntaxNode? VisitParameter(ParameterSyntax node)
+        // {
+        //     var type = _semanticModel.GetDeclaredSymbol(node);
+        //     return base.VisitParameter(
+        //         type is null
+        //             ? node
+        //             : node.WithType(
+        //                 ParseTypeName(type.Type.ToDisplayString())
+        //             )
+        //     );
+        // }
     }
 }

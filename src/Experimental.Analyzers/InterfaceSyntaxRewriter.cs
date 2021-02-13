@@ -1,6 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -32,14 +33,19 @@ namespace Rocket.Surgery.Experimental.Analyzers
                .SelectMany(z => z.Members)
                .OfType<PropertyDeclarationSyntax>())
             {
-                if (member.Identifier.IsEquivalentTo(node.Identifier))
+                if (member.Identifier.ToFullString() == node.Identifier.ToFullString())
                     return null;
             }
+
+            // this probably controversial...
+            if (node.ExplicitInterfaceSpecifier is { })
+                node = node.WithExplicitInterfaceSpecifier(null);
 
             node = node.WithModifiers(TokenList(node.Modifiers.Except(node.Modifiers.Where(z => z.IsKind(SyntaxKind.AbstractKeyword)))));
 
             return node.Modifiers.Any(z => z.IsKind(SyntaxKind.PublicKeyword) || z.IsKind(SyntaxKind.ProtectedKeyword) || z.IsKind(SyntaxKind.PrivateKeyword))
-                ? node : node.AddModifiers(Token(SyntaxKind.PublicKeyword));
+                ? node
+                : node.AddModifiers(Token(SyntaxKind.PublicKeyword));
         }
 
         public override SyntaxNode? VisitFieldDeclaration(FieldDeclarationSyntax node)
@@ -48,10 +54,22 @@ namespace Rocket.Surgery.Experimental.Analyzers
                .SelectMany(z => z.Members)
                .OfType<FieldDeclarationSyntax>())
             {
-                if (member.Declaration.IsEquivalentTo(node.Declaration))
+                if (member.Declaration.ToFullString() == node.Declaration.ToFullString())
                     return null;
             }
 
+            return node;
+        }
+
+        public override SyntaxNode? VisitBaseList(BaseListSyntax node)
+        {
+            foreach (var baseType in _relatedSyntax.SelectMany(z => ( z.BaseList ?? BaseList() ).Types))
+            {
+                node = node.WithTypes(SeparatedList(node.Types.Where(t => t.Type.GetSyntaxName() != baseType.Type.GetSyntaxName())));
+            }
+
+            if (node.Types.Count == 0)
+                return null;
             return node;
         }
 
@@ -61,9 +79,13 @@ namespace Rocket.Surgery.Experimental.Analyzers
                .SelectMany(z => z.Members)
                .OfType<MethodDeclarationSyntax>())
             {
-                if (member.Identifier.IsEquivalentTo(node.Identifier))
+                if (member.Identifier.ToFullString() == node.Identifier.ToFullString())
                     return null;
             }
+
+            // this probably controversial...
+            if (node.ExplicitInterfaceSpecifier is { })
+                node = node.WithExplicitInterfaceSpecifier(null);
 
             node = node.WithModifiers(TokenList(node.Modifiers.Except(node.Modifiers.Where(z => z.IsKind(SyntaxKind.AbstractKeyword)))));
 

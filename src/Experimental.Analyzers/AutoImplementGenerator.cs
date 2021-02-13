@@ -2,10 +2,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Rocket.Surgery.Experimental.Analyzers
 {
@@ -37,7 +39,7 @@ namespace Rocket.Surgery
         public MixinAttribute(Type type) { }
     }
 
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     class AutoImplementSourceAttribute : Attribute
     {
         public AutoImplementSourceAttribute(string source)
@@ -69,45 +71,58 @@ namespace Rocket.Surgery
                         path: "Attribute.cs"
                     )
                 );
-            foreach (var @interface in syntaxReceiver.Interfaces)
+            try
             {
-                var model = compilationWithMethod.GetSemanticModel(@interface.SyntaxTree);
-                var symbol = model.GetDeclaredSymbol(@interface);
-                if (symbol is null)
-                    continue;
+                foreach (var @interface in syntaxReceiver.Interfaces)
+                {
+                    var model = compilationWithMethod.GetSemanticModel(@interface.SyntaxTree);
+                    var symbol = model.GetDeclaredSymbol(@interface);
+                    if (symbol is null)
+                        continue;
 
-                var writer = new QualifiedCSharpSyntaxRewriter(compilationWithMethod, compilationWithMethod.GetSemanticModel(@interface.SyntaxTree));
-                var rewrittenInterface = (TypeDeclarationSyntax)writer.Visit(@interface);
+                    var writer = new QualifiedCSharpSyntaxRewriter(compilationWithMethod, compilationWithMethod.GetSemanticModel(@interface.SyntaxTree));
+                    var rewrittenInterface = (TypeDeclarationSyntax)writer.Visit(@interface);
 
-                var cu = SyntaxFactory.CompilationUnit(
-                    SyntaxFactory.List<ExternAliasDirectiveSyntax>(),
-                    SyntaxFactory.List(ImmutableArray<UsingDirectiveSyntax>.Empty),
-                    SyntaxFactory.List<AttributeListSyntax>(),
-                    SyntaxFactory.SingletonList<MemberDeclarationSyntax>(
-                        SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(symbol.ContainingNamespace.ToDisplayString()))
-                           .WithMembers(SyntaxFactory.SingletonList<MemberDeclarationSyntax>(rewrittenInterface.ReparentDeclaration(context, @interface)))
-                    )
-                ).AddUsings(@interface.SyntaxTree.GetCompilationUnitRoot().Usings.ToArray());
+                    var cu = CompilationUnit(
+                        List<ExternAliasDirectiveSyntax>(),
+                        List(ImmutableArray<UsingDirectiveSyntax>.Empty),
+                        List<AttributeListSyntax>(),
+                        SingletonList<MemberDeclarationSyntax>(
+                            SymbolEqualityComparer.Default.Equals(context.Compilation.GlobalNamespace, symbol.ContainingNamespace)
+                                ? rewrittenInterface.ReparentDeclaration(context, @interface)
+                                : NamespaceDeclaration(ParseName(symbol.ContainingNamespace.ToDisplayString()))
+                                   .WithMembers(SingletonList<MemberDeclarationSyntax>(rewrittenInterface.ReparentDeclaration(context, @interface)))
+                        )
+                    ).AddUsings(@interface.SyntaxTree.GetCompilationUnitRoot().Usings.ToArray());
+                    if (!SymbolEqualityComparer.Default.Equals(context.Compilation.GlobalNamespace, symbol.ContainingNamespace))
+                    {
+                        cu = cu.AddUsings(UsingDirective(ParseName(symbol.ContainingNamespace.ToString())));
+                    }
 
-                var attr = SyntaxFactory.AttributeList(
-                    SyntaxFactory.AttributeTargetSpecifier(SyntaxFactory.Token(SyntaxKind.AssemblyKeyword)),
-                    SyntaxFactory.SingletonSeparatedList(
-                        SyntaxFactory.Attribute(
-                            SyntaxFactory.ParseName("Rocket.Surgery.AutoImplementSourceAttribute"),
-                            SyntaxFactory.AttributeArgumentList(
-                                SyntaxFactory.SingletonSeparatedList(
-                                    SyntaxFactory.AttributeArgument(
-                                        SyntaxFactory.LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            SyntaxFactory.Literal(cu.NormalizeWhitespace().ToFullString())
+                    var attr = AttributeList(
+                        AttributeTargetSpecifier(Token(SyntaxKind.AssemblyKeyword)),
+                        SingletonSeparatedList(
+                            Attribute(
+                                ParseName("Rocket.Surgery.AutoImplementSourceAttribute"),
+                                AttributeArgumentList(
+                                    SingletonSeparatedList(
+                                        AttributeArgument(
+                                            LiteralExpression(
+                                                SyntaxKind.StringLiteralExpression,
+                                                Literal(cu.NormalizeWhitespace().ToFullString())
+                                            )
                                         )
                                     )
                                 )
                             )
                         )
-                    )
-                );
-                content.AppendLine(attr.ToFullString());
+                    );
+                    content.AppendLine(attr.ToFullString());
+                }
+            }
+            catch (Exception e)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.Error, null, e.ToString(), e.InnerException?.ToString()));
             }
 
             context.AddSource("AssemblyData.cs", content.ToString());

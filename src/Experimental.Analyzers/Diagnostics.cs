@@ -15,6 +15,14 @@ namespace Rocket.Surgery.Experimental.Analyzers
             DiagnosticSeverity.Error,
             true
         );
+        public static DiagnosticDescriptor Error  { get; } = new DiagnosticDescriptor(
+            "LPAD0002",
+            "Error",
+            "Error {0} -- {1}",
+            Category,
+            DiagnosticSeverity.Error,
+            true
+        );
 
         // public static DiagnosticDescriptor MustBeAnExpression { get; } = new DiagnosticDescriptor(
         //     "RSGD0001",
