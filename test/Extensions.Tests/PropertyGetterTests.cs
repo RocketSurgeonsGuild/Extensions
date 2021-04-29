@@ -7,6 +7,7 @@ using FluentAssertions;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
 using Rocket.Surgery.Reflection;
+using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -593,7 +594,7 @@ namespace Rocket.Surgery.Extensions.Tests
                         }
                     }
                 }),
-                Values = new ReadOnlyDictionary<string, string> (new Dictionary<string, string> { { "A", "1" }, { "B", "2" }, { "C", "3" } })
+                Values = new ReadOnlyDictionary<string, string>(new Dictionary<string, string> { { "A", "1" }, { "B", "2" }, { "C", "3" } })
             };
         }
 
