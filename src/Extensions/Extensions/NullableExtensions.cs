@@ -53,7 +53,7 @@ namespace Rocket.Surgery.Extensions
         private static Nullability NullabilityHelper(Type memberType, MemberInfo? declaringType, IEnumerable<CustomAttributeData> customAttributes)
         {
             if (memberType.IsValueType)
-                return Nullability.NotDefined;
+                return Nullable.GetUnderlyingType(memberType) == null ? Nullability.NonNullable : Nullability.Nullable;
 
             var nullable = customAttributes
                 .FirstOrDefault(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.NullableAttribute");
