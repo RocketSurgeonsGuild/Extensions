@@ -95,12 +95,12 @@ public class Base32Url
         /// <summary>
         ///     Encode
         /// </summary>
-        public readonly string Encode;
+        public readonly string? Encode;
 
         /// <summary>
         ///     Decode
         /// </summary>
-        public readonly string[] Decode;
+        public readonly string[]? Decode;
 #pragma warning restore CA1051 // Do not declare visible instance fields
     }
 
@@ -212,7 +212,7 @@ public class Base32Url
     ///     like this to provide a unique mapping during decoding, thus to create a crockford style map you must always include the upper and lower
     ///     decode mappings of any case insensitive decode characters required.
     /// </param>
-    public Base32Url(bool padding, bool caseSensitive, bool ignoreWhiteSpaceWhenDecoding, [NotNull] CharMap[] alphabet)
+    public Base32Url(bool padding, bool caseSensitive, bool ignoreWhiteSpaceWhenDecoding, CharMap[] alphabet)
     {
         if (alphabet == null)
         {
@@ -240,7 +240,7 @@ public class Base32Url
             );
         }
 
-        var decodingChars = alphabet.SelectMany(t => t.Decode.Select(c => c)).GroupBy(k => k, equality).ToArray();
+        var decodingChars = alphabet.SelectMany(t => t.Decode!.Select(c => c)).GroupBy(k => k, equality).ToArray();
         if (decodingChars.Any(g => g.Count() > 1))
         {
             throw new ArgumentException(
@@ -330,7 +330,7 @@ public class Base32Url
     ///     Thrown when string is invalid length if padding is expected or invalid (not in the base32 decoding set) characters are
     ///     provided.
     /// </exception>
-    public byte[] Decode([NotNull] string input)
+    public byte[] Decode(string input)
     {
         if (input == null)
         {
@@ -392,7 +392,7 @@ public class Base32Url
 
         var indexKey = ( IsCaseSensitive ? "S" : "I" ) +
                        string.Join("", _alphabet.Select(t => t.Encode)) +
-                       "_" + string.Join("", _alphabet.SelectMany(t => t.Decode).Select(c => c));
+                       "_" + string.Join("", _alphabet.SelectMany(t => t.Decode ?? Array.Empty<string>()).Select(c => c));
 
         if (!Indexes.TryGetValue(indexKey, out var cidx))
         {
@@ -404,7 +404,7 @@ public class Base32Url
                     cidx = new Dictionary<string, uint>(_alphabet.Length, equality);
                     for (var i = 0; i < _alphabet.Length; i++)
                     {
-                        foreach (var c in _alphabet[i].Decode.Select(c => c))
+                        foreach (var c in ( _alphabet[i].Decode ?? Array.Empty<string>() ).Select(c => c))
                         {
                             cidx[c] = (uint)i;
                         }

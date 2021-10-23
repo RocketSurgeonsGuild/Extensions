@@ -12,7 +12,7 @@ public static class TopographicalSortExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="source">The source.</param>
     /// <param name="dependencies">The dependencies.</param>
-    public static IEnumerable<T> TopographicalSort<T>([NotNull] this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies)
+    public static IEnumerable<T> TopographicalSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies)
     {
         if (source == null)
         {

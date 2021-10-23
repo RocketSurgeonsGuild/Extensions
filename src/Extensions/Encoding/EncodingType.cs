@@ -1,3 +1,4 @@
+#pragma warning disable CA1008
 namespace Rocket.Surgery.Encoding;
 
 /// <summary>

@@ -27,7 +27,7 @@ internal class Throttle<T> : ObserverBase<T>, IObserver<Throttle<T>>
         _leading = leading;
         _trailing = trailing;
         _scheduler = scheduler;
-        _notifier = notifier.SubscribeOn(_scheduler).ObserveOn(_scheduler).Select(z => this);
+        _notifier = notifier.SubscribeOn(_scheduler).ObserveOn(_scheduler).Select(_ => this);
         _destination = destination;
         _value = default!;
     }
@@ -49,13 +49,11 @@ internal class Throttle<T> : ObserverBase<T>, IObserver<Throttle<T>>
 
     protected override void OnNextCore(T value)
     {
-        var currentid = default(ulong);
         lock (_gate)
         {
             _hasValue = true;
             _value = value;
             _id = unchecked(_id + 1);
-            currentid = _id;
         }
 
         if (_serialCancelable == null)

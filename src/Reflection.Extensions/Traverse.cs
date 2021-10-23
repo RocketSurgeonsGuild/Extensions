@@ -2,7 +2,7 @@ namespace Rocket.Surgery.Reflection;
 
 internal static class Traverse
 {
-    public static IEnumerable<T> Across<T>(T first, Func<T, T> next)
+    public static IEnumerable<T> Across<T>(T first, Func<T, T?> next)
         where T : class
     {
         var item = first;

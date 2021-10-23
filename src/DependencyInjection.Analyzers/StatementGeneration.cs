@@ -202,6 +202,7 @@ internal static class StatementGeneration
                 var baseType = Helpers.GetBaseTypes(compilation, type).FirstOrDefault(z => z.IsGenericType && compilation.HasImplicitConversion(z, type));
                 if (baseType == null)
                 {
+                    // ReSharper disable once AccessToModifiedClosure
                     baseType = type.AllInterfaces.FirstOrDefault(z => z.IsGenericType && compilation.HasImplicitConversion(z, type));
                 }
 

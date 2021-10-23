@@ -27,12 +27,12 @@ public static class UnionHelper
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
 
-        type = GetRootType(type)!;
+        var rootType = GetRootType(type);
 
-        if (type?.GetCustomAttribute<UnionKeyAttribute>(false) == null)
-            throw new ArgumentOutOfRangeException(nameof(type), "type must have a union key attribute");
+        if (rootType?.GetCustomAttribute<UnionKeyAttribute>(false) == null)
+            throw new ArgumentOutOfRangeException(nameof(rootType), "type must have a union key attribute");
 
-        return type.GetDeclaredProperty(type.GetCustomAttribute<UnionKeyAttribute>(false)!.Key)!.PropertyType;
+        return rootType.GetDeclaredProperty(rootType.GetCustomAttribute<UnionKeyAttribute>(false)!.Key)!.PropertyType;
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public static class UnionHelper
 
         if (string.IsNullOrWhiteSpace(propertyName))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(propertyName));
-        return type.GetDeclaredProperty(propertyName)!.PropertyType!;
+        return type.GetDeclaredProperty(propertyName)!.PropertyType;
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public static class UnionHelper
         var rootType = typeInfo;
         while (rootType != null)
         {
-            if (rootType.GetCustomAttributes<UnionKeyAttribute>(false)?.Any() == true) break;
+            if (rootType.GetCustomAttributes<UnionKeyAttribute>(false).Any()) break;
             rootType = rootType.BaseType?.GetTypeInfo();
         }
 

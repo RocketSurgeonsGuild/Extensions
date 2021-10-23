@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Rocket.Surgery.DependencyInjection.Analyzers.Internals;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
+// ReSharper disable UnusedParameter.Local
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 internal static class DataHelpers
@@ -34,7 +35,7 @@ internal static class DataHelpers
                 return;
             }
 
-            if (!( simpleLambdaExpressionSyntax.ExpressionBody is InvocationExpressionSyntax body ))
+            if (simpleLambdaExpressionSyntax.ExpressionBody is not InvocationExpressionSyntax body)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
                 return;
@@ -252,9 +253,9 @@ internal static class DataHelpers
             return null;
         return typeInfo switch
         {
-            INamedTypeSymbol nts when name.ToFullString().StartsWith("FromAssemblyDependenciesOf") =>
+            INamedTypeSymbol nts when name.ToFullString().StartsWith("FromAssemblyDependenciesOf", StringComparison.Ordinal) =>
                 new CompiledAssemblyDependenciesDescriptor(nts),
-            INamedTypeSymbol nts when name.ToFullString().StartsWith("FromAssemblyOf") =>
+            INamedTypeSymbol nts when name.ToFullString().StartsWith("FromAssemblyOf", StringComparison.Ordinal) =>
                 new CompiledAssemblyDescriptor(nts),
             _ => null
         };
@@ -288,7 +289,7 @@ internal static class DataHelpers
     {
         if (name.ToFullString() == "AssignableToAny")
         {
-            foreach (var argument in expression.ArgumentList.Arguments!)
+            foreach (var argument in expression.ArgumentList.Arguments)
             {
                 if (argument.Expression is TypeOfExpressionSyntax typeOfExpressionSyntax)
                 {
@@ -313,7 +314,7 @@ internal static class DataHelpers
             yield break;
         }
 
-        if (name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList!.Arguments.Count == 1)
+        if (name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1)
         {
             if (genericNameSyntax.Identifier.ToFullString() == "AssignableTo")
             {
@@ -396,7 +397,7 @@ internal static class DataHelpers
 
             if (filter.HasValue)
             {
-                var symbol = semanticModel.GetTypeInfo(genericNameSyntax.TypeArgumentList.Arguments![0]).Type!;
+                var symbol = semanticModel.GetTypeInfo(genericNameSyntax.TypeArgumentList.Arguments[0]).Type!;
                 yield return new NamespaceFilterDescriptor(filter.Value, new[] { symbol.ContainingNamespace.ToDisplayString() });
             }
 
@@ -499,7 +500,7 @@ internal static class DataHelpers
                                                         {
                                                             case LiteralExpressionSyntax literalExpressionSyntax
                                                                 when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
-                                                                return literalExpressionSyntax.Token.ValueText!;
+                                                                return literalExpressionSyntax.Token.ValueText;
                                                             case InvocationExpressionSyntax
                                                                 {
                                                                     Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } }
@@ -510,7 +511,7 @@ internal static class DataHelpers
                                                             case TypeOfExpressionSyntax typeOfExpressionSyntax:
                                                             {
                                                                 var symbol = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type!;
-                                                                return symbol.ContainingNamespace.ToDisplayString()!;
+                                                                return symbol.ContainingNamespace.ToDisplayString();
                                                             }
                                                             default:
                                                                 context.ReportDiagnostic(
@@ -555,7 +556,7 @@ internal static class DataHelpers
                                                           {
                                                               case LiteralExpressionSyntax literalExpressionSyntax
                                                                   when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
-                                                                  return literalExpressionSyntax.Token.ValueText!;
+                                                                  return literalExpressionSyntax.Token.ValueText;
                                                               case InvocationExpressionSyntax
                                                                   {
                                                                       Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } }

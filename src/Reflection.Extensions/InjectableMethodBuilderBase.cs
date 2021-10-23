@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Reflection;
 
+#pragma warning disable CA1304, CA1845
 namespace Rocket.Surgery.Reflection;
 
 /// <summary>
@@ -144,7 +145,7 @@ public abstract class InjectableMethodBuilderBase
             Expression middlewareInstanceArg = instanceArg;
             if (methodInfo.DeclaringType == Container.AsType())
             {
-                middlewareInstanceArg = Expression.Convert(middlewareInstanceArg, methodInfo.DeclaringType);
+                middlewareInstanceArg = Expression.Convert(middlewareInstanceArg, methodInfo.DeclaringType!);
             }
 
             var body = Expression.Call(middlewareInstanceArg, methodInfo, methodArguments);
@@ -166,15 +167,15 @@ public abstract class InjectableMethodBuilderBase
 
     private static readonly MethodInfo GetServiceInfo = typeof(InjectableMethodBuilderBase)
                                                        .GetTypeInfo()
-                                                       .GetDeclaredMethod(nameof(GetService));
+                                                       .GetDeclaredMethod(nameof(GetService))!;
 
-    private static object GetService(IServiceProvider sp, Type type, bool optional)
+    private static object? GetService(IServiceProvider sp, Type type, bool optional)
     {
         var service = sp.GetService(type);
 
         if (!optional && service is null)
         {
-            throw new InvalidOperationException(string.Format("No service for type '{0}' has been registered.", type.FullName));
+            throw new InvalidOperationException($"No service for type '{type.FullName}' has been registered.");
         }
 
         return service;

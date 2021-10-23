@@ -2,7 +2,7 @@
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-public static class Diagnostics
+internal static class Diagnostics
 {
     private const string Category = "Dependency Injection";
 

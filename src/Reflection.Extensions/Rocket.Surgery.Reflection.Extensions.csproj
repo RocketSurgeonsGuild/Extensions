@@ -7,6 +7,10 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Extensions/Rocket.Surgery.Extensions.csproj" />
-        <PackageReference Include="System.Reflection.Emit.Lightweight" />
+        <PackageReference
+            Include="FastExpressionCompiler.LightExpression.Internal.src"
+            IncludeAssets="all"
+            PrivateAssets="runtime;build;native;contentfiles;analyzers"
+        />
     </ItemGroup>
 </Project>

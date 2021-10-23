@@ -59,7 +59,8 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
 
         foreach (var part in parts)
         {
-            if (innerType.IsArray)
+            // ReSharper disable once RedundantSuppressNullableWarningExpression
+            if (innerType!.IsArray)
             {
                 if (!int.TryParse(part, out var intValue))
                 {
@@ -86,7 +87,7 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
                                          .First(x => x.GetIndexParameters().Any(z => z.ParameterType == typeof(int)));
 
                 expression = Expression.MakeIndex(expression, paremeter, new[] { Expression.Constant(intValue, typeof(int)) });
-                innerType = innerType.GetGenericListInterfaceType().GenericTypeArguments[0];
+                innerType = innerType.GetGenericListInterfaceType()!.GenericTypeArguments[0];
                 continue;
             }
 
@@ -96,28 +97,24 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
                                          .First(x => x.GetIndexParameters().Any(z => z.ParameterType == typeof(string)));
 
                 expression = Expression.MakeIndex(expression, paremeter, new[] { Expression.Constant(part, typeof(string)) });
-                innerType = ( innerType.GetClosedTypeOf(typeof(IDictionary<,>)) ?? innerType.GetClosedTypeOf(typeof(IReadO n
-                lyDictionary <, >)) )
-                    .GenericTypeArguments[1];
-
+                innerType = ( innerType.GetClosedTypeOf(typeof(IDictionary<,>)) ?? innerType.GetClosedTypeOf(typeof(IReadOnlyDictionary<,>)) )
+                  ?.GenericTypeArguments[1];
                 continue;
             }
 
             if (innerType.IsGenericEnumerableInterfaceType())
             {
-                innerType = innerType.GetGenericEnumerableInterfaceType().GenericTypeArguments[0];
-                var firstMethod = typ
-                eof(
-                    En x =>
-                        x.Name == nameof(Enumerable.FirstOrDefault) && x.GetParameters().Length == 1
-                )
-
-                typeof(Enumerable).GetRuntimeMet
-                hods().First(
-                           x =>
-                               x.Name == nameof(Enumerable.Skip)
-                       )
-                      .MakeGenericMethod(innerType);
+                innerType = innerType.GetGenericEnumerableInterfaceType()!.GenericTypeArguments[0];
+                var firstMethod = typeof(Enumerable).GetRuntimeMethods().First(
+                                                         x =>
+                                                             x.Name == nameof(Enumerable.FirstOrDefault) && x.GetParameters().Length == 1
+                                                     )
+                                                    .MakeGenericMethod(innerType);
+                var skipMethod = typeof(Enumerable).GetRuntimeMethods().First(
+                                                        x =>
+                                                            x.Name == nameof(Enumerable.Skip)
+                                                    )
+                                                   .MakeGenericMethod(innerType);
 
                 if (!int.TryParse(part, out var intValue))
                 {
@@ -133,21 +130,18 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
                 continue;
             }
 
-            if (!Info.TryGetInfo(
-                innerType, part, _comparison,
-                out var info
-            ))
+            if (!Info.TryGetInfo(innerType, part, _comparison, out var info))
             {
                 if (_shouldThrow) throw new Exception($"Could not find property or field '{part}'.");
                 propertyDelegate = null!;
                 return false;
             }
 
-            innerType = info!.Type;
+            innerType = info.Type;
             expression = Expression.PropertyOrField(expression, info.Name);
         }
 
-        propertyDelegate = new PropertyDelegate(this, path, innerType, expression, root);
+        propertyDelegate = new PropertyDelegate(this, path, innerType!, expression, root);
         _propertyGetters.TryAdd(path, propertyDelegate);
         return true;
     }
@@ -202,7 +196,7 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
         return 2049151605 + EqualityComparer<Type>.Default.GetHashCode(Type);
     }
 
-    public static bool operator ==(TypeDelegate? delegate1, TypeD elegate? delegate2)
+    public static bool operator ==(TypeDelegate? delegate1, TypeDelegate? delegate2)
     {
         return EqualityComparer<TypeDelegate>.Default.Equals(delegate1!, delegate2!);
     }

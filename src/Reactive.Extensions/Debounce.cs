@@ -24,7 +24,7 @@ internal class Debounce<T> : ObserverBase<T>, IObserver<Debounce<T>>
         _leading = leading;
         _trailing = trailing;
         _scheduler = scheduler;
-        _notifier = notifier.SubscribeOn(_scheduler).ObserveOn(_scheduler).Select(z => this);
+        _notifier = notifier.SubscribeOn(_scheduler).ObserveOn(_scheduler).Select(_ => this);
         _destination = destination;
         _value = default!;
     }
@@ -65,11 +65,8 @@ internal class Debounce<T> : ObserverBase<T>, IObserver<Debounce<T>>
     {
         lock (_gate)
         {
-            if (_serialCancelable != null)
-            {
-                _serialCancelable?.Dispose();
-                _serialCancelable = null;
-            }
+            _serialCancelable?.Dispose();
+            _serialCancelable = null;
         }
 
         if (_trailing)

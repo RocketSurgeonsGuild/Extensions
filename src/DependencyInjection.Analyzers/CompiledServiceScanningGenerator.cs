@@ -9,9 +9,13 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
+/// <summary>
+///     Source generate used for scanning assemblies for registrations
+/// </summary>
 [Generator]
 public class CompiledServiceScanningGenerator : ISourceGenerator
 {
+    /// <inheritdoc />
     public void Initialize(GeneratorInitializationContext context)
     {
         context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
@@ -172,6 +176,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         Encoding.UTF8
     );
 
+    /// <inheritdoc />
     public void Execute(GeneratorExecutionContext context)
     {
         if (!( context.SyntaxReceiver is SyntaxReceiver syntaxReceiver ))
@@ -282,16 +287,18 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         var strategyName = IdentifierName("strategy");
         var serviceCollectionName = IdentifierName("services");
         var lineNumberIdentifier = IdentifierName("lineNumber");
-        var filePathIdentifier = IdentifierName("filePath");
+        IdentifierName("filePath");
         var block = Block();
+#pragma warning disable RS1024
         var privateAssemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+#pragma warning restore RS1024
 
         var switchStatement = SwitchStatement(lineNumberIdentifier);
         foreach (var lineGrouping in groups.GroupBy(z => z.lineNumber))
         {
             var innerBlock = Block();
             var blocks = new List<(string filePath, string memberName, BlockSyntax block)>();
-            foreach (var (expression, filePath, memberName, lineNumber, assemblies, typeFilters, serviceTypes, classFilter, lifetime) in lineGrouping)
+            foreach (var (_, filePath, memberName, _, assemblies, typeFilters, serviceTypes, classFilter, lifetime) in lineGrouping)
             {
                 var types = NarrowListOfTypes(assemblies, allNamedTypes, compilationWithMethod, classFilter, typeFilters);
 
@@ -436,10 +443,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 
         foreach (var type in types)
         {
-            var descriptors = new List<( INamedTypeSymbol serviceType,
-                INamedTypeSymbol implementationType,
-                ExpressionSyntax lifetimeValue )>();
+#pragma warning disable RS1024
             var emittedTypes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+#pragma warning restore RS1024
             var typeIsOpenGeneric = type.IsOpenGenericType();
             if (!compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
             {
@@ -463,7 +469,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                                 .Where(
                                      attribute => attribute.ConstructorArguments.Length > 0 && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Type
                                  )
-                                .GroupBy(attribute => attribute.ConstructorArguments[0].Value as INamedTypeSymbol!, SymbolEqualityComparer.Default)
+                                .GroupBy(attribute => attribute.ConstructorArguments[0].Value as INamedTypeSymbol, SymbolEqualityComparer.Default)
                                 .SelectMany(grp => grp.Skip(1))
                                 .ToArray();
                 foreach (var duplicate in duplicates)

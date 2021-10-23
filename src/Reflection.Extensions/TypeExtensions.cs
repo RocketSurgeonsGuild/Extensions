@@ -8,17 +8,14 @@ internal static class TypeExtensions
     public static bool IsClosedTypeOf(this Type @this, Type openGeneric)
     {
         return TypesAssignableFrom(@this).Any(
-            t => t.GetTypeInfo().IsGenericType && !@this.GetTypeInfo().ContainsGenericParameters && t.Get
-        enericTypeDefinition() == openGeneric
-            );
+            t => t.GetTypeInfo().IsGenericType && !@this.GetTypeInfo().ContainsGenericParameters && t.GetGenericTypeDefinition() == openGeneric
+        );
     }
 
-    public static Type GetClosedTypeOf(this Type @this, Type openGeneric)
+    public static Type? GetClosedTypeOf(this Type @this, Type openGeneric)
     {
-        return TypesAssignableFrom(@this).FirstOrDefault
-        (
-            t => t.GetTypeInfo().IsGenericType && !@this.GetTypeInfo().ContainsGenericParameters && t.GetGenericTypeDefinition()
-             == openGeneric
+        return TypesAssignableFrom(@this).FirstOrDefault(
+            t => t.GetTypeInfo().IsGenericType && !@this.GetTypeInfo().ContainsGenericParameters && t.GetGenericTypeDefinition() == openGeneric
         );
     }
 
@@ -29,7 +26,7 @@ internal static class TypeExtensions
             || type.IsGenericCollectionInterfaceType();
     }
 
-    public static Type GetGenericEnumerableInterfaceType(this Type type)
+    public static Type? GetGenericEnumerableInterfaceType(this Type type)
     {
         return type.GetGenericListInterfaceType() ??
                type.GetGenericCollectionInterfaceType() ??
@@ -44,7 +41,7 @@ internal static class TypeExtensions
             || type.IsGenericTypeDefinedBy(typeof(ReadOnlyCollection<>));
     }
 
-    public static Type GetGenericCollectionInterfaceType(this Type type)
+    public static Type? GetGenericCollectionInterfaceType(this Type type)
     {
         return type.GetClosedTypeOf(typeof(ICollection<>)) ?? type.GetClosedTypeOf(typeof(IReadOnlyCollection<>));
     }
@@ -56,7 +53,7 @@ internal static class TypeExtensions
             || type.IsGenericTypeDefinedBy(typeof(IReadOnlyList<>));
     }
 
-    public static Type GetGenericListInterfaceType(this Type type)
+    public static Type? GetGenericListInterfaceType(this Type type)
     {
         return type.GetClosedTypeOf(typeof(IList<>)) ?? type.GetClosedTypeOf(typeof(IReadOnlyList<>));
     }
@@ -71,9 +68,7 @@ internal static class TypeExtensions
     public static IEnumerable<Type> TypesAssignableFrom(Type candidateType)
     {
         return candidateType.GetTypeInfo().ImplementedInterfaces.Concat(
-            Traverse.Across(candidateType, t =>
-                                t.GetTypeInf
-        o().BaseType)
-            );
+            Traverse.Across(candidateType, t => t.GetTypeInfo().BaseType)
+        );
     }
 }

@@ -18,7 +18,7 @@ public static class Base64Url
     /// </summary>
     /// <param name="input"></param>
     /// <returns>Input byte array converted to a base64ForUrl encoded string</returns>
-    public static string ToBase64ForUrlString([NotNull] byte[] input)
+    public static string ToBase64ForUrlString(byte[] input)
 #pragma warning restore CA1055 // Uri return values should not be strings
     {
         if (input == null)

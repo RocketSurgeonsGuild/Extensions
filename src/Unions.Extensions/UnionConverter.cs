@@ -35,13 +35,13 @@ public class UnionConverter : JsonConverter
         if (obj.Type == JTokenType.Null)
             return null!;
 
-        var context = GetContext(objectType);
-        var instance = Activator.CreateInstance(context.GetTypeToDeserializeTo((JObject)obj));
+        var context = GetContext(objectType)!;
+        var instance = Activator.CreateInstance(context.GetTypeToDeserializeTo((JObject)obj))!;
         serializer.Populate(obj.CreateReader(), instance);
         return instance;
     }
 
-    private UnionContext GetContext(Type type)
+    private UnionContext? GetContext(Type type)
     {
         if (!_contexts.TryGetValue(type, out var context))
         {

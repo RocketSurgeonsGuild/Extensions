@@ -1,6 +1,7 @@
 ﻿[*]
 dotnet_diagnostic.CS0436.severity = none
 dotnet_diagnostic.CA1014.severity = none
+dotnet_diagnostic.CA1031.severity = none
 dotnet_diagnostic.CA1034.severity = none
 dotnet_diagnostic.CA1040.severity = none
 dotnet_diagnostic.CA1062.severity = none
@@ -9,6 +10,7 @@ dotnet_diagnostic.CA1711.severity = none
 dotnet_diagnostic.CA1715.severity = none
 dotnet_diagnostic.CA1720.severity = none
 dotnet_diagnostic.CA1812.severity = none
+dotnet_diagnostic.CA1829.severity = none
 dotnet_diagnostic.CA1848.severity = none
 dotnet_diagnostic.CA2000.severity = none
 dotnet_diagnostic.CA2225.severity = none

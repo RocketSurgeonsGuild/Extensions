@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-public static class Helpers
+internal static class Helpers
 {
     public static string GetFullMetadataName(ISymbol? symbol)
     {
@@ -41,7 +41,7 @@ public static class Helpers
 
         static bool IsRootNamespace(ISymbol symbol)
         {
-            INamespaceSymbol? s = null;
+            INamespaceSymbol? s;
             return ( s = symbol as INamespaceSymbol ) != null && s.IsGlobalNamespace;
         }
     }
@@ -59,23 +59,23 @@ public static class Helpers
             sb = new StringBuilder(symbol.Name);
             if (namedTypeSymbol.IsOpenGenericType())
             {
-                sb.Append("<");
+                sb.Append('<');
                 for (var i = 1; i < namedTypeSymbol.Arity - 1; i++)
-                    sb.Append(",");
-                sb.Append(">");
+                    sb.Append(',');
+                sb.Append('>');
             }
             else
             {
-                sb.Append("<");
+                sb.Append('<');
                 for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
                 {
                     var argument = namedTypeSymbol.TypeArguments[index];
                     sb.Append(GetGenericDisplayName(argument));
                     if (index < namedTypeSymbol.TypeArguments.Length - 1)
-                        sb.Append(",");
+                        sb.Append(',');
                 }
 
-                sb.Append(">");
+                sb.Append('>');
             }
         }
 
@@ -103,7 +103,7 @@ public static class Helpers
 
         static bool IsRootNamespace(ISymbol symbol)
         {
-            INamespaceSymbol? s = null;
+            INamespaceSymbol? s;
             return ( s = symbol as INamespaceSymbol ) != null && s.IsGlobalNamespace;
         }
     }

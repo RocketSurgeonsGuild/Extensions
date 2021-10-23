@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-#pragma warning disable CA1307
+#pragma warning disable CA1307 // Specify StringComparison
 namespace Rocket.Surgery.Reflection;
 
 /// <summary>
@@ -18,12 +18,12 @@ public class BackingFieldHelper
 
     private readonly ConcurrentDictionary<(Type, string), FieldInfo> _backingFields = new ConcurrentDictionary<(Type, string), FieldInfo>();
 
-    private static FieldInfo? GetBackingField(PropertyInfo? pi)
+    private static FieldInfo? GetBackingField(PropertyInfo pi)
     {
-        if (pi == null || !pi.CanRead || pi.GetMethod?.IsDefined(typeof(CompilerGeneratedAttribute), true) != true)
+        if (!pi.CanRead || !pi.GetMethod!.IsDefined(typeof(CompilerGeneratedAttribute), true))
             return null;
 
-        var backingField = pi.DeclaringType?.GetTypeInfo().GetDeclaredField($"<{pi.Name}>k__BackingField");
+        var backingField = pi.DeclaringType.GetTypeInfo().GetDeclaredField($"<{pi.Name}>k__BackingField");
         if (backingField == null)
             return null;
 
@@ -38,7 +38,7 @@ public class BackingFieldHelper
         if (!_backingFields.TryGetValue(( objectType, name ), out var backingField))
         {
             var property = objectType.GetTypeInfo().GetProperty(
-                $"{interfaceType.FullName?.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance
+                $"{interfaceType.FullName.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance
             ) ?? objectType.GetTypeInfo().GetProperty(name);
 
             backingField = GetBackingField(property)!;

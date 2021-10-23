@@ -1,3 +1,8 @@
+#if NETSTANDARD2_0
+#pragma warning disable CS8602, CS8603
+#else
+using System.Diagnostics.CodeAnalysis;
+#endif
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 
@@ -6,6 +11,7 @@ namespace Rocket.Surgery.Reflection;
 /// <summary>
 ///     Property getter
 /// </summary>
+[PublicAPI]
 public class PropertyGetter
 {
     private readonly string? _separator;
@@ -31,14 +37,20 @@ public class PropertyGetter
     /// <param name="path">The path.</param>
     /// <param name="value">The value.</param>
     /// <returns></returns>
-    public bool TryGet<T>(object instance, string path, out T value)
+    public bool TryGet<T>(
+        object instance, string path,
+#if !NETSTANDARD2_0
+        [NotNullWhen(true)]
+#endif
+        out T? value
+    )
     {
         if (instance == null) throw new ArgumentNullException(nameof(instance));
         if (path == null) throw new ArgumentNullException(nameof(path));
 
         if (TryGetter<T>(instance.GetType(), path, out var getter))
         {
-            value = getter!(instance);
+            value = getter(instance)!;
             return true;
         }
 
@@ -67,13 +79,19 @@ public class PropertyGetter
     /// <param name="path">The path.</param>
     /// <param name="value">The value.</param>
     /// <returns></returns>
-    public bool TryGet(object instance, string path, out object value)
+    public bool TryGet(
+        object instance, string path,
+#if !NETSTANDARD2_0
+        [NotNullWhen(true)]
+#endif
+        out object? value
+    )
     {
         if (instance == null) throw new ArgumentNullException(nameof(instance));
 
         if (TryGetter(instance.GetType(), path, out var getter))
         {
-            value = getter!(instance);
+            value = getter(instance);
             return true;
         }
 
@@ -90,7 +108,7 @@ public class PropertyGetter
     public object Get(object instance, string path)
     {
         if (instance == null) throw new ArgumentNullException(nameof(instance));
-        if (TryGet(instance, path, out var propertyValue)) return propertyValue!;
+        if (TryGet(instance, path, out var propertyValue)) return propertyValue;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -101,7 +119,13 @@ public class PropertyGetter
     /// <param name="path">The path.</param>
     /// <param name="type">The type.</param>
     /// <returns></returns>
-    public bool TryGetPropertyType(object instance, string path, out Type type)
+    public bool TryGetPropertyType(
+        object instance, string path,
+#if !NETSTANDARD2_0
+        [NotNullWhen(true)]
+#endif
+        out Type? type
+    )
     {
         if (instance == null) throw new ArgumentNullException(nameof(instance));
         return TryGetPropertyType(instance.GetType(), path, out type);
@@ -116,7 +140,7 @@ public class PropertyGetter
     public Type GetPropertyType(object instance, string path)
     {
         if (instance == null) throw new ArgumentNullException(nameof(instance));
-        if (TryGetPropertyType(instance, path, out var propertyValue)) return propertyValue!;
+        if (TryGetPropertyType(instance, path, out var propertyValue)) return propertyValue;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -127,7 +151,13 @@ public class PropertyGetter
     /// <param name="path">The path.</param>
     /// <param name="propertyType">Type of the property.</param>
     /// <returns></returns>
-    public bool TryGetPropertyType(Type type, string path, out Type propertyType)
+    public bool TryGetPropertyType(
+        Type type, string path,
+#if !NETSTANDARD2_0
+        [NotNullWhen(true)]
+#endif
+        out Type? propertyType
+    )
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
         if (path == null) throw new ArgumentNullException(nameof(path));
@@ -151,7 +181,7 @@ public class PropertyGetter
     /// <returns></returns>
     public Type GetPropertyType(Type type, string path)
     {
-        if (TryGetPropertyType(type, path, out var propertyValue)) return propertyValue!;
+        if (TryGetPropertyType(type, path, out var propertyValue)) return propertyValue;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -163,7 +193,13 @@ public class PropertyGetter
     /// <param name="path">The path.</param>
     /// <param name="getter">The getter.</param>
     /// <returns></returns>
-    public bool TryGetter<T>(Type type, string path, out Func<object, T> getter)
+    public bool TryGetter<T>(
+        Type type, string path,
+#if !NETSTANDARD2_0
+        [NotNullWhen(true)]
+#endif
+        out Func<object, T>? getter
+    )
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
         if (path == null) throw new ArgumentNullException(nameof(path));
@@ -175,7 +211,7 @@ public class PropertyGetter
             return false;
         }
 
-        getter = v => (T)propertyDelegate.Delegate.DynamicInvoke(v);
+        getter = v => (T)propertyDelegate.Delegate.DynamicInvoke(v)!;
         return true;
     }
 
@@ -188,7 +224,7 @@ public class PropertyGetter
     /// <returns></returns>
     public Func<object, T> Getter<T>(Type type, string path)
     {
-        if (TryGetter<T>(type, path, out var getter)) return getter!;
+        if (TryGetter<T>(type, path, out var getter)) return getter;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -199,7 +235,13 @@ public class PropertyGetter
     /// <param name="path">The path.</param>
     /// <param name="getter">The getter.</param>
     /// <returns></returns>
-    public bool TryGetter(Type type, string path, out Func<object, object> getter)
+    public bool TryGetter(
+        Type type, string path,
+#if !NETSTANDARD2_0
+        [NotNullWhen(true)]
+#endif
+        out Func<object, object>? getter
+    )
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
         if (path == null) throw new ArgumentNullException(nameof(path));
@@ -211,7 +253,7 @@ public class PropertyGetter
             return false;
         }
 
-        getter = v => propertyDelegate.Delegate.DynamicInvoke(v);
+        getter = v => propertyDelegate.Delegate.DynamicInvoke(v)!;
         return true;
     }
 
@@ -249,7 +291,7 @@ public class PropertyGetter
     public Expression GetExpression(object instance, string path)
     {
         if (instance == null) throw new ArgumentNullException(nameof(instance));
-        if (TryGetExpression(instance, path, out var expression)) return expression!;
+        if (TryGetExpression(instance, path, out var expression)) return expression;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -268,7 +310,7 @@ public class PropertyGetter
         var typeDelegate = GetOrCreateTypeDelegate(type);
         if (typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
         {
-            expression = propertyDelegate!.StronglyTypedExpression;
+            expression = propertyDelegate.StronglyTypedExpression;
             return true;
         }
 
@@ -284,7 +326,7 @@ public class PropertyGetter
     /// <returns></returns>
     public Expression GetExpression(Type type, string path)
     {
-        if (TryGetExpression(type, path, out var expression)) return expression!;
+        if (TryGetExpression(type, path, out var expression)) return expression;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -309,7 +351,7 @@ public class PropertyGetter
     /// <returns></returns>
     public PropertyDelegate GetPropertyDelegate(object instance, string path)
     {
-        if (TryGetPropertyDelegate(instance, path, out var propertyDelegate)) return propertyDelegate!;
+        if (TryGetPropertyDelegate(instance, path, out var propertyDelegate)) return propertyDelegate;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -337,7 +379,7 @@ public class PropertyGetter
     /// <returns></returns>
     public PropertyDelegate GetPropertyDelegate(Type type, string path)
     {
-        if (TryGetPropertyDelegate(type, path, out var propertyDelegate)) return propertyDelegate!;
+        if (TryGetPropertyDelegate(type, path, out var propertyDelegate)) return propertyDelegate;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 

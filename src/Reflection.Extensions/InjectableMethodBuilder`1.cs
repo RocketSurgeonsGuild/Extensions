@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Linq.Expressions;
+using FastExpressionCompiler;
 
 namespace Rocket.Surgery.Reflection;
 
