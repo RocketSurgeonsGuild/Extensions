@@ -1,47 +1,44 @@
-using System;
 using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
-namespace System.Threading.Tasks
+namespace System.Threading.Tasks;
+
+/// <summary>
+///     TaskExtensions.
+/// </summary>
+[PublicAPI]
+public static class TaskExtensions
 {
     /// <summary>
-    ///  TaskExtensions.
+    ///     Continues the <see cref="Task" /> return on any scheduler context.
     /// </summary>
-    [PublicAPI]
-    public static class TaskExtensions
+    /// <param name="task">The this.</param>
+    /// <returns>ConfiguredTaskAwaitable.</returns>
+    /// <exception cref="ArgumentNullException">this</exception>
+    public static ConfiguredTaskAwaitable ContinueOnAnyContext(this Task task)
     {
-        /// <summary>
-        /// Continues the <see cref="Task" /> return on any scheduler context.
-        /// </summary>
-        /// <param name="task">The this.</param>
-        /// <returns>ConfiguredTaskAwaitable.</returns>
-        /// <exception cref="ArgumentNullException">this</exception>
-        public static ConfiguredTaskAwaitable ContinueOnAnyContext(this Task task)
+        if (task == null)
         {
-            if (task == null)
-            {
-                throw new ArgumentNullException(nameof(task));
-            }
-
-            return task.ConfigureAwait(false);
+            throw new ArgumentNullException(nameof(task));
         }
 
-        /// <summary>
-        /// Continues the <see cref="Task" /> return on any scheduler context.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="task">The this.</param>
-        /// <returns>ConfiguredTaskAwaitable{T}.</returns>
-        /// <exception cref="ArgumentNullException">this</exception>
-        public static ConfiguredTaskAwaitable<T> ContinueOnAnyContext<T>(this Task<T> task)
-        {
-            if (task == null)
-            {
-                throw new ArgumentNullException(nameof(task));
-            }
+        return task.ConfigureAwait(false);
+    }
 
-            return task.ConfigureAwait(false);
+    /// <summary>
+    ///     Continues the <see cref="Task" /> return on any scheduler context.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="task">The this.</param>
+    /// <returns>ConfiguredTaskAwaitable{T}.</returns>
+    /// <exception cref="ArgumentNullException">this</exception>
+    public static ConfiguredTaskAwaitable<T> ContinueOnAnyContext<T>(this Task<T> task)
+    {
+        if (task == null)
+        {
+            throw new ArgumentNullException(nameof(task));
         }
+
+        return task.ConfigureAwait(false);
     }
 }

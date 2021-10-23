@@ -2,566 +2,579 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Rocket.Surgery.DependencyInjection.Analyzers.Internals;
-using System.Collections.Generic;
-using System.Linq;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace Rocket.Surgery.DependencyInjection.Analyzers
+namespace Rocket.Surgery.DependencyInjection.Analyzers;
+
+internal static class DataHelpers
 {
-    static class DataHelpers
+    public static void HandleInvocationExpressionSyntax(
+        GeneratorExecutionContext context,
+        CSharpCompilation compilation,
+        SemanticModel semanticModel,
+        ExpressionSyntax rootExpression,
+        List<IAssemblyDescriptor> assemblies,
+        List<ITypeFilterDescriptor> typeFilters,
+        List<IServiceTypeDescriptor> serviceTypes,
+        ref ClassFilter classFilter,
+        ref MemberAccessExpressionSyntax lifetimeExpressionSyntax
+    )
     {
-        public static void HandleInvocationExpressionSyntax(
-            GeneratorExecutionContext context,
-            CSharpCompilation compilation,
-            SemanticModel semanticModel,
-            ExpressionSyntax rootExpression,
-            List<IAssemblyDescriptor> assemblies,
-            List<ITypeFilterDescriptor> typeFilters,
-            List<IServiceTypeDescriptor> serviceTypes,
-            ref ClassFilter classFilter,
-            ref MemberAccessExpressionSyntax lifetimeExpressionSyntax
-        )
+        if (!( rootExpression is InvocationExpressionSyntax expression ))
         {
-            if (!(rootExpression is InvocationExpressionSyntax expression))
+            if (!( rootExpression is SimpleLambdaExpressionSyntax simpleLambdaExpressionSyntax ))
             {
-                if (!(rootExpression is SimpleLambdaExpressionSyntax simpleLambdaExpressionSyntax))
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
-                    return;
-                }
-
-                if (simpleLambdaExpressionSyntax.ExpressionBody == null)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
-                    return;
-                }
-
-                if (!(simpleLambdaExpressionSyntax.ExpressionBody is InvocationExpressionSyntax body))
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
-                    return;
-                }
-
-                expression = body;
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
+                return;
             }
 
-            if (expression.Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax
-                && memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+            if (simpleLambdaExpressionSyntax.ExpressionBody == null)
             {
-                if (memberAccessExpressionSyntax.Expression is InvocationExpressionSyntax childExpression)
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
+                return;
+            }
+
+            if (!( simpleLambdaExpressionSyntax.ExpressionBody is InvocationExpressionSyntax body ))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
+                return;
+            }
+
+            expression = body;
+        }
+
+        if (expression.Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax
+         && memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+        {
+            if (memberAccessExpressionSyntax.Expression is InvocationExpressionSyntax childExpression)
+            {
+                HandleInvocationExpressionSyntax(
+                    context,
+                    compilation,
+                    semanticModel,
+                    childExpression,
+                    assemblies,
+                    typeFilters,
+                    serviceTypes,
+                    ref classFilter,
+                    ref lifetimeExpressionSyntax
+                );
+            }
+
+            var type = semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression);
+            if (type.Type != null)
+            {
+                var typeName = type.Type.ToDisplayString();
+                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector")
                 {
-                    HandleInvocationExpressionSyntax(
-                        context,
-                        compilation,
+                    var selector = HandleCompiledAssemblySelector(
                         semanticModel,
-                        childExpression,
-                        assemblies,
-                        typeFilters,
-                        serviceTypes,
-                        ref classFilter,
-                        ref lifetimeExpressionSyntax
+                        expression,
+                        memberAccessExpressionSyntax.Name
                     );
-                }
-
-                var type = semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression);
-                if (type.Type != null)
-                {
-                    var typeName = type.Type.ToDisplayString();
-                    if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector")
+                    if (selector != null)
                     {
-                        var selector = HandleCompiledAssemblySelector(
-                            semanticModel,
-                            expression,
-                            memberAccessExpressionSyntax.Name
-                        );
-                        if (selector != null)
-                        {
-                            assemblies.Add(selector);
-                        }
-                    }
-
-                    if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector")
-                    {
-                        var selector = HandleCompiledAssemblySelector(
-                            semanticModel,
-                            expression,
-                            memberAccessExpressionSyntax.Name
-                        );
-                        if (selector != null)
-                        {
-                            assemblies.Add(selector);
-                        }
-                        else
-                        {
-                            classFilter = HandleCompiledImplementationTypeSelector(expression, memberAccessExpressionSyntax.Name);
-                        }
-                    }
-
-                    if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter")
-                    {
-                        typeFilters.AddRange(HandleCompiledImplementationTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
-                    }
-
-                    if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector")
-                    {
-                        serviceTypes.AddRange(HandleCompiledServiceTypeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
-                    }
-
-                    if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector")
-                    {
-                        serviceTypes.AddRange(HandleCompiledServiceTypeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
-                        lifetimeExpressionSyntax = HandleCompiledLifetimeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name) ??
-                                                   lifetimeExpressionSyntax;
+                        assemblies.Add(selector);
                     }
                 }
 
-                foreach (var argument in expression.ArgumentList.Arguments.Where(argument => argument.Expression is SimpleLambdaExpressionSyntax))
+                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector")
                 {
-                    HandleInvocationExpressionSyntax(
-                        context,
-                        compilation,
+                    var selector = HandleCompiledAssemblySelector(
                         semanticModel,
-                        argument.Expression,
-                        assemblies,
-                        typeFilters,
-                        serviceTypes,
-                        ref classFilter,
-                        ref lifetimeExpressionSyntax
+                        expression,
+                        memberAccessExpressionSyntax.Name
                     );
+                    if (selector != null)
+                    {
+                        assemblies.Add(selector);
+                    }
+                    else
+                    {
+                        classFilter = HandleCompiledImplementationTypeSelector(expression, memberAccessExpressionSyntax.Name);
+                    }
                 }
-            }
-        }
 
-        static MemberAccessExpressionSyntax? HandleCompiledLifetimeSelector(
-            GeneratorExecutionContext context,
-            SemanticModel semanticModel,
-            InvocationExpressionSyntax expression,
-            NameSyntax name
-        )
-        {
-            if (name.ToFullString() == "WithSingletonLifetime")
-            {
-                return MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("ServiceLifetime"),
-                    IdentifierName("Singleton")
-                );
-            }
-
-            if (name.ToFullString() == "WithScopedLifetime")
-            {
-                return MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("ServiceLifetime"),
-                    IdentifierName("Scoped")
-                );
-            }
-
-            if (name.ToFullString() == "WithTransientLifetime")
-            {
-                return MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("ServiceLifetime"),
-                    IdentifierName("Transient")
-                );
-            }
-
-            if (name.ToFullString() == "WithLifetime" && expression.ArgumentList.Arguments.Count == 1)
-            {
-                if (expression.ArgumentList.Arguments[0].Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
-                    return memberAccessExpressionSyntax;
-            }
-
-            return null;
-        }
-
-        static IEnumerable<IServiceTypeDescriptor> HandleCompiledServiceTypeSelector(
-            GeneratorExecutionContext context,
-            SemanticModel semanticModel,
-            InvocationExpressionSyntax expression,
-            NameSyntax name
-        )
-        {
-            if (name.ToFullString() == "AsSelf")
-            {
-                yield return new SelfServiceTypeDescriptor();
-                yield break;
-            }
-
-            if (name.ToFullString() == "AsImplementedInterfaces")
-            {
-                yield return new ImplementedInterfacesServiceTypeDescriptor();
-                yield break;
-            }
-
-            if (name.ToFullString() == "AsMatchingInterface")
-            {
-                yield return new MatchingInterfaceServiceTypeDescriptor();
-                yield break;
-            }
-
-            if (name.ToFullString() == "UsingAttributes")
-            {
-                yield return new UsingAttributeServiceTypeDescriptor();
-                yield break;
-            }
-
-            if (name.ToFullString() == "AsSelfWithInterfaces")
-            {
-                yield return new SelfServiceTypeDescriptor();
-                yield return new ImplementedInterfacesServiceTypeDescriptor();
-                yield break;
-            }
-
-            if (name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1)
-            {
-                var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
-                if (typeSyntax == null)
+                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter")
                 {
-                    yield break;
+                    typeFilters.AddRange(HandleCompiledImplementationTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
                 }
 
-                var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
-                switch (typeInfo)
+                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector")
                 {
-                    case INamedTypeSymbol nts:
-                        yield return new CompiledServiceTypeDescriptor(nts);
-                        yield break;
-                    default:
-                        context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
-                        yield break;
+                    serviceTypes.AddRange(HandleCompiledServiceTypeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
+                }
+
+                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector")
+                {
+                    serviceTypes.AddRange(HandleCompiledServiceTypeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
+                    lifetimeExpressionSyntax = HandleCompiledLifetimeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name) ??
+                                               lifetimeExpressionSyntax;
                 }
             }
+
+            foreach (var argument in expression.ArgumentList.Arguments.Where(argument => argument.Expression is SimpleLambdaExpressionSyntax))
+            {
+                HandleInvocationExpressionSyntax(
+                    context,
+                    compilation,
+                    semanticModel,
+                    argument.Expression,
+                    assemblies,
+                    typeFilters,
+                    serviceTypes,
+                    ref classFilter,
+                    ref lifetimeExpressionSyntax
+                );
+            }
+        }
+    }
+
+    private static MemberAccessExpressionSyntax? HandleCompiledLifetimeSelector(
+        GeneratorExecutionContext context,
+        SemanticModel semanticModel,
+        InvocationExpressionSyntax expression,
+        NameSyntax name
+    )
+    {
+        if (name.ToFullString() == "WithSingletonLifetime")
+        {
+            return MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                IdentifierName("ServiceLifetime"),
+                IdentifierName("Singleton")
+            );
         }
 
-        static IAssemblyDescriptor? HandleCompiledAssemblySelector(
-            SemanticModel semanticModel,
-            InvocationExpressionSyntax expression,
-            NameSyntax name
-        )
+        if (name.ToFullString() == "WithScopedLifetime")
         {
-            if (name.ToFullString() == "FromAssembly")
-                return new AssemblyDescriptor(semanticModel.Compilation.Assembly);
-            if (name.ToFullString() == "FromAssemblies")
-                return new AllAssemblyDescriptor();
+            return MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                IdentifierName("ServiceLifetime"),
+                IdentifierName("Scoped")
+            );
+        }
 
+        if (name.ToFullString() == "WithTransientLifetime")
+        {
+            return MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                IdentifierName("ServiceLifetime"),
+                IdentifierName("Transient")
+            );
+        }
+
+        if (name.ToFullString() == "WithLifetime" && expression.ArgumentList.Arguments.Count == 1)
+        {
+            if (expression.ArgumentList.Arguments[0].Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
+                return memberAccessExpressionSyntax;
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<IServiceTypeDescriptor> HandleCompiledServiceTypeSelector(
+        GeneratorExecutionContext context,
+        SemanticModel semanticModel,
+        InvocationExpressionSyntax expression,
+        NameSyntax name
+    )
+    {
+        if (name.ToFullString() == "AsSelf")
+        {
+            yield return new SelfServiceTypeDescriptor();
+            yield break;
+        }
+
+        if (name.ToFullString() == "AsImplementedInterfaces")
+        {
+            yield return new ImplementedInterfacesServiceTypeDescriptor();
+            yield break;
+        }
+
+        if (name.ToFullString() == "AsMatchingInterface")
+        {
+            yield return new MatchingInterfaceServiceTypeDescriptor();
+            yield break;
+        }
+
+        if (name.ToFullString() == "UsingAttributes")
+        {
+            yield return new UsingAttributeServiceTypeDescriptor();
+            yield break;
+        }
+
+        if (name.ToFullString() == "AsSelfWithInterfaces")
+        {
+            yield return new SelfServiceTypeDescriptor();
+            yield return new ImplementedInterfacesServiceTypeDescriptor();
+            yield break;
+        }
+
+        if (name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1)
+        {
             var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
             if (typeSyntax == null)
-                return null;
-
-            var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
-            if (typeInfo == null)
-                return null;
-            return typeInfo switch
             {
-                INamedTypeSymbol nts when name.ToFullString().StartsWith("FromAssemblyDependenciesOf") =>
-                    new CompiledAssemblyDependenciesDescriptor(nts),
-                INamedTypeSymbol nts when name.ToFullString().StartsWith("FromAssemblyOf") =>
-                    new CompiledAssemblyDescriptor(nts),
-                _ => null
-            };
-        }
-
-        static ClassFilter HandleCompiledImplementationTypeSelector(
-            InvocationExpressionSyntax expression,
-            NameSyntax name
-        )
-        {
-            if (name.ToFullString() == "AddClasses" && expression.ArgumentList.Arguments.Count is >= 0 and <= 2)
-            {
-                foreach (var argument in expression.ArgumentList.Arguments)
-                {
-                    if (argument.Expression is LiteralExpressionSyntax literalExpressionSyntax && literalExpressionSyntax.Token.IsKind(SyntaxKind.TrueKeyword))
-                    {
-                        return ClassFilter.PublicOnly;
-                    }
-                }
+                yield break;
             }
 
-            return ClassFilter.All;
+            var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
+            switch (typeInfo)
+            {
+                case INamedTypeSymbol nts:
+                    yield return new CompiledServiceTypeDescriptor(nts);
+                    yield break;
+                default:
+                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                    yield break;
+            }
+        }
+    }
+
+    private static IAssemblyDescriptor? HandleCompiledAssemblySelector(
+        SemanticModel semanticModel,
+        InvocationExpressionSyntax expression,
+        NameSyntax name
+    )
+    {
+        if (name.ToFullString() == "FromAssembly")
+            return new AssemblyDescriptor(semanticModel.Compilation.Assembly);
+        if (name.ToFullString() == "FromAssemblies")
+            return new AllAssemblyDescriptor();
+
+        var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
+        if (typeSyntax == null)
+            return null;
+
+        var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
+        if (typeInfo == null)
+            return null;
+        return typeInfo switch
+        {
+            INamedTypeSymbol nts when name.ToFullString().StartsWith("FromAssemblyDependenciesOf") =>
+                new CompiledAssemblyDependenciesDescriptor(nts),
+            INamedTypeSymbol nts when name.ToFullString().StartsWith("FromAssemblyOf") =>
+                new CompiledAssemblyDescriptor(nts),
+            _ => null
+        };
+    }
+
+    private static ClassFilter HandleCompiledImplementationTypeSelector(
+        InvocationExpressionSyntax expression,
+        NameSyntax name
+    )
+    {
+        if (name.ToFullString() == "AddClasses" && expression.ArgumentList.Arguments.Count is >= 0 and <= 2)
+        {
+            foreach (var argument in expression.ArgumentList.Arguments)
+            {
+                if (argument.Expression is LiteralExpressionSyntax literalExpressionSyntax && literalExpressionSyntax.Token.IsKind(SyntaxKind.TrueKeyword))
+                {
+                    return ClassFilter.PublicOnly;
+                }
+            }
         }
 
-        static IEnumerable<ITypeFilterDescriptor> HandleCompiledImplementationTypeFilter(
-            GeneratorExecutionContext context,
-            SemanticModel semanticModel,
-            InvocationExpressionSyntax expression,
-            NameSyntax name
-        )
+        return ClassFilter.All;
+    }
+
+    private static IEnumerable<ITypeFilterDescriptor> HandleCompiledImplementationTypeFilter(
+        GeneratorExecutionContext context,
+        SemanticModel semanticModel,
+        InvocationExpressionSyntax expression,
+        NameSyntax name
+    )
+    {
+        if (name.ToFullString() == "AssignableToAny")
         {
-            if (name.ToFullString() == "AssignableToAny")
+            foreach (var argument in expression.ArgumentList.Arguments!)
             {
-                foreach (var argument in expression.ArgumentList.Arguments!)
+                if (argument.Expression is TypeOfExpressionSyntax typeOfExpressionSyntax)
                 {
-                    if (argument.Expression is TypeOfExpressionSyntax typeOfExpressionSyntax)
+                    var typeInfo = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type;
+                    switch (typeInfo)
                     {
-                        var typeInfo = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type;
-                        switch (typeInfo)
-                        {
-                            case INamedTypeSymbol nts:
-                                yield return new CompiledAssignableToAnyTypeFilterDescriptor(nts);
-                                continue;
+                        case INamedTypeSymbol nts:
+                            yield return new CompiledAssignableToAnyTypeFilterDescriptor(nts);
+                            continue;
 
-                            default:
-                                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
-                                yield break;
-                        }
+                        default:
+                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            yield break;
                     }
+                }
 
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeTypeOf, argument.Expression.GetLocation()));
-                    yield return new CompiledAbortTypeFilterDescriptor(context.Compilation.ObjectType);
-                    yield break;
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeTypeOf, argument.Expression.GetLocation()));
+                yield return new CompiledAbortTypeFilterDescriptor(context.Compilation.ObjectType);
+                yield break;
+            }
+
+            yield break;
+        }
+
+        if (name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList!.Arguments.Count == 1)
+        {
+            if (genericNameSyntax.Identifier.ToFullString() == "AssignableTo")
+            {
+                var type = Helpers.ExtractSyntaxFromMethod(expression, name);
+                if (type != null)
+                {
+                    var typeInfo = semanticModel.GetTypeInfo(type).Type;
+                    switch (typeInfo)
+                    {
+                        case INamedTypeSymbol nts:
+                            yield return new CompiledAssignableToTypeFilterDescriptor(nts);
+                            yield break;
+
+                        default:
+                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            yield break;
+                    }
                 }
 
                 yield break;
             }
 
-            if (name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList!.Arguments.Count == 1)
+            if (genericNameSyntax.Identifier.ToFullString() == "WithAttribute")
             {
-                if (genericNameSyntax.Identifier.ToFullString() == "AssignableTo")
+                var type = Helpers.ExtractSyntaxFromMethod(expression, name);
+                if (type != null)
                 {
-                    var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                    if (type != null)
+                    var typeInfo = semanticModel.GetTypeInfo(type).Type;
+                    switch (typeInfo)
                     {
-                        var typeInfo = semanticModel.GetTypeInfo(type).Type;
-                        switch (typeInfo)
-                        {
-                            case INamedTypeSymbol nts:
-                                yield return new CompiledAssignableToTypeFilterDescriptor(nts);
-                                yield break;
+                        case INamedTypeSymbol nts:
+                            yield return new CompiledWithAttributeFilterDescriptor(nts);
+                            yield break;
 
-                            default:
-                                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
-                                yield break;
-                        }
+                        default:
+                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            yield break;
                     }
-
-                    yield break;
                 }
 
-                if (genericNameSyntax.Identifier.ToFullString() == "WithAttribute")
+                yield break;
+            }
+
+            if (genericNameSyntax.Identifier.ToFullString() == "WithoutAttribute")
+            {
+                var type = Helpers.ExtractSyntaxFromMethod(expression, name);
+                if (type != null)
                 {
-                    var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                    if (type != null)
+                    var typeInfo = semanticModel.GetTypeInfo(type).Type;
+                    switch (typeInfo)
                     {
-                        var typeInfo = semanticModel.GetTypeInfo(type).Type;
-                        switch (typeInfo)
-                        {
-                            case INamedTypeSymbol nts:
-                                yield return new CompiledWithAttributeFilterDescriptor(nts);
-                                yield break;
+                        case INamedTypeSymbol nts:
+                            yield return new CompiledWithoutAttributeFilterDescriptor(nts);
+                            yield break;
 
-                            default:
-                                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
-                                yield break;
-                        }
+                        default:
+                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            yield break;
                     }
-
-                    yield break;
                 }
 
-                if (genericNameSyntax.Identifier.ToFullString() == "WithoutAttribute")
+                yield break;
+            }
+
+            NamespaceFilter? filter = null;
+            if (genericNameSyntax.Identifier.ToFullString() == "InExactNamespaceOf")
+            {
+                filter = NamespaceFilter.Exact;
+            }
+
+            if (genericNameSyntax.Identifier.ToFullString() == "InNamespaceOf")
+            {
+                filter = NamespaceFilter.In;
+            }
+
+            if (genericNameSyntax.Identifier.ToFullString() == "NotInNamespaceOf")
+            {
+                filter = NamespaceFilter.NotIn;
+            }
+
+            if (filter.HasValue)
+            {
+                var symbol = semanticModel.GetTypeInfo(genericNameSyntax.TypeArgumentList.Arguments![0]).Type!;
+                yield return new NamespaceFilterDescriptor(filter.Value, new[] { symbol.ContainingNamespace.ToDisplayString() });
+            }
+
+            yield break;
+        }
+
+        if (name is SimpleNameSyntax simpleNameSyntax)
+        {
+            if (simpleNameSyntax.ToFullString() == "AssignableTo")
+            {
+                var type = Helpers.ExtractSyntaxFromMethod(expression, name);
+                if (type != null)
                 {
-                    var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                    if (type != null)
+                    var typeInfo = semanticModel.GetTypeInfo(type).Type;
+                    switch (typeInfo)
                     {
-                        var typeInfo = semanticModel.GetTypeInfo(type).Type;
-                        switch (typeInfo)
-                        {
-                            case INamedTypeSymbol nts:
-                                yield return new CompiledWithoutAttributeFilterDescriptor(nts);
-                                yield break;
-
-                            default:
-                                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
-                                yield break;
-                        }
+                        case INamedTypeSymbol nts:
+                            yield return new CompiledAssignableToTypeFilterDescriptor(nts);
+                            yield break;
+                        default:
+                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            yield break;
                     }
-
-                    yield break;
                 }
 
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeTypeOf, simpleNameSyntax.Identifier.GetLocation()));
+                yield return new CompiledAbortTypeFilterDescriptor(context.Compilation.ObjectType);
+                yield break;
+            }
+
+            if (simpleNameSyntax.ToFullString() == "WithAttribute")
+            {
+                var type = Helpers.ExtractSyntaxFromMethod(expression, name);
+                if (type != null)
+                {
+                    var typeInfo = semanticModel.GetTypeInfo(type).Type;
+                    switch (typeInfo)
+                    {
+                        case INamedTypeSymbol nts:
+                            yield return new CompiledWithAttributeFilterDescriptor(nts);
+                            yield break;
+
+                        default:
+                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            yield break;
+                    }
+                }
+
+                yield break;
+            }
+
+            if (simpleNameSyntax.ToFullString() == "WithoutAttribute")
+            {
+                var type = Helpers.ExtractSyntaxFromMethod(expression, name);
+                if (type != null)
+                {
+                    var typeInfo = semanticModel.GetTypeInfo(type).Type;
+                    switch (typeInfo)
+                    {
+                        case INamedTypeSymbol nts:
+                            yield return new CompiledWithoutAttributeFilterDescriptor(nts);
+                            yield break;
+
+                        default:
+                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            yield break;
+                    }
+                }
+
+                yield break;
+            }
+
+            {
                 NamespaceFilter? filter = null;
-                if (genericNameSyntax.Identifier.ToFullString() == "InExactNamespaceOf")
+                if (simpleNameSyntax.ToFullString() == "InExactNamespaces" ||
+                    simpleNameSyntax.Identifier.ToFullString() == "InExactNamespaceOf")
                 {
                     filter = NamespaceFilter.Exact;
                 }
 
-                if (genericNameSyntax.Identifier.ToFullString() == "InNamespaceOf")
+                if (simpleNameSyntax.ToFullString() == "InNamespaces" ||
+                    simpleNameSyntax.Identifier.ToFullString() == "InNamespaceOf")
                 {
                     filter = NamespaceFilter.In;
                 }
 
-                if (genericNameSyntax.Identifier.ToFullString() == "NotInNamespaceOf")
+                if (simpleNameSyntax.ToFullString() == "NotInNamespaces" ||
+                    simpleNameSyntax.Identifier.ToFullString() == "NotInNamespaceOf")
                 {
                     filter = NamespaceFilter.NotIn;
                 }
 
                 if (filter.HasValue)
                 {
-                    var symbol = semanticModel.GetTypeInfo(genericNameSyntax.TypeArgumentList.Arguments![0]).Type!;
-                    yield return new NamespaceFilterDescriptor(filter.Value, new [] { symbol.ContainingNamespace.ToDisplayString() });
-                }
+                    var namespaces = expression.ArgumentList.Arguments
+                                               .Select(
+                                                    argument =>
+                                                    {
+                                                        switch (argument.Expression)
+                                                        {
+                                                            case LiteralExpressionSyntax literalExpressionSyntax
+                                                                when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
+                                                                return literalExpressionSyntax.Token.ValueText!;
+                                                            case InvocationExpressionSyntax
+                                                                {
+                                                                    Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } }
+                                                                } invocationExpressionSyntax
+                                                                when invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax
+                                                                    identifierNameSyntax:
+                                                                return identifierNameSyntax.Identifier.Text;
+                                                            case TypeOfExpressionSyntax typeOfExpressionSyntax:
+                                                            {
+                                                                var symbol = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type!;
+                                                                return symbol.ContainingNamespace.ToDisplayString()!;
+                                                            }
+                                                            default:
+                                                                context.ReportDiagnostic(
+                                                                    Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation())
+                                                                );
+                                                                return null!;
+                                                        }
+                                                    }
+                                                )
+                                               .Where(z => !string.IsNullOrWhiteSpace(z))
+                                               .ToArray();
 
-                yield break;
+                    yield return new NamespaceFilterDescriptor(filter.Value, namespaces);
+                }
             }
 
-            if (name is SimpleNameSyntax simpleNameSyntax)
+
             {
-                if (simpleNameSyntax.ToFullString() == "AssignableTo")
+                TextDirectionFilter? filter = null;
+                if (simpleNameSyntax.ToString() is "Suffix" or "Postfix" or "EndsWith")
                 {
-                    var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                    if (type != null)
-                    {
-                        var typeInfo = semanticModel.GetTypeInfo(type).Type;
-                        switch (typeInfo)
-                        {
-                            case INamedTypeSymbol nts:
-                                yield return new CompiledAssignableToTypeFilterDescriptor(nts);
-                                yield break;
-                            default:
-                                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
-                                yield break;
-                        }
-                    }
-
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeTypeOf, simpleNameSyntax.Identifier.GetLocation()));
-                    yield return new CompiledAbortTypeFilterDescriptor(context.Compilation.ObjectType);
-                    yield break;
+                    filter = TextDirectionFilter.EndsWith;
                 }
 
-                if (simpleNameSyntax.ToFullString() == "WithAttribute")
+                if (simpleNameSyntax.ToFullString() is "Affix" or "Prefix" or "StartsWith")
                 {
-                    var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                    if (type != null)
-                    {
-                        var typeInfo = semanticModel.GetTypeInfo(type).Type;
-                        switch (typeInfo)
-                        {
-                            case INamedTypeSymbol nts:
-                                yield return new CompiledWithAttributeFilterDescriptor(nts);
-                                yield break;
-
-                            default:
-                                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
-                                yield break;
-                        }
-                    }
-
-                    yield break;
+                    filter = TextDirectionFilter.StartsWith;
                 }
 
-                if (simpleNameSyntax.ToFullString() == "WithoutAttribute")
+                if (simpleNameSyntax.ToFullString() is "Contains" or "Includes")
                 {
-                    var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                    if (type != null)
-                    {
-                        var typeInfo = semanticModel.GetTypeInfo(type).Type;
-                        switch (typeInfo)
-                        {
-                            case INamedTypeSymbol nts:
-                                yield return new CompiledWithoutAttributeFilterDescriptor(nts);
-                                yield break;
-
-                            default:
-                                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
-                                yield break;
-                        }
-                    }
-
-                    yield break;
+                    filter = TextDirectionFilter.Contains;
                 }
 
+                if (filter.HasValue)
                 {
-                    NamespaceFilter? filter = null;
-                    if (simpleNameSyntax.ToFullString() == "InExactNamespaces" ||
-                        simpleNameSyntax.Identifier.ToFullString() == "InExactNamespaceOf")
-                    {
-                        filter = NamespaceFilter.Exact;
-                    }
+                    var stringValues = expression.ArgumentList.Arguments
+                                                 .Select(
+                                                      argument =>
+                                                      {
+                                                          switch (argument.Expression)
+                                                          {
+                                                              case LiteralExpressionSyntax literalExpressionSyntax
+                                                                  when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
+                                                                  return literalExpressionSyntax.Token.ValueText!;
+                                                              case InvocationExpressionSyntax
+                                                                  {
+                                                                      Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } }
+                                                                  } invocationExpressionSyntax
+                                                                  when invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax
+                                                                      identifierNameSyntax:
+                                                                  return identifierNameSyntax.Identifier.Text;
+                                                              default:
+                                                                  context.ReportDiagnostic(
+                                                                      Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation())
+                                                                  );
+                                                                  return null!;
+                                                          }
+                                                      }
+                                                  )
+                                                 .Where(z => !string.IsNullOrWhiteSpace(z))
+                                                 .ToArray();
 
-                    if (simpleNameSyntax.ToFullString() == "InNamespaces" ||
-                        simpleNameSyntax.Identifier.ToFullString() == "InNamespaceOf")
-                    {
-                        filter = NamespaceFilter.In;
-                    }
-
-                    if (simpleNameSyntax.ToFullString() == "NotInNamespaces" ||
-                        simpleNameSyntax.Identifier.ToFullString() == "NotInNamespaceOf")
-                    {
-                        filter = NamespaceFilter.NotIn;
-                    }
-
-                    if (filter.HasValue)
-                    {
-                        var namespaces = expression.ArgumentList.Arguments
-                           .Select(
-                                argument =>
-                                {
-                                    switch (argument.Expression)
-                                    {
-                                        case LiteralExpressionSyntax literalExpressionSyntax when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
-                                            return literalExpressionSyntax.Token.ValueText!;
-                                        case InvocationExpressionSyntax  { Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } } } invocationExpressionSyntax when invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax identifierNameSyntax:
-                                            return identifierNameSyntax.Identifier.Text;
-                                        case TypeOfExpressionSyntax typeOfExpressionSyntax:
-                                        {
-                                            var symbol = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type!;
-                                            return symbol.ContainingNamespace.ToDisplayString()!;
-                                        }
-                                        default:
-                                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation()));
-                                            return null!;
-                                    }
-                                }
-                            )
-                           .Where(z => !string.IsNullOrWhiteSpace(z))
-                           .ToArray();
-
-                        yield return new NamespaceFilterDescriptor(filter.Value, namespaces);
-                    }
-                }
-
-
-                {
-                    TextDirectionFilter? filter = null;
-                    if (simpleNameSyntax.ToString() is "Suffix" or "Postfix" or "EndsWith")
-                    {
-                        filter = TextDirectionFilter.EndsWith;
-                    }
-
-                    if (simpleNameSyntax.ToFullString() is "Affix" or "Prefix" or "StartsWith")
-                    {
-                        filter = TextDirectionFilter.StartsWith;
-                    }
-
-                    if (simpleNameSyntax.ToFullString() is "Contains" or "Includes")
-                    {
-                        filter = TextDirectionFilter.Contains;
-                    }
-
-                    if (filter.HasValue)
-                    {
-                        var stringValues = expression.ArgumentList.Arguments
-                           .Select(
-                                argument =>
-                                {
-                                    switch (argument.Expression)
-                                    {
-                                        case LiteralExpressionSyntax literalExpressionSyntax when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
-                                            return literalExpressionSyntax.Token.ValueText!;
-                                        case InvocationExpressionSyntax  { Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } } } invocationExpressionSyntax when invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax identifierNameSyntax:
-                                            return identifierNameSyntax.Identifier.Text;
-                                        default:
-                                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation()));
-                                            return null!;
-                                    }
-                                }
-                            )
-                           .Where(z => !string.IsNullOrWhiteSpace(z))
-                           .ToArray();
-
-                        yield return new NameFilterDescriptor(filter.Value, stringValues);
-                    }
+                    yield return new NameFilterDescriptor(filter.Value, stringValues);
                 }
             }
         }

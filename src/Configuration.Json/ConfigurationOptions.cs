@@ -1,23 +1,23 @@
 using Microsoft.Extensions.Configuration;
+using Rocket.Surgery.Configuration;
 using IMsftConfigurationBuilder = Microsoft.Extensions.Configuration.IConfigurationBuilder;
 
-namespace Rocket.Surgery.Extensions.Configuration
+namespace Rocket.Surgery.Extensions.Configuration;
+
+/// <summary>
+///     JsonConfigOptionsExtensions
+/// </summary>
+public static class JsonConfigOptionsExtensions
 {
     /// <summary>
-    /// JsonConfigOptionsExtensions
+    ///     Configures the options to inject json files into the correct locations in app settings
     /// </summary>
-    public static class JsonConfigOptionsExtensions
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public static ConfigOptions UseJson(this ConfigOptions options)
     {
-        /// <summary>
-        /// Configures the options to inject json files into the correct locations in app settings
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static ConfigOptions UseJson(this ConfigOptions options)
-        {
-            options.AddApplicationConfiguration(b => b.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true));
-            options.AddEnvironmentConfiguration((b, environmentName) => b.AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true));
-            return options;
-        }
+        options.AddApplicationConfiguration(b => b.AddJsonFile("appsettings.json", true, true));
+        options.AddEnvironmentConfiguration((b, environmentName) => b.AddJsonFile($"appsettings.{environmentName}.json", true, true));
+        return options;
     }
 }

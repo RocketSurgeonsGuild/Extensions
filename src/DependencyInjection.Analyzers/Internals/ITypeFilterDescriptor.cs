@@ -1,66 +1,81 @@
 using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
 
-namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals
+namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals;
+
+internal interface ITypeFilterDescriptor
 {
-    interface ITypeFilterDescriptor { }
+}
 
-    struct NamespaceFilterDescriptor : ITypeFilterDescriptor
+internal struct NamespaceFilterDescriptor : ITypeFilterDescriptor
+{
+    public IEnumerable<string> Namespaces { get; }
+    public NamespaceFilter Filter { get; }
+
+    public NamespaceFilterDescriptor(NamespaceFilter filter, IEnumerable<string> namespaces)
     {
-        public IEnumerable<string> Namespaces { get; }
-        public NamespaceFilter Filter { get; }
-
-        public NamespaceFilterDescriptor(NamespaceFilter filter, IEnumerable<string> namespaces)
-        {
-            Filter = filter;
-            Namespaces = namespaces;
-        }
+        Filter = filter;
+        Namespaces = namespaces;
     }
+}
 
-    struct NameFilterDescriptor : ITypeFilterDescriptor
+internal struct NameFilterDescriptor : ITypeFilterDescriptor
+{
+    public TextDirectionFilter Filter { get; }
+    public IEnumerable<string> Names { get; }
+
+    public NameFilterDescriptor(TextDirectionFilter filter, IEnumerable<string> names)
     {
-        public TextDirectionFilter Filter { get; }
-        public IEnumerable<string> Names { get; }
-
-        public NameFilterDescriptor(TextDirectionFilter filter, IEnumerable<string> names)
-        {
-            Names = names;
-            Filter = filter;
-        }
+        Names = names;
+        Filter = filter;
     }
+}
 
-    struct CompiledWithAttributeFilterDescriptor : ITypeFilterDescriptor
+internal struct CompiledWithAttributeFilterDescriptor : ITypeFilterDescriptor
+{
+    public INamedTypeSymbol Attribute { get; }
+
+    public CompiledWithAttributeFilterDescriptor(INamedTypeSymbol attribute)
     {
-        public INamedTypeSymbol Attribute { get; }
-
-        public CompiledWithAttributeFilterDescriptor(INamedTypeSymbol attribute) => Attribute = attribute;
+        Attribute = attribute;
     }
+}
 
-    struct CompiledWithoutAttributeFilterDescriptor : ITypeFilterDescriptor
+internal struct CompiledWithoutAttributeFilterDescriptor : ITypeFilterDescriptor
+{
+    public INamedTypeSymbol Attribute { get; }
+
+    public CompiledWithoutAttributeFilterDescriptor(INamedTypeSymbol attribute)
     {
-        public INamedTypeSymbol Attribute { get; }
-
-        public CompiledWithoutAttributeFilterDescriptor(INamedTypeSymbol attribute) => Attribute = attribute;
+        Attribute = attribute;
     }
+}
 
-    struct CompiledAssignableToTypeFilterDescriptor : ITypeFilterDescriptor
+internal struct CompiledAssignableToTypeFilterDescriptor : ITypeFilterDescriptor
+{
+    public INamedTypeSymbol Type { get; }
+
+    public CompiledAssignableToTypeFilterDescriptor(INamedTypeSymbol type)
     {
-        public INamedTypeSymbol Type { get; }
-
-        public CompiledAssignableToTypeFilterDescriptor(INamedTypeSymbol type) => Type = type;
+        Type = type;
     }
+}
 
-    struct CompiledAssignableToAnyTypeFilterDescriptor : ITypeFilterDescriptor
+internal struct CompiledAssignableToAnyTypeFilterDescriptor : ITypeFilterDescriptor
+{
+    public INamedTypeSymbol Type { get; }
+
+    public CompiledAssignableToAnyTypeFilterDescriptor(INamedTypeSymbol type)
     {
-        public INamedTypeSymbol Type { get; }
-
-        public CompiledAssignableToAnyTypeFilterDescriptor(INamedTypeSymbol type) => Type = type;
+        Type = type;
     }
+}
 
-    struct CompiledAbortTypeFilterDescriptor : ITypeFilterDescriptor
+internal struct CompiledAbortTypeFilterDescriptor : ITypeFilterDescriptor
+{
+    public INamedTypeSymbol Type { get; }
+
+    public CompiledAbortTypeFilterDescriptor(INamedTypeSymbol type)
     {
-        public INamedTypeSymbol Type { get; }
-
-        public CompiledAbortTypeFilterDescriptor(INamedTypeSymbol type) => Type = type;
+        Type = type;
     }
 }

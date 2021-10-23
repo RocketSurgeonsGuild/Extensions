@@ -1,98 +1,100 @@
-using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
 
-namespace Rocket.Surgery.Reflection
+#pragma warning disable CA1307
+namespace Rocket.Surgery.Reflection;
+
+/// <summary>
+///     The default backing field helper
+/// </summary>
+public class BackingFieldHelper
 {
     /// <summary>
-    /// The default backing field helper
+    ///     A default instance
     /// </summary>
-    public class BackingFieldHelper
+    public static BackingFieldHelper Instance { get; } = new BackingFieldHelper();
+
+    private readonly ConcurrentDictionary<(Type, string), FieldInfo> _backingFields = new ConcurrentDictionary<(Type, string), FieldInfo>();
+
+    private static FieldInfo? GetBackingField(PropertyInfo? pi)
     {
-        /// <summary>
-        /// A default instance
-        /// </summary>
-        public static BackingFieldHelper Instance { get; } = new BackingFieldHelper();
-        private readonly ConcurrentDictionary<(Type, string), FieldInfo> _backingFields = new ConcurrentDictionary<(Type, string), FieldInfo>();
+        if (pi == null || !pi.CanRead || pi.GetMethod?.IsDefined(typeof(CompilerGeneratedAttribute), true) != true)
+            return null;
 
-        private static FieldInfo? GetBackingField(PropertyInfo pi)
+        var backingField = pi.DeclaringType?.GetTypeInfo().GetDeclaredField($"<{pi.Name}>k__BackingField");
+        if (backingField == null)
+            return null;
+
+        if (!backingField.IsDefined(typeof(CompilerGeneratedAttribute), true))
+            return null;
+
+        return backingField;
+    }
+
+    private FieldInfo GetBackingField(Type objectType, Type interfaceType, string name)
+    {
+        if (!_backingFields.TryGetValue(( objectType, name ), out var backingField))
         {
-            if (!pi.CanRead || !pi.GetMethod.IsDefined(typeof(CompilerGeneratedAttribute), inherit: true))
-                return null;
+            var property = objectType.GetTypeInfo().GetProperty(
+                $"{interfaceType.FullName?.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance
+            ) ?? objectType.GetTypeInfo().GetProperty(name);
 
-            var backingField = pi.DeclaringType.GetTypeInfo().GetDeclaredField($"<{pi.Name}>k__BackingField");
-            if (backingField == null)
-                return null;
-
-            if (!backingField.IsDefined(typeof(CompilerGeneratedAttribute), inherit: true))
-                return null;
-
-            return backingField;
+            backingField = GetBackingField(property)!;
+            _backingFields.TryAdd(( objectType, name ), backingField!);
         }
 
-        private FieldInfo GetBackingField(Type objectType, Type interfaceType, string name)
-        {
-            if (!_backingFields.TryGetValue((objectType, name), out var backingField))
-            {
-#pragma warning disable CA1307 // Specify StringComparison
-                var property = objectType.GetTypeInfo().GetProperty($"{interfaceType.FullName.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance) ?? objectType.GetTypeInfo().GetProperty(name);
-#pragma warning restore CA1307 // Specify StringComparison
-
-                backingField = GetBackingField(property)!;
-                _backingFields.TryAdd((objectType, name), backingField!);
-            }
-            if (backingField is null)
-                throw new NotSupportedException("Given Expression is not supported");
-            return backingField;
-        }
-
-        /// <summary>
-        /// Gets the backing field.
-        /// </summary>
-        /// <typeparam name="TInterface">The type of the interface.</typeparam>
-        /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <param name="type">The type.</param>
-        /// <param name="expression">The expression.</param>
-        /// <returns></returns>
-        public FieldInfo GetBackingField<TInterface, TValue>(Type type, [NotNull] Expression<Func<TInterface, TValue>> expression)
-        {
-            if (expression == null)
-            {
-                throw new ArgumentNullException(nameof(expression));
-            }
-
-            if (expression.Body is MemberExpression exp)
-            {
-                return GetBackingField(type, typeof(TInterface), exp.Member.Name);
-            }
+        if (backingField is null)
             throw new NotSupportedException("Given Expression is not supported");
-        }
+        return backingField;
+    }
 
-        /// <summary>
-        /// Sets the backing field.
-        /// </summary>
-        /// <typeparam name="TInterface">The type of the interface.</typeparam>
-        /// <typeparam name="TValue">The type of the value.</typeparam>
-        /// <param name="instance">The instance.</param>
-        /// <param name="expression">The expression.</param>
-        /// <param name="value">The value.</param>
-        public void SetBackingField<TInterface, TValue>(TInterface instance, [NotNull] Expression<Func<TInterface, TValue>> expression, TValue value)
+    /// <summary>
+    ///     Gets the backing field.
+    /// </summary>
+    /// <typeparam name="TInterface">The type of the interface.</typeparam>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="type">The type.</param>
+    /// <param name="expression">The expression.</param>
+    /// <returns></returns>
+    public FieldInfo GetBackingField<TInterface, TValue>(Type type, [NotNull] Expression<Func<TInterface, TValue>> expression)
+    {
+        if (expression == null)
         {
-            if (expression == null)
-            {
-                throw new ArgumentNullException(nameof(expression));
-            }
-
-            if (expression.Body is MemberExpression exp)
-            {
-                var field = GetBackingField(instance!.GetType(), expression);
-                field.SetValue(instance, value);
-                return;
-            }
-            throw new NotSupportedException("Given Expression is not supported");
+            throw new ArgumentNullException(nameof(expression));
         }
+
+        if (expression.Body is MemberExpression exp)
+        {
+            return GetBackingField(type, typeof(TInterface), exp.Member.Name);
+        }
+
+        throw new NotSupportedException("Given Expression is not supported");
+    }
+
+    /// <summary>
+    ///     Sets the backing field.
+    /// </summary>
+    /// <typeparam name="TInterface">The type of the interface.</typeparam>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="instance">The instance.</param>
+    /// <param name="expression">The expression.</param>
+    /// <param name="value">The value.</param>
+    public void SetBackingField<TInterface, TValue>(TInterface instance, [NotNull] Expression<Func<TInterface, TValue>> expression, TValue value)
+    {
+        if (expression == null)
+        {
+            throw new ArgumentNullException(nameof(expression));
+        }
+
+        if (expression.Body is MemberExpression exp)
+        {
+            var field = GetBackingField(instance!.GetType(), expression);
+            field.SetValue(instance, value);
+            return;
+        }
+
+        throw new NotSupportedException("Given Expression is not supported");
     }
 }
