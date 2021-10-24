@@ -183,19 +183,19 @@ public class GeneratorTester : LoggerTest
         return this;
     }
 
-    public GeneratorTester AddGlobalOption(string key, string? value)
+    public GeneratorTester AddGlobalOption(string key, string value)
     {
         _optionsProvider.AddGlobalOption(key, value);
         return this;
     }
 
-    public GeneratorTester AddOption(SyntaxTree tree, string? value)
+    public GeneratorTester AddOption(SyntaxTree tree, string value)
     {
         _optionsProvider.AddOption(tree, value);
         return this;
     }
 
-    public GeneratorTester AddOption(AdditionalText key, string? value)
+    public GeneratorTester AddOption(AdditionalText key, string value)
     {
         _optionsProvider.AddOption(key, value);
         return this;
@@ -229,7 +229,7 @@ public class GeneratorTester : LoggerTest
         Logger.LogInformation("Starting Generation for {SourceCount}", _sources.Count);
         if (Logger.IsEnabled(LogLevel.Trace))
         {
-            Logger.LogTrace("--- References ---", _sources.Count);
+            Logger.LogTrace("--- References --- {Count}", _sources.Count);
             foreach (var reference in _metadataReferences)
                 Logger.LogTrace("    Reference: {Name}", reference.Display);
         }
@@ -245,7 +245,7 @@ public class GeneratorTester : LoggerTest
         var diagnostics = compilation.GetDiagnostics();
         if (Logger.IsEnabled(LogLevel.Trace) && diagnostics is { Length: > 0 })
         {
-            Logger.LogTrace("--- Input Diagnostics ---", _sources.Count);
+            Logger.LogTrace("--- Input Diagnostics --- {Count}", _sources.Count);
             foreach (var d in diagnostics)
                 Logger.LogTrace("    Reference: {Name}", d.ToString());
         }
@@ -274,7 +274,7 @@ public class GeneratorTester : LoggerTest
 
             if (Logger.IsEnabled(LogLevel.Trace) && diagnostics is { Length: > 0 })
             {
-                Logger.LogTrace("--- Diagnostics ---", _sources.Count);
+                Logger.LogTrace("--- Diagnostics --- {Count}", _sources.Count);
                 foreach (var d in diagnostics)
                     Logger.LogTrace("    Reference: {Name}", d.ToString());
             }
@@ -284,7 +284,7 @@ public class GeneratorTester : LoggerTest
                                          .ToImmutableArray();
             if (Logger.IsEnabled(LogLevel.Trace) && trees is { Length: > 0 })
             {
-                Logger.LogTrace("--- Syntax Trees ---", _sources.Count);
+                Logger.LogTrace("--- Syntax Trees --- {Count}", _sources.Count);
                 foreach (var t in trees)
                 {
                     Logger.LogTrace("    FilePath: {Name}", t.FilePath);
@@ -308,7 +308,7 @@ public class GeneratorTester : LoggerTest
         results = results with
         {
             FinalCompilation = inputCompilation,
-            FinalDiagnostics = inputCompilation?.GetDiagnostics() ?? results.FinalDiagnostics,
+            FinalDiagnostics = inputCompilation.GetDiagnostics(),
             Assembly = Emit(inputCompilation)
         };
 
@@ -317,8 +317,9 @@ public class GeneratorTester : LoggerTest
 
     private class OptionsProvider : AnalyzerConfigOptionsProvider
     {
-        private readonly Dictionary<string, string?> _options = new();
-        private readonly Dictionary<string, string?> _globalOptions;
+        // ReSharper disable once CollectionNeverQueried.Local
+        private readonly Dictionary<string, string> _options = new();
+        private readonly Dictionary<string, string> _globalOptions;
 
         public OptionsProvider()
         {
@@ -338,17 +339,17 @@ public class GeneratorTester : LoggerTest
 
         public override AnalyzerConfigOptions GlobalOptions { get; }
 
-        public void AddOption(SyntaxTree tree, string? value)
+        public void AddOption(SyntaxTree tree, string value)
         {
             _options.Add(tree.FilePath, value);
         }
 
-        public void AddOption(AdditionalText tree, string? value)
+        public void AddOption(AdditionalText tree, string value)
         {
             _options.Add(tree.Path, value);
         }
 
-        public void AddGlobalOption(string key, string? value)
+        public void AddGlobalOption(string key, string value)
         {
             _globalOptions.Add(key, value);
         }
@@ -356,16 +357,16 @@ public class GeneratorTester : LoggerTest
 
     private class Options : AnalyzerConfigOptions
     {
-        private readonly IReadOnlyDictionary<string, string?> _options;
+        private readonly IReadOnlyDictionary<string, string> _options;
 
-        public Options(IReadOnlyDictionary<string, string?> options)
+        public Options(IReadOnlyDictionary<string, string> options)
         {
             _options = options;
         }
 
-        public override bool TryGetValue(string key, out string? value)
+        public override bool TryGetValue(string key, out string value)
         {
-            return _options.TryGetValue(key, out value);
+            return _options.TryGetValue(key, out value!);
         }
     }
 }

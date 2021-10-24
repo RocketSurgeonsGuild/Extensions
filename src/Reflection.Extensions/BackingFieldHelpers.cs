@@ -18,12 +18,12 @@ public class BackingFieldHelper
 
     private readonly ConcurrentDictionary<(Type, string), FieldInfo> _backingFields = new ConcurrentDictionary<(Type, string), FieldInfo>();
 
-    private static FieldInfo? GetBackingField(PropertyInfo pi)
+    private static FieldInfo? GetBackingField(PropertyInfo? pi)
     {
-        if (!pi.CanRead || !pi.GetMethod!.IsDefined(typeof(CompilerGeneratedAttribute), true))
+        if (pi == null || !pi.CanRead || pi.GetMethod?.IsDefined(typeof(CompilerGeneratedAttribute), true) != true)
             return null;
 
-        var backingField = pi.DeclaringType.GetTypeInfo().GetDeclaredField($"<{pi.Name}>k__BackingField");
+        var backingField = pi.DeclaringType?.GetTypeInfo().GetDeclaredField($"<{pi.Name}>k__BackingField");
         if (backingField == null)
             return null;
 
@@ -38,11 +38,11 @@ public class BackingFieldHelper
         if (!_backingFields.TryGetValue(( objectType, name ), out var backingField))
         {
             var property = objectType.GetTypeInfo().GetProperty(
-                $"{interfaceType.FullName.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance
+                $"{interfaceType.FullName?.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance
             ) ?? objectType.GetTypeInfo().GetProperty(name);
 
             backingField = GetBackingField(property)!;
-            _backingFields.TryAdd(( objectType, name ), backingField!);
+            _backingFields.TryAdd(( objectType, name ), backingField);
         }
 
         if (backingField is null)
@@ -58,7 +58,7 @@ public class BackingFieldHelper
     /// <param name="type">The type.</param>
     /// <param name="expression">The expression.</param>
     /// <returns></returns>
-    public FieldInfo GetBackingField<TInterface, TValue>(Type type, [NotNull] Expression<Func<TInterface, TValue>> expression)
+    public FieldInfo GetBackingField<TInterface, TValue>(Type type, Expression<Func<TInterface, TValue>> expression)
     {
         if (expression == null)
         {
@@ -81,14 +81,14 @@ public class BackingFieldHelper
     /// <param name="instance">The instance.</param>
     /// <param name="expression">The expression.</param>
     /// <param name="value">The value.</param>
-    public void SetBackingField<TInterface, TValue>(TInterface instance, [NotNull] Expression<Func<TInterface, TValue>> expression, TValue value)
+    public void SetBackingField<TInterface, TValue>(TInterface instance, Expression<Func<TInterface, TValue>> expression, TValue value)
     {
         if (expression == null)
         {
             throw new ArgumentNullException(nameof(expression));
         }
 
-        if (expression.Body is MemberExpression exp)
+        if (expression.Body is MemberExpression)
         {
             var field = GetBackingField(instance!.GetType(), expression);
             field.SetValue(instance, value);

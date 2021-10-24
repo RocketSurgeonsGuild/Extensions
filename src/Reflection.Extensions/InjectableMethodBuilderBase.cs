@@ -59,7 +59,7 @@ public abstract class InjectableMethodBuilderBase
     /// </summary>
     /// <param name="arguments">The arguments.</param>
     /// <returns></returns>
-    protected (MethodCallExpression body, IEnumerable<ParameterExpression> parameters) Compile(params TypeInfo[] arguments)
+    protected (Expression body, IEnumerable<ParameterExpression> parameters) Compile(params TypeInfo[] arguments)
     {
         // Make this stupid simple
         // We allow multiple method names, but beyond that overloads are not allowed

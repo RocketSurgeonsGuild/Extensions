@@ -77,7 +77,7 @@ public record GenerationTestResults(
         return results.FinalCompilation;
     }
 
-    public static implicit operator Assembly(GenerationTestResults results)
+    public static implicit operator Assembly?(GenerationTestResults results)
     {
         return results.Assembly;
     }

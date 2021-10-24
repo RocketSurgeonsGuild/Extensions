@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 using Microsoft.CodeAnalysis.CSharp;
@@ -2249,7 +2250,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                     strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.ServiceA), typeof(TestProject.A.ServiceA), ServiceLifetime.Scoped));
                     strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));
                     strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.ServiceB), typeof(TestProject.B.ServiceB), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.B.ServiceB>(), ServiceLifetime.Scoped));"
+                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.B.ServiceB>(), ServiceLifetime.Scoped));",
+                            _ => ""
                         }
                     }
                     break;
@@ -2377,7 +2379,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                     strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
                     strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.IServiceB), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
                     strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.ServiceA), typeof(TestProject.A.ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));"
+                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));",
+                            _ => ""
                         }
                     }
                     break;
@@ -2718,6 +2721,7 @@ public static class Program {
 
         var generator = await GenerateAsync();
         Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
+        Debug.Assert(generationTestResult != null);
         Assert.NotEmpty(generationTestResult.Diagnostics);
         Assert.Contains(generationTestResult.Diagnostics, z => z.Id == Diagnostics.MustBeAnExpression.Id);
     }
@@ -2753,6 +2757,7 @@ public static class Program {
 
         var generator = await GenerateAsync();
         Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
+        Debug.Assert(generationTestResult != null);
         Assert.NotEmpty(generationTestResult.Diagnostics);
         Assert.Contains(generationTestResult.Diagnostics, z => z.Id == Diagnostics.MustBeTypeOf.Id);
     }
@@ -2787,6 +2792,7 @@ public static class Program {
 
         var generator = await GenerateAsync();
         Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
+        Debug.Assert(generationTestResult != null);
         Assert.NotEmpty(generationTestResult.Diagnostics);
         Assert.Contains(generationTestResult.Diagnostics, z => z.Id == Diagnostics.NamespaceMustBeAString.Id);
     }
@@ -2826,6 +2832,7 @@ public static class Program {
 
         var generator = await GenerateAsync();
         Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
+        Debug.Assert(generationTestResult != null);
         Assert.NotEmpty(generationTestResult.Diagnostics);
         Assert.Contains(
             generationTestResult.Diagnostics,
@@ -2868,6 +2875,7 @@ public static class Program {
 
         var generator = await GenerateAsync();
         Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
+        Debug.Assert(generationTestResult != null);
         Assert.NotEmpty(generationTestResult.Diagnostics);
         Assert.Contains(
             generationTestResult.Diagnostics,
@@ -2877,8 +2885,9 @@ public static class Program {
 
     private static class StaticHelper
     {
-        public static IServiceCollection ExecuteStaticServiceCollectionMethod(Assembly assembly, string className, string methodName)
+        public static IServiceCollection ExecuteStaticServiceCollectionMethod(Assembly? assembly, string className, string methodName)
         {
+            if (assembly == null) return new ServiceCollection();
             var @class = assembly.GetTypes().FirstOrDefault(z => z.IsClass && z.Name == className)!;
             Assert.NotNull(@class);
 

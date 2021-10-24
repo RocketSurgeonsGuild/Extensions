@@ -34,8 +34,9 @@ public static class NullableExtensions
     /// </summary>
     /// <param name="property"></param>
     /// <returns></returns>
-    public static Nullability GetNullability(this PropertyInfo property)
+    public static Nullability GetNullability(this PropertyInfo? property)
     {
+        if (property == null) return Nullability.NotDefined;
         return NullabilityHelper(property.PropertyType, property.DeclaringType, property.CustomAttributes);
     }
 
@@ -44,8 +45,9 @@ public static class NullableExtensions
     /// </summary>
     /// <param name="field"></param>
     /// <returns></returns>
-    public static Nullability GetNullability(this FieldInfo field)
+    public static Nullability GetNullability(this FieldInfo? field)
     {
+        if (field == null) return Nullability.NotDefined;
         return NullabilityHelper(field.FieldType, field.DeclaringType, field.CustomAttributes);
     }
 
@@ -54,8 +56,9 @@ public static class NullableExtensions
     /// </summary>
     /// <param name="parameter"></param>
     /// <returns></returns>
-    public static Nullability GetNullability(this ParameterInfo parameter)
+    public static Nullability GetNullability(this ParameterInfo? parameter)
     {
+        if (parameter == null) return Nullability.NotDefined;
         return NullabilityHelper(parameter.ParameterType, parameter.Member, parameter.CustomAttributes);
     }
 
@@ -64,8 +67,9 @@ public static class NullableExtensions
     /// </summary>
     /// <param name="method"></param>
     /// <returns></returns>
-    public static Nullability GetNullability(this MethodInfo method)
+    public static Nullability GetNullability(this MethodInfo? method)
     {
+        if (method == null) return Nullability.NotDefined;
         return NullabilityHelper(
             method.ReturnType, method.DeclaringType, method.ReturnTypeCustomAttributes.GetCustomAttributes(false).OfType<CustomAttributeData>()
         );

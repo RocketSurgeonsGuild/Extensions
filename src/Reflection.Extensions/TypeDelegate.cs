@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
+#pragma warning disable CA2201
 namespace Rocket.Surgery.Reflection;
 
 internal class TypeDelegate : IEquatable<TypeDelegate?>

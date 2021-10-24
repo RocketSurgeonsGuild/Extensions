@@ -3,7 +3,7 @@ using System.Runtime.Loader;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
-public class CollectibleTestAssemblyLoadContext : AssemblyLoadContext, IDisposable
+internal class CollectibleTestAssemblyLoadContext : AssemblyLoadContext, IDisposable
 {
     public CollectibleTestAssemblyLoadContext() : base(
 #if NETCOREAPP3_1 || NET5_0

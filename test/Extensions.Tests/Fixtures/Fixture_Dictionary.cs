@@ -1,12 +1,8 @@
 #nullable disable
-using System.Collections.Generic;
+namespace Rocket.Surgery.Extensions.Tests.Fixtures;
 
-namespace Rocket.Surgery.Extensions.Tests.Fixtures
+internal class Fixture_Dictionary
 {
-    class Fixture_Dictionary
-    {
-        public IDictionary<string, string> Values;
-        public Dictionary<string, Fixture_Thing> Things { get; set; }
-
-    }
+    public IDictionary<string, string> Values;
+    public Dictionary<string, Fixture_Thing> Things { get; set; }
 }
