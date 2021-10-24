@@ -5,15 +5,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 internal class CollectibleTestAssemblyLoadContext : AssemblyLoadContext, IDisposable
 {
-    public CollectibleTestAssemblyLoadContext() : base(
-#if NETCOREAPP3_1 || NET5_0
-        true
-#endif
-
-    )
-    {
-    }
-
     protected override Assembly? Load(AssemblyName assemblyName)
     {
         return null;

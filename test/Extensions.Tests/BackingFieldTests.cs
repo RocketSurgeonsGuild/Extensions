@@ -60,10 +60,20 @@ public class BackingFieldTests
 
     private class ExplictField2 : IBackingField
     {
+#pragma warning disable RCS1169 // Make field read-only.
+#pragma warning disable IDE0044 // Add readonly modifier
+#pragma warning disable 649
         private string _value;
-
+#pragma warning restore 649
+#pragma warning restore IDE0044 // Add readonly modifier
+#pragma warning restore RCS1169 // Make field read-only.
         // ReSharper disable once ConvertToAutoProperty
-        string IBackingField.Value => _value;
+        string IBackingField.Value
+        {
+#pragma warning disable IDE0025 // Use expression body for properties
+            get => _value;
+#pragma warning restore IDE0025 // Use expression body for properties
+        }
     }
 
     [Theory]
@@ -87,6 +97,7 @@ public class BackingFieldTests
     {
         var instance = (IBackingField)Activator.CreateInstance(backingField);
         Action a = () => new BackingFieldHelper().SetBackingField(instance, x => x.Value, "abcd");
+        instance!.Value.Should().BeNullOrWhiteSpace();
         a.Should().Throw<NotSupportedException>();
     }
 }
