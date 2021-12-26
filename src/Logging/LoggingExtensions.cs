@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 
-#pragma warning disable CA1848, CA2254
+#pragma warning disable CA2254
 // ReSharper disable TemplateIsNotCompileTimeConstantProblem
 namespace Rocket.Surgery.Extensions.Logging;
 
