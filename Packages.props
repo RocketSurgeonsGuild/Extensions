@@ -32,7 +32,7 @@
         <PackageReference Update="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Update="System.Collections.Immutable" Version="6.0.0" />
         <PackageReference Update="System.Interactive" Version="5.0.0" />
-        <PackageReference Update="System.Interactive.Async" Version="5.0.0" />
+        <PackageReference Update="System.Interactive.Async" Version="5.1.0" />
         <PackageReference Update="System.Reactive" Version="5.0.0" />
         <PackageReference Update="System.Reactive.Observable.Aliases" Version="5.0.0" />
         <PackageReference Update="System.Reflection.Emit.Lightweight" Version="4.7.0" />
