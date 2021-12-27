@@ -22,5 +22,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Configuration" />
         <PackageReference Include="Microsoft.Reactive.Testing" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" PrivateAssets="all" />
     </ItemGroup>
 </Project>
