@@ -1,8 +1,8 @@
 using Nuke.Common.CI.GitHubActions;
-using Rocket.Surgery.Nuke;
 using Rocket.Surgery.Nuke.ContinuousIntegration;
 using Rocket.Surgery.Nuke.DotNetCore;
 using Rocket.Surgery.Nuke.GithubActions;
+using YamlDotNet.Core;
 
 #pragma warning disable CA1050
 
@@ -11,7 +11,6 @@ using Rocket.Surgery.Nuke.GithubActions;
     GitHubActionsImage.MacOsLatest,
     GitHubActionsImage.WindowsLatest,
     GitHubActionsImage.UbuntuLatest,
-    AutoGenerate = false,
     On = new[] { GitHubActionsTrigger.Push },
     OnPushTags = new[] { "v*" },
     OnPushBranches = new[] { "master", "next" },
@@ -20,11 +19,11 @@ using Rocket.Surgery.Nuke.GithubActions;
     NonEntryTargets = new[]
     {
         nameof(ICIEnvironment.CIEnvironment),
-        nameof(ITriggerCodeCoverageReports.Trigger_Code_Coverage_Reports),
-        nameof(ITriggerCodeCoverageReports.Generate_Code_Coverage_Report_Cobertura),
-        nameof(IGenerateCodeCoverageBadges.Generate_Code_Coverage_Badges),
-        nameof(IGenerateCodeCoverageReport.Generate_Code_Coverage_Report),
-        nameof(IGenerateCodeCoverageSummary.Generate_Code_Coverage_Summary),
+        nameof(ITriggerCodeCoverageReports.TriggerCodeCoverageReports),
+        nameof(ITriggerCodeCoverageReports.GenerateCodeCoverageReportCobertura),
+        nameof(IGenerateCodeCoverageBadges.GenerateCodeCoverageBadges),
+        nameof(IGenerateCodeCoverageReport.GenerateCodeCoverageReport),
+        nameof(IGenerateCodeCoverageSummary.GenerateCodeCoverageSummary),
         nameof(Default)
     },
     ExcludedTargets = new[] { nameof(ICanClean.Clean), nameof(ICanRestoreWithDotNetCore.DotnetToolRestore) },
@@ -37,7 +36,7 @@ public partial class Solution
 {
     public static RocketSurgeonGitHubActionsConfiguration Middleware(RocketSurgeonGitHubActionsConfiguration configuration)
     {
-        var buildJob = configuration.Jobs.First(z => z.Name == "Build");
+        var buildJob = configuration.Jobs.OfType<RocketSurgeonsGithubActionsJob>().First(z => z.Name == "Build");
         var checkoutStep = buildJob.Steps.OfType<CheckoutStep>().Single();
         // For fetch all
         checkoutStep.FetchDepth = 0;
