@@ -13,52 +13,44 @@ namespace Rocket.Surgery.Extensions.Tests;
 
 public class BackingFieldTests
 {
-    private interface IBackingField
+    interface IBackingField
     {
         string Value { get; }
     }
-
-    private class BackingField1 : IBackingField
+    class BackingField1 : IBackingField
     {
         public string Value { get; }
     }
-
-    private class BackingField2 : IBackingField
+    class BackingField2 : IBackingField
     {
         public string Value { get; private set; }
     }
-
-    private class BackingField3 : IBackingField
+    class BackingField3 : IBackingField
     {
         public string Value { get; internal set; }
     }
-
-    private class BackingField5 : IBackingField
+    class BackingField5 : IBackingField
     {
         public string Value { get; protected set; }
     }
-
-    private class BackingField6 : IBackingField
+    class BackingField6 : IBackingField
     {
         public string Value { get; set; }
     }
-
-    private class BackingField4 : IBackingField
+    class BackingField4 : IBackingField
     {
+        private string _value;
         public string Value
         {
-            get;
-            // ReSharper disable once UnusedMember.Local
-            set;
+            get => _value;
+            set => _value = value;
         }
     }
-
-    private class ExplictField1 : IBackingField
+    class ExplictField1 : IBackingField
     {
         string IBackingField.Value { get; }
     }
-
-    private class ExplictField2 : IBackingField
+    class ExplictField2 : IBackingField
     {
 #pragma warning disable RCS1169 // Make field read-only.
 #pragma warning disable IDE0044 // Add readonly modifier
