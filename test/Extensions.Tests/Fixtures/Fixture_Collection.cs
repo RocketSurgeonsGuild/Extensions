@@ -1,12 +1,10 @@
 #nullable disable
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Rocket.Surgery.Extensions.Tests.Fixtures
+namespace Rocket.Surgery.Extensions.Tests.Fixtures;
+
+internal class Fixture_Collection
 {
-    class Fixture_Collection
-    {
-        public Collection<string> Values;
-        public ICollection<Fixture_Thing> Things { get; set; }
-    }
+    public Collection<string> Values;
+    public ICollection<Fixture_Thing> Things { get; set; }
 }

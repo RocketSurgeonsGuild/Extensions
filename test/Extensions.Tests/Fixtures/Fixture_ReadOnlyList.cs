@@ -1,11 +1,8 @@
 #nullable disable
-using System.Collections.Generic;
+namespace Rocket.Surgery.Extensions.Tests.Fixtures;
 
-namespace Rocket.Surgery.Extensions.Tests.Fixtures
+internal class Fixture_ReadOnlyList
 {
-    class Fixture_ReadOnlyList
-    {
-        public IReadOnlyList<string> Values { get; set; }
-        public IReadOnlyList<Fixture_Thing> Things;
-    }
+    public IReadOnlyList<string> Values { get; set; }
+    public IReadOnlyList<Fixture_Thing> Things;
 }

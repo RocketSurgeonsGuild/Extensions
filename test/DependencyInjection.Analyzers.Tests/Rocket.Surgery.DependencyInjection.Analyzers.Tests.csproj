@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.csproj" />
@@ -9,8 +9,8 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
         <PackageReference Include="Microsoft.Extensions.Configuration" />
         <PackageReference Include="Microsoft.Reactive.Testing" />
     </ItemGroup>

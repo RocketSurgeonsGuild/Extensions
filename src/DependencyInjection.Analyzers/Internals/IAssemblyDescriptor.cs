@@ -1,36 +1,60 @@
 using Microsoft.CodeAnalysis;
 
-namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals
+namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals;
+
+internal interface IAssemblyDescriptor
 {
-    interface IAssemblyDescriptor
+}
+
+internal struct AssemblyDescriptor : IAssemblyDescriptor
+{
+    public IAssemblySymbol AssemblySymbol { get; }
+
+    public AssemblyDescriptor(IAssemblySymbol assemblySymbol)
     {
+        AssemblySymbol = assemblySymbol;
     }
 
-    struct AssemblyDescriptor : IAssemblyDescriptor
+    public override string ToString()
     {
-        public IAssemblySymbol AssemblySymbol { get; }
+        return Helpers.GetFullMetadataName(AssemblySymbol);
+    }
+}
 
-        public AssemblyDescriptor(IAssemblySymbol assemblySymbol)
-        {
-            AssemblySymbol = assemblySymbol;
-        }
-        public override string ToString() => Helpers.GetFullMetadataName(AssemblySymbol);
+internal struct AllAssemblyDescriptor : IAssemblyDescriptor
+{
+    public override string ToString()
+    {
+        return "All";
+    }
+}
+
+internal struct CompiledAssemblyDescriptor : IAssemblyDescriptor
+{
+    public INamedTypeSymbol TypeFromAssembly { get; }
+
+    public CompiledAssemblyDescriptor(INamedTypeSymbol typeFromAssembly)
+    {
+        TypeFromAssembly = typeFromAssembly;
     }
 
-    struct AllAssemblyDescriptor : IAssemblyDescriptor
+    public override string ToString()
     {
-        public override string ToString() => "All";
+        return Helpers.GetFullMetadataName(TypeFromAssembly);
     }
-    struct CompiledAssemblyDescriptor : IAssemblyDescriptor
+}
+
+internal struct CompiledAssemblyDependenciesDescriptor : IAssemblyDescriptor
+{
+    public INamedTypeSymbol TypeFromAssembly { get; }
+
+    public CompiledAssemblyDependenciesDescriptor(INamedTypeSymbol typeFromAssembly)
     {
-        public INamedTypeSymbol TypeFromAssembly { get; }
-        public CompiledAssemblyDescriptor(INamedTypeSymbol typeFromAssembly) => TypeFromAssembly = typeFromAssembly;
-        public override string ToString() => Helpers.GetFullMetadataName(TypeFromAssembly);
+        TypeFromAssembly = typeFromAssembly;
     }
-    struct CompiledAssemblyDependenciesDescriptor : IAssemblyDescriptor
+
+    public override string ToString()
     {
-        public INamedTypeSymbol TypeFromAssembly { get; }
-        public CompiledAssemblyDependenciesDescriptor(INamedTypeSymbol typeFromAssembly) => TypeFromAssembly = typeFromAssembly;
-        public override string ToString() => Helpers.GetFullMetadataName(TypeFromAssembly);
+        return Helpers.GetFullMetadataName(TypeFromAssembly);
     }
 }

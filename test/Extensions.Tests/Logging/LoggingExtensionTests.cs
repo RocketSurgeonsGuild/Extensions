@@ -1,52 +1,64 @@
-﻿using System;
-using FakeItEasy;
+﻿using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Rocket.Surgery.Extensions.Logging;
 using Xunit;
 
-namespace Rocket.Surgery.Conventions.Tests.Logging
+namespace Rocket.Surgery.Extensions.Tests.Logging;
+
+public class LoggingExtensionTests
 {
-    public class LoggingExtensionTests
+    [Fact]
+    public void TimeInformationShouldNotBeNull()
     {
-        [Fact]
-        public void TimeInformationShouldNotBeNull()
-            => A.Fake<ILogger>().TimeInformation("message").Should().NotBeNull();
+        A.Fake<ILogger>().TimeInformation("message").Should().NotBeNull();
+    }
 
-        [Fact]
-        public void TimeInformationShouldDispose()
+    [Fact]
+    public void TimeInformationShouldDispose()
+    {
+        Action a = () =>
         {
-            Action a = () =>
+            using (A.Fake<ILogger>().TimeInformation("message"))
             {
-                using (A.Fake<ILogger>().TimeInformation("message")) { }
-            };
-            a.Should().NotThrow();
-        }
+            }
+        };
+        a.Should().NotThrow();
+    }
 
-        [Fact]
-        public void TimeDebugShouldNotBeNull() => A.Fake<ILogger>().TimeDebug("message").Should().NotBeNull();
+    [Fact]
+    public void TimeDebugShouldNotBeNull()
+    {
+        A.Fake<ILogger>().TimeDebug("message").Should().NotBeNull();
+    }
 
-        [Fact]
-        public void TimeDebugShouldDispose()
+    [Fact]
+    public void TimeDebugShouldDispose()
+    {
+        Action a = () =>
         {
-            Action a = () =>
+            using (A.Fake<ILogger>().TimeDebug("message"))
             {
-                using (A.Fake<ILogger>().TimeDebug("message")) { }
-            };
-            a.Should().NotThrow();
-        }
+            }
+        };
+        a.Should().NotThrow();
+    }
 
-        [Fact]
-        public void TimeTraceShouldNotBeNull() => A.Fake<ILogger>().TimeTrace("message").Should().NotBeNull();
+    [Fact]
+    public void TimeTraceShouldNotBeNull()
+    {
+        A.Fake<ILogger>().TimeTrace("message").Should().NotBeNull();
+    }
 
-        [Fact]
-        public void TimeTraceShouldDispose()
+    [Fact]
+    public void TimeTraceShouldDispose()
+    {
+        Action a = () =>
         {
-            Action a = () =>
+            using (A.Fake<ILogger>().TimeTrace("message"))
             {
-                using (A.Fake<ILogger>().TimeTrace("message")) { }
-            };
-            a.Should().NotThrow();
-        }
+            }
+        };
+        a.Should().NotThrow();
     }
 }

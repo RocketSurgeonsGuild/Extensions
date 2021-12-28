@@ -1,19 +1,33 @@
 using Microsoft.CodeAnalysis;
 
-namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals
+namespace Rocket.Surgery.DependencyInjection.Analyzers.Internals;
+
+internal interface IServiceTypeDescriptor
 {
-    interface IServiceTypeDescriptor { }
+}
 
-    struct SelfServiceTypeDescriptor : IServiceTypeDescriptor { }
+internal struct SelfServiceTypeDescriptor : IServiceTypeDescriptor
+{
+}
 
-    struct ImplementedInterfacesServiceTypeDescriptor : IServiceTypeDescriptor { }
+internal struct ImplementedInterfacesServiceTypeDescriptor : IServiceTypeDescriptor
+{
+}
 
-    struct MatchingInterfaceServiceTypeDescriptor : IServiceTypeDescriptor { }
-    struct UsingAttributeServiceTypeDescriptor : IServiceTypeDescriptor { }
-    struct CompiledServiceTypeDescriptor : IServiceTypeDescriptor
+internal struct MatchingInterfaceServiceTypeDescriptor : IServiceTypeDescriptor
+{
+}
+
+internal struct UsingAttributeServiceTypeDescriptor : IServiceTypeDescriptor
+{
+}
+
+internal struct CompiledServiceTypeDescriptor : IServiceTypeDescriptor
+{
+    public INamedTypeSymbol Type { get; }
+
+    public CompiledServiceTypeDescriptor(INamedTypeSymbol type)
     {
-        public INamedTypeSymbol Type { get; }
-
-        public CompiledServiceTypeDescriptor(INamedTypeSymbol type) => Type = type;
+        Type = type;
     }
 }

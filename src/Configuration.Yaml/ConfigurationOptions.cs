@@ -1,51 +1,51 @@
 using Microsoft.Extensions.Configuration;
+using Rocket.Surgery.Configuration;
 using IMsftConfigurationBuilder = Microsoft.Extensions.Configuration.IConfigurationBuilder;
 
-namespace Rocket.Surgery.Extensions.Configuration
+namespace Rocket.Surgery.Extensions.Configuration;
+
+/// <summary>
+///     YamlConfigOptionsExtensions
+/// </summary>
+public static class YamlConfigOptionsExtensions
 {
     /// <summary>
-    /// YamlConfigOptionsExtensions
+    ///     Configures the options to inject yaml files into the correct locations in app settings
     /// </summary>
-    public static class YamlConfigOptionsExtensions
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public static ConfigOptions UseYml(this ConfigOptions options)
     {
-        /// <summary>
-        /// Configures the options to inject yaml files into the correct locations in app settings
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static ConfigOptions UseYml(this ConfigOptions options)
-        {
-            options.AddApplicationConfiguration(
-                b => b.AddYamlFile("appsettings.yml", optional: true, reloadOnChange: true)
-            );
-            options.AddEnvironmentConfiguration(
-                (b, environmentName) => b.AddYamlFile(
-                    $"appsettings.{environmentName}.yml",
-                    optional: true,
-                    reloadOnChange: true
-                )
-            );
-            return options;
-        }
+        options.AddApplicationConfiguration(
+            b => b.AddYamlFile("appsettings.yml", true, true)
+        );
+        options.AddEnvironmentConfiguration(
+            (b, environmentName) => b.AddYamlFile(
+                $"appsettings.{environmentName}.yml",
+                true,
+                true
+            )
+        );
+        return options;
+    }
 
-        /// <summary>
-        /// Configures the options to inject yaml files into the correct locations in app settings
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        public static ConfigOptions UseYaml(this ConfigOptions options)
-        {
-            options.AddApplicationConfiguration(
-                b => b.AddYamlFile("appsettings.yaml", optional: true, reloadOnChange: true)
-            );
-            options.AddEnvironmentConfiguration(
-                (b, environmentName) => b.AddYamlFile(
-                    $"appsettings.{environmentName}.yaml",
-                    optional: true,
-                    reloadOnChange: true
-                )
-            );
-            return options;
-        }
+    /// <summary>
+    ///     Configures the options to inject yaml files into the correct locations in app settings
+    /// </summary>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public static ConfigOptions UseYaml(this ConfigOptions options)
+    {
+        options.AddApplicationConfiguration(
+            b => b.AddYamlFile("appsettings.yaml", true, true)
+        );
+        options.AddEnvironmentConfiguration(
+            (b, environmentName) => b.AddYamlFile(
+                $"appsettings.{environmentName}.yaml",
+                true,
+                true
+            )
+        );
+        return options;
     }
 }

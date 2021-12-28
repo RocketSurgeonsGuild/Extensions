@@ -1,29 +1,58 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
-using System;
-using System.Collections.Generic;
 
-namespace Rocket.Surgery.DependencyInjection
+// ReSharper disable MemberCanBePrivate.Global
+namespace Rocket.Surgery.DependencyInjection;
+
+/// <summary>
+///     Attribute used to define the service registration of a given type
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class ServiceRegistrationAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class ServiceRegistrationAttribute : Attribute
+    /// <summary>
+    ///     The default constructor
+    /// </summary>
+    public ServiceRegistrationAttribute() : this(null)
     {
-        public ServiceRegistrationAttribute() : this(null) { }
+    }
 
-        public ServiceRegistrationAttribute(ServiceLifetime lifetime) : this(null, lifetime) { }
+    /// <summary>
+    ///     Constructor to specify the lifetime
+    /// </summary>
+    /// <param name="lifetime"></param>
+    public ServiceRegistrationAttribute(ServiceLifetime lifetime) : this(null, lifetime)
+    {
+    }
 
-        public ServiceRegistrationAttribute(Type? serviceType) : this(serviceType, ServiceLifetime.Transient) { }
+    /// <summary>
+    ///     Constructor to specify the service type including optional runtime
+    /// </summary>
+    /// <param name="serviceType"></param>
+    /// <param name="lifetime"></param>
+    public ServiceRegistrationAttribute(Type? serviceType, ServiceLifetime lifetime = ServiceLifetime.Transient)
+    {
+        ServiceType = serviceType;
+        Lifetime = lifetime;
+    }
 
-        public ServiceRegistrationAttribute(Type? serviceType, ServiceLifetime lifetime)
-        {
-            ServiceType = serviceType;
-            Lifetime = lifetime;
-        }
+    /// <summary>
+    ///     The service type
+    /// </summary>
+    public Type? ServiceType { get; }
 
-        public Type? ServiceType { get; }
+    /// <summary>
+    ///     The lifetime
+    /// </summary>
+    public ServiceLifetime Lifetime { get; }
 
-        public ServiceLifetime Lifetime { get; }
-
-        public IEnumerable<Type> GetServiceTypes(Type fallbackType) => new ServiceDescriptorAttribute(ServiceType, Lifetime).GetServiceTypes(fallbackType);
+    /// <summary>
+    ///     All the defined services types for the given type.
+    /// </summary>
+    /// <param name="fallbackType"></param>
+    /// <returns></returns>
+    public IEnumerable<Type> GetServiceTypes(Type fallbackType)
+    {
+        return new ServiceDescriptorAttribute(ServiceType, Lifetime).GetServiceTypes(fallbackType);
     }
 }
