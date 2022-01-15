@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
-using Rocket.Surgery.Configuration;
+using Rocket.Surgery.Extensions.Configuration;
 
 // ReSharper disable once CheckNamespace
 namespace Rocket.Surgery.Conventions;

@@ -1,4 +1,4 @@
-namespace Rocket.Surgery.Configuration;
+namespace Rocket.Surgery.Extensions.Configuration;
 
 /// <summary>
 ///     Options for configuring a hosting environment
