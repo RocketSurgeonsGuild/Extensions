@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace Rocket.Surgery.Configuration;
+namespace Rocket.Surgery.Extensions.Configuration;
 
 /// <summary>
 ///     Delegate for defining application configuration

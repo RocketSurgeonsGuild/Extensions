@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using IMsftConfigurationBuilder = Microsoft.Extensions.Configuration.IConfigurationBuilder;
 
-namespace Rocket.Surgery.Configuration;
+namespace Rocket.Surgery.Extensions.Configuration;
 
 internal class ProxyConfigurationBuilder : IMsftConfigurationBuilder
 {
