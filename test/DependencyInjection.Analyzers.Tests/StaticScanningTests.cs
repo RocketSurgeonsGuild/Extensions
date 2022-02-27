@@ -67,6 +67,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -86,6 +87,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
         var result = await GenerateAsync();
         result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
@@ -144,6 +146,7 @@ namespace TestProject
         }
     }
 }
+#pragma warning restore CS0436
 "
         );
 
@@ -155,6 +158,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -177,6 +181,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         private static AssemblyName RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull => _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull ??= new AssemblyName(""RootDependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"");
     }
 }
+#pragma warning restore CS0436
 ";
 
         AddCompilationReference(dependencies.ToArray());
@@ -236,6 +241,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -255,6 +261,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
         var result = await GenerateAsync();
         result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
@@ -309,6 +316,7 @@ public static class Program {
         return services;
     }
 }
+#pragma warning restore CS0436
 "
         );
 
@@ -320,6 +328,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -342,6 +351,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         private static AssemblyName RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull => _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull ??= new AssemblyName(""RootDependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"");
     }
 }
+#pragma warning restore CS0436
 ";
         AddCompilationReference(dependencies.ToArray());
 
@@ -415,6 +425,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -432,7 +443,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
             return services;
         }
     }
-}";
+}
+#pragma warning restore CS0436
+";
 
         AddCompilationReference(dependencies.ToArray());
 
@@ -493,6 +506,7 @@ namespace TestProject
         }
     }
 }
+#pragma warning restore CS0436
 "
         );
 
@@ -504,6 +518,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -524,7 +539,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         private static AssemblyName _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull;
         private static AssemblyName RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull => _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull ??= new AssemblyName(""RootDependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"");
     }
-}";
+}
+#pragma warning restore CS0436
+";
 
         AddCompilationReference(dependencies.ToArray());
 
@@ -578,6 +595,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -597,6 +615,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var result = await GenerateAsync();
@@ -649,6 +668,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -667,6 +687,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var result = await GenerateAsync();
@@ -841,6 +862,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -865,6 +887,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         private static AssemblyName DependencyProjectVersion0000CultureneutralPublicKeyTokennull => _DependencyProjectVersion0000CultureneutralPublicKeyTokennull ??= new AssemblyName(""DependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"");
     }
 }
+#pragma warning restore CS0436
 ";
         AddCompilationReference(dependency);
 
@@ -1034,6 +1057,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {{
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1065,6 +1089,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }}
     }}
 }}
+#pragma warning restore CS0436
 ";
 
         var result = await GenerateAsync();
@@ -1160,6 +1185,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1189,6 +1215,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1251,6 +1278,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1271,6 +1299,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1326,6 +1355,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1350,6 +1380,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1408,6 +1439,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1428,6 +1460,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1486,6 +1519,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1506,6 +1540,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1564,6 +1599,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1584,6 +1620,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1642,6 +1679,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1662,6 +1700,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1719,6 +1758,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1739,6 +1779,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1796,6 +1837,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1816,6 +1858,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1878,6 +1921,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1897,6 +1941,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -1960,6 +2005,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1982,6 +2028,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -2041,6 +2088,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -2064,6 +2112,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
         var generator = await GenerateAsync();
         generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
@@ -2124,6 +2173,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -2147,6 +2197,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
         var generator = await GenerateAsync();
         generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
@@ -2238,6 +2289,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {{
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -2283,6 +2335,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }}
     }}
 }}
+#pragma warning restore CS0436
 ";
         var generator = await GenerateAsync();
         generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
@@ -2365,6 +2418,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {{
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -2412,6 +2466,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }}
     }}
 }}
+#pragma warning restore CS0436
 ";
 
         var generator = await GenerateAsync();
@@ -2511,6 +2566,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -2530,6 +2586,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
         AddCompilationReference(dependencies.ToArray());
@@ -2665,6 +2722,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {{
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -2696,6 +2754,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }}
     }}
 }}
+#pragma warning restore CS0436
 ";
 
         AddCompilationReference(dependencies.ToArray());

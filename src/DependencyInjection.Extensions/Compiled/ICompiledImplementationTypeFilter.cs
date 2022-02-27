@@ -1,5 +1,6 @@
 ﻿using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled;
 
 /// <summary>

@@ -807,6 +807,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using Scrutor;
 using Rocket.Surgery.DependencyInjection.Compiled;
+#pragma warning disable CS0436
 namespace Microsoft.Extensions.DependencyInjection
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -861,6 +862,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
     private static readonly string staticScanSourceText = @"
@@ -869,6 +871,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Scrutor;
 using Rocket.Surgery.DependencyInjection.Compiled;
+#pragma warning disable CS0436
 namespace Microsoft.Extensions.DependencyInjection
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -898,6 +901,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
     private static readonly string partialStaticScanSourceTextWithAssemblyLoadContext = @"
@@ -907,6 +911,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using Scrutor;
 using Rocket.Surgery.DependencyInjection.Compiled;
+#pragma warning disable CS0436
 namespace Microsoft.Extensions.DependencyInjection
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -949,6 +954,7 @@ namespace Microsoft.Extensions.DependencyInjection
         );
     }
 }
+#pragma warning restore CS0436
 ";
 
     private static readonly string partialStaticScanSourceText = @"
@@ -957,6 +963,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Scrutor;
 using Rocket.Surgery.DependencyInjection.Compiled;
+#pragma warning disable CS0436
 namespace Microsoft.Extensions.DependencyInjection
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -980,6 +987,7 @@ namespace Microsoft.Extensions.DependencyInjection
         );
     }
 }
+#pragma warning restore CS0436
 ";
 
     private static readonly string populateSourceTextWithAssemblyLoadContext = @"
@@ -991,6 +999,7 @@ using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1002,6 +1011,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 
     private static readonly string populateSourceText = @"
@@ -1012,6 +1022,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
+#pragma warning disable CS0436
 namespace Rocket.Surgery.DependencyInjection.Compiled
 {
     [CompilerGenerated, ExcludeFromCodeCoverage]
@@ -1023,5 +1034,6 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         }
     }
 }
+#pragma warning restore CS0436
 ";
 }
