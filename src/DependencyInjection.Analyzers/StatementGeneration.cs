@@ -14,7 +14,7 @@ internal static class StatementGeneration
     );
 
     public static InvocationExpressionSyntax GenerateServiceFactory(
-        CSharpCompilation compilation,
+        Compilation compilation,
         NameSyntax strategyName,
         NameSyntax serviceCollectionName,
         INamedTypeSymbol serviceType,
@@ -66,7 +66,7 @@ internal static class StatementGeneration
     }
 
     public static InvocationExpressionSyntax GenerateServiceType(
-        CSharpCompilation compilation,
+        Compilation compilation,
         NameSyntax strategyName,
         NameSyntax serviceCollectionName,
         INamedTypeSymbol serviceType,
@@ -154,7 +154,7 @@ internal static class StatementGeneration
     }
 
     public static bool RemoveImplicitGenericConversion(
-        CSharpCompilation compilation,
+        Compilation compilation,
         INamedTypeSymbol assignableToType,
         INamedTypeSymbol type
     )
@@ -188,7 +188,7 @@ internal static class StatementGeneration
     }
 
     private static ExpressionSyntax GetTypeOfExpression(
-        CSharpCompilation compilation, INamedTypeSymbol type, INamedTypeSymbol? relatedType, bool useAssemblyLoad
+        Compilation compilation, INamedTypeSymbol type, INamedTypeSymbol? relatedType, bool useAssemblyLoad
     )
     {
         if (type.IsUnboundGenericType && relatedType != null)
@@ -252,7 +252,7 @@ internal static class StatementGeneration
         return GetPrivateType(compilation, type, useAssemblyLoad);
     }
 
-    private static InvocationExpressionSyntax GetPrivateType(CSharpCompilation compilation, INamedTypeSymbol type, bool useAssemblyLoad)
+    private static InvocationExpressionSyntax GetPrivateType(Compilation compilation, INamedTypeSymbol type, bool useAssemblyLoad)
     {
         var expression = InvocationExpression(
                 MemberAccessExpression(

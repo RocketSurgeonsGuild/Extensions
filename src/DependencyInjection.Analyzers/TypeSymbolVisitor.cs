@@ -1,12 +1,11 @@
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 internal class TypeSymbolVisitor : SymbolVisitor
 {
-    public static ImmutableArray<INamedTypeSymbol> GetTypes(CSharpCompilation compilation)
+    public static ImmutableArray<INamedTypeSymbol> GetTypes(Compilation compilation)
     {
         var visitor = new TypeSymbolVisitor();
         visitor.VisitNamespace(compilation.GlobalNamespace);
@@ -15,7 +14,7 @@ internal class TypeSymbolVisitor : SymbolVisitor
         return visitor.GetTypes();
     }
 
-    public static ImmutableArray<INamedTypeSymbol> GetTypes(CSharpCompilation compilation, IEnumerable<ISymbol?> symbols)
+    public static ImmutableArray<INamedTypeSymbol> GetTypes(Compilation compilation, IEnumerable<ISymbol?> symbols)
     {
         var visitor = new TypeSymbolVisitor();
         visitor.Accept(symbols);

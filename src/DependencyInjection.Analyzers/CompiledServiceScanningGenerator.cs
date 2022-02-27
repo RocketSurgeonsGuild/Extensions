@@ -3,7 +3,6 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Rocket.Surgery.DependencyInjection.Analyzers.Internals;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -13,298 +12,200 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 ///     Source generate used for scanning assemblies for registrations
 /// </summary>
 [Generator]
-public class CompiledServiceScanningGenerator : ISourceGenerator
+public class CompiledServiceScanningGenerator : IIncrementalGenerator
 {
-    /// <inheritdoc />
-    public void Initialize(GeneratorInitializationContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-    }
+        var syntaxProvider = context.SyntaxProvider.CreateSyntaxProvider(
+            (node, _) => node is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax mae } ies
+                      && mae.Name.Identifier.Text.EndsWith("ScanCompiled", StringComparison.Ordinal) && ies.ArgumentList.Arguments.Count is 1 or 2,
+            (syntaxContext, _) => ( expression: ( (InvocationExpressionSyntax)syntaxContext.Node ).ArgumentList.Arguments[0].Expression,
+                                    semanticModel: syntaxContext.SemanticModel )
+        );
 
-    private static readonly SourceText staticScanSourceTextWithAssemblyLoadContext = SourceText.From(
-        @"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.Loader;
-using Scrutor;
-using Rocket.Surgery.DependencyInjection.Compiled;
-namespace Microsoft.Extensions.DependencyInjection
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class CompiledServiceScanningExtensions
-    {
-        public static IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        )
-        {
-            return PopulateExtensions.Populate(services, RegistrationStrategy.Append, AssemblyLoadContext.GetLoadContext(typeof(CompiledServiceScanningExtensions).Assembly) ?? AssemblyLoadContext.Default, filePath, memberName, lineNumber);
-        }
+        var useAssemblyLoadContext = context.AnalyzerConfigOptionsProvider.Combine(context.CompilationProvider)
+                                            .Select(
+                                                 (tuple, _) =>
+                                                 {
+                                                     var (provider, compilation) = tuple;
+                                                     return provider.GlobalOptions.TryGetValue("compiled_scan_assembly_load", out var v)
+                                                         ? v.Equals("true", StringComparison.OrdinalIgnoreCase)
+                                                         : compilation.GetTypeByMetadataName("System.Runtime.Loader.AssemblyLoadContext") is null;
+                                                 }
+                                             );
+        // There is no way to post initialize here, as we have no idea if the AssemblyLoadContext will be available or not
+//        context.RegisterPostInitializationOutput(
+//            initializationContext => { initializationContext.AddSource("PartialCompiledServiceScanningExtensions.cs", staticScanPartialSourceText); }
+//        );
 
-        public static IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-            RegistrationStrategy strategy,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        )
-        {
-            return PopulateExtensions.Populate(services, strategy, AssemblyLoadContext.GetLoadContext(typeof(CompiledServiceScanningExtensions).Assembly) ?? AssemblyLoadContext.Default, filePath, memberName, lineNumber);
-        }
-
-        public static IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-            AssemblyLoadContext context,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        )
-        {
-            return PopulateExtensions.Populate(services, RegistrationStrategy.Append, context, filePath, memberName, lineNumber);
-        }
-
-        public static IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-            RegistrationStrategy strategy,
-            AssemblyLoadContext context,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        )
-        {
-            return PopulateExtensions.Populate(services, strategy, context, filePath, memberName, lineNumber);
-        }
-    }
-}
-",
-        Encoding.UTF8
-    );
-
-    private static readonly SourceText staticScanSourceText = SourceText.From(
-        @"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using Scrutor;
-using Rocket.Surgery.DependencyInjection.Compiled;
-namespace Microsoft.Extensions.DependencyInjection
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class CompiledServiceScanningExtensions
-    {
-        public static IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        )
-        {
-            return PopulateExtensions.Populate(services, RegistrationStrategy.Append, filePath, memberName, lineNumber);
-        }
-
-        public static IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-            RegistrationStrategy strategy,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        )
-        {
-            return PopulateExtensions.Populate(services, strategy, filePath, memberName, lineNumber);
-        }
-    }
-}
-",
-        Encoding.UTF8
-    );
-
-    private static readonly SourceText populateSourceTextWithAssemblyLoadContext = SourceText.From(
-        @"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Loader;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
-        {
-            return services;
-        }
-    }
-}
-",
-        Encoding.UTF8
-    );
-
-    private static readonly SourceText populateSourceText = SourceText.From(
-        @"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            return services;
-        }
-    }
-}
-",
-        Encoding.UTF8
-    );
-
-    /// <inheritdoc />
-    public void Execute(GeneratorExecutionContext context)
-    {
-        if (!( context.SyntaxReceiver is SyntaxReceiver syntaxReceiver ))
-        {
-            return;
-        }
-
-        var compilation = ( context.Compilation as CSharpCompilation )!;
-        // Debugger.Launch();
-        var parseOptions = compilation.SyntaxTrees.Select(z => z.Options).OfType<CSharpParseOptions>().First();
-        var useAssemblyLoad =
-            context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("compiled_scan_assembly_load", out var v)
-                ? v.Equals("true", StringComparison.OrdinalIgnoreCase)
-                : compilation.GetTypeByMetadataName("System.Runtime.Loader.AssemblyLoadContext") is null;
-        var compilationWithMethod = compilation
-           .AddSyntaxTrees(
-                CSharpSyntaxTree.ParseText(
-                    useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext,
-                    parseOptions,
-                    "CompiledServiceScanningExtensions.cs"
-                ),
-                CSharpSyntaxTree.ParseText(
-                    useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext,
-                    parseOptions,
-                    "PopulateExtensions.cs"
-                )
-            );
-
-        context.AddSource("CompiledServiceScanningExtensions.cs", useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext);
-        if (syntaxReceiver.ScanCompiledExpressions.Count == 0)
-        {
-            context.AddSource("PopulateExtensions.cs", useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext);
-            return;
-        }
-
-        var groups =
-            new List<(
-                ExpressionSyntax expression,
-                string filePath,
-                string memberName,
-                int lineNumber,
-                List<IAssemblyDescriptor> assemblies,
-                List<ITypeFilterDescriptor> typeFilters,
-                List<IServiceTypeDescriptor> serviceTypes,
-                ClassFilter classFilter,
-                ExpressionSyntax lifetime
-                )>();
-
-        foreach (var rootExpression in syntaxReceiver.ScanCompiledExpressions)
-        {
-            var semanticModel = compilationWithMethod.GetSemanticModel(rootExpression.SyntaxTree);
-
-            var assemblies = new List<IAssemblyDescriptor>();
-            var typeFilters = new List<ITypeFilterDescriptor>();
-            var serviceTypes = new List<IServiceTypeDescriptor>();
-            var classFilter = ClassFilter.All;
-            var lifetimeExpressionSyntax =
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName("ServiceLifetime"),
-                    IdentifierName("Transient")
-                );
-
-            DataHelpers.HandleInvocationExpressionSyntax(
-                context,
-                compilationWithMethod,
-                semanticModel,
-                rootExpression,
-                assemblies,
-                typeFilters,
-                serviceTypes,
-                ref classFilter,
-                ref lifetimeExpressionSyntax
-            );
-
-            var containingMethod = rootExpression.Ancestors().OfType<MethodDeclarationSyntax>().First();
-
-            var methodCallSyntax = rootExpression.Ancestors()
-                                                 .OfType<InvocationExpressionSyntax>()
-                                                 .First(
-                                                      ies => ies.Expression is MemberAccessExpressionSyntax mae
-                                                          && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
-                                                  );
-
-            groups.Add(
-                (
-                    rootExpression,
-                    rootExpression.SyntaxTree.FilePath,
-                    containingMethod.Identifier.Text,
-                    // line numbers here are 1 based
-                    methodCallSyntax.SyntaxTree.GetText().Lines.First(z => z.Span.IntersectsWith(methodCallSyntax.Span)).LineNumber + 1,
-                    assemblies,
-                    typeFilters,
-                    serviceTypes,
-                    classFilter,
-                    lifetimeExpressionSyntax
-                )
-            );
-
-            if (serviceTypes.Count == 0)
+        context.RegisterImplementationSourceOutput(
+            useAssemblyLoadContext.Combine(syntaxProvider.Collect()),
+            static (context, tuple) =>
             {
-                serviceTypes.Add(new SelfServiceTypeDescriptor());
+                if (tuple.Right.Length > 0)
+                {
+                    context.AddSource("CompiledServiceScanningExtensions.cs", tuple.Left ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext);
+                    return;
+                }
+
+                context.AddSource("PopulateExtensions.cs", tuple.Left ? populateSourceText : populateSourceTextWithAssemblyLoadContext);
             }
+        );
+
+
+        context.RegisterImplementationSourceOutput(
+            syntaxProvider
+               .Combine(
+                    useAssemblyLoadContext
+                       .Combine(context.ParseOptionsProvider.Select((options, token) => (CSharpParseOptions)options))
+                       .Combine(context.CompilationProvider)
+                       .Select(
+                            (tuple, token) =>
+                            {
+                                var (_, compilation) = tuple;
+                                var (useAssemblyLoad, parseOptions) = tuple.Left;
+                                // This is required because post init cannpt tell us if AssemblyLoadContext is available or not.
+                                return ( useAssemblyLoad, parseOptions, compilation: compilation
+                                            .AddSyntaxTrees(
+                                                 CSharpSyntaxTree.ParseText(
+                                                     useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext, parseOptions,
+                                                     "CompiledServiceScanningExtensions.cs", cancellationToken: token
+                                                 ),
+                                                 CSharpSyntaxTree.ParseText(
+                                                     useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext, parseOptions,
+                                                     "PopulateExtensions.cs", cancellationToken: token
+                                                 )
+                                             ) );
+                            }
+                        )
+                )
+               .Select(
+                    (tuple, token) => ( tuple.Left.expression, tuple.Right.compilation,
+                                        useAssemblyLoadContext: tuple.Right.useAssemblyLoad, tuple.Right.parseOptions )
+                )
+               .Select(
+                    static (tuple, token) =>
+                    {
+                        var (rootExpression, compilation, useAssemblyLoadContext, parseOptions) = tuple;
+
+                        var assemblies = new List<IAssemblyDescriptor>();
+                        var typeFilters = new List<ITypeFilterDescriptor>();
+                        var serviceTypes = new List<IServiceTypeDescriptor>();
+                        var diagnostics = new List<Diagnostic>();
+                        var classFilter = ClassFilter.All;
+                        var lifetimeExpressionSyntax =
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("ServiceLifetime"),
+                                IdentifierName("Transient")
+                            );
+
+                        DataHelpers.HandleInvocationExpressionSyntax(
+                            diagnostics,
+                            compilation.GetSemanticModel(tuple.expression.SyntaxTree),
+                            rootExpression,
+                            assemblies,
+                            typeFilters,
+                            serviceTypes,
+                            compilation.ObjectType,
+                            ref classFilter,
+                            ref lifetimeExpressionSyntax,
+                            token
+                        );
+
+                        var containingMethod = rootExpression.Ancestors().OfType<MethodDeclarationSyntax>().First();
+
+                        var methodCallSyntax = rootExpression.Ancestors()
+                                                             .OfType<InvocationExpressionSyntax>()
+                                                             .First(
+                                                                  ies => ies.Expression is MemberAccessExpressionSyntax mae
+                                                                      && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
+                                                              );
+
+
+                        if (serviceTypes.Count == 0)
+                        {
+                            serviceTypes.Add(new SelfServiceTypeDescriptor());
+                        }
+
+                        return (
+                            context: tuple,
+                            data: (
+                                diagnostics,
+                                rootExpression,
+                                filePath: rootExpression.SyntaxTree.FilePath,
+                                containingMethod: containingMethod.Identifier.Text,
+                                // line numbers here are 1 based
+                                lineNumber: methodCallSyntax.SyntaxTree.GetText(token).Lines.First(z => z.Span.IntersectsWith(methodCallSyntax.Span)).LineNumber
+                                          + 1,
+                                assemblies,
+                                typeFilters,
+                                serviceTypes,
+                                classFilter,
+                                lifetimeExpressionSyntax
+                            ) );
+                    }
+                )
+               .Collect()
+               .Select(
+                    (array, token) =>
+                    {
+                        var d = array.FirstOrDefault();
+                        return ( d.context.compilation, d.context.expression, d.context.useAssemblyLoadContext, d.context.parseOptions,
+                                 d.data.diagnostics, groups: array.GroupBy(z => z.data.lineNumber, z => z.data) );
+                    }
+                )
+           ,
+            static (context, tuple) =>
+            {
+                Execute(
+                    context, tuple.compilation, tuple.expression, tuple.useAssemblyLoadContext, tuple.parseOptions, tuple.diagnostics,
+                    tuple.groups
+                );
+            }
+        );
+    }
+
+    private static void Execute(
+        SourceProductionContext context, Compilation compilation, ExpressionSyntax expression, bool useAssemblyLoadContext,
+        ParseOptions parseOptions, List<Diagnostic> diagnostics,
+        IEnumerable<IGrouping<int, (List<Diagnostic> diagnostics, ExpressionSyntax rootExpression, string filePath, string containingMethod, int lineNumber,
+            List<IAssemblyDescriptor> assemblies, List<ITypeFilterDescriptor> typeFilters, List<IServiceTypeDescriptor> serviceTypes, ClassFilter classFilter,
+            MemberAccessExpressionSyntax lifetimeExpressionSyntax)>> groups
+    )
+    {
+        if (diagnostics.Any())
+        {
+            foreach (var diag in diagnostics)
+            {
+                context.ReportDiagnostic(diag);
+            }
+
+            return;
         }
 
-        var allNamedTypes = TypeSymbolVisitor.GetTypes(compilationWithMethod);
+        var allNamedTypes = TypeSymbolVisitor.GetTypes(compilation);
 
         var strategyName = IdentifierName("strategy");
         var serviceCollectionName = IdentifierName("services");
         var lineNumberIdentifier = IdentifierName("lineNumber");
-        IdentifierName("filePath");
         var block = Block();
 #pragma warning disable RS1024
         var privateAssemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
 #pragma warning restore RS1024
 
         var switchStatement = SwitchStatement(lineNumberIdentifier);
-        foreach (var lineGrouping in groups.GroupBy(z => z.lineNumber))
+        foreach (var lineGrouping in groups)
         {
             var innerBlock = Block();
             var blocks = new List<(string filePath, string memberName, BlockSyntax block)>();
-            foreach (var (_, filePath, memberName, _, assemblies, typeFilters, serviceTypes, classFilter, lifetime) in lineGrouping)
+            foreach (var (_, _, filePath, memberName, _, assemblies, typeFilters, serviceTypes, classFilter, lifetime) in lineGrouping)
             {
-                var types = NarrowListOfTypes(assemblies, allNamedTypes, compilationWithMethod, classFilter, typeFilters);
+                var types = NarrowListOfTypes(assemblies, allNamedTypes, compilation, classFilter, typeFilters);
 
                 var localBlock = GenerateDescriptors(
                     context,
-                    compilationWithMethod,
+                    compilation,
                     types,
                     serviceTypes,
                     innerBlock,
@@ -312,7 +213,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
                     serviceCollectionName,
                     lifetime,
                     privateAssemblies,
-                    useAssemblyLoad
+                    useAssemblyLoadContext
                 );
 
                 blocks.Add(( filePath, memberName, localBlock ));
@@ -399,7 +300,10 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 
 
         {
-            var root = CSharpSyntaxTree.ParseText(useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext, parseOptions)
+            var root = CSharpSyntaxTree.ParseText(
+                                            useAssemblyLoadContext ? populateSourceText : populateSourceTextWithAssemblyLoadContext,
+                                            (CSharpParseOptions)parseOptions
+                                        )
                                        .GetCompilationUnitRoot();
             var method = root.DescendantNodes().OfType<MethodDeclarationSyntax>().Single();
 
@@ -421,8 +325,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     }
 
     private static BlockSyntax GenerateDescriptors(
-        GeneratorExecutionContext context,
-        CSharpCompilation compilation,
+        SourceProductionContext context,
+        Compilation compilation,
         ImmutableArray<INamedTypeSymbol> types,
         List<IServiceTypeDescriptor> serviceTypes,
         BlockSyntax innerBlock,
@@ -786,7 +690,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     private static ImmutableArray<INamedTypeSymbol> NarrowListOfTypes(
         List<IAssemblyDescriptor> assemblies,
         ImmutableArray<INamedTypeSymbol> iNamedTypeSymbols,
-        CSharpCompilation compilation,
+        Compilation compilation,
         ClassFilter classFilter,
         List<ITypeFilterDescriptor> typeFilters
     )
@@ -896,21 +800,228 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
         return types;
     }
 
-    internal class SyntaxReceiver : ISyntaxReceiver
+    private static readonly string staticScanSourceTextWithAssemblyLoadContext = @"
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Runtime.Loader;
+using Scrutor;
+using Rocket.Surgery.DependencyInjection.Compiled;
+namespace Microsoft.Extensions.DependencyInjection
+{
+    [CompilerGenerated, ExcludeFromCodeCoverage]
+    internal static class CompiledServiceScanningExtensions
     {
-        public List<ExpressionSyntax> ScanCompiledExpressions { get; } = new List<ExpressionSyntax>();
-
-        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        )
         {
-            if (syntaxNode is InvocationExpressionSyntax ies)
-            {
-                if (ies.Expression is MemberAccessExpressionSyntax mae
-                 && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
-                 && ies.ArgumentList.Arguments.Count is 1 or 2)
-                {
-                    ScanCompiledExpressions.Add(ies.ArgumentList.Arguments[0].Expression);
-                }
-            }
+            return PopulateExtensions.Populate(services, RegistrationStrategy.Append, AssemblyLoadContext.GetLoadContext(typeof(CompiledServiceScanningExtensions).Assembly) ?? AssemblyLoadContext.Default, filePath, memberName, lineNumber);
+        }
+
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            RegistrationStrategy strategy,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        )
+        {
+            return PopulateExtensions.Populate(services, strategy, AssemblyLoadContext.GetLoadContext(typeof(CompiledServiceScanningExtensions).Assembly) ?? AssemblyLoadContext.Default, filePath, memberName, lineNumber);
+        }
+
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            AssemblyLoadContext context,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        )
+        {
+            return PopulateExtensions.Populate(services, RegistrationStrategy.Append, context, filePath, memberName, lineNumber);
+        }
+
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            RegistrationStrategy strategy,
+            AssemblyLoadContext context,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        )
+        {
+            return PopulateExtensions.Populate(services, strategy, context, filePath, memberName, lineNumber);
         }
     }
+}
+";
+
+    private static readonly string staticScanSourceText = @"
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using Scrutor;
+using Rocket.Surgery.DependencyInjection.Compiled;
+namespace Microsoft.Extensions.DependencyInjection
+{
+    [CompilerGenerated, ExcludeFromCodeCoverage]
+    internal static class CompiledServiceScanningExtensions
+    {
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        )
+        {
+            return PopulateExtensions.Populate(services, RegistrationStrategy.Append, filePath, memberName, lineNumber);
+        }
+
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            RegistrationStrategy strategy,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        )
+        {
+            return PopulateExtensions.Populate(services, strategy, filePath, memberName, lineNumber);
+        }
+    }
+}
+";
+
+    private static readonly string partialStaticScanSourceTextWithAssemblyLoadContext = @"
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Runtime.Loader;
+using Scrutor;
+using Rocket.Surgery.DependencyInjection.Compiled;
+namespace Microsoft.Extensions.DependencyInjection
+{
+    [CompilerGenerated, ExcludeFromCodeCoverage]
+    internal static partial class CompiledServiceScanningExtensions
+    {
+        public static partial IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        );
+
+        public static partial IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            RegistrationStrategy strategy,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        );
+
+        public static partial IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            AssemblyLoadContext context,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        );
+
+        public static partial IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            RegistrationStrategy strategy,
+            AssemblyLoadContext context,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        );
+    }
+}
+";
+
+    private static readonly string partialStaticScanSourceText = @"
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using Scrutor;
+using Rocket.Surgery.DependencyInjection.Compiled;
+namespace Microsoft.Extensions.DependencyInjection
+{
+    [CompilerGenerated, ExcludeFromCodeCoverage]
+    internal static partial class CompiledServiceScanningExtensions
+    {
+        public static IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        );
+
+        public static partial IServiceCollection ScanCompiled(
+            this IServiceCollection services,
+            Action<ICompiledAssemblySelector> action,
+            RegistrationStrategy strategy,
+	        [CallerFilePathAttribute] string filePath = """",
+	        [CallerMemberName] string memberName = """",
+	        [CallerLineNumberAttribute] int lineNumber = 0
+        );
+    }
+}
+";
+
+    private static readonly string populateSourceTextWithAssemblyLoadContext = @"
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Loader;
+using Microsoft.Extensions.DependencyInjection;
+using Scrutor;
+
+namespace Rocket.Surgery.DependencyInjection.Compiled
+{
+    [CompilerGenerated, ExcludeFromCodeCoverage]
+    internal static class PopulateExtensions
+    {
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, AssemblyLoadContext context, string filePath, string memberName, int lineNumber)
+        {
+            return services;
+        }
+    }
+}
+";
+
+    private static readonly string populateSourceText = @"
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.DependencyInjection;
+using Scrutor;
+
+namespace Rocket.Surgery.DependencyInjection.Compiled
+{
+    [CompilerGenerated, ExcludeFromCodeCoverage]
+    internal static class PopulateExtensions
+    {
+        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
+        {
+            return services;
+        }
+    }
+}
+";
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -23,7 +22,7 @@ public record GenerationTestResults(
     }
 
     public bool TryGetResult<T>([NotNullWhen(true)] out GenerationTestResult? result)
-        where T : ISourceGenerator, new()
+        where T : IIncrementalGenerator, new()
     {
         return Results.TryGetValue(typeof(T), out result);
     }
@@ -38,7 +37,7 @@ public record GenerationTestResults(
     }
 
     public void AssertGeneratedAsExpected<T>(string expectedValue, params string[] expectedValues)
-        where T : ISourceGenerator, new()
+        where T : IIncrementalGenerator, new()
     {
         if (!TryGetResult<T>(out var result))
         {

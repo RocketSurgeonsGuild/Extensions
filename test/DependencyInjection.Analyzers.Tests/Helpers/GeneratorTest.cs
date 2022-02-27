@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
+using Castle.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -66,7 +67,7 @@ public class GeneratorTester : LoggerTest
 {
     private readonly string _projectName;
     protected AssemblyLoadContext AssemblyLoadContext { get; }
-    private readonly HashSet<MetadataReference> _metadataReferences = new(global::Castle.Core.ReferenceEqualityComparer<MetadataReference>.Instance);
+    private readonly HashSet<MetadataReference> _metadataReferences = new(ReferenceEqualityComparer<MetadataReference>.Instance);
     private readonly HashSet<Type> _generators = new();
     private readonly List<SourceText> _sources = new();
     private GenerationTestResults? _lastResult;
@@ -122,7 +123,7 @@ public class GeneratorTester : LoggerTest
     }
 
     public GeneratorTester WithGenerator<T>()
-        where T : ISourceGenerator, new()
+        where T : IIncrementalGenerator, new()
     {
         _generators.Add(typeof(T));
         return this;
@@ -267,8 +268,8 @@ public class GeneratorTester : LoggerTest
         foreach (var generatorType in _generators)
         {
             Logger.LogInformation("--- {Generator} ---", generatorType.FullName);
-            var generator = ( Activator.CreateInstance(generatorType) as ISourceGenerator )!;
-            var driver = CSharpGeneratorDriver.Create(new[] { generator }, optionsProvider: _optionsProvider);
+            var generator = ( Activator.CreateInstance(generatorType) as IIncrementalGenerator )!;
+            var driver = CSharpGeneratorDriver.Create(new[] { generator.AsSourceGenerator() }, optionsProvider: _optionsProvider);
 
             driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out diagnostics);
 
