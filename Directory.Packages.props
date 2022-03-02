@@ -38,7 +38,7 @@
     <PackageVersion Include="System.Reactive.Observable.Aliases" Version="5.0.0" />
     <PackageVersion Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
     <PackageVersion Include="Microsoft.Reactive.Testing" Version="5.0.0" />
-    <PackageVersion Include="Scrutor" Version="4.0.0" />
+    <PackageVersion Include="Scrutor" Version="4.1.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Bogus" Version="34.0.1" />
