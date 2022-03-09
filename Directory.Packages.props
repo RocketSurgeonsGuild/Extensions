@@ -27,7 +27,7 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageVersion Include="FastExpressionCompiler.Internal.src" Version="3.2.2" />
     <PackageVersion Include="NetEscapades.Configuration.Yaml" Version="2.2.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
