@@ -1,7 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
@@ -115,7 +114,7 @@ internal static class Helpers
         return SpecialCharacterRemover.Replace(symbol.Identity.GetDisplayName(true), "");
     }
 
-    public static IEnumerable<INamedTypeSymbol> GetBaseTypes(CSharpCompilation compilation, INamedTypeSymbol namedTypeSymbol)
+    public static IEnumerable<INamedTypeSymbol> GetBaseTypes(Compilation compilation, INamedTypeSymbol namedTypeSymbol)
     {
         while (namedTypeSymbol.BaseType != null)
         {

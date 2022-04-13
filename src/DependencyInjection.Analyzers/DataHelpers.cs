@@ -10,129 +10,133 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 internal static class DataHelpers
 {
     public static void HandleInvocationExpressionSyntax(
-        GeneratorExecutionContext context,
-        CSharpCompilation compilation,
+        List<Diagnostic> diagnostics,
         SemanticModel semanticModel,
         ExpressionSyntax rootExpression,
         List<IAssemblyDescriptor> assemblies,
         List<ITypeFilterDescriptor> typeFilters,
         List<IServiceTypeDescriptor> serviceTypes,
+        INamedTypeSymbol objectType,
         ref ClassFilter classFilter,
-        ref MemberAccessExpressionSyntax lifetimeExpressionSyntax
+        ref MemberAccessExpressionSyntax lifetimeExpressionSyntax,
+        CancellationToken cancellationToken
     )
     {
-        if (!( rootExpression is InvocationExpressionSyntax expression ))
+        if (rootExpression is not InvocationExpressionSyntax expression)
         {
-            if (!( rootExpression is SimpleLambdaExpressionSyntax simpleLambdaExpressionSyntax ))
+            if (rootExpression is not SimpleLambdaExpressionSyntax simpleLambdaExpressionSyntax || simpleLambdaExpressionSyntax is { ExpressionBody: null }
+                                                                                                || simpleLambdaExpressionSyntax.ExpressionBody is not
+                                                                                                       InvocationExpressionSyntax body)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
-                return;
-            }
-
-            if (simpleLambdaExpressionSyntax.ExpressionBody == null)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
-                return;
-            }
-
-            if (simpleLambdaExpressionSyntax.ExpressionBody is not InvocationExpressionSyntax body)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
+                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, rootExpression.GetLocation()));
                 return;
             }
 
             expression = body;
         }
 
-        if (expression.Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax
-         && memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+        if (expression.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax
+         || !memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression))
         {
-            if (memberAccessExpressionSyntax.Expression is InvocationExpressionSyntax childExpression)
+            return;
+        }
+
+        if (memberAccessExpressionSyntax.Expression is InvocationExpressionSyntax childExpression)
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            HandleInvocationExpressionSyntax(
+                diagnostics,
+                semanticModel,
+                childExpression,
+                assemblies,
+                typeFilters,
+                serviceTypes,
+                objectType,
+                ref classFilter,
+                ref lifetimeExpressionSyntax,
+                cancellationToken
+            );
+        }
+
+        var type = semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression);
+        if (type.Type is { })
+        {
+            var typeName = type.Type.ToDisplayString();
+            if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector")
             {
-                HandleInvocationExpressionSyntax(
-                    context,
-                    compilation,
+                var selector = HandleCompiledAssemblySelector(
                     semanticModel,
-                    childExpression,
-                    assemblies,
-                    typeFilters,
-                    serviceTypes,
-                    ref classFilter,
-                    ref lifetimeExpressionSyntax
+                    expression,
+                    memberAccessExpressionSyntax.Name
+                );
+                if (selector is { })
+                {
+                    assemblies.Add(selector);
+                }
+            }
+
+            if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector")
+            {
+                if (cancellationToken.IsCancellationRequested) return;
+                var selector = HandleCompiledAssemblySelector(
+                    semanticModel,
+                    expression,
+                    memberAccessExpressionSyntax.Name
+                );
+                if (selector is { })
+                {
+                    assemblies.Add(selector);
+                }
+                else
+                {
+                    classFilter = HandleCompiledImplementationTypeSelector(expression, memberAccessExpressionSyntax.Name);
+                }
+            }
+
+            if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter")
+            {
+                if (cancellationToken.IsCancellationRequested) return;
+                typeFilters.AddRange(
+                    HandleCompiledImplementationTypeFilter(diagnostics, semanticModel, expression, memberAccessExpressionSyntax.Name, objectType)
                 );
             }
 
-            var type = semanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression);
-            if (type.Type != null)
+            if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector")
             {
-                var typeName = type.Type.ToDisplayString();
-                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector")
-                {
-                    var selector = HandleCompiledAssemblySelector(
-                        semanticModel,
-                        expression,
-                        memberAccessExpressionSyntax.Name
-                    );
-                    if (selector != null)
-                    {
-                        assemblies.Add(selector);
-                    }
-                }
-
-                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector")
-                {
-                    var selector = HandleCompiledAssemblySelector(
-                        semanticModel,
-                        expression,
-                        memberAccessExpressionSyntax.Name
-                    );
-                    if (selector != null)
-                    {
-                        assemblies.Add(selector);
-                    }
-                    else
-                    {
-                        classFilter = HandleCompiledImplementationTypeSelector(expression, memberAccessExpressionSyntax.Name);
-                    }
-                }
-
-                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter")
-                {
-                    typeFilters.AddRange(HandleCompiledImplementationTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
-                }
-
-                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector")
-                {
-                    serviceTypes.AddRange(HandleCompiledServiceTypeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
-                }
-
-                if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector")
-                {
-                    serviceTypes.AddRange(HandleCompiledServiceTypeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
-                    lifetimeExpressionSyntax = HandleCompiledLifetimeSelector(context, semanticModel, expression, memberAccessExpressionSyntax.Name) ??
-                                               lifetimeExpressionSyntax;
-                }
+                if (cancellationToken.IsCancellationRequested) return;
+                serviceTypes.AddRange(HandleCompiledServiceTypeSelector(diagnostics, semanticModel, expression, memberAccessExpressionSyntax.Name));
             }
 
-            foreach (var argument in expression.ArgumentList.Arguments.Where(argument => argument.Expression is SimpleLambdaExpressionSyntax))
+            if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector")
             {
-                HandleInvocationExpressionSyntax(
-                    context,
-                    compilation,
-                    semanticModel,
-                    argument.Expression,
-                    assemblies,
-                    typeFilters,
-                    serviceTypes,
-                    ref classFilter,
-                    ref lifetimeExpressionSyntax
-                );
+                if (cancellationToken.IsCancellationRequested) return;
+                serviceTypes.AddRange(HandleCompiledServiceTypeSelector(diagnostics, semanticModel, expression, memberAccessExpressionSyntax.Name));
+                if (cancellationToken.IsCancellationRequested) return;
+                lifetimeExpressionSyntax = HandleCompiledLifetimeSelector(diagnostics, semanticModel, expression, memberAccessExpressionSyntax.Name) ??
+                                           lifetimeExpressionSyntax;
             }
+        }
+
+        foreach (var argument in expression.ArgumentList.Arguments.Where(argument => argument.Expression is SimpleLambdaExpressionSyntax))
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            HandleInvocationExpressionSyntax(
+                diagnostics,
+                semanticModel,
+                argument.Expression,
+                assemblies,
+                typeFilters,
+                serviceTypes,
+                objectType,
+                ref classFilter,
+                ref lifetimeExpressionSyntax,
+                cancellationToken
+            );
         }
     }
 
     private static MemberAccessExpressionSyntax? HandleCompiledLifetimeSelector(
-        GeneratorExecutionContext context,
+        List<Diagnostic> diagnostics,
         SemanticModel semanticModel,
         InvocationExpressionSyntax expression,
         NameSyntax name
@@ -175,7 +179,7 @@ internal static class DataHelpers
     }
 
     private static IEnumerable<IServiceTypeDescriptor> HandleCompiledServiceTypeSelector(
-        GeneratorExecutionContext context,
+        List<Diagnostic> diagnostics,
         SemanticModel semanticModel,
         InvocationExpressionSyntax expression,
         NameSyntax name
@@ -227,7 +231,7 @@ internal static class DataHelpers
                     yield return new CompiledServiceTypeDescriptor(nts);
                     yield break;
                 default:
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                     yield break;
             }
         }
@@ -281,10 +285,11 @@ internal static class DataHelpers
     }
 
     private static IEnumerable<ITypeFilterDescriptor> HandleCompiledImplementationTypeFilter(
-        GeneratorExecutionContext context,
+        List<Diagnostic> diagnostics,
         SemanticModel semanticModel,
         InvocationExpressionSyntax expression,
-        NameSyntax name
+        NameSyntax name,
+        INamedTypeSymbol objectType
     )
     {
         if (name.ToFullString() == "AssignableToAny")
@@ -301,13 +306,13 @@ internal static class DataHelpers
                             continue;
 
                         default:
-                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                             yield break;
                     }
                 }
 
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeTypeOf, argument.Expression.GetLocation()));
-                yield return new CompiledAbortTypeFilterDescriptor(context.Compilation.ObjectType);
+                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeTypeOf, argument.Expression.GetLocation()));
+                yield return new CompiledAbortTypeFilterDescriptor(objectType);
                 yield break;
             }
 
@@ -319,7 +324,7 @@ internal static class DataHelpers
             if (genericNameSyntax.Identifier.ToFullString() == "AssignableTo")
             {
                 var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                if (type != null)
+                if (type is { })
                 {
                     var typeInfo = semanticModel.GetTypeInfo(type).Type;
                     switch (typeInfo)
@@ -329,7 +334,7 @@ internal static class DataHelpers
                             yield break;
 
                         default:
-                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                             yield break;
                     }
                 }
@@ -340,7 +345,7 @@ internal static class DataHelpers
             if (genericNameSyntax.Identifier.ToFullString() == "WithAttribute")
             {
                 var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                if (type != null)
+                if (type is { })
                 {
                     var typeInfo = semanticModel.GetTypeInfo(type).Type;
                     switch (typeInfo)
@@ -350,7 +355,7 @@ internal static class DataHelpers
                             yield break;
 
                         default:
-                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                             yield break;
                     }
                 }
@@ -361,7 +366,7 @@ internal static class DataHelpers
             if (genericNameSyntax.Identifier.ToFullString() == "WithoutAttribute")
             {
                 var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                if (type != null)
+                if (type is { })
                 {
                     var typeInfo = semanticModel.GetTypeInfo(type).Type;
                     switch (typeInfo)
@@ -371,7 +376,7 @@ internal static class DataHelpers
                             yield break;
 
                         default:
-                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                             yield break;
                     }
                 }
@@ -395,7 +400,7 @@ internal static class DataHelpers
                 filter = NamespaceFilter.NotIn;
             }
 
-            if (filter.HasValue)
+            if (filter is { })
             {
                 var symbol = semanticModel.GetTypeInfo(genericNameSyntax.TypeArgumentList.Arguments[0]).Type!;
                 yield return new NamespaceFilterDescriptor(filter.Value, new[] { symbol.ContainingNamespace.ToDisplayString() });
@@ -409,7 +414,7 @@ internal static class DataHelpers
             if (simpleNameSyntax.ToFullString() == "AssignableTo")
             {
                 var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                if (type != null)
+                if (type is { })
                 {
                     var typeInfo = semanticModel.GetTypeInfo(type).Type;
                     switch (typeInfo)
@@ -418,20 +423,20 @@ internal static class DataHelpers
                             yield return new CompiledAssignableToTypeFilterDescriptor(nts);
                             yield break;
                         default:
-                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                             yield break;
                     }
                 }
 
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeTypeOf, simpleNameSyntax.Identifier.GetLocation()));
-                yield return new CompiledAbortTypeFilterDescriptor(context.Compilation.ObjectType);
+                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeTypeOf, simpleNameSyntax.Identifier.GetLocation()));
+                yield return new CompiledAbortTypeFilterDescriptor(objectType);
                 yield break;
             }
 
             if (simpleNameSyntax.ToFullString() == "WithAttribute")
             {
                 var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                if (type != null)
+                if (type is { })
                 {
                     var typeInfo = semanticModel.GetTypeInfo(type).Type;
                     switch (typeInfo)
@@ -441,7 +446,7 @@ internal static class DataHelpers
                             yield break;
 
                         default:
-                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                             yield break;
                     }
                 }
@@ -452,7 +457,7 @@ internal static class DataHelpers
             if (simpleNameSyntax.ToFullString() == "WithoutAttribute")
             {
                 var type = Helpers.ExtractSyntaxFromMethod(expression, name);
-                if (type != null)
+                if (type is { })
                 {
                     var typeInfo = semanticModel.GetTypeInfo(type).Type;
                     switch (typeInfo)
@@ -462,7 +467,7 @@ internal static class DataHelpers
                             yield break;
 
                         default:
-                            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                            diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                             yield break;
                     }
                 }
@@ -490,7 +495,7 @@ internal static class DataHelpers
                     filter = NamespaceFilter.NotIn;
                 }
 
-                if (filter.HasValue)
+                if (filter is { })
                 {
                     var namespaces = expression.ArgumentList.Arguments
                                                .Select(
@@ -514,7 +519,7 @@ internal static class DataHelpers
                                                                 return symbol.ContainingNamespace.ToDisplayString();
                                                             }
                                                             default:
-                                                                context.ReportDiagnostic(
+                                                                diagnostics.Add(
                                                                     Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation())
                                                                 );
                                                                 return null!;
@@ -546,7 +551,7 @@ internal static class DataHelpers
                     filter = TextDirectionFilter.Contains;
                 }
 
-                if (filter.HasValue)
+                if (filter is { })
                 {
                     var stringValues = expression.ArgumentList.Arguments
                                                  .Select(
@@ -565,7 +570,7 @@ internal static class DataHelpers
                                                                       identifierNameSyntax:
                                                                   return identifierNameSyntax.Identifier.Text;
                                                               default:
-                                                                  context.ReportDiagnostic(
+                                                                  diagnostics.Add(
                                                                       Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation())
                                                                   );
                                                                   return null!;
