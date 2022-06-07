@@ -2,10 +2,10 @@ using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.Git;
+using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.MSBuild;
-using Rocket.Surgery.Nuke;
 using Rocket.Surgery.Nuke.DotNetCore;
 
 [PublicAPI]
@@ -18,7 +18,7 @@ using Rocket.Surgery.Nuke.DotNetCore;
 [MSBuildVerbosityMapping]
 [NuGetVerbosityMapping]
 [ShutdownDotNetAfterServerBuild]
-public partial class Solution : NukeBuild,
+public partial class Pipeline : NukeBuild,
                                 ICanRestoreWithDotNetCore,
                                 ICanBuildWithDotNetCore,
                                 ICanTestWithDotNetCore,
@@ -29,8 +29,7 @@ public partial class Solution : NukeBuild,
                                 IGenerateCodeCoverageReport,
                                 IGenerateCodeCoverageSummary,
                                 IGenerateCodeCoverageBadges,
-                                IHaveConfiguration<Configuration>,
-                                ICanLint
+                                IHaveConfiguration<Configuration>
 {
     /// <summary>
     ///     Support plugins are available for:
@@ -41,10 +40,8 @@ public partial class Solution : NukeBuild,
     /// </summary>
     public static int Main()
     {
-        return Execute<Solution>(x => x.Default);
+        return Execute<Pipeline>(x => x.Default);
     }
-
-    [OptionalGitRepository] public GitRepository? GitRepository { get; }
 
     private Target Default => _ => _
                                   .DependsOn(Restore)
@@ -57,10 +54,7 @@ public partial class Solution : NukeBuild,
     public Target Pack => _ => _.Inherit<ICanPackWithDotNetCore>(x => x.CorePack)
                                 .DependsOn(Clean);
 
-    [ComputedGitVersion] public GitVersion GitVersion { get; } = null!;
-
     public Target Clean => _ => _.Inherit<ICanClean>(x => x.Clean);
-    public Target Lint => _ => _.Inherit<ICanLint>(x => x.Lint);
     public Target Restore => _ => _.Inherit<ICanRestoreWithDotNetCore>(x => x.CoreRestore);
     public Target Test => _ => _.Inherit<ICanTestWithDotNetCore>(x => x.CoreTest);
 
@@ -68,5 +62,10 @@ public partial class Solution : NukeBuild,
                                         .Before(Default)
                                         .Before(Clean);
 
+    [Solution(GenerateProjects = true)] private Solution Solution { get; } = null!;
+    Nuke.Common.ProjectModel.Solution IHaveSolution.Solution => Solution;
+
+    [OptionalGitRepository] public GitRepository? GitRepository { get; }
+    [ComputedGitVersion] public GitVersion GitVersion { get; } = null!;
     [Parameter("Configuration to build")] public Configuration Configuration { get; } = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 }
