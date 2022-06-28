@@ -118,14 +118,14 @@ public static class ConfigHostBuilderExtensions
         if (source != null)
         {
             var index = sources.IndexOf(source);
-            foreach (var newSource in createSourceFrom.Reverse())
+            foreach (var newSource in createSourceFrom)
             {
                 sources.Insert(index + 1, newSource);
             }
         }
         else
         {
-            foreach (var newSource in createSourceFrom.Reverse())
+            foreach (var newSource in createSourceFrom)
             {
                 sources.Add(newSource);
             }
@@ -147,14 +147,14 @@ public static class ConfigHostBuilderExtensions
         {
             var index = sources.IndexOf(source);
             sources.RemoveAt(index);
-            foreach (var newSource in iConfigurationSources.Reverse())
+            foreach (var newSource in iConfigurationSources)
             {
                 sources.Insert(index, newSource);
             }
         }
         else
         {
-            foreach (var newSource in iConfigurationSources.Reverse())
+            foreach (var newSource in iConfigurationSources)
             {
                 sources.Add(newSource);
             }
