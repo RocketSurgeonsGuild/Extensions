@@ -44,11 +44,11 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
             {
                 if (tuple.Right.Length > 0)
                 {
-                    context.AddSource("CompiledServiceScanningExtensions.cs", tuple.Left ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext);
+                    context.AddSource("CompiledServiceScanningExtensions.cs", tuple.Left ? StaticScanSourceText : StaticScanSourceTextWithAssemblyLoadContext);
                     return;
                 }
 
-                context.AddSource("PopulateExtensions.cs", tuple.Left ? populateSourceText : populateSourceTextWithAssemblyLoadContext);
+                context.AddSource("PopulateExtensions.cs", tuple.Left ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext);
             }
         );
 
@@ -68,11 +68,11 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                 return ( useAssemblyLoad, parseOptions, compilation: compilation
                                             .AddSyntaxTrees(
                                                  CSharpSyntaxTree.ParseText(
-                                                     useAssemblyLoad ? staticScanSourceText : staticScanSourceTextWithAssemblyLoadContext, parseOptions,
+                                                     useAssemblyLoad ? StaticScanSourceText : StaticScanSourceTextWithAssemblyLoadContext, parseOptions,
                                                      "CompiledServiceScanningExtensions.cs", cancellationToken: token
                                                  ),
                                                  CSharpSyntaxTree.ParseText(
-                                                     useAssemblyLoad ? populateSourceText : populateSourceTextWithAssemblyLoadContext, parseOptions,
+                                                     useAssemblyLoad ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext, parseOptions,
                                                      "PopulateExtensions.cs", cancellationToken: token
                                                  )
                                              ) );
@@ -158,6 +158,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
            ,
             static (context, tuple) =>
             {
+                if (tuple.diagnostics == null) return;
                 Execute(
                     context, tuple.compilation, tuple.expression, tuple.useAssemblyLoadContext, tuple.parseOptions, tuple.diagnostics,
                     tuple.groups
@@ -219,7 +220,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 blocks.Add(( filePath, memberName, localBlock ));
             }
 
-            static SwitchSectionSyntax CreateNestedSwitchSections<T>(
+            static SwitchSectionSyntax createNestedSwitchSections<T>(
                 IReadOnlyList<(string filePath, string memberName, BlockSyntax block)> blocks,
                 NameSyntax identifier,
                 Func<(string filePath, string memberName, BlockSyntax block), T> regroup,
@@ -244,11 +245,11 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 return SwitchSection().AddStatements(section, BreakStatement());
             }
 
-            var lineSwitchSection = CreateNestedSwitchSections(
+            var lineSwitchSection = createNestedSwitchSections(
                     blocks,
                     IdentifierName("filePath"),
                     x => x.filePath,
-                    GenerateFilePathSwitchStatement,
+                    generateFilePathSwitchStatement,
                     value =>
                         LiteralExpression(
                             SyntaxKind.StringLiteralExpression,
@@ -264,13 +265,13 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                     )
                 );
 
-            static SwitchSectionSyntax GenerateFilePathSwitchStatement(IGrouping<string, (string filePath, string memberName, BlockSyntax block)> innerGroup)
+            static SwitchSectionSyntax generateFilePathSwitchStatement(IGrouping<string, (string filePath, string memberName, BlockSyntax block)> innerGroup)
             {
-                return CreateNestedSwitchSections(
+                return createNestedSwitchSections(
                     innerGroup.ToArray(),
                     IdentifierName("memberName"),
                     x => x.memberName,
-                    GenerateMemberNameSwitchStatement,
+                    generateMemberNameSwitchStatement,
                     value =>
                         LiteralExpression(
                             SyntaxKind.StringLiteralExpression,
@@ -279,7 +280,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 );
             }
 
-            static SwitchSectionSyntax GenerateMemberNameSwitchStatement(IGrouping<string, (string filePath, string memberName, BlockSyntax block)> innerGroup)
+            static SwitchSectionSyntax generateMemberNameSwitchStatement(IGrouping<string, (string filePath, string memberName, BlockSyntax block)> innerGroup)
             {
                 return SwitchSection()
                       .AddLabels(
@@ -301,7 +302,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
 
         {
             var root = CSharpSyntaxTree.ParseText(
-                                            useAssemblyLoadContext ? populateSourceText : populateSourceTextWithAssemblyLoadContext,
+                                            useAssemblyLoadContext ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext,
                                             (CSharpParseOptions)parseOptions
                                         )
                                        .GetCompilationUnitRoot();
@@ -771,7 +772,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
         {
             types = filter.Filter switch
             {
-                NamespaceFilter.Exact => types.RemoveAll(toSymbol => !filter.Namespaces.Any(ns => toSymbol.ContainingNamespace.ToDisplayString() == ns)),
+                NamespaceFilter.Exact => types.RemoveAll(toSymbol => filter.Namespaces.All(ns => toSymbol.ContainingNamespace.ToDisplayString() != ns)),
                 NamespaceFilter.In => types.RemoveAll(
                     toSymbol => !filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))
                 ),
@@ -800,7 +801,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
         return types;
     }
 
-    private static readonly string staticScanSourceTextWithAssemblyLoadContext = @"
+    private const string StaticScanSourceTextWithAssemblyLoadContext = @"
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -865,7 +866,7 @@ namespace Microsoft.Extensions.DependencyInjection
 #pragma warning restore CS0436
 ";
 
-    private static readonly string staticScanSourceText = @"
+    private const string StaticScanSourceText = @"
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -904,93 +905,7 @@ namespace Microsoft.Extensions.DependencyInjection
 #pragma warning restore CS0436
 ";
 
-    private static readonly string partialStaticScanSourceTextWithAssemblyLoadContext = @"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.Loader;
-using Scrutor;
-using Rocket.Surgery.DependencyInjection.Compiled;
-#pragma warning disable CS0436
-namespace Microsoft.Extensions.DependencyInjection
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static partial class CompiledServiceScanningExtensions
-    {
-        public static partial IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        );
-
-        public static partial IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-            RegistrationStrategy strategy,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        );
-
-        public static partial IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-            AssemblyLoadContext context,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        );
-
-        public static partial IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-            RegistrationStrategy strategy,
-            AssemblyLoadContext context,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        );
-    }
-}
-#pragma warning restore CS0436
-";
-
-    private static readonly string partialStaticScanSourceText = @"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using Scrutor;
-using Rocket.Surgery.DependencyInjection.Compiled;
-#pragma warning disable CS0436
-namespace Microsoft.Extensions.DependencyInjection
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static partial class CompiledServiceScanningExtensions
-    {
-        public static IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        );
-
-        public static partial IServiceCollection ScanCompiled(
-            this IServiceCollection services,
-            Action<ICompiledAssemblySelector> action,
-            RegistrationStrategy strategy,
-	        [CallerFilePathAttribute] string filePath = """",
-	        [CallerMemberName] string memberName = """",
-	        [CallerLineNumberAttribute] int lineNumber = 0
-        );
-    }
-}
-#pragma warning restore CS0436
-";
-
-    private static readonly string populateSourceTextWithAssemblyLoadContext = @"
+    private const string PopulateSourceTextWithAssemblyLoadContext = @"
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -1014,7 +929,7 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 #pragma warning restore CS0436
 ";
 
-    private static readonly string populateSourceText = @"
+    private const string PopulateSourceText = @"
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
