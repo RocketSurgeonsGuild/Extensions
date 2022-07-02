@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+      <IsRoslynComponent>true</IsRoslynComponent>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Rocket.Surgery.Extensions.Tests" />
@@ -11,9 +12,14 @@
       <!--    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" PrivateAssets="all" />-->
 
       <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+      <None Remove="Properties\launchSettings.json" />
       <!--    <Compile Include="../DependencyInjection.Extensions/Compiled/**/*.cs" Visible="false" />-->
   </ItemGroup>
     <ItemGroup>
         <InternalsVisibleTo Include="Rocket.Surgery.DependencyInjection.Analyzers.Tests" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Properties" />
     </ItemGroup>
 </Project>
