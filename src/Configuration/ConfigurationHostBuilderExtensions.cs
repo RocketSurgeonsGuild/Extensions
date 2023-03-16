@@ -59,7 +59,7 @@ public static class ConfigHostBuilderExtensions
         InsertConfigurationSourceAfter(
             configurationBuilder.Sources,
             sources => sources
-                      .OfType<JsonConfigurationSource>()
+                      .OfType<FileConfigurationSource>()
                       .FirstOrDefault(
                            x => string.Equals(x.Path, $"appsettings.{options.EnvironmentName ?? string.Empty}.json", StringComparison.OrdinalIgnoreCase)
                        ),
@@ -77,7 +77,7 @@ public static class ConfigHostBuilderExtensions
 
         ReplaceConfigurationSourceAt(
             configurationBuilder.Sources,
-            sources => sources.OfType<JsonConfigurationSource>().FirstOrDefault(
+            sources => sources.OfType<FileConfigurationSource>().FirstOrDefault(
                 x => string.Equals(x.Path, "appsettings.json", StringComparison.OrdinalIgnoreCase)
             ),
             new ProxyConfigurationBuilder(configurationBuilder).Apply(options.ApplicationConfiguration)
@@ -89,7 +89,7 @@ public static class ConfigHostBuilderExtensions
             ReplaceConfigurationSourceAt(
                 configurationBuilder.Sources,
                 sources => sources
-                          .OfType<JsonConfigurationSource>()
+                          .OfType<FileConfigurationSource>()
                           .FirstOrDefault(x => string.Equals(x.Path, $"appsettings.{options.EnvironmentName}.json", StringComparison.OrdinalIgnoreCase)),
                 new ProxyConfigurationBuilder(configurationBuilder).Apply(options.EnvironmentConfiguration, options.EnvironmentName!).GetAdditionalSources()
             );
@@ -98,7 +98,7 @@ public static class ConfigHostBuilderExtensions
         ReplaceConfigurationSourceAt(
             configurationBuilder.Sources,
             sources => sources
-                      .OfType<JsonConfigurationSource>()
+                      .OfType<FileConfigurationSource>()
                       .FirstOrDefault(x => string.Equals(x.Path, "appsettings.local.json", StringComparison.OrdinalIgnoreCase)),
             new ProxyConfigurationBuilder(configurationBuilder)
                .Apply(options.EnvironmentConfiguration, "local").GetAdditionalSources()
