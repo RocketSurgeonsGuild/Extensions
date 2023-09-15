@@ -8,10 +8,10 @@
         <PackageVersion Update="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1' or '$(TargetFramework)' == 'netcoreapp3.1'">
-        <PackageVersion Update="Microsoft.Extensions.Configuration" Version="3.1.31" />
-        <PackageVersion Update="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.31" />
-        <PackageVersion Update="Microsoft.Extensions.Configuration.Ini" Version="3.1.31" />
-        <PackageVersion Update="Microsoft.Extensions.Configuration.Json" Version="3.1.31" />
-        <PackageVersion Update="Microsoft.Extensions.Logging.Abstractions" Version="3.1.31" />
+        <PackageVersion Update="Microsoft.Extensions.Configuration" Version="3.1.32" />
+        <PackageVersion Update="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.32" />
+        <PackageVersion Update="Microsoft.Extensions.Configuration.Ini" Version="3.1.32" />
+        <PackageVersion Update="Microsoft.Extensions.Configuration.Json" Version="3.1.32" />
+        <PackageVersion Update="Microsoft.Extensions.Logging.Abstractions" Version="3.1.32" />
     </ItemGroup>
 </Project>
