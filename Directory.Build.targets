@@ -16,7 +16,6 @@
             Condition="'$(MSBuildProjectName)'!='.build'"
         />
       <!-- <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" IncludeAssets="analyzers;build;buildMultitargeting;buildTransitive" PrivateAssets="All" /> -->
-      <PackageReference Include="Rocket.Surgery.MSBuild.Metadata" IncludeAssets="analyzers;build;buildMultitargeting;buildTransitive" PrivateAssets="All" />
     <PackageReference Include="Rocket.Surgery.MSBuild.SourceLink" IncludeAssets="analyzers;build;buildMultitargeting;buildTransitive" PrivateAssets="All" />
     <PackageReference Include="Roslynator.Analyzers" IncludeAssets="analyzers;build;buildMultitargeting;buildTransitive" PrivateAssets="All" />
   </ItemGroup>
