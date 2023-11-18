@@ -1,0 +1,5 @@
+#nullable enable
+Rocket.Surgery.Extensions.Logging.LoggingAbstractionsExtensions
+static Rocket.Surgery.Extensions.Logging.LoggingAbstractionsExtensions.TimeDebug(this Microsoft.Extensions.Logging.ILogger! logger, string! message, params object![]! args) -> System.IDisposable!
+static Rocket.Surgery.Extensions.Logging.LoggingAbstractionsExtensions.TimeInformation(this Microsoft.Extensions.Logging.ILogger! logger, string! message, params object![]! args) -> System.IDisposable!
+static Rocket.Surgery.Extensions.Logging.LoggingAbstractionsExtensions.TimeTrace(this Microsoft.Extensions.Logging.ILogger! logger, string! message, params object![]! args) -> System.IDisposable!

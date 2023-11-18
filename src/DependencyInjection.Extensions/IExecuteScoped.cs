@@ -1,9 +1,10 @@
-﻿namespace Rocket.Surgery.DependencyInjection;
+﻿#pragma warning disable RS0026
+namespace Rocket.Surgery.DependencyInjection;
 
 /// <summary>
 ///     Invoke the specified action with the scoped dependency
 /// </summary>
-public interface IExecuteScoped<T>
+public interface IExecuteScoped<out T>
     where T : notnull
 {
     /// <summary>
@@ -40,7 +41,7 @@ public interface IExecuteScoped<T>
 /// <summary>
 ///     Execution of a set of dependencies from a scope that is automatically disposed after execution
 /// </summary>
-public interface IExecuteScoped<T1, T2>
+public interface IExecuteScoped<out T1, out T2>
     where T1 : notnull
     where T2 : notnull
 {
@@ -78,7 +79,7 @@ public interface IExecuteScoped<T1, T2>
 /// <summary>
 ///     Execution of a set of dependencies from a scope that is automatically disposed after execution
 /// </summary>
-public interface IExecuteScoped<T1, T2, T3>
+public interface IExecuteScoped<out T1, out T2, out T3>
     where T1 : notnull
     where T2 : notnull
     where T3 : notnull
@@ -117,7 +118,7 @@ public interface IExecuteScoped<T1, T2, T3>
 /// <summary>
 ///     Execution of a set of dependencies from a scope that is automatically disposed after execution
 /// </summary>
-public interface IExecuteScoped<T1, T2, T3, T4>
+public interface IExecuteScoped<out T1, out T2, out T3, out T4>
     where T1 : notnull
     where T2 : notnull
     where T3 : notnull
@@ -157,7 +158,7 @@ public interface IExecuteScoped<T1, T2, T3, T4>
 /// <summary>
 ///     Execution of a set of dependencies from a scope that is automatically disposed after execution
 /// </summary>
-public interface IExecuteScoped<T1, T2, T3, T4, T5>
+public interface IExecuteScoped<out T1, out T2, out T3, out T4, out T5>
     where T1 : notnull
     where T2 : notnull
     where T3 : notnull
@@ -198,7 +199,7 @@ public interface IExecuteScoped<T1, T2, T3, T4, T5>
 /// <summary>
 ///     Execution of a set of dependencies from a scope that is automatically disposed after execution
 /// </summary>
-public interface IExecuteScoped<T1, T2, T3, T4, T5, T6>
+public interface IExecuteScoped<out T1, out T2, out T3, out T4, out T5, out T6>
     where T1 : notnull
     where T2 : notnull
     where T3 : notnull

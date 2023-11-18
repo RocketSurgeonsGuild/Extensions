@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Build Schema",
   "$ref": "#/definitions/build",
+  "title": "Build Schema",
   "definitions": {
     "build": {
       "type": "object",
@@ -100,6 +100,7 @@
               "GenerateReadme",
               "Pack",
               "Restore",
+              "ShipApis",
               "Test",
               "Trigger_Code_Coverage_Reports",
               "TriggerCodeCoverageReports"
@@ -136,6 +137,7 @@
               "GenerateReadme",
               "Pack",
               "Restore",
+              "ShipApis",
               "Test",
               "Trigger_Code_Coverage_Reports",
               "TriggerCodeCoverageReports"
