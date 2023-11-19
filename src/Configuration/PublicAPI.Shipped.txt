@@ -1,0 +1,15 @@
+#nullable enable
+Rocket.Surgery.Conventions.ConfigHostBuilderExtensions
+Rocket.Surgery.Extensions.Configuration.ConfigOptionApplicationDelegate
+Rocket.Surgery.Extensions.Configuration.ConfigOptionEnvironmentDelegate
+Rocket.Surgery.Extensions.Configuration.ConfigOptions
+Rocket.Surgery.Extensions.Configuration.ConfigOptions.AddApplicationConfiguration(Rocket.Surgery.Extensions.Configuration.ConfigOptionApplicationDelegate! delegate) -> Rocket.Surgery.Extensions.Configuration.ConfigOptions!
+Rocket.Surgery.Extensions.Configuration.ConfigOptions.AddEnvironmentConfiguration(Rocket.Surgery.Extensions.Configuration.ConfigOptionEnvironmentDelegate! delegate) -> Rocket.Surgery.Extensions.Configuration.ConfigOptions!
+Rocket.Surgery.Extensions.Configuration.ConfigOptions.ConfigOptions() -> void
+Rocket.Surgery.Extensions.Configuration.ConfigOptions.ConfigOptions(string! environmentName) -> void
+Rocket.Surgery.Extensions.Configuration.ConfigOptions.EnvironmentName.get -> string?
+Rocket.Surgery.Extensions.Configuration.ConfigOptions.UseEnvironment(string! environmentName) -> Rocket.Surgery.Extensions.Configuration.ConfigOptions!
+static Rocket.Surgery.Conventions.ConfigHostBuilderExtensions.UseLocalConfiguration(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, Rocket.Surgery.Extensions.Configuration.ConfigOptions! options) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Rocket.Surgery.Conventions.ConfigHostBuilderExtensions.UseLocalConfiguration(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, System.Action<Rocket.Surgery.Extensions.Configuration.ConfigOptions!>! configOptionsAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Rocket.Surgery.Conventions.ConfigHostBuilderExtensions.UseLocalConfiguration(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, System.Func<Rocket.Surgery.Extensions.Configuration.ConfigOptions!, Rocket.Surgery.Extensions.Configuration.ConfigOptions!>! configOptionsAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!
+static Rocket.Surgery.Conventions.ConfigHostBuilderExtensions.UseLocalConfiguration(this Microsoft.Extensions.Configuration.IConfigurationBuilder! configurationBuilder, System.Func<Rocket.Surgery.Extensions.Configuration.ConfigOptions!>! configOptionsAction) -> Microsoft.Extensions.Configuration.IConfigurationBuilder!

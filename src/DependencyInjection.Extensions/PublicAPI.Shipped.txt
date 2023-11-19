@@ -1,0 +1,169 @@
+#nullable enable
+Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector.FromAssemblies() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector.FromAssembly() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector.FromAssemblyDependenciesOf(System.Type! type) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector.FromAssemblyDependenciesOf<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector.FromAssemblyOf(System.Type! type) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledAssemblySelector.FromAssemblyOf<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.Affix(string! value, params string![]! values) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.AssignableTo(System.Type! type) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.AssignableTo<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.AssignableToAny(System.Type! first, params System.Type![]! types) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.Contains(string! value, params string![]! values) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.EndsWith(string! value, params string![]! values) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.Includes(string! value, params string![]! values) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.InExactNamespaceOf(System.Type! first, params System.Type![]! types) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.InExactNamespaceOf<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.InExactNamespaces(string! first, params string![]! namespaces) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.InNamespaceOf(System.Type! first, params System.Type![]! types) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.InNamespaceOf<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.InNamespaces(string! first, params string![]! namespaces) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.NotInNamespaceOf(System.Type! first, params System.Type![]! types) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.NotInNamespaceOf<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.NotInNamespaces(string! first, params string![]! namespaces) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.Postfix(string! value, params string![]! values) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.Prefix(string! value, params string![]! values) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.StartsWith(string! value, params string![]! values) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.Suffix(string! value, params string![]! values) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.WithAttribute(System.Type! attributeType) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.WithAttribute<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.WithoutAttribute(System.Type! attributeType) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter.WithoutAttribute<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector.AddClasses() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector.AddClasses(bool publicOnly) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector.AddClasses(System.Action<Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!>! action, bool publicOnly) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeSelector.AddClasses(System.Action<Rocket.Surgery.DependencyInjection.Compiled.ICompiledImplementationTypeFilter!>! action) -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector.WithLifetime(Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) -> void
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector.WithScopedLifetime() -> void
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector.WithSingletonLifetime() -> void
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector.WithTransientLifetime() -> void
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector.As<T>() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector.AsImplementedInterfaces() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector.AsMatchingInterface() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector.AsSelf() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector.AsSelfWithInterfaces() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector!
+Rocket.Surgery.DependencyInjection.Compiled.ICompiledServiceTypeSelector.UsingAttributes() -> Rocket.Surgery.DependencyInjection.Compiled.ICompiledLifetimeSelector!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T>
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T>.Invoke(System.Action<T>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T>.Invoke(System.Func<T, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T>.Invoke(System.Func<T, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T>.Invoke<TResult>(System.Func<T, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T>.Invoke<TResult>(System.Func<T, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T>.Invoke<TResult>(System.Func<T, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>.Invoke(System.Action<T1, T2, T3, T4, T5, T6>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>.Invoke(System.Func<T1, T2, T3, T4, T5, T6, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>.Invoke(System.Func<T1, T2, T3, T4, T5, T6, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>.Invoke<TResult>(System.Func<T1, T2, T3, T4, T5, T6, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>.Invoke<TResult>(System.Func<T1, T2, T3, T4, T5, T6, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>.Invoke<TResult>(System.Func<T1, T2, T3, T4, T5, T6, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>.Invoke(System.Action<T1, T2, T3, T4, T5>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>.Invoke(System.Func<T1, T2, T3, T4, T5, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>.Invoke(System.Func<T1, T2, T3, T4, T5, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>.Invoke<TResult>(System.Func<T1, T2, T3, T4, T5, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>.Invoke<TResult>(System.Func<T1, T2, T3, T4, T5, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>.Invoke<TResult>(System.Func<T1, T2, T3, T4, T5, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>.Invoke(System.Action<T1, T2, T3, T4>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>.Invoke(System.Func<T1, T2, T3, T4, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>.Invoke(System.Func<T1, T2, T3, T4, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>.Invoke<TResult>(System.Func<T1, T2, T3, T4, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>.Invoke<TResult>(System.Func<T1, T2, T3, T4, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>.Invoke<TResult>(System.Func<T1, T2, T3, T4, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>.Invoke(System.Action<T1, T2, T3>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>.Invoke(System.Func<T1, T2, T3, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>.Invoke(System.Func<T1, T2, T3, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>.Invoke<TResult>(System.Func<T1, T2, T3, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>.Invoke<TResult>(System.Func<T1, T2, T3, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>.Invoke<TResult>(System.Func<T1, T2, T3, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>.Invoke(System.Action<T1, T2>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>.Invoke(System.Func<T1, T2, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>.Invoke(System.Func<T1, T2, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>.Invoke<TResult>(System.Func<T1, T2, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>.Invoke<TResult>(System.Func<T1, T2, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>.Invoke<TResult>(System.Func<T1, T2, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>.Invoke(System.Action<T?>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>.Invoke(System.Func<T?, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>.Invoke(System.Func<T?, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>.Invoke<TResult>(System.Func<T?, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>.Invoke<TResult>(System.Func<T?, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>.Invoke<TResult>(System.Func<T?, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>.Invoke(System.Action<T1?, T2?, T3?, T4?, T5?, T6?>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>.Invoke(System.Func<T1?, T2?, T3?, T4?, T5?, T6?, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>.Invoke(System.Func<T1?, T2?, T3?, T4?, T5?, T6?, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, T5?, T6?, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, T5?, T6?, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, T5?, T6?, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>.Invoke(System.Action<T1?, T2?, T3?, T4?, T5?>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>.Invoke(System.Func<T1?, T2?, T3?, T4?, T5?, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>.Invoke(System.Func<T1?, T2?, T3?, T4?, T5?, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, T5?, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, T5?, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, T5?, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>.Invoke(System.Action<T1?, T2?, T3?, T4?>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>.Invoke(System.Func<T1?, T2?, T3?, T4?, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>.Invoke(System.Func<T1?, T2?, T3?, T4?, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>.Invoke<TResult>(System.Func<T1?, T2?, T3?, T4?, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>.Invoke(System.Action<T1?, T2?, T3?>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>.Invoke(System.Func<T1?, T2?, T3?, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>.Invoke(System.Func<T1?, T2?, T3?, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>.Invoke<TResult>(System.Func<T1?, T2?, T3?, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>.Invoke<TResult>(System.Func<T1?, T2?, T3?, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>.Invoke<TResult>(System.Func<T1?, T2?, T3?, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>.Invoke(System.Action<T1?, T2?>! action) -> void
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>.Invoke(System.Func<T1?, T2?, System.Threading.CancellationToken, System.Threading.Tasks.Task!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>.Invoke(System.Func<T1?, T2?, System.Threading.Tasks.Task!>! action) -> System.Threading.Tasks.Task!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>.Invoke<TResult>(System.Func<T1?, T2?, System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>!>! action, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>.Invoke<TResult>(System.Func<T1?, T2?, System.Threading.Tasks.Task<TResult>!>! action) -> System.Threading.Tasks.Task<TResult>!
+Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>.Invoke<TResult>(System.Func<T1?, T2?, TResult>! action) -> TResult
+Rocket.Surgery.DependencyInjection.ScopedServiceExtensions
+Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions
+Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute
+Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute.GetServiceTypes(System.Type! fallbackType) -> System.Collections.Generic.IEnumerable<System.Type!>!
+Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute.Lifetime.get -> Microsoft.Extensions.DependencyInjection.ServiceLifetime
+Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute.ServiceRegistrationAttribute() -> void
+Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute.ServiceRegistrationAttribute(Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime) -> void
+Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute.ServiceRegistrationAttribute(System.Type? serviceType, Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient) -> void
+Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute.ServiceType.get -> System.Type?
+static Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions.AddExecuteScopedServices(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2, T3, T4, T5, T6>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2, T3, T4, T5, T6>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5, T6>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2, T3, T4, T5>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2, T3, T4, T5>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4, T5>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2, T3, T4>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2, T3, T4>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3, T4>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2, T3>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2, T3>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2, T3>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceExtensions.WithScoped<T1, T2>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScoped<T1, T2>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2, T3, T4, T5, T6>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2, T3, T4, T5, T6>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5, T6>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2, T3, T4, T5>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2, T3, T4, T5>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4, T5>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2, T3, T4>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2, T3, T4>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3, T4>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2, T3>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2, T3>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2, T3>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2>(this Microsoft.Extensions.DependencyInjection.IServiceScopeFactory! serviceScopeFactory) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>!
+static Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions.WithScopedOptional<T1, T2>(this System.IServiceProvider! serviceProvider) -> Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<T1, T2>!

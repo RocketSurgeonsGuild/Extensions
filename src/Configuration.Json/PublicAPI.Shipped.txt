@@ -1,0 +1,3 @@
+#nullable enable
+Rocket.Surgery.Extensions.Configuration.JsonConfigOptionsExtensions
+static Rocket.Surgery.Extensions.Configuration.JsonConfigOptionsExtensions.UseJson(this Rocket.Surgery.Extensions.Configuration.ConfigOptions! options) -> Rocket.Surgery.Extensions.Configuration.ConfigOptions!

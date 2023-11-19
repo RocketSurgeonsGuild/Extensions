@@ -2,16 +2,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Rocket.Surgery.DependencyInjection;
 
-internal class ExecuteScopedOptional<T> : IExecuteScopedOptional<T>
+internal class ExecuteScopedOptional<T>(IServiceScopeFactory serviceScopeFactoryFactory) : IExecuteScopedOptional<T>
     where T : notnull
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public ExecuteScopedOptional(IServiceScopeFactory serviceScopeFactoryFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactoryFactory;
-    }
-
     public void Invoke(Action<T?> action)
     {
         if (action is null)
@@ -19,7 +12,7 @@ internal class ExecuteScopedOptional<T> : IExecuteScopedOptional<T>
             throw new ArgumentNullException(nameof(action));
         }
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         action(scope.ServiceProvider.GetService<T>());
     }
 
@@ -30,7 +23,7 @@ internal class ExecuteScopedOptional<T> : IExecuteScopedOptional<T>
             throw new ArgumentNullException(nameof(action));
         }
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return action(scope.ServiceProvider.GetService<T>());
     }
 
@@ -41,7 +34,7 @@ internal class ExecuteScopedOptional<T> : IExecuteScopedOptional<T>
             throw new ArgumentNullException(nameof(action));
         }
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         await action(scope.ServiceProvider.GetService<T>(), cancellationToken).ConfigureAwait(false);
     }
 
@@ -52,7 +45,7 @@ internal class ExecuteScopedOptional<T> : IExecuteScopedOptional<T>
             throw new ArgumentNullException(nameof(action));
         }
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return await action(scope.ServiceProvider.GetService<T>(), cancellationToken).ConfigureAwait(false);
     }
 
