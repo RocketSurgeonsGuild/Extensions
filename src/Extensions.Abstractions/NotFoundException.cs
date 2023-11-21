@@ -1,4 +1,4 @@
-﻿namespace Rocket.Surgery;
+namespace Rocket.Surgery;
 
 /// <summary>
 ///     NotFoundException.

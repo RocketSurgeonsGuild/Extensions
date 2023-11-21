@@ -30,13 +30,13 @@ public static class Base3264Encoding
     {
         return type switch
         {
-            EncodingType.Base64             => Convert.ToBase64String(input, Base64FormattingOptions.None),
-            EncodingType.Base64Url          => Base64Url.ToBase64ForUrlString(input),
-            EncodingType.Base32Url          => Base32Url.ToBase32String(input),
-            EncodingType.ZBase32            => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Encode(input),
+            EncodingType.Base64 => Convert.ToBase64String(input, Base64FormattingOptions.None),
+            EncodingType.Base64Url => Base64Url.ToBase64ForUrlString(input),
+            EncodingType.Base32Url => Base32Url.ToBase32String(input),
+            EncodingType.ZBase32 => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Encode(input),
             EncodingType.Base32LowProfanity => new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Encode(input),
-            EncodingType.Base32Crockford    => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Encode(input),
-            _                               => throw new NotImplementedException("Encoding type not implemented: " + type),
+            EncodingType.Base32Crockford => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Encode(input),
+            _ => throw new NotImplementedException("Encoding type not implemented: " + type),
         };
     }
 
@@ -51,13 +51,13 @@ public static class Base3264Encoding
     {
         return type switch
         {
-            EncodingType.Base64             => Convert.FromBase64String(input),
-            EncodingType.Base64Url          => Base64Url.FromBase64ForUrlString(input),
-            EncodingType.Base32Url          => Base32Url.FromBase32String(input),
-            EncodingType.ZBase32            => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Decode(input),
+            EncodingType.Base64 => Convert.FromBase64String(input),
+            EncodingType.Base64Url => Base64Url.FromBase64ForUrlString(input),
+            EncodingType.Base32Url => Base32Url.FromBase32String(input),
+            EncodingType.ZBase32 => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Decode(input),
             EncodingType.Base32LowProfanity => new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Decode(input),
-            EncodingType.Base32Crockford    => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Decode(input),
-            _                               => throw new NotImplementedException("Encoding type not implemented: " + type),
+            EncodingType.Base32Crockford => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Decode(input),
+            _ => throw new NotImplementedException("Encoding type not implemented: " + type),
         };
     }
 
@@ -73,13 +73,13 @@ public static class Base3264Encoding
 
         return type switch
         {
-            EncodingType.Base64             => Convert.ToBase64String(enc.GetBytes(input), Base64FormattingOptions.None),
-            EncodingType.Base64Url          => Base64Url.ToBase64ForUrlString(enc.GetBytes(input)),
-            EncodingType.Base32Url          => Base32Url.ToBase32String(enc.GetBytes(input)),
-            EncodingType.ZBase32            => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Encode(enc.GetBytes(input)),
+            EncodingType.Base64 => Convert.ToBase64String(enc.GetBytes(input), Base64FormattingOptions.None),
+            EncodingType.Base64Url => Base64Url.ToBase64ForUrlString(enc.GetBytes(input)),
+            EncodingType.Base32Url => Base32Url.ToBase32String(enc.GetBytes(input)),
+            EncodingType.ZBase32 => new Base32Url(false, false, true, Base32Url.ZBase32Alphabet).Encode(enc.GetBytes(input)),
             EncodingType.Base32LowProfanity => new Base32Url(false, true, true, Base32Url.Base32LowProfanityAlphabet).Encode(enc.GetBytes(input)),
-            EncodingType.Base32Crockford    => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Encode(enc.GetBytes(input)),
-            _                               => throw new NotImplementedException("Encoding type not implemented: " + type),
+            EncodingType.Base32Crockford => new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet).Encode(enc.GetBytes(input)),
+            _ => throw new NotImplementedException("Encoding type not implemented: " + type),
         };
     }
 
@@ -95,7 +95,7 @@ public static class Base3264Encoding
 
         return type switch
         {
-            EncodingType.Base64    => enc.GetString(Convert.FromBase64String(input)),
+            EncodingType.Base64 => enc.GetString(Convert.FromBase64String(input)),
             EncodingType.Base64Url => enc.GetString(Base64Url.FromBase64ForUrlString(input)),
             EncodingType.Base32Url => enc.GetString(Base32Url.FromBase32String(input)),
             EncodingType.ZBase32 => enc.GetString(

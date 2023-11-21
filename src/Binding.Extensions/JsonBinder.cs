@@ -126,7 +126,7 @@ public class JsonBinder : IJsonBinder
 
             // This produces a simple look ahead
             var zippedKeys = keys
-               .Zip(keys.Skip(1), (prev, current) => ( prev, current ));
+               .Zip(keys.Skip(1), (prev, current) => (prev, current));
 
             foreach (var (key, next) in zippedKeys)
             {

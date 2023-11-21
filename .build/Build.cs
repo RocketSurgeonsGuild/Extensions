@@ -20,6 +20,7 @@ using Serilog;
 [MSBuildVerbosityMapping]
 [NuGetVerbosityMapping]
 [ShutdownDotNetAfterServerBuild]
+[LocalBuildConventions]
 public partial class Pipeline : NukeBuild,
                                 ICanRestoreWithDotNetCore,
                                 ICanBuildWithDotNetCore,
@@ -27,10 +28,15 @@ public partial class Pipeline : NukeBuild,
                                 ICanPackWithDotNetCore,
                                 IHaveDataCollector,
                                 ICanClean,
+                                ICanLintStagedFiles,
+                                ICanDotNetFormat,
+                                ICanPrettier,
+                                IHavePublicApis,
                                 ICanUpdateReadme,
                                 IGenerateCodeCoverageReport,
                                 IGenerateCodeCoverageSummary,
                                 IGenerateCodeCoverageBadges,
+                                ICanRegenerateBuildConfiguration,
                                 IHaveConfiguration<Configuration>
 {
     /// <summary>
@@ -57,49 +63,9 @@ public partial class Pipeline : NukeBuild,
                                 .DependsOn(Clean);
 
     public Target Clean => _ => _.Inherit<ICanClean>(x => x.Clean);
+    public Target Lint => _ => _.Inherit<ICanLint>(x => x.Lint);
     public Target Restore => _ => _.Inherit<ICanRestoreWithDotNetCore>(x => x.CoreRestore);
     public Target Test => _ => _.Inherit<ICanTestWithDotNetCore>(x => x.CoreTest);
-
-    public Target BuildVersion => _ => _.Inherit<IHaveBuildVersion>(x => x.BuildVersion)
-                                        .Before(Default)
-                                        .Before(Clean);
-
-    public Target ShipApis => _ => _.Executes(
-        async () =>
-        {
-            foreach (var project in Solution.AllProjects.Where(z => z.HasPackageReference("Microsoft.CodeAnalysis.PublicApiAnalyzers")))
-            {
-                Log.Logger.Information(project.Name);
-                var dotnetFormat = DotnetTool.GetTool("dotnet-format");
-                DotNetTasks.DotNet($"format analyzers --diagnostics=RS0016", project.Directory);
-                await MarkShipped(project.Directory);
-            }
-
-            static async Task MarkShipped(AbsolutePath directory)
-            {
-                var shippedFilePath = directory / "PublicAPI.Shipped.txt";
-                var shipped = ( File.Exists(shippedFilePath) ? await File.ReadAllLinesAsync(shippedFilePath) : Array.Empty<string>() )
-                             .Where(z => z != "#nullable enable")
-                             .ToList();
-                var unshippedFilePath = directory / "PublicAPI.Unshipped.txt";
-                var unshipped = ( File.Exists(unshippedFilePath) ? await File.ReadAllLinesAsync(unshippedFilePath) : Array.Empty<string>() )
-                               .Where(z => z != "#nullable enable")
-                               .ToList();
-                Log.Logger.Information("Processing {Directory}", directory);
-
-                foreach (var item in unshipped)
-                {
-                    if (item is not { Length: > 0 }) continue;
-                    shipped.Add(item);
-                }
-
-                shipped.Sort();
-                shipped.Insert(0, "#nullable enable");
-                await File.WriteAllLinesAsync(shippedFilePath, shipped);
-                await File.WriteAllTextAsync(unshippedFilePath, "#nullable enable");
-            }
-        }
-    );
 
     [Solution(GenerateProjects = true)] private Solution Solution { get; } = null!;
     Nuke.Common.ProjectModel.Solution IHaveSolution.Solution => Solution;

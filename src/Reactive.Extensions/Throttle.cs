@@ -1,4 +1,4 @@
-﻿using System.Reactive.Concurrency;
+using System.Reactive.Concurrency;
 
 // ReSharper disable once CheckNamespace
 namespace System.Reactive.Linq;

@@ -1,4 +1,4 @@
-﻿#pragma warning disable RS0026
+#pragma warning disable RS0026
 namespace Rocket.Surgery.DependencyInjection;
 
 /// <summary>

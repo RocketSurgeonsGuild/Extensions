@@ -507,17 +507,17 @@ internal static class DataHelpers
                                                                 when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
                                                                 return literalExpressionSyntax.Token.ValueText;
                                                             case InvocationExpressionSyntax
-                                                                {
-                                                                    Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } }
-                                                                } invocationExpressionSyntax
+                                                            {
+                                                                Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } }
+                                                            } invocationExpressionSyntax
                                                                 when invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax
                                                                     identifierNameSyntax:
                                                                 return identifierNameSyntax.Identifier.Text;
                                                             case TypeOfExpressionSyntax typeOfExpressionSyntax:
-                                                            {
-                                                                var symbol = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type!;
-                                                                return symbol.ContainingNamespace.ToDisplayString();
-                                                            }
+                                                                {
+                                                                    var symbol = semanticModel.GetTypeInfo(typeOfExpressionSyntax.Type).Type!;
+                                                                    return symbol.ContainingNamespace.ToDisplayString();
+                                                                }
                                                             default:
                                                                 diagnostics.Add(
                                                                     Diagnostic.Create(Diagnostics.NamespaceMustBeAString, argument.GetLocation())
@@ -563,9 +563,9 @@ internal static class DataHelpers
                                                                   when literalExpressionSyntax.Token.IsKind(SyntaxKind.StringLiteralToken):
                                                                   return literalExpressionSyntax.Token.ValueText;
                                                               case InvocationExpressionSyntax
-                                                                  {
-                                                                      Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } }
-                                                                  } invocationExpressionSyntax
+                                                              {
+                                                                  Expression: IdentifierNameSyntax { Identifier: { Text: "nameof" } }
+                                                              } invocationExpressionSyntax
                                                                   when invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax
                                                                       identifierNameSyntax:
                                                                   return identifierNameSyntax.Identifier.Text;
