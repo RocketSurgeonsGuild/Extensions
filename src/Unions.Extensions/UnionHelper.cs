@@ -126,7 +126,7 @@ public static class UnionHelper
         return typeInfo.Assembly.DefinedTypes
                        .Where(typeInfo.IsAssignableFrom)
                        .Where(x => !x.IsAbstract)
-                       .Select(type => ( type, @enum: type.GetCustomAttribute<UnionAttribute>()?.Value! ))
+                       .Select(type => (type, @enum: type.GetCustomAttribute<UnionAttribute>()?.Value!))
                        .ToDictionary(
                             x => x.@enum,
                             x => x.type.AsType()
@@ -189,7 +189,7 @@ public static class UnionHelper
                              .Cast<object>()
                              .ToArray();
 
-            yield return ( enumType.GetTypeInfo(), rootType, types.Length == values.Length );
+            yield return (enumType.GetTypeInfo(), rootType, types.Length == values.Length);
         }
     }
 }

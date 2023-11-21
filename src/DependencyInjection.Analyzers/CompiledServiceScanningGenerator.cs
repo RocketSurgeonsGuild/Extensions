@@ -19,8 +19,8 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
         var syntaxProvider = context.SyntaxProvider.CreateSyntaxProvider(
             (node, _) => node is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax mae } ies
                       && mae.Name.Identifier.Text.EndsWith("ScanCompiled", StringComparison.Ordinal) && ies.ArgumentList.Arguments.Count is 1 or 2,
-            (syntaxContext, _) => ( expression: ( (InvocationExpressionSyntax)syntaxContext.Node ).ArgumentList.Arguments[0].Expression,
-                                    semanticModel: syntaxContext.SemanticModel )
+            (syntaxContext, _) => (expression: ( (InvocationExpressionSyntax)syntaxContext.Node ).ArgumentList.Arguments[0].Expression,
+                                    semanticModel: syntaxContext.SemanticModel)
         );
 
         var useAssemblyLoadContext = context.AnalyzerConfigOptionsProvider.Combine(context.CompilationProvider)
@@ -34,9 +34,9 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                                  }
                                              );
         // There is no way to post initialize here, as we have no idea if the AssemblyLoadContext will be available or not
-//        context.RegisterPostInitializationOutput(
-//            initializationContext => { initializationContext.AddSource("PartialCompiledServiceScanningExtensions.cs", staticScanPartialSourceText); }
-//        );
+        //        context.RegisterPostInitializationOutput(
+        //            initializationContext => { initializationContext.AddSource("PartialCompiledServiceScanningExtensions.cs", staticScanPartialSourceText); }
+        //        );
 
         context.RegisterImplementationSourceOutput(
             useAssemblyLoadContext.Combine(syntaxProvider.Collect()),
@@ -65,7 +65,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                 var (_, compilation) = tuple;
                                 var (useAssemblyLoad, parseOptions) = tuple.Left;
                                 // This is required because post init cannpt tell us if AssemblyLoadContext is available or not.
-                                return ( useAssemblyLoad, parseOptions, compilation: compilation
+                                return (useAssemblyLoad, parseOptions, compilation: compilation
                                             .AddSyntaxTrees(
                                                  CSharpSyntaxTree.ParseText(
                                                      useAssemblyLoad ? StaticScanSourceText : StaticScanSourceTextWithAssemblyLoadContext, parseOptions,
@@ -75,13 +75,13 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                                      useAssemblyLoad ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext, parseOptions,
                                                      "PopulateExtensions.cs", cancellationToken: token
                                                  )
-                                             ) );
+                                             ));
                             }
                         )
                 )
                .Select(
-                    (tuple, token) => ( tuple.Left.expression, tuple.Right.compilation,
-                                        useAssemblyLoadContext: tuple.Right.useAssemblyLoad, tuple.Right.parseOptions )
+                    (tuple, token) => (tuple.Left.expression, tuple.Right.compilation,
+                                        useAssemblyLoadContext: tuple.Right.useAssemblyLoad, tuple.Right.parseOptions)
                 )
                .Select(
                     static (tuple, token) =>
@@ -143,7 +143,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                 serviceTypes,
                                 classFilter,
                                 lifetimeExpressionSyntax
-                            ) );
+                            ));
                     }
                 )
                .Collect()
@@ -151,8 +151,8 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                     (array, token) =>
                     {
                         var d = array.FirstOrDefault();
-                        return ( d.context.compilation, d.context.expression, d.context.useAssemblyLoadContext, d.context.parseOptions,
-                                 d.data.diagnostics, groups: array.GroupBy(z => z.data.lineNumber, z => z.data) );
+                        return (d.context.compilation, d.context.expression, d.context.useAssemblyLoadContext, d.context.parseOptions,
+                                 d.data.diagnostics, groups: array.GroupBy(z => z.data.lineNumber, z => z.data));
                     }
                 )
            ,
@@ -217,7 +217,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                     useAssemblyLoadContext
                 );
 
-                blocks.Add(( filePath, memberName, localBlock ));
+                blocks.Add((filePath, memberName, localBlock));
             }
 
             static SwitchSectionSyntax createNestedSwitchSections<T>(

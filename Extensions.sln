@@ -1,25 +1,22 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29006.145
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8FFDF555-DB50-45F9-9A2D-6410F39151C3}"
 	ProjectSection(SolutionItems) = preProject
-		src\Directory.Build.props = src\Directory.Build.props
-		src\Directory.Build.targets = src\Directory.Build.targets
-		src\.editorconfig = src\.editorconfig
+		src/Directory.Build.props = src/Directory.Build.props
+		src/Directory.Build.targets = src/Directory.Build.targets
+		src/.editorconfig = src/.editorconfig
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DF33E0FB-9790-4654-B60F-8AB22E0CC3D1}"
 	ProjectSection(SolutionItems) = preProject
-		test\Directory.Build.props = test\Directory.Build.props
-		test\Directory.Build.targets = test\Directory.Build.targets
-		test\.editorconfig = test\.editorconfig
+		test/Directory.Build.props = test/Directory.Build.props
+		test/Directory.Build.targets = test/Directory.Build.targets
+		test/.editorconfig = test/.editorconfig
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = ".build", ".build\.build.csproj", "{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{E3DCB78E-EE06-4EA3-88AC-762D8910387C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.Extensions", "src\Extensions\Rocket.Surgery.Extensions.csproj", "{00701530-9209-4B25-8526-06B6A11A97BC}"
 EndProject
@@ -57,6 +54,61 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.DependencyIn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.DependencyInjection.Analyzers.Tests", "test\DependencyInjection.Analyzers.Tests\Rocket.Surgery.DependencyInjection.Analyzers.Tests.csproj", "{2E4A2D9D-D43C-4185-8F68-7F92D5C5D5EA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{545CF2DB-935E-4852-A509-1BEE3C3E99B1}"
+	ProjectSection(SolutionItems) = preProject
+		.config/dotnet-tools.json = .config/dotnet-tools.json
+		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		Directory.Packages.support.props = Directory.Packages.support.props
+		Directory.Build.targets = Directory.Build.targets
+		.editorconfig = .editorconfig
+		build.cmd = build.cmd
+		build.ps1 = build.ps1
+		build.sh = build.sh
+		GitReleaseManager.yaml = GitReleaseManager.yaml
+		.appveyor.yml = .appveyor.yml
+		.codecov.yml = .codecov.yml
+		GitVersion.yml = GitVersion.yml
+		LICENSE = LICENSE
+		Readme.md = Readme.md
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.gitmodules = .gitmodules
+		.prettierignore = .prettierignore
+		.prettierrc = .prettierrc
+		.lintstagedrc.js = .lintstagedrc.js
+		NuGet.config = NuGet.config
+		package.json = package.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{821B4039-6E5F-43B4-A803-8B4A75D25A0A}"
+	ProjectSection(SolutionItems) = preProject
+		.github/labels.yml = .github/labels.yml
+		.github/release.yml = .github/release.yml
+		.github/renovate.json = .github/renovate.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{F3010393-CBDF-4730-8D01-EF171BB787CF}"
+	ProjectSection(SolutionItems) = preProject
+		.github/workflows/ci-ignore.yml = .github/workflows/ci-ignore.yml
+		.github/workflows/ci.yml = .github/workflows/ci.yml
+		.github/workflows/close-milestone.yml = .github/workflows/close-milestone.yml
+		.github/workflows/dependabot-merge.yml = .github/workflows/dependabot-merge.yml
+		.github/workflows/draft-release.yml = .github/workflows/draft-release.yml
+		.github/workflows/sync-labels.yml = .github/workflows/sync-labels.yml
+		.github/workflows/update-milestone.yml = .github/workflows/update-milestone.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".husky", ".husky", "{660E562C-E0E1-41D5-98A1-C816140566C8}"
+	ProjectSection(SolutionItems) = preProject
+		.husky/pre-commit = .husky/pre-commit
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{6ADAB0E3-4082-4180-8D29-CDBC9A3E9784}"
+	ProjectSection(SolutionItems) = preProject
+		.vscode/settings.json = .vscode/settings.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,14 +121,10 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Debug|x64.Build.0 = Debug|Any CPU
 		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Debug|x86.Build.0 = Debug|Any CPU
 		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Release|x64.ActiveCfg = Release|Any CPU
-		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Release|x64.Build.0 = Release|Any CPU
 		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Release|x86.ActiveCfg = Release|Any CPU
-		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610}.Release|x86.Build.0 = Release|Any CPU
 		{00701530-9209-4B25-8526-06B6A11A97BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{00701530-9209-4B25-8526-06B6A11A97BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00701530-9209-4B25-8526-06B6A11A97BC}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -298,7 +346,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610} = {E3DCB78E-EE06-4EA3-88AC-762D8910387C}
+		{55EFAE2F-A7CA-4917-A381-4A6EF5E79610} = {545CF2DB-935E-4852-A509-1BEE3C3E99B1}
 		{00701530-9209-4B25-8526-06B6A11A97BC} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{6AB743E2-9E77-4A4A-A75D-3C923A2307C4} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{F77F1BB8-CFA9-422E-9674-8277FE106C6C} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
@@ -317,6 +365,10 @@ Global
 		{A2918D9D-7FEA-4D3F-BB2D-54E72B6D9721} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{5C84221B-71E9-4EE6-A86B-AB3DD5B1B199} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{2E4A2D9D-D43C-4185-8F68-7F92D5C5D5EA} = {DF33E0FB-9790-4654-B60F-8AB22E0CC3D1}
+		{821B4039-6E5F-43B4-A803-8B4A75D25A0A} = {545CF2DB-935E-4852-A509-1BEE3C3E99B1}
+		{F3010393-CBDF-4730-8D01-EF171BB787CF} = {821B4039-6E5F-43B4-A803-8B4A75D25A0A}
+		{660E562C-E0E1-41D5-98A1-C816140566C8} = {545CF2DB-935E-4852-A509-1BEE3C3E99B1}
+		{6ADAB0E3-4082-4180-8D29-CDBC9A3E9784} = {545CF2DB-935E-4852-A509-1BEE3C3E99B1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {439897C2-CCBD-44FE-B2DC-A3E4670ADA59}
