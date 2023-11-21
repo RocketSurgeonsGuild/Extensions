@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Checkout
         if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: '${{ github.event.pull_request.head.repo.full_name }}'
           ref: '${{ github.event.pull_request.head.ref }}'
@@ -52,12 +52,12 @@ jobs:
           fetch-depth: '0'
       - name: 🔨 Use .NET Core 6.0 SDK
         if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
       - name: 🔨 Use .NET Core 8.0 SDK
         if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
       - name: 🎁 dotnet tool restore
