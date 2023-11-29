@@ -42,7 +42,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
         uses: actions/checkout@v4
         with:
           repository: '${{ github.event.pull_request.head.repo.full_name }}'
@@ -50,32 +49,34 @@ jobs:
           token: '${{ secrets.RSG_BOT_TOKEN }}'
           clean: 'false'
           fetch-depth: '0'
+      - name: Get Head Commit Message
+        id: commit-message
+        run: |
+          echo "message=$(git show -s --format=%s)" >> "$GITHUB_OUTPUT"
+      - name: npm ci
+        run: |
+          npm ci
       - name: 🔨 Use .NET Core 6.0 SDK
-        if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
       - name: 🔨 Use .NET Core 8.0 SDK
-        if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
       - name: 🎁 dotnet tool restore
-        if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
           dotnet tool restore
       - name: Regenerate Build Configurations
         id: regenerateBuildConfigurations
-        if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
           dotnet nuke RegenerateBuildConfigurations --skip
       - name: Lint Staged
         id: lintStaged
-        if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
         run: |
           dotnet nuke LintStaged --skip
       - name: Add & Commit
-        if: github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
+        if: "'${{ steps.commit-message.outputs.message }}' == 'Automatically linting code'"
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'Automatically linting code'
