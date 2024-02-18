@@ -14,162 +14,13 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 [Generator]
 public class CompiledServiceScanningGenerator : IIncrementalGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
-    {
-        var syntaxProvider = context.SyntaxProvider.CreateSyntaxProvider(
-            (node, _) => node is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax mae } ies
-                      && mae.Name.Identifier.Text.EndsWith("ScanCompiled", StringComparison.Ordinal) && ies.ArgumentList.Arguments.Count is 1 or 2,
-            (syntaxContext, _) => (expression: ( (InvocationExpressionSyntax)syntaxContext.Node ).ArgumentList.Arguments[0].Expression,
-                                    semanticModel: syntaxContext.SemanticModel)
-        );
-
-        var useAssemblyLoadContext = context.AnalyzerConfigOptionsProvider.Combine(context.CompilationProvider)
-                                            .Select(
-                                                 (tuple, _) =>
-                                                 {
-                                                     var (provider, compilation) = tuple;
-                                                     return provider.GlobalOptions.TryGetValue("compiled_scan_assembly_load", out var v)
-                                                         ? v.Equals("true", StringComparison.OrdinalIgnoreCase)
-                                                         : compilation.GetTypeByMetadataName("System.Runtime.Loader.AssemblyLoadContext") is null;
-                                                 }
-                                             );
-        // There is no way to post initialize here, as we have no idea if the AssemblyLoadContext will be available or not
-        //        context.RegisterPostInitializationOutput(
-        //            initializationContext => { initializationContext.AddSource("PartialCompiledServiceScanningExtensions.cs", staticScanPartialSourceText); }
-        //        );
-
-        context.RegisterImplementationSourceOutput(
-            useAssemblyLoadContext.Combine(syntaxProvider.Collect()),
-            static (context, tuple) =>
-            {
-                if (tuple.Right.Length > 0)
-                {
-                    context.AddSource("CompiledServiceScanningExtensions.cs", tuple.Left ? StaticScanSourceText : StaticScanSourceTextWithAssemblyLoadContext);
-                    return;
-                }
-
-                context.AddSource("PopulateExtensions.cs", tuple.Left ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext);
-            }
-        );
-
-
-        context.RegisterImplementationSourceOutput(
-            syntaxProvider
-               .Combine(
-                    useAssemblyLoadContext
-                       .Combine(context.ParseOptionsProvider.Select((options, token) => (CSharpParseOptions)options))
-                       .Combine(context.CompilationProvider)
-                       .Select(
-                            (tuple, token) =>
-                            {
-                                var (_, compilation) = tuple;
-                                var (useAssemblyLoad, parseOptions) = tuple.Left;
-                                // This is required because post init cannpt tell us if AssemblyLoadContext is available or not.
-                                return (useAssemblyLoad, parseOptions, compilation: compilation
-                                            .AddSyntaxTrees(
-                                                 CSharpSyntaxTree.ParseText(
-                                                     useAssemblyLoad ? StaticScanSourceText : StaticScanSourceTextWithAssemblyLoadContext, parseOptions,
-                                                     "CompiledServiceScanningExtensions.cs", cancellationToken: token
-                                                 ),
-                                                 CSharpSyntaxTree.ParseText(
-                                                     useAssemblyLoad ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext, parseOptions,
-                                                     "PopulateExtensions.cs", cancellationToken: token
-                                                 )
-                                             ));
-                            }
-                        )
-                )
-               .Select(
-                    (tuple, token) => (tuple.Left.expression, tuple.Right.compilation,
-                                        useAssemblyLoadContext: tuple.Right.useAssemblyLoad, tuple.Right.parseOptions)
-                )
-               .Select(
-                    static (tuple, token) =>
-                    {
-                        var (rootExpression, compilation, useAssemblyLoadContext, parseOptions) = tuple;
-
-                        var assemblies = new List<IAssemblyDescriptor>();
-                        var typeFilters = new List<ITypeFilterDescriptor>();
-                        var serviceTypes = new List<IServiceTypeDescriptor>();
-                        var diagnostics = new List<Diagnostic>();
-                        var classFilter = ClassFilter.All;
-                        var lifetimeExpressionSyntax =
-                            MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                IdentifierName("ServiceLifetime"),
-                                IdentifierName("Transient")
-                            );
-
-                        DataHelpers.HandleInvocationExpressionSyntax(
-                            diagnostics,
-                            compilation.GetSemanticModel(tuple.expression.SyntaxTree),
-                            rootExpression,
-                            assemblies,
-                            typeFilters,
-                            serviceTypes,
-                            compilation.ObjectType,
-                            ref classFilter,
-                            ref lifetimeExpressionSyntax,
-                            token
-                        );
-
-                        var containingMethod = rootExpression.Ancestors().OfType<MethodDeclarationSyntax>().First();
-
-                        var methodCallSyntax = rootExpression.Ancestors()
-                                                             .OfType<InvocationExpressionSyntax>()
-                                                             .First(
-                                                                  ies => ies.Expression is MemberAccessExpressionSyntax mae
-                                                                      && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
-                                                              );
-
-
-                        if (serviceTypes.Count == 0)
-                        {
-                            serviceTypes.Add(new SelfServiceTypeDescriptor());
-                        }
-
-                        return (
-                            context: tuple,
-                            data: (
-                                diagnostics,
-                                rootExpression,
-                                filePath: rootExpression.SyntaxTree.FilePath,
-                                containingMethod: containingMethod.Identifier.Text,
-                                // line numbers here are 1 based
-                                lineNumber: methodCallSyntax.SyntaxTree.GetText(token).Lines.First(z => z.Span.IntersectsWith(methodCallSyntax.Span)).LineNumber
-                                          + 1,
-                                assemblies,
-                                typeFilters,
-                                serviceTypes,
-                                classFilter,
-                                lifetimeExpressionSyntax
-                            ));
-                    }
-                )
-               .Collect()
-               .Select(
-                    (array, token) =>
-                    {
-                        var d = array.FirstOrDefault();
-                        return (d.context.compilation, d.context.expression, d.context.useAssemblyLoadContext, d.context.parseOptions,
-                                 d.data.diagnostics, groups: array.GroupBy(z => z.data.lineNumber, z => z.data));
-                    }
-                )
-           ,
-            static (context, tuple) =>
-            {
-                if (tuple.diagnostics == null) return;
-                Execute(
-                    context, tuple.compilation, tuple.expression, tuple.useAssemblyLoadContext, tuple.parseOptions, tuple.diagnostics,
-                    tuple.groups
-                );
-            }
-        );
-    }
-
     private static void Execute(
-        SourceProductionContext context, Compilation compilation, ExpressionSyntax expression, bool useAssemblyLoadContext,
-        ParseOptions parseOptions, List<Diagnostic> diagnostics,
+        SourceProductionContext context,
+        Compilation compilation,
+        ExpressionSyntax expression,
+        bool useAssemblyLoadContext,
+        ParseOptions parseOptions,
+        List<Diagnostic> diagnostics,
         IEnumerable<IGrouping<int, (List<Diagnostic> diagnostics, ExpressionSyntax rootExpression, string filePath, string containingMethod, int lineNumber,
             List<IAssemblyDescriptor> assemblies, List<ITypeFilterDescriptor> typeFilters, List<IServiceTypeDescriptor> serviceTypes, ClassFilter classFilter,
             MemberAccessExpressionSyntax lifetimeExpressionSyntax)>> groups
@@ -191,16 +42,17 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
         var serviceCollectionName = IdentifierName("services");
         var lineNumberIdentifier = IdentifierName("lineNumber");
         var block = Block();
-#pragma warning disable RS1024
+        #pragma warning disable RS1024
         var privateAssemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
-#pragma warning restore RS1024
+        #pragma warning restore RS1024
 
         var switchStatement = SwitchStatement(lineNumberIdentifier);
         foreach (var lineGrouping in groups)
         {
             var innerBlock = Block();
             var blocks = new List<(string filePath, string memberName, BlockSyntax block)>();
-            foreach (var (_, _, filePath, memberName, _, assemblies, typeFilters, serviceTypes, classFilter, lifetime) in lineGrouping)
+            foreach (( _, _, var filePath, var memberName, _, var assemblies, var typeFilters, var serviceTypes, var classFilter,
+                       var lifetime ) in lineGrouping)
             {
                 var types = NarrowListOfTypes(assemblies, allNamedTypes, compilation, classFilter, typeFilters);
 
@@ -217,7 +69,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                     useAssemblyLoadContext
                 );
 
-                blocks.Add((filePath, memberName, localBlock));
+                blocks.Add(( filePath, memberName, localBlock ));
             }
 
             static SwitchSectionSyntax createNestedSwitchSections<T>(
@@ -230,7 +82,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
             {
                 if (blocks.Count == 1)
                 {
-                    var (_, _, localBlock) = blocks[0];
+                    ( _, _, var localBlock ) = blocks[0];
                     return SwitchSection()
                           .AddStatements(localBlock.Statements.ToArray())
                           .AddStatements(BreakStatement());
@@ -301,11 +153,12 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
 
 
         {
-            var root = CSharpSyntaxTree.ParseText(
-                                            useAssemblyLoadContext ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext,
-                                            (CSharpParseOptions)parseOptions
-                                        )
-                                       .GetCompilationUnitRoot();
+            var root = CSharpSyntaxTree
+                      .ParseText(
+                           useAssemblyLoadContext ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext,
+                           (CSharpParseOptions)parseOptions
+                       )
+                      .GetCompilationUnitRoot();
             var method = root.DescendantNodes().OfType<MethodDeclarationSyntax>().Single();
 
             var newMethod = method
@@ -317,7 +170,8 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
             {
                 var @class = root.DescendantNodes().OfType<ClassDeclarationSyntax>().Single();
                 var privateAssemblyNodes = privateAssemblies
-                   .SelectMany(StatementGeneration.AssemblyDeclaration);
+                                          .OrderBy(z => z.ToDisplayString())
+                                          .SelectMany(StatementGeneration.AssemblyDeclaration);
                 root = root.ReplaceNode(@class, @class.AddMembers(privateAssemblyNodes.ToArray()));
             }
 
@@ -346,11 +200,11 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
         var serviceDescriptorAttribute = compilation.GetTypeByMetadataName("Scrutor.ServiceDescriptorAttribute")!;
         var serviceRegistrationAttribute = compilation.GetTypeByMetadataName("Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute")!;
 
-        foreach (var type in types)
+        foreach (var type in types.OrderBy(z => z.ToDisplayString()))
         {
-#pragma warning disable RS1024
+            #pragma warning disable RS1024
             var emittedTypes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
-#pragma warning restore RS1024
+            #pragma warning restore RS1024
             var typeIsOpenGeneric = type.IsOpenGenericType();
             if (!compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
             {
@@ -359,16 +213,17 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
 
             if (usingAttributes)
             {
-                var attributeDataElements = type.GetAttributes()
-                                                .Where(
-                                                     attribute => attribute.AttributeClass != null &&
-                                                                  ( SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceDescriptorAttribute)
-                                                                  ||
-                                                                    SymbolEqualityComparer.Default.Equals(
-                                                                        attribute.AttributeClass, serviceRegistrationAttribute
-                                                                    ) )
-                                                 )
-                                                .ToArray();
+                var attributeDataElements = type
+                                           .GetAttributes()
+                                           .Where(
+                                                attribute => attribute.AttributeClass != null
+                                                 && ( SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceDescriptorAttribute)
+                                                     || SymbolEqualityComparer.Default.Equals(
+                                                            attribute.AttributeClass,
+                                                            serviceRegistrationAttribute
+                                                        ) )
+                                            )
+                                           .ToArray();
 
                 var duplicates = attributeDataElements
                                 .Where(
@@ -435,11 +290,14 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                         }
                     }
 
-                    if (attribute.ConstructorArguments.Length == 0 ||
-                        ( isServiceRegistration && attribute.ConstructorArguments.Length == 1
-                                                && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Enum ) ||
-                        ( isServiceDescriptor && attribute.ConstructorArguments.Length == 2 && attribute.ConstructorArguments[1].Kind == TypedConstantKind.Enum
-                       && attribute.ConstructorArguments[0].Value == null ))
+                    if (attribute.ConstructorArguments.Length == 0
+                     || ( isServiceRegistration
+                         && attribute.ConstructorArguments.Length == 1
+                         && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Enum )
+                     || ( isServiceDescriptor
+                         && attribute.ConstructorArguments.Length == 2
+                         && attribute.ConstructorArguments[1].Kind == TypedConstantKind.Enum
+                         && attribute.ConstructorArguments[0].Value == null ))
                     {
                         if (!emittedTypes.Contains(type))
                         {
@@ -580,7 +438,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
             {
                 var name = $"I{type.Name}";
                 var @interface = type.AllInterfaces.FirstOrDefault(z => z.Name == name);
-                if (@interface is not null && !emittedTypes.Contains(@interface))
+                if (@interface is { } && !emittedTypes.Contains(@interface))
                 {
                     innerBlock = innerBlock.AddStatements(
                         ExpressionStatement(
@@ -706,23 +564,25 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
             var assemblyReferences = assemblies
                                     .OfType<CompiledAssemblyDependenciesDescriptor>()
                                     .SelectMany(
-                                         descriptor => compilation.References
-                                                                  .Select(compilation.GetAssemblyOrModuleSymbol)
-                                                                  .SelectMany(
-                                                                       z => z is IAssemblySymbol assemblySymbol ? assemblySymbol.Modules :
-                                                                           z is IModuleSymbol moduleSymbol ? new[] { moduleSymbol } :
-                                                                           Array.Empty<IModuleSymbol>()
+                                         descriptor => compilation
+                                                      .References
+                                                      .Select(compilation.GetAssemblyOrModuleSymbol)
+                                                      .SelectMany(
+                                                           z => z is IAssemblySymbol assemblySymbol ? assemblySymbol.Modules :
+                                                               z is IModuleSymbol moduleSymbol      ? new[] { moduleSymbol, } :
+                                                                                                      Array.Empty<IModuleSymbol>()
+                                                       )
+                                                      .Where(
+                                                           module => module.ReferencedAssemblySymbols.Any(
+                                                               reference =>
+                                                                   SymbolEqualityComparer.Default.Equals(
+                                                                       descriptor.TypeFromAssembly.ContainingAssembly,
+                                                                       reference
                                                                    )
-                                                                  .Where(
-                                                                       module => module.ReferencedAssemblySymbols.Any(
-                                                                           reference =>
-                                                                               SymbolEqualityComparer.Default.Equals(
-                                                                                   descriptor.TypeFromAssembly.ContainingAssembly, reference
-                                                                               )
-                                                                       )
-                                                                   )
-                                                                  .Select(z => z.ContainingAssembly)
-                                                                  .Distinct(SymbolEqualityComparer.Default)
+                                                           )
+                                                       )
+                                                      .Select(z => z.ContainingAssembly)
+                                                      .Distinct(SymbolEqualityComparer.Default)
                                      )
                                     .ToArray();
 
@@ -771,31 +631,33 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
         foreach (var filter in typeFilters.OfType<NamespaceFilterDescriptor>())
         {
             types = filter.Filter switch
-            {
-                NamespaceFilter.Exact => types.RemoveAll(toSymbol => filter.Namespaces.All(ns => toSymbol.ContainingNamespace.ToDisplayString() != ns)),
-                NamespaceFilter.In => types.RemoveAll(
-                    toSymbol => !filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))
-                ),
-                NamespaceFilter.NotIn => types.RemoveAll(
-                    toSymbol => filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))
-                ),
-                _ => types
-            };
+                    {
+                        NamespaceFilter.Exact => types.RemoveAll(toSymbol => filter.Namespaces.All(ns => toSymbol.ContainingNamespace.ToDisplayString() != ns)),
+                        NamespaceFilter.In => types.RemoveAll(
+                            toSymbol => !filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))
+                        ),
+                        NamespaceFilter.NotIn => types.RemoveAll(
+                            toSymbol => filter.Namespaces.Any(n => toSymbol.ContainingNamespace.ToDisplayString().StartsWith(n, StringComparison.Ordinal))
+                        ),
+                        _ => types,
+                    };
         }
 
         foreach (var filter in typeFilters.OfType<NameFilterDescriptor>())
         {
             types = filter.Filter switch
-            {
-                TextDirectionFilter.Contains => types.RemoveAll(toSymbol => !filter.Names.Any(name => toSymbol.Name.Contains(name) && toSymbol.Arity == 0)),
-                TextDirectionFilter.StartsWith => types.RemoveAll(
-                    toSymbol => !filter.Names.Any(name => toSymbol.Name.StartsWith(name, StringComparison.Ordinal) && toSymbol.Arity == 0)
-                ),
-                TextDirectionFilter.EndsWith => types.RemoveAll(
-                    toSymbol => !filter.Names.Any(name => toSymbol.Name.EndsWith(name, StringComparison.Ordinal) && toSymbol.Arity == 0)
-                ),
-                _ => types
-            };
+                    {
+                        TextDirectionFilter.Contains => types.RemoveAll(
+                            toSymbol => !filter.Names.Any(name => toSymbol.Name.Contains(name) && toSymbol.Arity == 0)
+                        ),
+                        TextDirectionFilter.StartsWith => types.RemoveAll(
+                            toSymbol => !filter.Names.Any(name => toSymbol.Name.StartsWith(name, StringComparison.Ordinal) && toSymbol.Arity == 0)
+                        ),
+                        TextDirectionFilter.EndsWith => types.RemoveAll(
+                            toSymbol => !filter.Names.Any(name => toSymbol.Name.EndsWith(name, StringComparison.Ordinal) && toSymbol.Arity == 0)
+                        ),
+                        _ => types,
+                    };
         }
 
         return types;
@@ -951,4 +813,168 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
 }
 #pragma warning restore CS0436
 ";
+
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        var syntaxProvider = context.SyntaxProvider.CreateSyntaxProvider(
+            (node, _) => node is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax mae, } ies
+             && mae.Name.Identifier.Text.EndsWith("ScanCompiled", StringComparison.Ordinal)
+             && ies.ArgumentList.Arguments.Count is 1 or 2,
+            (syntaxContext, _) => ( expression: ( (InvocationExpressionSyntax)syntaxContext.Node ).ArgumentList.Arguments[0].Expression,
+                                    semanticModel: syntaxContext.SemanticModel )
+        );
+
+        var useAssemblyLoadContext = context
+                                    .AnalyzerConfigOptionsProvider.Combine(context.CompilationProvider)
+                                    .Select(
+                                         (tuple, _) =>
+                                         {
+                                             ( var provider, var compilation ) = tuple;
+                                             return provider.GlobalOptions.TryGetValue("compiled_scan_assembly_load", out var v)
+                                                 ? v.Equals("true", StringComparison.OrdinalIgnoreCase)
+                                                 : compilation.GetTypeByMetadataName("System.Runtime.Loader.AssemblyLoadContext") is null;
+                                         }
+                                     );
+        // There is no way to post initialize here, as we have no idea if the AssemblyLoadContext will be available or not
+        //        context.RegisterPostInitializationOutput(
+        //            initializationContext => { initializationContext.AddSource("PartialCompiledServiceScanningExtensions.cs", staticScanPartialSourceText); }
+        //        );
+
+        context.RegisterImplementationSourceOutput(
+            useAssemblyLoadContext.Combine(syntaxProvider.Collect()),
+            static (context, tuple) =>
+            {
+                if (tuple.Right.Length > 0)
+                {
+                    context.AddSource("CompiledServiceScanningExtensions.cs", tuple.Left ? StaticScanSourceText : StaticScanSourceTextWithAssemblyLoadContext);
+                    return;
+                }
+
+                context.AddSource("PopulateExtensions.cs", tuple.Left ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext);
+            }
+        );
+
+
+        context.RegisterImplementationSourceOutput(
+            syntaxProvider
+               .Combine(
+                    useAssemblyLoadContext
+                       .Combine(context.ParseOptionsProvider.Select((options, token) => (CSharpParseOptions)options))
+                       .Combine(context.CompilationProvider)
+                       .Select(
+                            (tuple, token) =>
+                            {
+                                ( _, var compilation ) = tuple;
+                                ( var useAssemblyLoad, var parseOptions ) = tuple.Left;
+                                // This is required because post init cannpt tell us if AssemblyLoadContext is available or not.
+                                return ( useAssemblyLoad, parseOptions, compilation: compilation
+                                            .AddSyntaxTrees(
+                                                 CSharpSyntaxTree.ParseText(
+                                                     useAssemblyLoad ? StaticScanSourceText : StaticScanSourceTextWithAssemblyLoadContext,
+                                                     parseOptions,
+                                                     "CompiledServiceScanningExtensions.cs",
+                                                     cancellationToken: token
+                                                 ),
+                                                 CSharpSyntaxTree.ParseText(
+                                                     useAssemblyLoad ? PopulateSourceText : PopulateSourceTextWithAssemblyLoadContext,
+                                                     parseOptions,
+                                                     "PopulateExtensions.cs",
+                                                     cancellationToken: token
+                                                 )
+                                             ) );
+                            }
+                        )
+                )
+               .Select(
+                    (tuple, token) => ( tuple.Left.expression, tuple.Right.compilation,
+                                        useAssemblyLoadContext: tuple.Right.useAssemblyLoad, tuple.Right.parseOptions )
+                )
+               .Select(
+                    static (tuple, token) =>
+                    {
+                        ( var rootExpression, var compilation, var useAssemblyLoadContext, var parseOptions ) = tuple;
+
+                        var assemblies = new List<IAssemblyDescriptor>();
+                        var typeFilters = new List<ITypeFilterDescriptor>();
+                        var serviceTypes = new List<IServiceTypeDescriptor>();
+                        var diagnostics = new List<Diagnostic>();
+                        var classFilter = ClassFilter.All;
+                        var lifetimeExpressionSyntax =
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("ServiceLifetime"),
+                                IdentifierName("Transient")
+                            );
+
+                        DataHelpers.HandleInvocationExpressionSyntax(
+                            diagnostics,
+                            compilation.GetSemanticModel(tuple.expression.SyntaxTree),
+                            rootExpression,
+                            assemblies,
+                            typeFilters,
+                            serviceTypes,
+                            compilation.ObjectType,
+                            ref classFilter,
+                            ref lifetimeExpressionSyntax,
+                            token
+                        );
+
+                        var containingMethod = rootExpression.Ancestors().OfType<MethodDeclarationSyntax>().First();
+
+                        var methodCallSyntax = rootExpression
+                                              .Ancestors()
+                                              .OfType<InvocationExpressionSyntax>()
+                                              .First(
+                                                   ies => ies.Expression is MemberAccessExpressionSyntax mae
+                                                    && mae.Name.ToString().EndsWith("ScanCompiled", StringComparison.Ordinal)
+                                               );
+
+
+                        if (serviceTypes.Count == 0)
+                        {
+                            serviceTypes.Add(new SelfServiceTypeDescriptor());
+                        }
+
+                        return (
+                            context: tuple,
+                            data: (
+                                diagnostics,
+                                rootExpression,
+                                filePath: rootExpression.SyntaxTree.FilePath,
+                                containingMethod: containingMethod.Identifier.Text,
+                                // line numbers here are 1 based
+                                lineNumber: methodCallSyntax.SyntaxTree.GetText(token).Lines.First(z => z.Span.IntersectsWith(methodCallSyntax.Span)).LineNumber
+                              + 1,
+                                assemblies,
+                                typeFilters,
+                                serviceTypes,
+                                classFilter,
+                                lifetimeExpressionSyntax
+                            ) );
+                    }
+                )
+               .Collect()
+               .Select(
+                    (array, token) =>
+                    {
+                        var d = array.FirstOrDefault();
+                        return ( d.context.compilation, d.context.expression, d.context.useAssemblyLoadContext, d.context.parseOptions,
+                                 d.data.diagnostics, groups: array.GroupBy(z => z.data.lineNumber, z => z.data) );
+                    }
+                ),
+            static (context, tuple) =>
+            {
+                if (tuple.diagnostics == null) return;
+                Execute(
+                    context,
+                    tuple.compilation,
+                    tuple.expression,
+                    tuple.useAssemblyLoadContext,
+                    tuple.parseOptions,
+                    tuple.diagnostics,
+                    tuple.groups
+                );
+            }
+        );
+    }
 }

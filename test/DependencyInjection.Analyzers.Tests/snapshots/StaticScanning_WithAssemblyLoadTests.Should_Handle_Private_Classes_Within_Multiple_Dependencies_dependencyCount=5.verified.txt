@@ -1,0 +1,60 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  GlobalOptions: {
+    compiled_scan_assembly_load: true
+  },
+  ParseOptions: {
+    LanguageVersion: CSharp10,
+    DocumentationMode: Parse
+  },
+  References: [
+    <in-memory assembly>,
+    <in-memory assembly>,
+    <in-memory assembly>,
+    <in-memory assembly>,
+    <in-memory assembly>,
+    <in-memory assembly>,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    Scrutor.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  Services: [
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationType: Dependency1Project.Service0
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationType: Dependency1Project.Service1
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationType: Dependency1Project.Service2
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationType: Dependency1Project.Service3
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationType: Dependency1Project.Service4
+    }
+  ]
+}

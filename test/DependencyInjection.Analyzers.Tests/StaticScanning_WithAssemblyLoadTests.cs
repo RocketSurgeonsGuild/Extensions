@@ -1,32 +1,20 @@
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Rocket.Surgery.DependencyInjection.Analyzers.Tests.Helpers;
-using Xunit;
+using Rocket.Surgery.Extensions.Testing.SourceGenerators;
 using Xunit.Abstractions;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
-public class StaticScanning_WithAssemblyLoadTests : GeneratorTest
+public class StaticScanning_WithAssemblyLoadTests(ITestOutputHelper testOutputHelper) : GeneratorTest(testOutputHelper, true)
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public StaticScanning_WithAssemblyLoadTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper, LogLevel.Trace)
-    {
-        _testOutputHelper = testOutputHelper;
-        WithGenerator<CompiledServiceScanningGenerator>();
-        IgnoreOutputFile("CompiledServiceScanningExtensions.cs");
-        AddGlobalOption("compiled_scan_assembly_load", "true");
-    }
-
     [Fact]
     public async Task Should_Handle_Public_Types()
     {
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -57,55 +45,24 @@ public static class Program {
     }
 }
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 20:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(Service), typeof(Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<Service>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Equal(2, services.Count());
-        Assert.Equal(1, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Fact]
     public async Task Should_Handle_Private_Types()
     {
-        var dependencies = new List<CSharpCompilation>();
-        var rootGenerator = await new GeneratorTester("RootDependencyProject", AssemblyLoadContext, _testOutputHelper)
+        var dependencies = new List<GeneratorTestResults>();
+
+        var rootGenerator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(AssemblyLoadContext)
                                  .AddSources(
                                       @"
 namespace RootDependencyProject
@@ -114,13 +71,14 @@ namespace RootDependencyProject
     class Service : IService { }
 }
 "
-                                  ).GenerateAsync();
-        rootGenerator.AssertCompilationWasSuccessful();
-        rootGenerator.AssertGenerationWasSuccessful();
-        dependencies.Add(rootGenerator.FinalCompilation);
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
+        dependencies.Add(rootGenerator);
 
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 using RootDependencyProject;
@@ -146,59 +104,22 @@ namespace TestProject
     }
 }
 "
-        );
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 14:
-                    strategy.Apply(services, ServiceDescriptor.Describe(Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service""), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service""), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService), _ => _.GetRequiredService(Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service"")) as RootDependencyProject.IService, ServiceLifetime.Singleton));
-                    break;
-            }
-
-            return services;
-        }
-
-        private static AssemblyName _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull;
-        private static AssemblyName RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull => _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull ??= new AssemblyName(""RootDependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"");
-    }
-}
-#pragma warning restore CS0436
-";
-
-        AddCompilationReference(dependencies.ToArray());
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Equal(2, services.Count());
-        Assert.Equal(1, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Fact]
     public async Task Should_Handle_Public_Open_Generic_Types()
     {
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -228,54 +149,24 @@ public static class Program {
     }
 }
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 20:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(Service<>), typeof(Service<>), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService<>), typeof(Service<>), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Equal(2, services.Count());
-        Assert.Equal(0, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(2, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Fact]
     public async Task Should_Handle_Private_Open_Generic_Types()
     {
-        var dependencies = new List<CSharpCompilation>();
-        var rootGenerator = await new GeneratorTester("RootDependencyProject", AssemblyLoadContext, _testOutputHelper)
+        var dependencies = new List<GeneratorTestResults>();
+
+        var rootGenerator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(AssemblyLoadContext)
                                  .AddSources(
                                       @"
 namespace RootDependencyProject
@@ -284,14 +175,15 @@ namespace RootDependencyProject
     class Service<T> : IService<T> { }
 }
 "
-                                  ).GenerateAsync();
-        rootGenerator.AssertCompilationWasSuccessful();
-        rootGenerator.AssertGenerationWasSuccessful();
-        dependencies.Add(rootGenerator.FinalCompilation);
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
+        dependencies.Add(rootGenerator);
 
 
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 using RootDependencyProject;
@@ -313,59 +205,24 @@ public static class Program {
     }
 }
 "
-        );
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 11:
-                    strategy.Apply(services, ServiceDescriptor.Describe(Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService<>), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Service`1""), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-
-        private static AssemblyName _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull;
-        private static AssemblyName RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull => _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull ??= new AssemblyName(""RootDependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"");
-    }
-}
-#pragma warning restore CS0436
-";
-        AddCompilationReference(dependencies.ToArray());
-
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Equal(2, services.Count());
-        Assert.Equal(0, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(2, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Fact]
     public async Task Should_Handle_Public_Closed_Generic_Types()
     {
-        var dependencies = new List<CSharpCompilation>();
-        var rootGenerator = await new GeneratorTester("RootDependencyProject", AssemblyLoadContext, _testOutputHelper)
+        var dependencies = new List<GeneratorTestResults>();
+        var rootGenerator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(AssemblyLoadContext)
                                  .AddSources(
                                       @"
 namespace RootDependencyProject
@@ -378,13 +235,14 @@ namespace RootDependencyProject
     public class RequestHandler : IRequestHandler<Request, Response> { }
 }
 "
-                                  ).GenerateAsync();
-        rootGenerator.AssertCompilationWasSuccessful();
-        rootGenerator.AssertGenerationWasSuccessful();
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
         dependencies.Add(rootGenerator);
 
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 using RootDependencyProject;
@@ -409,54 +267,24 @@ namespace TestProject
     }
 }
 "
-        );
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 14:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IRequestHandler<RootDependencyProject.Request, RootDependencyProject.Response>), typeof(RootDependencyProject.RequestHandler), ServiceLifetime.Singleton));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        AddCompilationReference(dependencies.ToArray());
-
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Single(services);
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(1, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Fact]
     public async Task Should_Handle_Private_Closed_Generic_Types()
     {
-        var dependencies = new List<CSharpCompilation>();
-        var rootGenerator = await new GeneratorTester("RootDependencyProject", AssemblyLoadContext, _testOutputHelper)
+        var dependencies = new List<GeneratorTestResults>();
+        var rootGenerator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(AssemblyLoadContext)
                                  .AddSources(
                                       @"
 namespace RootDependencyProject
@@ -469,13 +297,14 @@ namespace RootDependencyProject
     class RequestHandler : IRequestHandler<Request, Response> { }
 }
 "
-                                  ).GenerateAsync();
-        rootGenerator.AssertCompilationWasSuccessful();
-        rootGenerator.AssertGenerationWasSuccessful();
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
         dependencies.Add(rootGenerator);
 
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 using RootDependencyProject;
@@ -500,58 +329,22 @@ namespace TestProject
     }
 }
 "
-        );
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 14:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IRequestHandler<, >).MakeGenericType(Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Request""), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.Response"")), Assembly.Load(RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""RootDependencyProject.RequestHandler""), ServiceLifetime.Singleton));
-                    break;
-            }
-
-            return services;
-        }
-
-        private static AssemblyName _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull;
-        private static AssemblyName RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull => _RootDependencyProjectVersion0000CultureneutralPublicKeyTokennull ??= new AssemblyName(""RootDependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"");
-    }
-}
-#pragma warning restore CS0436
-";
-
-        AddCompilationReference(dependencies.ToArray());
-
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Single(services);
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(1, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Fact]
     public async Task Should_Ignore_Abstract_Classes()
     {
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -576,55 +369,21 @@ public static class Program {
     }
 }
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 14:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(Service), typeof(Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<Service>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Equal(2, services.Count());
-        Assert.Equal(1, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Fact]
     public async Task Should_Using_Support_As_Type()
     {
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -648,158 +407,22 @@ public static class Program {
     }
 }
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 14:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), typeof(Service), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Single(services);
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(1, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(5)]
-    public async Task Should_Handle_Private_Generic_Classes_Within_Multiple_Dependencies(int dependencyCount)
-    {
-        var dependencies = new List<CSharpCompilation>();
-        var rootGenerator = await new GeneratorTester("RootDependencyProject", AssemblyLoadContext, _testOutputHelper)
-                                 .AddSources(
-                                      @"
-namespace RootDependencyProject
-{
-    public interface IRequest<T> { }
-    public interface IRequestHandler<T, R> where T : IRequest<R> { }
-}
-"
-                                  ).GenerateAsync();
-        rootGenerator.AssertCompilationWasSuccessful();
-        rootGenerator.AssertGenerationWasSuccessful();
-        dependencies.Add(rootGenerator);
-
-        for (var i = 0; i < dependencyCount; i++)
-        {
-            using var dependencyGenerator = new GeneratorTester($"Dependency{i}Project", AssemblyLoadContext, _testOutputHelper);
-            var dependency = dependencyGenerator
-                            .AddCompilationReference(rootGenerator)
-                            .AddSources(
-                                 $@"
-using RootDependencyProject;
-
-namespace Dependency{
-    1
-}Project
-{{    
-    {
-        ( i % 2 == 0 ? "public" : "" )
-    } class Request{
-        i
-    } : IRequest<Response{
-        i
-    }> {{ }}
-    {
-        ( i % 2 == 0 ? "public" : "" )
-    } class Response{
-        i
-    } {{ }}
-    {
-        ( i % 2 == 0 ? "public" : "" )
-    } class RequestHandler{
-        i
-    } : IRequestHandler<Request{
-        i
-    }, Response{
-        i
-    }>  {{ }}
-}}
-"
-                             ).Compile();
-            dependencies.Add(dependency);
-        }
-
-
-        AddSources(
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using RootDependencyProject;
-
-namespace TestProject
-{
-    public static class Program
-    {
-        static void Main() { }
-        static IServiceCollection LoadServices()
-        {
-            var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
-            );
-            return services;
-        }
-    }
-}
-"
-        );
-
-        var generator = await AddCompilationReference(dependencies.ToArray())
-           .GenerateAsync();
-
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(dependencyCount, services.Count());
-        Assert.Equal(dependencyCount, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(dependencyCount, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Fact]
     public async Task Should_Handle_Private_Classes_Within_Self()
     {
-        using var dependencyGenerator = new GeneratorTester("DependencyProject", AssemblyLoadContext, _testOutputHelper);
-        var dependency = await dependencyGenerator
+        var dependency = await GeneratorTestContextBuilder
+                              .Create()
+                              .WithProjectName("DependencyProject")
+                              .WithAssemblyLoadContext(AssemblyLoadContext)
                               .AddSources(
                                    @"
 namespace DependencyProject
@@ -808,13 +431,13 @@ namespace DependencyProject
     class Service : IService { }
 }
 "
-                               ).GenerateAsync();
+                               )
+                              .Build()
+                              .GenerateAsync();
 
-        dependency.AssertCompilationWasSuccessful();
-        dependency.AssertGenerationWasSuccessful();
-
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 using DependencyProject;
@@ -841,54 +464,557 @@ namespace TestProject
     }
 }
 "
+                           )
+                          .AddCompilationReferences(dependency)
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+    [Fact]
+    public async Task Should_Split_Correctly_Given_Same_Line_Number_Run()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService
+{
+
+}
+
+public class Service : IService
+{
+
+}
+
+public interface IServiceB
+{
+
+}
+
+public class ServiceB : IServiceB
+{
+
+}
+",
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public static class Program {
+    static ServiceCollection Services = new ServiceCollection();
+    static void Main() {}
+    static IServiceCollection Method()
+    {
+	    Services.ScanCompiled(z => z
+			.FromAssemblies()
+			.AddClasses(x => x.AssignableTo(typeof(IService)), false)
+            .AsSelf()
+            .AsImplementedInterfaces()
+            .WithSingletonLifetime()
         );
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+        return Services;
+    }
+}
+",
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public static class Program2 {
+    static ServiceCollection Services = new ServiceCollection();
+
+    static IServiceCollection Method()
+    {
+	    Services.ScanCompiled(z => z
+			.FromAssemblies()
+			.AddClasses(x => x.AssignableTo<IServiceB>(), false)
+            .AsSelf()
+            .AsImplementedInterfaces()
+            .WithScopedLifetime()
+        );
+
+        return Services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services1 = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "Method");
+        var services2 = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program2", "Method");
+
+        await Verify(new GeneratorTestResultsWithServices(result, services1.Concat(services2)));
+    }
+
+    [Fact]
+    public async Task Should_Filter_AssignableTo()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public interface IServiceB { }
+public class Service : IService, IServiceB { }
+public class ServiceA : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+	    services.ScanCompiled(
+        z => z
+			.FromAssemblies()
+			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>())
+            .AsSelf()
+            .AsImplementedInterfaces()
+            .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+    [Fact]
+    public async Task Should_Filter_AssignableToAny()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public interface IServiceB { }
+public class Service : IService, IServiceB { }
+public class ServiceA : IService { }
+public class ServiceB : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+	    services.ScanCompiled(
+        z => z
+			.FromAssemblies()
+			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
+            .AsSelf()
+            .AsImplementedInterfaces()
+            .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+    [Fact]
+    public async Task Should_Support_ServiceRegistrationAttributes()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using System;
+using Rocket.Surgery.DependencyInjection;
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public interface IServiceB { }
+[ServiceRegistration(typeof(IServiceB), ServiceLifetime.Scoped)]
+public class Service : IService, IServiceB { }
+[ServiceRegistration(ServiceLifetime.Transient)]
+public class ServiceA : IService { }
+[ServiceRegistration]
+public class ServiceB : IService, IServiceB { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+	    services.ScanCompiled(
+        z => z
+			.FromAssemblies()
+			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
+            .UsingAttributes()
+            .WithSingletonLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+    [Fact]
+    public async Task Should_Support_ServiceDescriptorAttributes()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using System;
+using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
+public interface IService { }
+public interface IServiceB { }
+[ServiceDescriptor(typeof(IServiceB), ServiceLifetime.Scoped)]
+public class Service : IService, IServiceB { }
+[ServiceDescriptor(null, ServiceLifetime.Transient)]
+public class ServiceA : IService { }
+[ServiceDescriptor]
+public class ServiceB : IService, IServiceB { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
     {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 15:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.Service), typeof(TestProject.Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProject.IService), _ => _.GetRequiredService<TestProject.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(Assembly.Load(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service""), Assembly.Load(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service""), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProject.IService), _ => _.GetRequiredService(Assembly.Load(DependencyProjectVersion0000CultureneutralPublicKeyTokennull).GetType(""DependencyProject.Service"")) as DependencyProject.IService, ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-
-        private static AssemblyName _DependencyProjectVersion0000CultureneutralPublicKeyTokennull;
-        private static AssemblyName DependencyProjectVersion0000CultureneutralPublicKeyTokennull => _DependencyProjectVersion0000CultureneutralPublicKeyTokennull ??= new AssemblyName(""DependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"");
+        var services = new ServiceCollection();
+	    services.ScanCompiled(
+        z => z
+			.FromAssemblies()
+			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
+            .UsingAttributes()
+            .WithSingletonLifetime()
+        );
+        return services;
     }
 }
-#pragma warning restore CS0436
-";
-        AddCompilationReference(dependency);
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Equal(4, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(2, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(4, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+    [Fact]
+    public async Task Should_Report_Diagnostic_When_Not_Using_Expressions()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public class Service : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+	    services.ScanCompiled(
+        z => {
+               z.FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService)))
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .WithScopedLifetime();
+        });
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result);
+    }
+
+    [Fact]
+    public async Task Should_Report_Diagnostic_Not_Given_A_Compiled_Type()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public class Service : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var type = typeof(IService);
+        var services = new ServiceCollection();
+	    services.ScanCompiled(z => z.FromAssemblies()
+			  .AddClasses(x => x.AssignableTo(type))
+              .AsSelf()
+              .AsImplementedInterfaces()
+              .WithScopedLifetime());
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result);
+    }
+
+    [Fact]
+    public async Task Should_Report_Diagnostic_Not_Given_A_Static_Namespace()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public class Service : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var ns = ""MyNamespace"");
+        var services = new ServiceCollection();
+	    services.ScanCompiled(z => z.FromAssemblies()
+			  .AddClasses(x => x.InNamespaces(ns))
+              .AsSelf()
+              .AsImplementedInterfaces()
+              .WithScopedLifetime());
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result);
+    }
+
+    [Fact]
+    public async Task Should_Report_Diagnostic_For_Duplicate_ServiceRegistrationAttributes()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using System;
+using Rocket.Surgery.DependencyInjection;
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+[ServiceRegistration(typeof(IService), ServiceLifetime.Scoped)]
+[ServiceRegistration(typeof(IService), ServiceLifetime.Singleton)]
+public class Service : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+	    services.ScanCompiled(
+        z => z
+			.FromAssemblies()
+			.AddClasses(x => x.AssignableTo(typeof(IService)))
+            .UsingAttributes()
+            .WithSingletonLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result);
+    }
+
+    [Fact]
+    public async Task Should_Report_Diagnostic_For_Duplicate_ServiceDescriptorAttributes()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using System;
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+using Scrutor;
+
+public interface IService { }
+[ServiceDescriptor(typeof(IService), ServiceLifetime.Scoped)]
+[ServiceDescriptor(typeof(IService), ServiceLifetime.Singleton)]
+public class Service : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+	    services.ScanCompiled(
+        z => z
+			.FromAssemblies()
+			.AddClasses(x => x.AssignableTo(typeof(IService)))
+            .UsingAttributes()
+            .WithSingletonLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    public async Task Should_Handle_Private_Generic_Classes_Within_Multiple_Dependencies(int dependencyCount)
+    {
+        var dependencies = new List<GeneratorTestResults>();
+        var rootGenerator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(AssemblyLoadContext)
+                                 .AddSources(
+                                      @"
+namespace RootDependencyProject
+{
+    public interface IRequest<T> { }
+    public interface IRequestHandler<T, R> where T : IRequest<R> { }
+}
+"
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
+        dependencies.Add(rootGenerator);
+
+        for (var i = 0; i < dependencyCount; i++)
+        {
+            var dependency = await GeneratorTestContextBuilder
+                                  .Create()
+                                  .WithProjectName($"Dependency{i}Project")
+                                  .WithAssemblyLoadContext(AssemblyLoadContext)
+                                  .AddCompilationReferences(rootGenerator)
+                                  .AddSources(
+                                       $@"
+using RootDependencyProject;
+
+namespace Dependency{
+    1
+}Project
+{{
+    {
+        ( i % 2 == 0 ? "public" : "" )
+    } class Request{
+        i
+    } : IRequest<Response{
+        i
+    }> {{ }}
+    {
+        ( i % 2 == 0 ? "public" : "" )
+    } class Response{
+        i
+    } {{ }}
+    {
+        ( i % 2 == 0 ? "public" : "" )
+    } class RequestHandler{
+        i
+    } : IRequestHandler<Request{
+        i
+    }, Response{
+        i
+    }>  {{ }}
+}}
+"
+                                   )
+                                  .Build()
+                                  .GenerateAsync();
+            dependencies.Add(dependency);
+        }
+
+
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+using RootDependencyProject;
+
+namespace TestProject
+{
+    public static class Program
+    {
+        static void Main() { }
+        static IServiceCollection LoadServices()
+        {
+            var services = new ServiceCollection();
+	        services.ScanCompiled(
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithSingletonLifetime()
+            );
+            return services;
+        }
+    }
+}
+"
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
     }
 
     [Theory]
@@ -900,8 +1026,11 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData(5)]
     public async Task Should_Handle_Private_Classes_Within_Multiple_Dependencies(int dependencyCount)
     {
-        var dependencies = new List<CSharpCompilation>();
-        var rootGenerator = await new GeneratorTester("RootDependencyProject", AssemblyLoadContext, _testOutputHelper)
+        var dependencies = new List<GeneratorTestResults>();
+        var rootGenerator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(AssemblyLoadContext)
                                  .AddSources(
                                       @"
 namespace RootDependencyProject
@@ -909,16 +1038,18 @@ namespace RootDependencyProject
     public interface IService { }
 }
 "
-                                  ).GenerateAsync();
-        rootGenerator.AssertCompilationWasSuccessful();
-        rootGenerator.AssertGenerationWasSuccessful();
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
         dependencies.Add(rootGenerator);
 
         for (var i = 0; i < dependencyCount; i++)
         {
-            using var dependencyGenerator = new GeneratorTester($"Dependency{i}Project", AssemblyLoadContext, _testOutputHelper);
-            var dependency = await dependencyGenerator
-                                  .AddCompilationReference(rootGenerator)
+            var dependency = await GeneratorTestContextBuilder
+                                  .Create()
+                                  .WithProjectName($"Dependency{i}Project")
+                                  .WithAssemblyLoadContext(AssemblyLoadContext)
+                                  .AddCompilationReferences(rootGenerator)
                                   .AddSources(
                                        $@"
 namespace Dependency{
@@ -930,13 +1061,16 @@ namespace Dependency{
     } : RootDependencyProject.IService {{ }}
 }}
 "
-                                   ).GenerateAsync();
+                                   )
+                                  .Build()
+                                  .GenerateAsync();
             dependencies.Add(dependency);
         }
 
 
-        AddSources(
-            @"
+        var result = await Builder
+                          .AddSources(
+                               @"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 using RootDependencyProject;
@@ -961,18 +1095,14 @@ namespace TestProject
     }
 }
 "
-        );
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
 
-        var generator = await AddCompilationReference(dependencies.ToArray())
-           .GenerateAsync();
 
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(dependencyCount, services.Count());
-        Assert.Equal(dependencyCount, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(dependencyCount, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
     }
 
     [Theory]
@@ -981,8 +1111,9 @@ namespace TestProject
     [InlineData(ServiceLifetime.Transient)]
     public async Task Should_Have_Correct_Lifetime(ServiceLifetime serviceLifetime)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1035,349 +1166,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = $@"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {{
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {{
-            switch (lineNumber)
-            {{
-                case 30:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(Service), typeof(Service), ServiceLifetime.{
-                        serviceLifetime
-                    }));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<Service>(), ServiceLifetime.{
-                        serviceLifetime
-                    }));
-                    break;
-                case 38:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceB), typeof(ServiceB), ServiceLifetime.{
-                        serviceLifetime
-                    }));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<ServiceB>(), ServiceLifetime.{
-                        serviceLifetime
-                    }));
-                    break;
-            }}
-
-            return services;
-        }}
-    }}
-}}
-#pragma warning restore CS0436
-";
-
-        var result = await GenerateAsync();
-        result.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        result.AssertCompilationWasSuccessful();
-        result.AssertGenerationWasSuccessful();
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        Assert.Equal(4, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(2, services.Count(z => z.ImplementationType is not null));
-    }
-
-    [Fact]
-    public async Task Should_Split_Correctly_Given_Same_Line_Number_Run()
-    {
-        AddSources(
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public interface IService
-{
-
-}
-
-public class Service : IService
-{
-
-}
-
-public interface IServiceB
-{
-
-}
-
-public class ServiceB : IServiceB
-{
-
-}
-"
-        );
-
-        AddSources(
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public static class Program {
-    static ServiceCollection Services = new ServiceCollection();
-    static void Main() {}
-    static IServiceCollection Method()
-    {
-	    Services.ScanCompiled(z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)), false)
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithSingletonLifetime()
-        );
-
-        return Services;
-    }
-}
-",
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public static class Program2 {
-    static ServiceCollection Services = new ServiceCollection();
-
-    static IServiceCollection Method()
-    {
-	    Services.ScanCompiled(z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo<IServiceB>(), false)
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-
-        return Services;
-    }
-}
-"
-        );
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 10:
-                    switch (filePath)
-                    {
-                        case ""Test1.cs"":
-                            strategy.Apply(services, ServiceDescriptor.Describe(typeof(Service), typeof(Service), ServiceLifetime.Singleton));
-                            strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<Service>(), ServiceLifetime.Singleton));
-                            break;
-                        case ""Test2.cs"":
-                            strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceB), typeof(ServiceB), ServiceLifetime.Scoped));
-                            strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<ServiceB>(), ServiceLifetime.Scoped));
-                            break;
-                    }
-
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var assembly = generator;
-        var services1 = StaticHelper.ExecuteStaticServiceCollectionMethod(assembly, "Program", "Method");
-        var services2 = StaticHelper.ExecuteStaticServiceCollectionMethod(assembly, "Program2", "Method");
-
-        Assert.Equal(2, services1.Count());
-        Assert.Equal(1, services1.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services1.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services1.Count(z => z.Lifetime == ServiceLifetime.Singleton));
-
-        Assert.Equal(2, services2.Count());
-        Assert.Equal(1, services2.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services2.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services2.Count(z => z.Lifetime == ServiceLifetime.Scoped));
-    }
-
-    [Fact]
-    public async Task Should_Filter_AssignableTo()
-    {
-        AddSources(
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public interface IService { }
-public interface IServiceB { }
-public class Service : IService, IServiceB { }
-public class ServiceA : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>())
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }
-}
-"
-        );
-
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 15:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(Service), typeof(Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<Service>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(3, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
-    }
-
-    [Fact]
-    public async Task Should_Filter_AssignableToAny()
-    {
-        AddSources(
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public interface IService { }
-public interface IServiceB { }
-public class Service : IService, IServiceB { }
-public class ServiceA : IService { }
-public class ServiceB : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }
-}
-"
-        );
-
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 16:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(Service), typeof(Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceA), typeof(ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceA>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceB), typeof(ServiceB), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceB>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(7, services.Count());
-        Assert.Equal(4, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(3, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(7, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(serviceLifetime);
     }
 
     [Theory]
@@ -1386,8 +1181,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData("EndsWith")]
     public async Task Should_Filter_With_EndsWith(string methodName)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1414,49 +1210,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 16:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceFactory), typeof(ServiceFactory), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceFactory>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<ServiceFactory>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(3, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
     }
 
     [Theory]
@@ -1465,8 +1225,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData("EndsWith")]
     public async Task Should_Filter_With_EndsWith_NameOf(string methodName)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1493,49 +1254,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 16:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceFactory), typeof(ServiceFactory), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceFactory>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<ServiceFactory>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(3, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
     }
 
     [Theory]
@@ -1544,8 +1269,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData("StartsWith")]
     public async Task Should_Filter_With_StartsWith(string methodName)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1572,49 +1298,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 16:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(FactoryService), typeof(FactoryService), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<FactoryService>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<FactoryService>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(3, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
     }
 
     [Theory]
@@ -1623,8 +1313,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData("StartsWith")]
     public async Task Should_Filter_With_StartsWith_NameOf(string methodName)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1651,49 +1342,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 16:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(FactoryService), typeof(FactoryService), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<FactoryService>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<FactoryService>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(3, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
     }
 
     [Theory]
@@ -1701,8 +1356,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData("Contains")]
     public async Task Should_Filter_With_Contains(string methodName)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1729,49 +1385,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 16:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServFactoryice), typeof(ServFactoryice), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServFactoryice>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<ServFactoryice>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(3, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
     }
 
     [Theory]
@@ -1779,8 +1399,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData("Contains")]
     public async Task Should_Filter_With_Contains_NameOf(string methodName)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1807,49 +1428,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 16:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServFactoryice), typeof(ServFactoryice), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServFactoryice>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<ServFactoryice>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(3, services.Count());
-        Assert.Equal(2, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
     }
 
     [Theory]
@@ -1857,8 +1442,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData(false)]
     public async Task Should_Filter_WithAttribute(bool useTypeof)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using System;
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
@@ -1890,49 +1476,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 19:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceA), typeof(ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceA>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(2, services.Count());
-        Assert.Equal(1, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
     }
 
     [Theory]
@@ -1940,8 +1490,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData(false)]
     public async Task Should_Filter_WithoutAttribute(bool useTypeof)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using System;
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
@@ -1973,219 +1524,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 19:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(Service), typeof(Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceB), typeof(ServiceB), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceB>(), ServiceLifetime.Scoped));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertCompilationWasSuccessful();
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(5, services.Count());
-        Assert.Equal(3, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(2, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(5, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
-    }
-
-    [Fact]
-    public async Task Should_Support_ServiceRegistrationAttributes()
-    {
-        AddSources(
-            @"
-using System;
-using Rocket.Surgery.DependencyInjection;
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public interface IService { }
-public interface IServiceB { }
-[ServiceRegistration(typeof(IServiceB), ServiceLifetime.Scoped)]
-public class Service : IService, IServiceB { }
-[ServiceRegistration(ServiceLifetime.Transient)]
-public class ServiceA : IService { }
-[ServiceRegistration]
-public class ServiceB : IService, IServiceB { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
-"
-        );
-
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 21:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), typeof(Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceA), typeof(ServiceA), ServiceLifetime.Transient));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceA>(), ServiceLifetime.Transient));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceB), typeof(ServiceB), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceB>(), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<ServiceB>(), ServiceLifetime.Singleton));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertGenerationWasSuccessful();
-        generator.AssertCompilationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(6, services.Count());
-        Assert.Equal(3, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(3, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(1, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Transient));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
-    }
-
-    [Fact]
-    public async Task Should_Support_ServiceDescriptorAttributes()
-    {
-        AddSources(
-            @"
-using System;
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-public interface IService { }
-public interface IServiceB { }
-[ServiceDescriptor(typeof(IServiceB), ServiceLifetime.Scoped)]
-public class Service : IService, IServiceB { }
-[ServiceDescriptor(null, ServiceLifetime.Transient)]
-public class ServiceA : IService { }
-[ServiceDescriptor]
-public class ServiceB : IService, IServiceB { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
-"
-        );
-
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 21:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), typeof(Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceA), typeof(ServiceA), ServiceLifetime.Transient));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceA>(), ServiceLifetime.Transient));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(ServiceB), typeof(ServiceB), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IService), _ => _.GetRequiredService<ServiceB>(), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(IServiceB), _ => _.GetRequiredService<ServiceB>(), ServiceLifetime.Singleton));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertGenerationWasSuccessful();
-        generator.AssertCompilationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(6, services.Count());
-        Assert.Equal(3, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(3, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(1, services.Count(z => z.Lifetime == ServiceLifetime.Scoped));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Transient));
-        Assert.Equal(3, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
     }
 
     [Theory]
@@ -2200,8 +1545,9 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", 7, true, true)]
     public async Task Should_Filter_Namespaces(NamespaceFilter filter, string namespaceFilterValue, int count, bool usingClass, bool usingTypeof)
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -2243,7 +1589,7 @@ public static class Program {{
                     (true, true, NamespaceFilter.Exact)   => $"InExactNamespaceOf<{namespaceFilterValue}>()",
                     (true, true, NamespaceFilter.In)      => $"InNamespaceOf<{namespaceFilterValue}>()",
                     (true, true, NamespaceFilter.NotIn)   => $"InNamespaces(\"TestProject\").NotInNamespaceOf<{namespaceFilterValue}>()",
-                    _                                     => "ERROR"
+                    _                                     => "ERROR",
                 }
             })
             .AsSelf()
@@ -2254,70 +1600,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = $@"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {{
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {{
-            switch (lineNumber)
-            {{
-                case 28:
-                    {
-                        filter switch
-                        {
-                            NamespaceFilter.Exact =>
-                                @"strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.Service), typeof(TestProject.A.Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.IServiceB), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.ServiceA), typeof(TestProject.A.ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));",
-                            NamespaceFilter.In =>
-                                @"strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.Service), typeof(TestProject.A.Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.IServiceB), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.ServiceA), typeof(TestProject.A.ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.C.ServiceC), typeof(TestProject.A.C.ServiceC), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.C.ServiceC>(), ServiceLifetime.Scoped));",
-                            NamespaceFilter.NotIn =>
-                                @"strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.Service), typeof(TestProject.A.Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.IServiceB), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.ServiceA), typeof(TestProject.A.ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.ServiceB), typeof(TestProject.B.ServiceB), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.B.ServiceB>(), ServiceLifetime.Scoped));",
-                            _ => ""
-                        }
-                    }
-                    break;
-            }}
-
-            return services;
-        }}
-    }}
-}}
-#pragma warning restore CS0436
-";
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(count, services.Count());
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseHashedParameters(filter, namespaceFilterValue, count, usingClass, usingTypeof);
     }
 
     [Theory]
@@ -2328,11 +1617,16 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData(NamespaceFilter.NotIn, "TestProject.A.C", "TestProject.B", 5, false)]
     [InlineData(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", "TestProject.B.ServiceB", 5, true)]
     public async Task Should_Filter_Multiple_Namespaces(
-        NamespaceFilter filter, string namespaceFilterValue, string namespaceFilterValueSecond, int count, bool usingClass
+        NamespaceFilter filter,
+        string namespaceFilterValue,
+        string namespaceFilterValueSecond,
+        int count,
+        bool usingClass
     )
     {
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -2372,7 +1666,7 @@ public static class Program {{
                     (true, NamespaceFilter.In) => $"InNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
                     (true, NamespaceFilter.NotIn) =>
                         $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
-                    _ => "ERROR"
+                    _ => "ERROR",
                 }
             })
             .AsSelf()
@@ -2383,73 +1677,13 @@ public static class Program {{
     }}
 }}
 "
-        );
+                           )
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = $@"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {{
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {{
-            switch (lineNumber)
-            {{
-                case 28:
-                    {
-                        filter switch
-                        {
-                            NamespaceFilter.Exact =>
-                                @"strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.Service), typeof(TestProject.A.Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.IServiceB), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.ServiceA), typeof(TestProject.A.ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.ServiceB), typeof(TestProject.B.ServiceB), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.B.ServiceB>(), ServiceLifetime.Scoped));",
-                            NamespaceFilter.In =>
-                                @"strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.Service), typeof(TestProject.A.Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.IServiceB), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.ServiceA), typeof(TestProject.A.ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.C.ServiceC), typeof(TestProject.A.C.ServiceC), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.C.ServiceC>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.ServiceB), typeof(TestProject.B.ServiceB), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.B.ServiceB>(), ServiceLifetime.Scoped));",
-                            NamespaceFilter.NotIn =>
-                                @"strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.Service), typeof(TestProject.A.Service), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.B.IServiceB), _ => _.GetRequiredService<TestProject.A.Service>(), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.ServiceA), typeof(TestProject.A.ServiceA), ServiceLifetime.Scoped));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(TestProject.A.IService), _ => _.GetRequiredService<TestProject.A.ServiceA>(), ServiceLifetime.Scoped));",
-                            _ => ""
-                        }
-                    }
-                    break;
-            }}
-
-            return services;
-        }}
-    }}
-}}
-#pragma warning restore CS0436
-";
-
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(count, services.Count());
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseHashedParameters(filter, namespaceFilterValue, count, usingClass);
     }
 
     [Theory]
@@ -2457,17 +1691,21 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData(false)]
     public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyOf(bool useTypeof)
     {
-        var dependencies = new List<CSharpCompilation>();
+        var dependencies = new List<GeneratorTestResults>();
 
-        static async Task<CSharpCompilation> CreateServiceDependency(
+        static async Task<GeneratorTestResults> CreateServiceDependency(
             AssemblyLoadContext context,
-            ITestOutputHelper testOutputHelper,
+            ILogger logger,
             string suffix,
-            params CSharpCompilation[] dependencies
+            params GeneratorTestResults[] dependencies
         )
         {
-            var generator = await new GeneratorTester("DependencyProject" + suffix, context, testOutputHelper)
-                                 .AddCompilationReference(dependencies)
+            var generator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("DependencyProject" + suffix)
+                                 .AddCompilationReferences(dependencies)
+                                 .WithLogger(logger)
+                                 .WithAssemblyLoadContext(context)
                                  .AddSources(
                                       $@"
 namespace DependencyProject{
@@ -2484,23 +1722,26 @@ namespace DependencyProject{
     } {{ }}
 }}
 "
-                                  ).GenerateAsync();
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
             generator.AssertCompilationWasSuccessful();
             generator.AssertGenerationWasSuccessful();
-            return generator.FinalCompilation;
+            return generator;
         }
 
-        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, _testOutputHelper, "A");
-        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, _testOutputHelper, "B");
-        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, _testOutputHelper, "C", dependencyA);
-        var dependencyD = await CreateServiceDependency(AssemblyLoadContext, _testOutputHelper, "D", dependencyC);
+        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, "A");
+        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, "B");
+        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, "C", dependencyA);
+        var dependencyD = await CreateServiceDependency(AssemblyLoadContext, Logger, "D", dependencyC);
         dependencies.Add(dependencyA);
         dependencies.Add(dependencyB);
         dependencies.Add(dependencyC);
         dependencies.Add(dependencyD);
 
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 using DependencyProjectA;
@@ -2531,48 +1772,14 @@ namespace TestProject
     }}
 }}
 "
-        );
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
 
-        var expected = @"using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {
-            switch (lineNumber)
-            {
-                case 17:
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProjectB.ServiceB), typeof(DependencyProjectB.ServiceB), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProjectB.IServiceB), _ => _.GetRequiredService<DependencyProjectB.ServiceB>(), ServiceLifetime.Singleton));
-                    break;
-            }
-
-            return services;
-        }
-    }
-}
-#pragma warning restore CS0436
-";
-
-        AddCompilationReference(dependencies.ToArray());
-        var generator = await GenerateAsync();
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(1, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(1, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(2, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
     }
 
     [Theory]
@@ -2584,14 +1791,20 @@ namespace Rocket.Surgery.DependencyInjection.Compiled
     [InlineData("ServiceC", true, 1)]
     public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyDependenciesOf(string className, bool useTypeof, int expectedCount)
     {
-        var dependencies = new List<CSharpCompilation>();
+        var dependencies = new List<GeneratorTestResults>();
 
-        static async Task<CSharpCompilation> CreateRoot(
-            AssemblyLoadContext context, ITestOutputHelper testOutputHelper, params CSharpCompilation[] dependencies
+        static async Task<GeneratorTestResults> CreateRoot(
+            AssemblyLoadContext context,
+            ILogger logger,
+            params GeneratorTestResults[] dependencies
         )
         {
-            var generator = await new GeneratorTester("RootDependencyProject", context, testOutputHelper)
-                                 .AddCompilationReference(dependencies)
+            var generator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(context)
+                                 .WithLogger(logger)
+                                 .AddCompilationReferences(dependencies)
                                  .AddSources(
                                       @"
 namespace RootDependencyProject
@@ -2599,28 +1812,33 @@ namespace RootDependencyProject
     public interface IService { }
 }
 "
-                                  ).GenerateAsync();
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
             generator.AssertCompilationWasSuccessful();
             generator.AssertGenerationWasSuccessful();
-            return generator.FinalCompilation;
+            return generator;
         }
 
-        static async Task<CSharpCompilation> CreateServiceDependency(
+        static async Task<GeneratorTestResults> CreateServiceDependency(
             AssemblyLoadContext context,
-            ITestOutputHelper testOutputHelper,
+            ILogger logger,
             string suffix,
-            params CSharpCompilation[] dependencies
+            params GeneratorTestResults[] dependencies
         )
         {
-            using var generator = new GeneratorTester("DependencyProject" + suffix, context, testOutputHelper);
             var additionalCode = dependencies
-                                .Where(z => z.AssemblyName?.StartsWith("DependencyProject") == true)
+                                .Where(z => z.FinalCompilation.AssemblyName?.StartsWith("DependencyProject") == true)
                                 .Select(
                                      z =>
-                                         $"class HardReference{z.AssemblyName?.Substring(z.AssemblyName.Length - 1)} : {z.AssemblyName + ".Service" + z.AssemblyName?.Substring(z.AssemblyName.Length - 1)} {{ }}"
+                                         $"class HardReference{z.FinalCompilation.AssemblyName?.Substring(z.FinalCompilation.AssemblyName.Length - 1)} : {z.FinalCompilation.AssemblyName + ".Service" + z.FinalCompilation.AssemblyName?.Substring(z.FinalCompilation.AssemblyName.Length - 1)} {{ }}"
                                  );
-            var dep = await generator
-                           .AddCompilationReference(dependencies)
+            var dep = await GeneratorTestContextBuilder
+                           .Create()
+                           .WithProjectName("DependencyProject" + suffix)
+                           .WithAssemblyLoadContext(context)
+                           .WithLogger(logger)
+                           .AddCompilationReferences(dependencies)
                            .AddSources(
                                 $@"
 namespace DependencyProject{
@@ -2635,25 +1853,33 @@ namespace DependencyProject{
     } : RootDependencyProject.IService {{ }}
 }}
 "
-                            ).GenerateAsync();
-            dep.AssertCompilationWasSuccessful();
-            dep.AssertGenerationWasSuccessful();
-            return dep.FinalCompilation;
+                            )
+                           .Build()
+                           .GenerateAsync();
+            return dep;
         }
 
-        var root = await CreateRoot(AssemblyLoadContext, _testOutputHelper);
-        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, _testOutputHelper, "A", root);
-        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, _testOutputHelper, "B", root);
-        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, _testOutputHelper, "C", dependencyA, root);
-        var dependencyD = await CreateServiceDependency(AssemblyLoadContext, _testOutputHelper, "D", dependencyA, dependencyC, root);
+        var root = await CreateRoot(AssemblyLoadContext, Logger);
+        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, "A", root);
+        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, "B", root);
+        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, "C", dependencyA, root);
+        var dependencyD = await CreateServiceDependency(
+            AssemblyLoadContext,
+            Logger,
+            "D",
+            dependencyA,
+            dependencyC,
+            root
+        );
         dependencies.Add(root);
         dependencies.Add(dependencyA);
         dependencies.Add(dependencyB);
         dependencies.Add(dependencyC);
         dependencies.Add(dependencyD);
 
-        AddSources(
-            $@"
+        var result = await Builder
+                          .AddSources(
+                               $@"
 
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
@@ -2686,257 +1912,14 @@ namespace TestProject
     }}
 }}
 "
-        );
-
-        var expected = $@"
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-#pragma warning disable CS0436
-namespace Rocket.Surgery.DependencyInjection.Compiled
-{{
-    [CompilerGenerated, ExcludeFromCodeCoverage]
-    internal static class PopulateExtensions
-    {{
-        public static IServiceCollection Populate(IServiceCollection services, RegistrationStrategy strategy, string filePath, string memberName, int lineNumber)
-        {{
-            switch (lineNumber)
-            {{
-                case 19:{
-                    className switch
-                    {
-                        "ServiceA" => @"
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProjectC.ServiceC), typeof(DependencyProjectC.ServiceC), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService), _ => _.GetRequiredService<DependencyProjectC.ServiceC>(), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProjectD.ServiceD), typeof(DependencyProjectD.ServiceD), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService), _ => _.GetRequiredService<DependencyProjectD.ServiceD>(), ServiceLifetime.Singleton));",
-                        "ServiceB" => @"",
-                        "ServiceC" => @"
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(DependencyProjectD.ServiceD), typeof(DependencyProjectD.ServiceD), ServiceLifetime.Singleton));
-                    strategy.Apply(services, ServiceDescriptor.Describe(typeof(RootDependencyProject.IService), _ => _.GetRequiredService<DependencyProjectD.ServiceD>(), ServiceLifetime.Singleton));",
-                        _ => ""
-                    }
-                }
-                    break;
-            }}
-
-            return services;
-        }}
-    }}
-}}
-#pragma warning restore CS0436
-";
-
-        AddCompilationReference(dependencies.ToArray());
-        var generator = await GenerateAsync();
-
-        generator.AssertGeneratedAsExpected<CompiledServiceScanningGenerator>(expected);
-
-        generator.AssertGenerationWasSuccessful();
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(generator, "Program", "LoadServices");
-        Assert.Equal(expectedCount, services.Count(z => z.ImplementationFactory is not null));
-        Assert.Equal(expectedCount, services.Count(z => z.ImplementationType is not null));
-        Assert.Equal(expectedCount * 2, services.Count(z => z.Lifetime == ServiceLifetime.Singleton));
-    }
-
-    [Fact]
-    public async Task Should_Report_Diagnostic_When_Not_Using_Expressions()
-    {
-        AddSources(
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public interface IService { }
-public class Service : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => { 
-               z.FromAssemblies()
-			    .AddClasses(x => x.AssignableTo(typeof(IService)))
-                .AsSelf()
-                .AsImplementedInterfaces()
-                .WithScopedLifetime();
-        });
-        return services;
-    }
-}
-"
-        );
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
 
 
-        var generator = await GenerateAsync();
-        Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
-        Debug.Assert(generationTestResult != null);
-        Assert.NotEmpty(generationTestResult.Diagnostics);
-        Assert.Contains(generationTestResult.Diagnostics, z => z.Id == Diagnostics.MustBeAnExpression.Id);
-    }
-
-    [Fact]
-    public async Task Should_Report_Diagnostic_Not_Given_A_Compiled_Type()
-    {
-        AddSources(
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public interface IService { }
-public class Service : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var type = typeof(IService);
-        var services = new ServiceCollection();
-	    services.ScanCompiled(z => z.FromAssemblies()
-			  .AddClasses(x => x.AssignableTo(type))
-              .AsSelf()
-              .AsImplementedInterfaces()
-              .WithScopedLifetime());
-        return services;
-    }
-}
-"
-        );
-
-
-        var generator = await GenerateAsync();
-        Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
-        Debug.Assert(generationTestResult != null);
-        Assert.NotEmpty(generationTestResult.Diagnostics);
-        Assert.Contains(generationTestResult.Diagnostics, z => z.Id == Diagnostics.MustBeTypeOf.Id);
-    }
-
-    [Fact]
-    public async Task Should_Report_Diagnostic_Not_Given_A_Static_Namespace()
-    {
-        AddSources(
-            @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public interface IService { }
-public class Service : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var ns = ""MyNamespace""); 
-        var services = new ServiceCollection();
-	    services.ScanCompiled(z => z.FromAssemblies()
-			  .AddClasses(x => x.InNamespaces(ns))
-              .AsSelf()
-              .AsImplementedInterfaces()
-              .WithScopedLifetime());
-        return services;
-    }
-}
-"
-        );
-
-        var generator = await GenerateAsync();
-        Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
-        Debug.Assert(generationTestResult != null);
-        Assert.NotEmpty(generationTestResult.Diagnostics);
-        Assert.Contains(generationTestResult.Diagnostics, z => z.Id == Diagnostics.NamespaceMustBeAString.Id);
-    }
-
-    [Fact]
-    public async Task Should_Report_Diagnostic_For_Duplicate_ServiceRegistrationAttributes()
-    {
-        AddSources(
-            @"
-using System;
-using Rocket.Surgery.DependencyInjection;
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-
-public interface IService { }
-[ServiceRegistration(typeof(IService), ServiceLifetime.Scoped)]
-[ServiceRegistration(typeof(IService), ServiceLifetime.Singleton)]
-public class Service : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
-"
-        );
-
-        var generator = await GenerateAsync();
-        Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
-        Debug.Assert(generationTestResult != null);
-        Assert.NotEmpty(generationTestResult.Diagnostics);
-        Assert.Contains(
-            generationTestResult.Diagnostics,
-            z => z.Id == Diagnostics.DuplicateServiceDescriptorAttribute.Id && z.Location.GetLineSpan().StartLinePosition.Line == 8
-        );
-    }
-
-    [Fact]
-    public async Task Should_Report_Diagnostic_For_Duplicate_ServiceDescriptorAttributes()
-    {
-        AddSources(
-            @"
-using System;
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-public interface IService { }
-[ServiceDescriptor(typeof(IService), ServiceLifetime.Scoped)]
-[ServiceDescriptor(typeof(IService), ServiceLifetime.Singleton)]
-public class Service : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
-"
-        );
-
-        var generator = await GenerateAsync();
-        Assert.True(generator.TryGetResult<CompiledServiceScanningGenerator>(out var generationTestResult));
-        Debug.Assert(generationTestResult != null);
-        Assert.NotEmpty(generationTestResult.Diagnostics);
-        Assert.Contains(
-            generationTestResult.Diagnostics,
-            z => z.Id == Diagnostics.DuplicateServiceDescriptorAttribute.Id && z.Location.GetLineSpan().StartLinePosition.Line == 8
-        );
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(className, useTypeof, expectedCount);
     }
 
     private static class StaticHelper

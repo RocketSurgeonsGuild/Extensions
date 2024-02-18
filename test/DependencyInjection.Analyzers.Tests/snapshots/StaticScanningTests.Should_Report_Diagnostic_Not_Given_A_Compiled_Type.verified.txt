@@ -1,0 +1,103 @@
+﻿{
+  FinalDiagnostics: [
+    {
+      Id: CS0122,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator\CompiledServiceScanningExtensions.cs: (21,19)-(21,37),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0122),
+      MessageFormat: '{0}' is inaccessible due to its protection level,
+      Message: 'PopulateExtensions' is inaccessible due to its protection level,
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS0122,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator\CompiledServiceScanningExtensions.cs: (33,19)-(33,37),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0122),
+      MessageFormat: '{0}' is inaccessible due to its protection level,
+      Message: 'PopulateExtensions' is inaccessible due to its protection level,
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS0122,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator\CompiledServiceScanningExtensions.cs: (45,19)-(45,37),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0122),
+      MessageFormat: '{0}' is inaccessible due to its protection level,
+      Message: 'PopulateExtensions' is inaccessible due to its protection level,
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS0122,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator\CompiledServiceScanningExtensions.cs: (58,19)-(58,37),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0122),
+      MessageFormat: '{0}' is inaccessible due to its protection level,
+      Message: 'PopulateExtensions' is inaccessible due to its protection level,
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    }
+  ],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: [
+      {
+        Id: RSGD0002,
+        Title: Must use typeof,
+        Severity: Error,
+        WarningLevel: 0,
+        Location: Input0.cs: (14,24)-(14,36),
+        MessageFormat: Method must be called with typeof, variables are not allowed,
+        Message: Method must be called with typeof, variables are not allowed,
+        Category: Dependency Injection
+      }
+    ]
+  },
+  GlobalOptions: {
+    compiled_scan_assembly_load: false
+  },
+  ParseOptions: {
+    LanguageVersion: CSharp10,
+    DocumentationMode: Parse
+  },
+  References: [
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    Scrutor.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ]
+}
