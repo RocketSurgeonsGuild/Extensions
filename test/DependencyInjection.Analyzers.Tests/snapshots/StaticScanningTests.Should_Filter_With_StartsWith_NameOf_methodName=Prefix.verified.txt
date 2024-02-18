@@ -1,0 +1,44 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  GlobalOptions: {
+    compiled_scan_assembly_load: false
+  },
+  ParseOptions: {
+    LanguageVersion: CSharp10,
+    DocumentationMode: Parse
+  },
+  References: [
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    Scrutor.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  Services: [
+    {
+      Lifetime: Scoped,
+      ServiceType: FactoryService,
+      ImplementationType: FactoryService
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: IServiceB,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    }
+  ]
+}
