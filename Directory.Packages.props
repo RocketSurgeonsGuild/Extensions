@@ -52,9 +52,9 @@
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
     <PackageVersion Include="FluentAssertions.Analyzers" Version="0.30.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-    <PackageVersion Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="8.0.12" />
-    <PackageVersion Include="Rocket.Surgery.Extensions.Testing.XUnit" Version="8.0.12" />
-    <PackageVersion Include="Rocket.Surgery.Extensions.Testing.SourceGenerators" Version="8.0.12" />
+    <PackageVersion Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="8.0.13" />
+    <PackageVersion Include="Rocket.Surgery.Extensions.Testing.XUnit" Version="8.0.13" />
+    <PackageVersion Include="Rocket.Surgery.Extensions.Testing.SourceGenerators" Version="8.0.13" />
     <PackageVersion Include="Verify.Xunit" Version="23.2.2" />
     <PackageVersion Include="Verify.SourceGenerators" Version="2.2.0" />
     <PackageVersion Include="xunit" Version="2.7.0" />
