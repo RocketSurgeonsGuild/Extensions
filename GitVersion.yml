@@ -6,7 +6,7 @@ branches:
     track-merge-target: false
     regex: ^master$|^main$
     source-branches:
-    - release
+      - release
     is-source-branch-for: []
     tracks-release-branches: false
     is-release-branch: false
@@ -18,9 +18,9 @@ branches:
     label-number-pattern: '[/-](?<number>\d+)'
     regex: ^(pull|pull\-requests|pr)[/-]
     source-branches:
-    - main
-    - release
-    - feature
+      - main
+      - release
+      - feature
     is-source-branch-for: []
     pre-release-weight: 30000
   next:
