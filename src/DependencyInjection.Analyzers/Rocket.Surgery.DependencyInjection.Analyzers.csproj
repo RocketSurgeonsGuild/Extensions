@@ -4,9 +4,6 @@
       <IsRoslynComponent>true</IsRoslynComponent>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Rocket.Surgery.Extensions.Tests" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
       <!--    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" PrivateAssets="all" />-->
