@@ -1,6 +1,16 @@
 ﻿{
   FinalDiagnostics: [
     {
+      Id: RSGD0002,
+      Title: Must use typeof,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Input0.cs: (14,24)-(14,36),
+      MessageFormat: Method must be called with typeof, variables are not allowed,
+      Message: Method must be called with typeof, variables are not allowed,
+      Category: Dependency Injection
+    },
+    {
       Id: CS0122,
       Title: ,
       Severity: Error,
@@ -81,10 +91,6 @@
   },
   GlobalOptions: {
     compiled_scan_assembly_load: false
-  },
-  ParseOptions: {
-    LanguageVersion: CSharp10,
-    DocumentationMode: Parse
   },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
