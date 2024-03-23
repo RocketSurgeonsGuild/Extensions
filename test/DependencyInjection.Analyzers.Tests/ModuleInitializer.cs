@@ -11,7 +11,7 @@ public static class ModuleInitializer
     [ModuleInitializer]
     public static void Init()
     {
-        VerifyGeneratorTextContext.Initialize(false, true, DiagnosticSeverity.Error);
+        VerifyGeneratorTextContext.Initialize(DiagnosticSeverity.Error, Customizers.Default, Customizers.ExcludeParseOptions);
 
         VerifierSettings.AddExtraSettings(
             settings => { settings.Converters.Add(new ServiceDescriptorConverter()); }
@@ -57,15 +57,6 @@ public static class ModuleInitializer
         }
 
         var data = new Dictionary<string, object>();
-        // start here
-        data["ParseOptions"] = new
-        {
-            target.ParseOptions.LanguageVersion,
-            target.ParseOptions.DocumentationMode,
-            target.ParseOptions.Kind,
-            target.ParseOptions.Features,
-            target.ParseOptions.PreprocessorSymbolNames,
-        };
 
         data["GlobalOptions"] = target.GlobalOptions;
         data["FileOptions"] = target.FileOptions;

@@ -6,10 +6,6 @@
   GlobalOptions: {
     compiled_scan_assembly_load: true
   },
-  ParseOptions: {
-    LanguageVersion: CSharp10,
-    DocumentationMode: Parse
-  },
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

@@ -98,14 +98,21 @@
     }
   ],
   GeneratorDiagnostics: {
-    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: [
+      {
+        Id: RSGD0004,
+        Title: Namespace must be a string,
+        Severity: Warning,
+        WarningLevel: 1,
+        Location: Input0.cs: (14,37)-(14,39),
+        MessageFormat: The given namespace must be a constant string,
+        Message: The given namespace must be a constant string,
+        Category: Dependency Injection
+      }
+    ]
   },
   GlobalOptions: {
     compiled_scan_assembly_load: false
-  },
-  ParseOptions: {
-    LanguageVersion: CSharp10,
-    DocumentationMode: Parse
   },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

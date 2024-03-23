@@ -588,7 +588,8 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
 
             var allAssemblyReferences = assemblyReferences
                                        .Concat(assemblies.OfType<CompiledAssemblyDescriptor>().Select(z => z.TypeFromAssembly.ContainingAssembly))
-                                       .Distinct(SymbolEqualityComparer.Default);
+                                       .Distinct(SymbolEqualityComparer.Default)
+                                       .OfType<IAssemblySymbol>();
 
             types = TypeSymbolVisitor.GetTypes(compilation, allAssemblyReferences);
         }

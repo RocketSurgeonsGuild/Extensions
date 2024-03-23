@@ -1,6 +1,16 @@
 ﻿{
   FinalDiagnostics: [
     {
+      Id: RSGD0001,
+      Title: Must be a expression,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Input0.cs: (13,8)-(19,9),
+      MessageFormat: Methods that will be analyzed statically must be an expression, blocks and variables are not allowed,
+      Message: Methods that will be analyzed statically must be an expression, blocks and variables are not allowed,
+      Category: Dependency Injection
+    },
+    {
       Id: CS0122,
       Title: ,
       Severity: Error,
@@ -49,10 +59,6 @@
   },
   GlobalOptions: {
     compiled_scan_assembly_load: true
-  },
-  ParseOptions: {
-    LanguageVersion: CSharp10,
-    DocumentationMode: Parse
   },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

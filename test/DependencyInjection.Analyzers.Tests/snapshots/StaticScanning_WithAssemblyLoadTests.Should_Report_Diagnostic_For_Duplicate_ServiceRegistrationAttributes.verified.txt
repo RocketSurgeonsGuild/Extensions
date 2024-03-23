@@ -1,14 +1,21 @@
 ﻿{
   FinalDiagnostics: [],
   GeneratorDiagnostics: {
-    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: [
+      {
+        Id: RSGD0005,
+        Title: Duplicate service descriptor attribute,
+        Severity: Warning,
+        WarningLevel: 1,
+        Location: Input0.cs: (8,1)-(8,65),
+        MessageFormat: Cannot have more than one service descriptor attribute for a given type,
+        Message: Cannot have more than one service descriptor attribute for a given type,
+        Category: Dependency Injection
+      }
+    ]
   },
   GlobalOptions: {
     compiled_scan_assembly_load: true
-  },
-  ParseOptions: {
-    LanguageVersion: CSharp10,
-    DocumentationMode: Parse
   },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
