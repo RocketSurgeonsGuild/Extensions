@@ -21,7 +21,7 @@ internal class TypeSymbolVisitor(Compilation compilation) : SymbolVisitor
         return visitor.GetTypes();
     }
 
-    private readonly List<INamedTypeSymbol> _types = new List<INamedTypeSymbol>();
+    private readonly List<INamedTypeSymbol> _types = new();
 
     private void Accept<T>(IEnumerable<T> members)
         where T : ISymbol?
@@ -47,7 +47,9 @@ internal class TypeSymbolVisitor(Compilation compilation) : SymbolVisitor
         if (symbol.TypeKind is TypeKind.Class or TypeKind.Delegate or TypeKind.Struct)
         {
             if (symbol.IsAbstract || !symbol.CanBeReferencedByName) return;
-            if (Helpers.GetBaseTypes(compilation, symbol).Contains(compilation.GetTypeByMetadataName("System.Attribute"), SymbolEqualityComparer.Default)) return;
+            if (Helpers
+               .GetBaseTypes(compilation, symbol)
+               .Contains(compilation.GetTypeByMetadataName("System.Attribute"), SymbolEqualityComparer.Default)) return;
             _types.Add(symbol);
         }
 
