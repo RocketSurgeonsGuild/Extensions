@@ -160,37 +160,34 @@ internal static class StatementGeneration
         INamedTypeSymbol type
     )
     {
-        if (SymbolEqualityComparer.Default.Equals(compilation.ObjectType, type)) return false;
+        if (SymbolEqualityComparer.Default.Equals(compilation.ObjectType, type)) return true;
         if (SymbolEqualityComparer.Default.Equals(assignableToType, type))
             return true;
-        if (assignableToType.Arity > 0 && assignableToType.IsUnboundGenericType)
+        if (assignableToType.Arity <= 0 || !assignableToType.IsUnboundGenericType) return !compilation.HasImplicitConversion(type, assignableToType);
+
+        var matchingBaseTypes = Helpers
+                               .GetBaseTypes(compilation, type)
+                               .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
+                               .Where(z => z is not null)
+                               .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
+        if (matchingBaseTypes.Any())
         {
-            var matchingBaseTypes = Helpers.GetBaseTypes(compilation, type)
-                                           .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
-                                           .Where(z => z is not null)
-                                           .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
-            if (matchingBaseTypes.Any())
-            {
-                return false;
-            }
-
-            var matchingInterfaces = type.AllInterfaces
-                                         .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
-                                         .Where(z => z is not null)
-                                         .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
-            if (matchingInterfaces.Any())
-            {
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
-        return !compilation.HasImplicitConversion(type, assignableToType);
+        var matchingInterfaces = type
+                                .AllInterfaces
+                                .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
+                                .Where(z => z is not null)
+                                .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
+        return !matchingInterfaces.Any();
     }
 
     private static ExpressionSyntax GetTypeOfExpression(
-        Compilation compilation, INamedTypeSymbol type, INamedTypeSymbol? relatedType, bool useAssemblyLoad
+        Compilation compilation,
+        INamedTypeSymbol type,
+        INamedTypeSymbol? relatedType,
+        bool useAssemblyLoad
     )
     {
         if (type.IsUnboundGenericType && relatedType != null)
