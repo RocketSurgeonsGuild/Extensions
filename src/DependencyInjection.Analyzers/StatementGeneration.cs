@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -159,6 +160,7 @@ internal static class StatementGeneration
         INamedTypeSymbol type
     )
     {
+        if (SymbolEqualityComparer.Default.Equals(compilation.ObjectType, type)) return false;
         if (SymbolEqualityComparer.Default.Equals(assignableToType, type))
             return true;
         if (assignableToType.Arity > 0 && assignableToType.IsUnboundGenericType)
@@ -250,6 +252,68 @@ internal static class StatementGeneration
         }
 
         return GetPrivateType(compilation, type, useAssemblyLoad);
+    }
+
+    public static string GetGenericDisplayName(ISymbol? symbol)
+    {
+        if (symbol == null || IsRootNamespace(symbol))
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder(symbol.MetadataName);
+        if (symbol is INamedTypeSymbol namedTypeSymbol && ( namedTypeSymbol.IsOpenGenericType() || namedTypeSymbol.IsGenericType ))
+        {
+            sb = new(symbol.Name);
+            if (namedTypeSymbol.IsOpenGenericType())
+            {
+                sb.Append('<');
+                for (var i = 1; i < namedTypeSymbol.Arity - 1; i++)
+                    sb.Append(',');
+                sb.Append('>');
+            }
+            else
+            {
+                sb.Append('<');
+                for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
+                {
+                    var argument = namedTypeSymbol.TypeArguments[index];
+                    sb.Append(GetGenericDisplayName(argument));
+                    if (index < namedTypeSymbol.TypeArguments.Length - 1)
+                        sb.Append(',');
+                }
+
+                sb.Append('>');
+            }
+        }
+
+        var last = symbol;
+
+        var workingSymbol = symbol.ContainingSymbol;
+
+        while (!IsRootNamespace(workingSymbol))
+        {
+            if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
+            {
+                sb.Insert(0, '+');
+            }
+            else
+            {
+                sb.Insert(0, '.');
+            }
+
+            sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            //sb.Insert(0, symbol.MetadataName);
+            workingSymbol = workingSymbol.ContainingSymbol;
+        }
+
+        return sb.ToString();
+
+        static bool IsRootNamespace(ISymbol symbol)
+        {
+            INamespaceSymbol? s;
+            return ( s = symbol as INamespaceSymbol ) != null && s.IsGlobalNamespace;
+        }
     }
 
     private static InvocationExpressionSyntax GetPrivateType(Compilation compilation, INamedTypeSymbol type, bool useAssemblyLoad)
