@@ -1,4 +1,3 @@
-using System.CodeDom.Compiler;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -56,7 +55,7 @@ internal static class Helpers
         var sb = new StringBuilder(symbol.MetadataName);
         if (symbol is INamedTypeSymbol namedTypeSymbol && ( namedTypeSymbol.IsOpenGenericType() || namedTypeSymbol.IsGenericType ))
         {
-            sb = new StringBuilder(symbol.Name);
+            sb = new(symbol.Name);
             if (namedTypeSymbol.IsOpenGenericType())
             {
                 sb.Append('<');
@@ -108,8 +107,6 @@ internal static class Helpers
         }
     }
 
-    private static readonly Regex SpecialCharacterRemover = new Regex("[^\\w\\d]", RegexOptions.Compiled);
-
     public static string AssemblyVariableName(IAssemblySymbol symbol)
     {
         return SpecialCharacterRemover.Replace(symbol.Identity.GetDisplayName(true), "");
@@ -148,4 +145,6 @@ internal static class Helpers
 
         return null;
     }
+
+    private static readonly Regex SpecialCharacterRemover = new("[^\\w\\d]", RegexOptions.Compiled);
 }

@@ -8,12 +8,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 internal static class StatementGeneration
 {
-    private static readonly MemberAccessExpressionSyntax Describe = MemberAccessExpression(
-        SyntaxKind.SimpleMemberAccessExpression,
-        IdentifierName("ServiceDescriptor"),
-        IdentifierName("Describe")
-    );
-
     public static InvocationExpressionSyntax GenerateServiceFactory(
         Compilation compilation,
         NameSyntax strategyName,
@@ -81,48 +75,6 @@ internal static class StatementGeneration
         return GenerateServiceType(strategyName, serviceCollectionName, serviceTypeExpression, implementationTypeExpression, lifetime);
     }
 
-    private static InvocationExpressionSyntax GenerateServiceType(
-        NameSyntax strategyName,
-        NameSyntax serviceCollectionName,
-        ExpressionSyntax serviceTypeExpression,
-        ExpressionSyntax implementationTypeExpression,
-        ExpressionSyntax lifetime
-    )
-    {
-        return InvocationExpression(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    strategyName,
-                    IdentifierName("Apply")
-                )
-            )
-           .WithArgumentList(
-                ArgumentList(
-                    SeparatedList(
-                        new[]
-                        {
-                            Argument(serviceCollectionName),
-                            Argument(
-                                InvocationExpression(Describe)
-                                   .WithArgumentList(
-                                        ArgumentList(
-                                            SeparatedList(
-                                                new[]
-                                                {
-                                                    Argument(serviceTypeExpression),
-                                                    Argument(implementationTypeExpression),
-                                                    Argument(lifetime)
-                                                }
-                                            )
-                                        )
-                                    )
-                            )
-                        }
-                    )
-                )
-            );
-    }
-
     public static IEnumerable<MemberDeclarationSyntax> AssemblyDeclaration(IAssemblySymbol symbol)
     {
         var name = Helpers.AssemblyVariableName(symbol);
@@ -168,7 +120,7 @@ internal static class StatementGeneration
         var matchingBaseTypes = Helpers
                                .GetBaseTypes(compilation, type)
                                .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
-                               .Where(z => z is not null)
+                               .Where(z => z is { })
                                .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
         if (matchingBaseTypes.Any())
         {
@@ -178,9 +130,124 @@ internal static class StatementGeneration
         var matchingInterfaces = type
                                 .AllInterfaces
                                 .Select(z => z.IsGenericType ? z.IsUnboundGenericType ? z : z.ConstructUnboundGenericType() : null!)
-                                .Where(z => z is not null)
+                                .Where(z => z is { })
                                 .Where(symbol => compilation.HasImplicitConversion(symbol, assignableToType));
         return !matchingInterfaces.Any();
+    }
+
+    public static string GetGenericDisplayName(ISymbol? symbol)
+    {
+        if (symbol == null || IsRootNamespace(symbol))
+        {
+            return string.Empty;
+        }
+
+        var sb = new StringBuilder(symbol.MetadataName);
+        if (symbol is INamedTypeSymbol namedTypeSymbol && ( namedTypeSymbol.IsOpenGenericType() || namedTypeSymbol.IsGenericType ))
+        {
+            sb = new(symbol.Name);
+            if (namedTypeSymbol.IsOpenGenericType())
+            {
+                sb.Append('<');
+                for (var i = 1; i < namedTypeSymbol.Arity - 1; i++)
+                    sb.Append(',');
+                sb.Append('>');
+            }
+            else
+            {
+                sb.Append('<');
+                for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
+                {
+                    var argument = namedTypeSymbol.TypeArguments[index];
+                    sb.Append(GetGenericDisplayName(argument));
+                    if (index < namedTypeSymbol.TypeArguments.Length - 1)
+                        sb.Append(',');
+                }
+
+                sb.Append('>');
+            }
+        }
+
+        var last = symbol;
+
+        var workingSymbol = symbol.ContainingSymbol;
+
+        while (!IsRootNamespace(workingSymbol))
+        {
+            if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
+            {
+                sb.Insert(0, '+');
+            }
+            else
+            {
+                sb.Insert(0, '.');
+            }
+
+            sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            //sb.Insert(0, symbol.MetadataName);
+            workingSymbol = workingSymbol.ContainingSymbol;
+        }
+
+        return sb.ToString();
+
+        static bool IsRootNamespace(ISymbol symbol)
+        {
+            INamespaceSymbol? s;
+            return ( s = symbol as INamespaceSymbol ) != null && s.IsGlobalNamespace;
+        }
+    }
+
+    public static bool IsOpenGenericType(this INamedTypeSymbol type)
+    {
+        return type.IsGenericType && ( type.IsUnboundGenericType || type.TypeArguments.All(z => z.TypeKind == TypeKind.TypeParameter) );
+    }
+
+    private static readonly MemberAccessExpressionSyntax Describe = MemberAccessExpression(
+        SyntaxKind.SimpleMemberAccessExpression,
+        IdentifierName("ServiceDescriptor"),
+        IdentifierName("Describe")
+    );
+
+    private static InvocationExpressionSyntax GenerateServiceType(
+        NameSyntax strategyName,
+        NameSyntax serviceCollectionName,
+        ExpressionSyntax serviceTypeExpression,
+        ExpressionSyntax implementationTypeExpression,
+        ExpressionSyntax lifetime
+    )
+    {
+        return InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    strategyName,
+                    IdentifierName("Apply")
+                )
+            )
+           .WithArgumentList(
+                ArgumentList(
+                    SeparatedList(
+                        new[]
+                        {
+                            Argument(serviceCollectionName),
+                            Argument(
+                                InvocationExpression(Describe)
+                                   .WithArgumentList(
+                                        ArgumentList(
+                                            SeparatedList(
+                                                new[]
+                                                {
+                                                    Argument(serviceTypeExpression),
+                                                    Argument(implementationTypeExpression),
+                                                    Argument(lifetime),
+                                                }
+                                            )
+                                        )
+                                    )
+                            ),
+                        }
+                    )
+                )
+            );
     }
 
     private static ExpressionSyntax GetTypeOfExpression(
@@ -251,68 +318,6 @@ internal static class StatementGeneration
         return GetPrivateType(compilation, type, useAssemblyLoad);
     }
 
-    public static string GetGenericDisplayName(ISymbol? symbol)
-    {
-        if (symbol == null || IsRootNamespace(symbol))
-        {
-            return string.Empty;
-        }
-
-        var sb = new StringBuilder(symbol.MetadataName);
-        if (symbol is INamedTypeSymbol namedTypeSymbol && ( namedTypeSymbol.IsOpenGenericType() || namedTypeSymbol.IsGenericType ))
-        {
-            sb = new(symbol.Name);
-            if (namedTypeSymbol.IsOpenGenericType())
-            {
-                sb.Append('<');
-                for (var i = 1; i < namedTypeSymbol.Arity - 1; i++)
-                    sb.Append(',');
-                sb.Append('>');
-            }
-            else
-            {
-                sb.Append('<');
-                for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
-                {
-                    var argument = namedTypeSymbol.TypeArguments[index];
-                    sb.Append(GetGenericDisplayName(argument));
-                    if (index < namedTypeSymbol.TypeArguments.Length - 1)
-                        sb.Append(',');
-                }
-
-                sb.Append('>');
-            }
-        }
-
-        var last = symbol;
-
-        var workingSymbol = symbol.ContainingSymbol;
-
-        while (!IsRootNamespace(workingSymbol))
-        {
-            if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
-            {
-                sb.Insert(0, '+');
-            }
-            else
-            {
-                sb.Insert(0, '.');
-            }
-
-            sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
-            //sb.Insert(0, symbol.MetadataName);
-            workingSymbol = workingSymbol.ContainingSymbol;
-        }
-
-        return sb.ToString();
-
-        static bool IsRootNamespace(ISymbol symbol)
-        {
-            INamespaceSymbol? s;
-            return ( s = symbol as INamespaceSymbol ) != null && s.IsGlobalNamespace;
-        }
-    }
-
     private static InvocationExpressionSyntax GetPrivateType(Compilation compilation, INamedTypeSymbol type, bool useAssemblyLoad)
     {
         var expression = InvocationExpression(
@@ -364,10 +369,5 @@ internal static class StatementGeneration
         }
 
         return expression;
-    }
-
-    public static bool IsOpenGenericType(this INamedTypeSymbol type)
-    {
-        return type.IsGenericType && ( type.IsUnboundGenericType || type.TypeArguments.All(z => z.TypeKind == TypeKind.TypeParameter) );
     }
 }
