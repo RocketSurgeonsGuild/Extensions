@@ -23,9 +23,13 @@
         <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
         <ImplicitUsings>enable</ImplicitUsings>
         <AnalysisLevel>latest</AnalysisLevel>
-<!--        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>-->
+        <!--        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>-->
+        <!--        <WarningsNotAsErrors></WarningsNotAsErrors>-->
         <WarningsAsErrors>RS0017</WarningsAsErrors>
-<!--        <WarningsNotAsErrors></WarningsNotAsErrors>-->
+
+        <NuGetAudit>true</NuGetAudit>
+        <NuGetAuditMode>all</NuGetAuditMode>
+        <NuGetAuditLevel>moderate</NuGetAuditLevel>
     </PropertyGroup>
     <ItemGroup>
         <None
