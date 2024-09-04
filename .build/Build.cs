@@ -15,7 +15,6 @@ using Serilog;
 [UnsetVisualStudioEnvironmentVariables]
 [PackageIcon("https://raw.githubusercontent.com/RocketSurgeonsGuild/graphics/master/png/social-square-thrust-rounded.png")]
 [EnsureGitHooks(GitHook.PreCommit)]
-[EnsureReadmeIsUpdated("Readme.md")]
 [DotNetVerbosityMapping]
 [MSBuildVerbosityMapping]
 [NuGetVerbosityMapping]
@@ -28,15 +27,11 @@ public partial class Pipeline : NukeBuild,
                                 ICanPackWithDotNetCore,
                                 IHaveDataCollector,
                                 ICanClean,
-                                ICanLintStagedFiles,
-                                ICanDotNetFormat,
-                                ICanPrettier,
+                                IHaveCommonLintTargets,
                                 IHavePublicApis,
-                                ICanUpdateReadme,
                                 IGenerateCodeCoverageReport,
                                 IGenerateCodeCoverageSummary,
                                 IGenerateCodeCoverageBadges,
-                                ICanRegenerateBuildConfiguration,
                                 IHaveConfiguration<Configuration>
 {
     /// <summary>
@@ -57,20 +52,24 @@ public partial class Pipeline : NukeBuild,
                                   .DependsOn(Test)
                                   .DependsOn(Pack);
 
-    public Target Build => _ => _.Inherit<ICanBuildWithDotNetCore>(x => x.CoreBuild);
-
-    public Target Pack => _ => _.Inherit<ICanPackWithDotNetCore>(x => x.CorePack)
-                                .DependsOn(Clean);
-
-    public Target Clean => _ => _.Inherit<ICanClean>(x => x.Clean);
+    public Target Build => _ => _;
+    public Target Pack => _ => _;
+    public Target Clean => _ => _;
     public Target Lint => _ => _.Inherit<ICanLint>(x => x.Lint);
-    public Target Restore => _ => _.Inherit<ICanRestoreWithDotNetCore>(x => x.CoreRestore);
-    public Target Test => _ => _.Inherit<ICanTestWithDotNetCore>(x => x.CoreTest);
+    public Target Restore => _ => _;
+    public Target Test => _ => _;
+
+    /// <summary>
+    /// Only run the JetBrains cleanup code when running on the server
+    /// </summary>
+    public Target JetBrainsCleanupCode => _ => _
+                                              .Inherit<ICanDotNetFormat>(x => x.JetBrainsCleanupCode)
+                                              .OnlyWhenStatic(() => IsServerBuild);
 
     [Solution(GenerateProjects = true)] private Solution Solution { get; } = null!;
     Nuke.Common.ProjectModel.Solution IHaveSolution.Solution => Solution;
 
     [OptionalGitRepository] public GitRepository? GitRepository { get; }
-    [ComputedGitVersion] public GitVersion GitVersion { get; } = null!;
+    [GitVersion(NoFetch = true, NoCache = false)] public GitVersion GitVersion { get; } = null!;
     [Parameter("Configuration to build")] public Configuration Configuration { get; } = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 }
