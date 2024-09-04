@@ -20,6 +20,8 @@
     <GlobalPackageReference Include="xunit.analyzers" Version="1.15.0" />
   </ItemGroup>
   <ItemGroup>
+    <PackageVersion Include="JetBrains.Annotations" Version="2024.2.0" />
+    <PackageVersion Include="JetBrains.ExternalAnnotations" Version="10.2.152" />
     <PackageVersion Include="Polyfill" Version="6.5.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
     <PackageVersion Include="GitVersion.Tool" Version="6.0.2" />
@@ -34,7 +36,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
-    <PackageVersion Include="FastExpressionCompiler.Internal.src" Version="4.2.1" />
+    <PackageVersion Include="FastExpressionCompiler" Version="4.2.1" />
     <PackageVersion Include="NetEscapades.Configuration.Yaml" Version="3.1.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="System.Collections.Immutable" Version="8.0.0" />
