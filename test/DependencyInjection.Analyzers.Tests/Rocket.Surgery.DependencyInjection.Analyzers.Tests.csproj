@@ -1,18 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\..\src\DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.csproj" />
-        <ProjectReference Include="..\..\src\DependencyInjection.Extensions\Rocket.Surgery.DependencyInjection.Extensions.csproj" />
+        <ProjectReference
+            Include="..\..\src\DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.csproj" />
+        <ProjectReference
+            Include="..\..\src\DependencyInjection.Extensions\Rocket.Surgery.DependencyInjection.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
         <PackageReference Include="Rocket.Surgery.Extensions.Testing.SourceGenerators" />
         <PackageReference Include="Microsoft.Extensions.Configuration" />
         <PackageReference Include="Microsoft.Reactive.Testing" />
         <PackageReference Include="Verify.SourceGenerators" />
         <PackageReference Include="Verify.Xunit" />
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
     </ItemGroup>
 </Project>

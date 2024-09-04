@@ -7,6 +7,6 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Extensions/Rocket.Surgery.Extensions.csproj" />
-        <PackageReference Include="FastExpressionCompiler.Internal.src" IncludeAssets="all" PrivateAssets="runtime;build;native;contentfiles;analyzers" />
+        <PackageReference Include="FastExpressionCompiler" />
     </ItemGroup>
 </Project>
