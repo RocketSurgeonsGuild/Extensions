@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project>
     <PropertyGroup>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
@@ -28,7 +27,7 @@
         <PackageVersion Include="GitVersion.Tool" Version="6.0.2" />
         <PackageVersion Include="Nuke.Common" Version="8.0.0" />
         <PackageVersion Include="ReportGenerator" Version="5.3.9" />
-        <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.8.0-beta.5" />
+        <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.8.1-beta.1" />
         <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.4.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
@@ -63,5 +62,6 @@
     </ItemGroup>
     <Import
         Project="$(MSBuildThisFileDirectory)/Directory.Packages.support.props"
-        Condition="Exists('$(MSBuildThisFileDirectory)/Directory.Packages.support.props')" />
+        Condition="Exists('$(MSBuildThisFileDirectory)/Directory.Packages.support.props')"
+    />
 </Project>

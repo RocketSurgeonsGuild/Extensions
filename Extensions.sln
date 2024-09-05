@@ -103,6 +103,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".husky", ".husky", "{660E562C-E0E1-41D5-98A1-C816140566C8}"
 	ProjectSection(SolutionItems) = preProject
 		.husky/pre-commit = .husky/pre-commit
+		.husky/task-runner.json = .husky/task-runner.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{6ADAB0E3-4082-4180-8D29-CDBC9A3E9784}"
