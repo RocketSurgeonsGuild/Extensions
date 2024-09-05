@@ -28,13 +28,14 @@
         <PackageVersion Include="GitVersion.Tool" Version="6.0.2" />
         <PackageVersion Include="Nuke.Common" Version="8.0.0" />
         <PackageVersion Include="ReportGenerator" Version="5.3.9" />
-        <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.8.0-beta.4" />
+        <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.8.0-beta.5" />
         <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.4.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration.Ini" Version="8.0.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+            Version="8.0.0" />
         <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
         <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
         <PackageVersion Include="FastExpressionCompiler" Version="4.2.1" />
@@ -55,7 +56,8 @@
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="8.0.18" />
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.XUnit" Version="8.0.18" />
-        <PackageVersion Include="Rocket.Surgery.Extensions.Testing.SourceGenerators" Version="8.0.18" />
+        <PackageVersion Include="Rocket.Surgery.Extensions.Testing.SourceGenerators"
+            Version="8.0.18" />
         <PackageVersion Include="Verify.Xunit" Version="26.3.1" />
         <PackageVersion Include="Verify.SourceGenerators" Version="2.4.0" />
         <PackageVersion Include="xunit" Version="2.9.0" />
