@@ -73,47 +73,47 @@ jobs:
       - name: 🎁 Restore
         id: restore
         run: |
-          dotnet nuke DotnetCoreRestore Restore --skip
+          dotnet nuke --target DotnetCoreRestore Restore
       - name: Lint Files
         id: lintFiles
         run: |
-          dotnet nuke LintFiles --skip
+          dotnet nuke --target LintFiles --skip Restore
       - name: Lint Public Api Analyzers
         id: lintPublicApiAnalyzers
         run: |
-          dotnet nuke LintPublicApiAnalyzers --skip
+          dotnet nuke --target LintPublicApiAnalyzers
       - name: Move Unshipped to Shipped
         id: moveUnshippedToShipped
         run: |
-          dotnet nuke MoveUnshippedToShipped --skip
+          dotnet nuke --target MoveUnshippedToShipped --skip LintPublicApiAnalyzers
       - name: Regenerate Build Configurations
         id: regenerateBuildConfigurations
         run: |
-          dotnet nuke RegenerateBuildConfigurations --skip
+          dotnet nuke --target RegenerateBuildConfigurations
       - name: Prettier
         id: prettier
         run: |
-          dotnet nuke Prettier --skip
+          dotnet nuke --target Prettier
       - name: Dotnet Format
         id: dotnetFormat
         run: |
-          dotnet nuke DotnetFormat --skip
+          dotnet nuke --target DotnetFormat
       - name: Jet Brains Cleanup Code
         id: jetBrainsCleanupCode
         run: |
-          dotnet nuke JetBrainsCleanupCode --skip
+          dotnet nuke --target JetBrainsCleanupCode
       - name: Generate Solution Items
         id: generateSolutionItems
         run: |
-          dotnet nuke GenerateSolutionItems --skip
+          dotnet nuke --target GenerateSolutionItems
       - name: Generate Readme
         id: generateReadme
         run: |
-          dotnet nuke GenerateReadme --skip
+          dotnet nuke --target GenerateReadme
       - name: Lint Git Add
         id: lintGitAdd
         run: |
-          dotnet nuke LintGitAdd --skip
+          dotnet nuke --target LintGitAdd
       - name: Add & Commit
         env:
           GITHUB_TOKEN: '${{ secrets.RSG_BOT_TOKEN }}'
