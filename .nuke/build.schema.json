@@ -137,88 +137,14 @@
           "type": "array",
           "description": "List of targets to be skipped. Empty list skips all dependencies",
           "items": {
-<<<<<<< Updated upstream
             "$ref": "#/definitions/ExecutableTarget"
-=======
-            "type": "string",
-            "enum": [
-              "Build",
-              "Clean",
-              "CleanWellKnownTemporaryFiles",
-              "Default",
-              "DotnetCoreBuild",
-              "DotnetCorePack",
-              "DotnetCoreRestore",
-              "DotnetCoreTest",
-              "DotnetFormat",
-              "DotnetToolRestore",
-              "GenerateCodeCoverageBadges",
-              "GenerateCodeCoverageReport",
-              "GenerateCodeCoverageReportCobertura",
-              "GenerateCodeCoverageSummary",
-              "GenerateReadme",
-              "GenerateSolutionItems",
-              "HuskyLint",
-              "JetBrainsCleanupCode",
-              "Lint",
-              "LintFiles",
-              "LintGitAdd",
-              "LintPublicApiAnalyzers",
-              "MoveUnshippedToShipped",
-              "Pack",
-              "PostLint",
-              "Prettier",
-              "RegenerateBuildConfigurations",
-              "Restore",
-              "ShipPublicApis",
-              "Test",
-              "TriggerCodeCoverageReports"
-            ]
->>>>>>> Stashed changes
           }
         },
         "Target": {
           "type": "array",
           "description": "List of targets to be invoked. Default is '{default_target}'",
           "items": {
-<<<<<<< Updated upstream
             "$ref": "#/definitions/ExecutableTarget"
-=======
-            "type": "string",
-            "enum": [
-              "Build",
-              "Clean",
-              "CleanWellKnownTemporaryFiles",
-              "Default",
-              "DotnetCoreBuild",
-              "DotnetCorePack",
-              "DotnetCoreRestore",
-              "DotnetCoreTest",
-              "DotnetFormat",
-              "DotnetToolRestore",
-              "GenerateCodeCoverageBadges",
-              "GenerateCodeCoverageReport",
-              "GenerateCodeCoverageReportCobertura",
-              "GenerateCodeCoverageSummary",
-              "GenerateReadme",
-              "GenerateSolutionItems",
-              "HuskyLint",
-              "JetBrainsCleanupCode",
-              "Lint",
-              "LintFiles",
-              "LintGitAdd",
-              "LintPublicApiAnalyzers",
-              "MoveUnshippedToShipped",
-              "Pack",
-              "PostLint",
-              "Prettier",
-              "RegenerateBuildConfigurations",
-              "Restore",
-              "ShipPublicApis",
-              "Test",
-              "TriggerCodeCoverageReports"
-            ]
->>>>>>> Stashed changes
           }
         },
         "Verbosity": {
