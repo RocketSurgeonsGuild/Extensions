@@ -109,19 +109,19 @@ jobs:
       - name: ⚙️ Build
         id: build
         run: |
-          dotnet nuke --target DotnetCoreBuild Build
+          dotnet .build/bin/Debug/.build.dll --target DotnetCoreBuild Build
       - name: 🚦 Test
         id: test
         run: |
-          dotnet nuke --target DotnetCoreTest Test TriggerCodeCoverageReports GenerateCodeCoverageReportCobertura GenerateCodeCoverageBadges GenerateCodeCoverageSummary GenerateCodeCoverageReport
+          dotnet .build/bin/Debug/.build.dll --target DotnetCoreTest Test TriggerCodeCoverageReports GenerateCodeCoverageReportCobertura GenerateCodeCoverageBadges GenerateCodeCoverageSummary GenerateCodeCoverageReport
       - name: 📦 Pack
         id: pack
         run: |
-          dotnet nuke --target DotnetCorePack Pack --skip Build
+          dotnet .build/bin/Debug/.build.dll --target DotnetCorePack Pack --skip Build
       - name: Default
         id: default
         run: |
-          dotnet nuke --target Default --skip Restore Build Test Pack
+          dotnet .build/bin/Debug/.build.dll --target Default --skip Restore Build Test Pack
       - name: 🏺 Publish coverage data
         if: always()
         uses: actions/upload-artifact@v4
