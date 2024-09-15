@@ -77,43 +77,43 @@ jobs:
       - name: Lint Files
         id: lintFiles
         run: |
-          dotnet nuke --target LintFiles --skip Restore
+          dotnet .build/bin/Debug/.build.dll --target LintFiles --skip Restore
       - name: Lint Public Api Analyzers
         id: lintPublicApiAnalyzers
         run: |
-          dotnet nuke --target LintPublicApiAnalyzers
+          dotnet .build/bin/Debug/.build.dll --target LintPublicApiAnalyzers
       - name: Move Unshipped to Shipped
         id: moveUnshippedToShipped
         run: |
-          dotnet nuke --target MoveUnshippedToShipped --skip LintPublicApiAnalyzers
+          dotnet .build/bin/Debug/.build.dll --target MoveUnshippedToShipped --skip LintPublicApiAnalyzers
       - name: Regenerate Build Configurations
         id: regenerateBuildConfigurations
         run: |
-          dotnet nuke --target RegenerateBuildConfigurations
+          dotnet .build/bin/Debug/.build.dll --target RegenerateBuildConfigurations
       - name: Prettier
         id: prettier
         run: |
-          dotnet nuke --target Prettier
+          dotnet .build/bin/Debug/.build.dll --target Prettier
       - name: Dotnet Format
         id: dotnetFormat
         run: |
-          dotnet nuke --target DotnetFormat
+          dotnet .build/bin/Debug/.build.dll --target DotnetFormat
       - name: Jet Brains Cleanup Code
         id: jetBrainsCleanupCode
         run: |
-          dotnet nuke --target JetBrainsCleanupCode
+          dotnet .build/bin/Debug/.build.dll --target JetBrainsCleanupCode
       - name: Generate Solution Items
         id: generateSolutionItems
         run: |
-          dotnet nuke --target GenerateSolutionItems
+          dotnet .build/bin/Debug/.build.dll --target GenerateSolutionItems
       - name: Generate Readme
         id: generateReadme
         run: |
-          dotnet nuke --target GenerateReadme
+          dotnet .build/bin/Debug/.build.dll --target GenerateReadme
       - name: Lint Git Add
         id: lintGitAdd
         run: |
-          dotnet nuke --target LintGitAdd
+          dotnet .build/bin/Debug/.build.dll --target LintGitAdd
       - name: Add & Commit
         env:
           GITHUB_TOKEN: '${{ secrets.RSG_BOT_TOKEN }}'
