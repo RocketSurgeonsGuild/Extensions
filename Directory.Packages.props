@@ -22,7 +22,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageVersion Include="JetBrains.Annotations" Version="2024.2.0" />
-        <PackageVersion Include="JetBrains.ExternalAnnotations" Version="10.2.152" />
+        <PackageVersion Include="JetBrains.ExternalAnnotations" Version="10.2.153" />
         <PackageVersion Include="Polyfill" Version="6.9.0" />
         <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
         <PackageVersion Include="GitVersion.Tool" Version="6.0.2" />
