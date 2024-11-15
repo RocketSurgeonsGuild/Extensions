@@ -1,9 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project>
     <ItemGroup>
-        <PackageReference Include="Polyfill"
-            Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))"
-            PrivateAssets="all" />
+        <PackageReference Include="Polyfill" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))" PrivateAssets="all" />
         <PackageReference Include="JetBrains.Annotations" PrivateAssets="all" />
         <PackageReference Include="JetBrains.ExternalAnnotations" PrivateAssets="all" />
     </ItemGroup>

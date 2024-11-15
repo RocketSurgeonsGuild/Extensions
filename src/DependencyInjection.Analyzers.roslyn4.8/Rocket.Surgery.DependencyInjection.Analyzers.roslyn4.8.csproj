@@ -6,7 +6,7 @@
       ""))</_Analyzer_Roslyn_Version_>
     <DefineConstants>$(DefineConstants);ROSLYN4_8</DefineConstants>
     <IsPackable>false</IsPackable>
-    <AssemblyName>Rocket.Surgery.Conventions.Analyzers</AssemblyName>
+    <AssemblyName>Rocket.Surgery.DependencyInjection.Analyzers</AssemblyName>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
   <ItemGroup>

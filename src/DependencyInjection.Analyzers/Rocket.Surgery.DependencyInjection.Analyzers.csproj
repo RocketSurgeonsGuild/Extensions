@@ -2,20 +2,21 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IsRoslynComponent>true</IsRoslynComponent>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <DefineConstants>$(DefineConstants);ROSLYN_CURRENT</DefineConstants>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all" />
     <PackageReference Include="System.Text.Json" PrivateAssets="all" />
     <PackageReference Include="Polyfill" PrivateAssets="All" />
-
       <None
-            Include="$(MSBuildThisFileDirectory)\..\Conventions.Analyzers.roslyn4.8\bin\$(Configuration)\netstandard2.0\$(AssemblyName).dll"
+            Include="$(MSBuildThisFileDirectory)\..\DependencyInjection.Analyzers.roslyn4.8\bin\$(Configuration)\netstandard2.0\$(AssemblyName).dll"
             Pack="true"
             PackagePath="analyzers/dotnet/roslyn4.8/cs"
             Visible="false"
         />
         <None Include="bin\$(Configuration)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.11/cs" Visible="false" />
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
         <None Include="$(PkgSystem_Text_Json)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.8/cs" Visible="false" />
         <None Include="$(PkgSystem_Text_Json)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.11/cs" Visible="false" />
 
