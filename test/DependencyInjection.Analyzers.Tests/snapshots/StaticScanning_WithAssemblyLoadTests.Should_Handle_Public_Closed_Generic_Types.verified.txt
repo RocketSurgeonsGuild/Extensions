@@ -9,12 +9,9 @@
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
-    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
-    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     mscorlib.dll,
     netstandard.dll,
     Rocket.Surgery.DependencyInjection.Extensions.dll,
-    Scrutor.dll,
     System.ComponentModel.dll,
     System.Core.dll,
     System.dll,
@@ -24,7 +21,7 @@
   Services: [
     {
       Lifetime: Singleton,
-      ServiceType: RootDependencyProject.IRequestHandler`2[[RootDependencyProject.Request, RootDependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null],[RootDependencyProject.Response, RootDependencyProject, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]],
+      ServiceType: RootDependencyProject.IRequestHandler`2[[RootDependencyProject.Request, RootDependencyProject, Version=version, Culture=neutral, PublicKeyToken=null],[RootDependencyProject.Response, RootDependencyProject, Version=version, Culture=neutral, PublicKeyToken=null]],
       ImplementationType: RootDependencyProject.RequestHandler
     }
   ]

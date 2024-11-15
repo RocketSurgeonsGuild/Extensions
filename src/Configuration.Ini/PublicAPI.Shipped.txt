@@ -1,3 +1,0 @@
-#nullable enable
-Rocket.Surgery.Extensions.Configuration.IniConfigOptionsExtensions
-static Rocket.Surgery.Extensions.Configuration.IniConfigOptionsExtensions.UseIni(this Rocket.Surgery.Extensions.Configuration.ConfigOptions! options) -> Rocket.Surgery.Extensions.Configuration.ConfigOptions!

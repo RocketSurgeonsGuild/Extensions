@@ -1,4 +1,0 @@
-#nullable enable
-Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator
-Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator.CompiledServiceScanningGenerator() -> void
-Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator.Initialize(Microsoft.CodeAnalysis.IncrementalGeneratorInitializationContext context) -> void

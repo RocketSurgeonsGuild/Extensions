@@ -9,12 +9,9 @@
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
-    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
-    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     mscorlib.dll,
     netstandard.dll,
     Rocket.Surgery.DependencyInjection.Extensions.dll,
-    Scrutor.dll,
     System.ComponentModel.dll,
     System.Core.dll,
     System.dll,

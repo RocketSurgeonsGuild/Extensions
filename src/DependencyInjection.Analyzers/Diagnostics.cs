@@ -50,4 +50,13 @@ internal static class Diagnostics
         DiagnosticSeverity.Warning,
         true
     );
+
+    public static DiagnosticDescriptor MustBeAString { get; } = new(
+        "RSGD0005",
+        "Value must be a string",
+        "The given value must be a constant string",
+        Category,
+        DiagnosticSeverity.Warning,
+        true
+    );
 }

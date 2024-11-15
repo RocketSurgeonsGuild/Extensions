@@ -1,4 +1,0 @@
-#nullable enable
-Rocket.Surgery.Extensions.Configuration.YamlConfigOptionsExtensions
-static Rocket.Surgery.Extensions.Configuration.YamlConfigOptionsExtensions.UseYaml(this Rocket.Surgery.Extensions.Configuration.ConfigOptions! options) -> Rocket.Surgery.Extensions.Configuration.ConfigOptions!
-static Rocket.Surgery.Extensions.Configuration.YamlConfigOptionsExtensions.UseYml(this Rocket.Surgery.Extensions.Configuration.ConfigOptions! options) -> Rocket.Surgery.Extensions.Configuration.ConfigOptions!

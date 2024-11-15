@@ -95,6 +95,10 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+      - name: 🔨 Use .NET Core 9.0 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
       - name: 🚒 dotnet workload restore
         continue-on-error: true
         run: |
@@ -130,7 +134,7 @@ jobs:
           path: 'coverage/'
       - name: 📫 Publish Coverage
         if: (github.event_name != 'pull_request' && github.event_name != 'pull_request_target') || ((github.event_name == 'pull_request' || github.event_name == 'pull_request_target') && github.event.pull_request.user.login != 'renovate[bot]' && github.event.pull_request.user.login != 'dependabot[bot]')
-        uses: codecov/codecov-action@v5.0.0
+        uses: codecov/codecov-action@v4.6.0
         with:
           name: 'actions-${{ matrix.os }}'
           token: '${{ secrets.CODECOV_TOKEN }}'

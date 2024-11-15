@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using DiffEngine;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +36,31 @@ public static class ModuleInitializer
                 return new(path, typeName, method.Name);
             }
         );
+        VerifierSettings.ScrubLinesWithReplace(
+            s => s.Contains("AssemblyMetadata(\"AssemblyProvider.", StringComparison.OrdinalIgnoreCase)
+                ? s.Substring(0, s.IndexOf('"', s.IndexOf('"') + 1) + 2) + "\"{scrubbed}\")]"
+                : s
+        );
+        VerifierSettings.ScrubLinesWithReplace(
+            s => s.Contains("<Compiled_AssemblyProvider_g>", StringComparison.OrdinalIgnoreCase)
+                ? s.Substring(0, s.IndexOf('"') + 1) + "{CompiledTypeProvider}" + s.Substring(s.LastIndexOf('"'))
+                : s
+        );
+        VerifierSettings.AddScrubber(
+            (builder, counter) =>
+            {
+                if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>() is
+                    { Version: { Length: > 0, } version, })
+                    builder.Replace(version, "version");
+                if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0, } version2, })
+                    builder.Replace(version2, "version");
+                // regex to replace the version number in this string Version=12.0.0.0,
+                var regex = new Regex("Version=(.*?),", RegexOptions.Compiled);
+                var result = regex.Replace(builder.ToString(), "Version=version,");
+                builder.Clear();
+                builder.Append(result);
+            }
+        );
     }
 
     internal static IEnumerable<Diagnostic> OrderDiagnosticResults(this IEnumerable<Diagnostic> diagnostics, DiagnosticSeverity severity)
@@ -65,6 +92,7 @@ public static class ModuleInitializer
                             .References
                             .Select(x => x.Display ?? "")
                             .Select(Path.GetFileName)
+                            .Distinct()
                             .OrderBy(z => z);
 
         data["FinalDiagnostics"] = target.FinalDiagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error);

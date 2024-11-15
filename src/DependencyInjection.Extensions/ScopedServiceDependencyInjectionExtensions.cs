@@ -13,11 +13,7 @@ public static class ScopedServiceDependencyInjectionExtensions
     /// </summary>
     public static IServiceCollection AddExecuteScopedServices(this IServiceCollection services)
     {
-        if (services is null)
-        {
-            throw new ArgumentNullException(nameof(services));
-        }
-
+        ArgumentNullException.ThrowIfNull(services);
         return services
               .AddTransient(typeof(IExecuteScoped<>), typeof(ExecuteScoped<>))
               .AddTransient(typeof(IExecuteScoped<,>), typeof(ExecuteScoped<,>))
