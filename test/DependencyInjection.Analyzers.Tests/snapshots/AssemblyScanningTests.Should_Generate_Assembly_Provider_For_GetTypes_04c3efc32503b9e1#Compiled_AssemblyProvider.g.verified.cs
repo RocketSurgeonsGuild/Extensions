@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
-[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes","{scrubbed}")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -18,7 +17,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         yield break;
     }
 
-    IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionAssemblySelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
+    IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
         yield break;
     }

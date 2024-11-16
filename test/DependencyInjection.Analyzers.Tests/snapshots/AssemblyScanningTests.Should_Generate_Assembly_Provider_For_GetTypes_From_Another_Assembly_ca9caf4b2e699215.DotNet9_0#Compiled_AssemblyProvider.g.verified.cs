@@ -17,7 +17,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         yield break;
     }
 
-    IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionAssemblySelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
+    IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
         switch (lineNumber)
         {

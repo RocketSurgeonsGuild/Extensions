@@ -154,7 +154,7 @@ internal static class ReflectionCollection
                                                                          .WithType(
                                                                               GenericName(Identifier("Func"))
                                                                                  .AddTypeArgumentListArguments(
-                                                                                      IdentifierName(IReflectionAssemblySelector),
+                                                                                      IdentifierName(IReflectionTypeSelector),
                                                                                       GenericName(Identifier("IEnumerable"))
                                                                                          .WithTypeArgumentList(
                                                                                               TypeArgumentList(
@@ -179,4 +179,5 @@ internal static class ReflectionCollection
     public record Item(SourceLocation Location, CompiledAssemblyFilter AssemblyFilter, CompiledTypeFilter TypeFilter);
 
     private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
+    private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
 }

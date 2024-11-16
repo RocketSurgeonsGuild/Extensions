@@ -192,7 +192,7 @@ public static class GetTypesTestsData
         );
 
         static object[] TestMethod(
-            Func<IReflectionAssemblySelector, IEnumerable<Type>> func,
+            Func<IReflectionTypeSelector, IEnumerable<Type>> func,
             [CallerArgumentExpression(nameof(func))]
             string argument = null!
         )
@@ -208,7 +208,7 @@ public static class GetTypesTestsData
         }
     }
 
-    public record GetTypesItem(string Name, string Expression, Func<IReflectionAssemblySelector, IEnumerable<Type>> Selector)
+    public record GetTypesItem(string Name, string Expression, Func<IReflectionTypeSelector, IEnumerable<Type>> Selector)
     {
         public override string ToString()
         {
