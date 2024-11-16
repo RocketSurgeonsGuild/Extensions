@@ -1,11 +1,90 @@
 using System.Reflection;
 using System.Runtime.Loader;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
 using Xunit.Abstractions;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
+
+public class AssemblyScanningTests(ITestOutputHelper testOutputHelper) : GeneratorTest(testOutputHelper, false)
+{
+    [Theory]
+    [MemberData(nameof(GetTypesTestsData.GetTypesData), MemberType = typeof(GetTypesTestsData))]
+    public async Task Should_Generate_Assembly_Provider_For_GetTypes(GetTypesTestsData.GetTypesItem getTypesItem)
+    {
+        var result = await Builder
+                          .AddSources(
+                               $$$""""
+                               using Rocket.Surgery.DependencyInjection;
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
+                               using System.ComponentModel;
+                               using System.Threading;
+                               using System.Threading.Tasks;
+                               using System;
+
+                               public static class Program
+                               {
+                                   static void Main()
+                                   {
+                                        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	        provider.GetTypes({{{getTypesItem.Expression}}});
+                                   }
+                               }
+                               """"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result).UseParameters(getTypesItem.Name).HashParameters();
+    }
+
+
+    [Theory]
+    [MemberData(nameof(GetTypesTestsData.GetTypesData), MemberType = typeof(GetTypesTestsData))]
+    public async Task Should_Generate_Assembly_Provider_For_GetTypes_From_Another_Assembly(GetTypesTestsData.GetTypesItem getTypesItem)
+    {
+        using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
+        var other = await Builder
+                         .WithProjectName("OtherProject")
+                         .AddSources(
+                              $$$""""
+                              using Rocket.Surgery.DependencyInjection;
+                              using Rocket.Surgery.DependencyInjection.Compiled;
+                              using Microsoft.Extensions.DependencyInjection;
+                              using System.ComponentModel;
+                              using System.Threading;
+                              using System.Threading.Tasks;
+                              using System;
+
+                              public static class Program
+                              {
+                                  static void Main()
+                                  {
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                              	       provider.GetTypes({{{getTypesItem.Expression}}});
+                                  }
+                              }
+                              """"
+                          )
+                         .Build()
+                         .GenerateAsync();
+
+        var diags = other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ToArray();
+        if (diags.Length > 0) await Verify(diags).UseParameters(getTypesItem.Name).HashParameters();
+
+        other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
+
+        var result = await Builder
+                          .AddCompilationReferences(other)
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result).UseParameters(getTypesItem.Name).HashParameters();
+    }
+}
 
 public class StaticScanningTests(ITestOutputHelper testOutputHelper) : GeneratorTest(testOutputHelper, false)
 {
@@ -33,13 +112,15 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService)))
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
         );
         return services;
     }
@@ -91,13 +172,15 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableTo<IService>())
-                .AsSelf()
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	        provider.Scan(
+                services,
+                z => z
+			        .FromAssemblies()
+			        .AddClasses(x => x.AssignableTo<IService>())
+                    .AsSelf()
+                    .AsImplementedInterfaces()
+                    .WithSingletonLifetime()
             );
             return services;
         }
@@ -138,12 +221,14 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService<>)))
-            .AsSelfWithInterfaces()
-            .WithScopedLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService<>)))
+                .AsSelfWithInterfaces()
+                .WithScopedLifetime()
         );
         return services;
     }
@@ -193,13 +278,15 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService<>)))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService<>)))
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
         );
         return services;
     }
@@ -255,12 +342,14 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	        provider.Scan(
+                services,
+                z => z
+			        .FromAssemblies()
+			        .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
+                    .AsImplementedInterfaces()
+                    .WithSingletonLifetime()
             );
             return services;
         }
@@ -317,12 +406,14 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	        provider.Scan(
+                services,
+                z => z
+			        .FromAssemblies()
+			        .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
+                    .AsImplementedInterfaces()
+                    .WithSingletonLifetime()
             );
             return services;
         }
@@ -357,13 +448,15 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService)))
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
         );
         return services;
     }
@@ -396,12 +489,14 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)))
-            .As<IService>()
-            .WithScopedLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService)))
+                .As<IService>()
+                .WithScopedLifetime()
         );
         return services;
     }
@@ -451,13 +546,15 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableTo<IService>())
-                .AsSelf()
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
+            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	        provider.Scan(
+                services,
+                z => z
+			        .FromAssemblies()
+			        .AddClasses(x => x.AssignableTo<IService>())
+                    .AsSelf()
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime()
             );
             return services;
         }
@@ -483,25 +580,10 @@ namespace TestProject
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
-public interface IService
-{
-
-}
-
-public class Service : IService
-{
-
-}
-
-public interface IServiceB
-{
-
-}
-
-public class ServiceB : IServiceB
-{
-
-}
+public interface IService;
+public class Service : IService;
+public interface IServiceB;
+public class ServiceB : IServiceB;
 ",
                                @"
 using Rocket.Surgery.DependencyInjection.Compiled;
@@ -512,12 +594,15 @@ public static class Program {
     static void Main() {}
     static IServiceCollection Method()
     {
-	    Services.ScanCompiled(z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)), false)
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithSingletonLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            Services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService)), false)
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .WithSingletonLifetime()
         );
 
         return Services;
@@ -533,7 +618,10 @@ public static class Program2 {
 
     static IServiceCollection Method()
     {
-	    Services.ScanCompiled(z => z
+        var provider = typeof(Program2).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            Services,
+            z => z
 			.FromAssemblies()
 			.AddClasses(x => x.AssignableTo<IServiceB>(), false)
             .AsSelf()
@@ -575,13 +663,15 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>())
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>())
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
         );
         return services;
     }
@@ -615,13 +705,15 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
         );
         return services;
     }
@@ -632,6 +724,8 @@ public static class Program {
                           .GenerateAsync();
 
 
+
+//        await Verify(result);
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
@@ -661,57 +755,14 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
-"
-                           )
-                          .Build()
-                          .GenerateAsync();
-
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
-    }
-
-    [Fact]
-    public async Task Should_Support_ServiceDescriptorAttributes()
-    {
-        var result = await Builder
-                          .AddSources(
-                               @"
-using System;
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-public interface IService { }
-public interface IServiceB { }
-[ServiceDescriptor(typeof(IServiceB), ServiceLifetime.Scoped)]
-public class Service : IService, IServiceB { }
-[ServiceDescriptor(null, ServiceLifetime.Transient)]
-public class ServiceA : IService { }
-[ServiceDescriptor]
-public class ServiceB : IService, IServiceB { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
+                .UsingAttributes()
+                .WithSingletonLifetime()
         );
         return services;
     }
@@ -743,13 +794,15 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => {
-               z.FromAssemblies()
-			    .AddClasses(x => x.AssignableTo(typeof(IService)))
-                .AsSelf()
-                .AsImplementedInterfaces()
-                .WithScopedLifetime();
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => {
+                   z.FromAssemblies()
+			        .AddClasses(x => x.AssignableTo(typeof(IService)))
+                    .AsSelf()
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime();
         });
         return services;
     }
@@ -780,7 +833,10 @@ public static class Program {
     {
         var type = typeof(IService);
         var services = new ServiceCollection();
-	    services.ScanCompiled(z => z.FromAssemblies()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z.FromAssemblies()
 			  .AddClasses(x => x.AssignableTo(type))
               .AsSelf()
               .AsImplementedInterfaces()
@@ -812,9 +868,12 @@ public static class Program {
     static void Main() { }
     static IServiceCollection LoadServices()
     {
-        var ns = ""MyNamespace"");
+        var ns = ""MyNamespace"";
         var services = new ServiceCollection();
-	    services.ScanCompiled(z => z.FromAssemblies()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z.FromAssemblies()
 			  .AddClasses(x => x.InNamespaces(ns))
               .AsSelf()
               .AsImplementedInterfaces()
@@ -851,51 +910,14 @@ public static class Program {
     static IServiceCollection LoadServices()
     {
         var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
-"
-                           )
-                          .Build()
-                          .GenerateAsync();
-
-        await Verify(result);
-    }
-
-    [Fact]
-    public async Task Should_Report_Diagnostic_For_Duplicate_ServiceDescriptorAttributes()
-    {
-        var result = await Builder
-                          .AddSources(
-                               @"
-using System;
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
-
-public interface IService { }
-[ServiceDescriptor(typeof(IService), ServiceLifetime.Scoped)]
-[ServiceDescriptor(typeof(IService), ServiceLifetime.Singleton)]
-public class Service : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableTo(typeof(IService)))
+                .UsingAttributes()
+                .WithSingletonLifetime()
         );
         return services;
     }
@@ -943,36 +965,18 @@ namespace RootDependencyProject
                                   .WithAssemblyLoadContext(AssemblyLoadContext)
                                   .AddCompilationReferences(rootGenerator)
                                   .AddSources(
-                                       $@"
-using RootDependencyProject;
+                                       $$"""
 
-namespace Dependency{
-    1
-}Project
-{{
-    {
-        ( i % 2 == 0 ? "public" : "" )
-    } class Request{
-        i
-    } : IRequest<Response{
-        i
-    }> {{ }}
-    {
-        ( i % 2 == 0 ? "public" : "" )
-    } class Response{
-        i
-    } {{ }}
-    {
-        ( i % 2 == 0 ? "public" : "" )
-    } class RequestHandler{
-        i
-    } : IRequestHandler<Request{
-        i
-    }, Response{
-        i
-    }>  {{ }}
-}}
-"
+                                       using RootDependencyProject;
+
+                                       namespace Dependency{{1}}Project
+                                       {
+                                           {{( i % 2 == 0 ? "public" : "" )}} class Request{{i}} : IRequest<Response{{i}}> { }
+                                           {{( i % 2 == 0 ? "public" : "" )}} class Response{{i}} { }
+                                           {{( i % 2 == 0 ? "public" : "" )}} class RequestHandler{{i}} : IRequestHandler<Request{{i}}, Response{{i}}>  { }
+                                       }
+
+                                       """
                                    )
                                   .Build()
                                   .GenerateAsync();
@@ -995,12 +999,14 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	        provider.Scan(
+                services,
+                z => z
+			        .FromAssemblies()
+			        .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
+                    .AsImplementedInterfaces()
+                    .WithSingletonLifetime()
             );
             return services;
         }
@@ -1051,16 +1057,14 @@ namespace RootDependencyProject
                                   .WithAssemblyLoadContext(AssemblyLoadContext)
                                   .AddCompilationReferences(rootGenerator)
                                   .AddSources(
-                                       $@"
-namespace Dependency{
-    1
-}Project
-{{
-    class Service{
-        i
-    } : RootDependencyProject.IService {{ }}
-}}
-"
+                                       $$"""
+
+                                       namespace Dependency{{1}}Project
+                                       {
+                                           class Service{{i}} : RootDependencyProject.IService { }
+                                       }
+
+                                       """
                                    )
                                   .Build()
                                   .GenerateAsync();
@@ -1083,12 +1087,14 @@ namespace TestProject
         static IServiceCollection LoadServices()
         {
             var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableTo<IService>())
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	        provider.Scan(
+                services,
+                z => z
+			        .FromAssemblies()
+			        .AddClasses(x => x.AssignableTo<IService>())
+                    .AsImplementedInterfaces()
+                    .WithSingletonLifetime()
             );
             return services;
         }
@@ -1113,59 +1119,45 @@ namespace TestProject
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               $$"""
 
-public interface IService
-{{
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-}}
+                               public interface IService;
+                               public class Service : IService;
+                               public interface IServiceB;
+                               public class ServiceB : IServiceB;
 
-public class Service : IService
-{{
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                                       provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo<IService>())
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .With{{serviceLifetime}}Lifetime()
+                                       );
 
-}}
-
-public interface IServiceB
-{{
-
-}}
-
-public class ServiceB : IServiceB
-{{
-
-}}
-
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo<IService>())
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .With{
-                serviceLifetime
-            }Lifetime()
-        );
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo<IServiceB>(), false)
-            .AsSelf()
-            .AsMatchingInterface()
-            .WithLifetime(ServiceLifetime.{
-                serviceLifetime
-            })
-        );
-        return services;
-    }}
-}}
-"
+                               	        provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo<IServiceB>(), false)
+                                               .AsSelf()
+                                               .AsMatchingInterface()
+                                               .WithLifetime(ServiceLifetime.{{serviceLifetime}})
+                                       );
+                                       return services;
+                                   }
+                               }
+                               """
                            )
                           .Build()
                           .GenerateAsync();
@@ -1175,266 +1167,274 @@ public static class Program {{
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(serviceLifetime);
     }
 
-    [Theory]
-    [InlineData("Suffix")]
-    [InlineData("Postfix")]
-    [InlineData("EndsWith")]
-    public async Task Should_Filter_With_EndsWith(string methodName)
+    [Fact]
+    public async Task Should_Filter_With_EndsWith()
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               """
 
-public interface Factory {{}}
-public interface IService {{ }}
-public interface IServiceB {{ }}
-public class ServiceFactory : IService, IServiceB {{ }}
-public class ServiceA : IService {{ }}
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().{methodName}(""Factory""))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               public interface Factory {}
+                               public interface IService { }
+                               public interface IServiceB { }
+                               public class ServiceFactory : IService, IServiceB { }
+                               public class ServiceA : IService { }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().EndsWith("Factory"))
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Theory]
-    [InlineData("Suffix")]
-    [InlineData("Postfix")]
-    [InlineData("EndsWith")]
-    public async Task Should_Filter_With_EndsWith_NameOf(string methodName)
+    [Fact]
+    public async Task Should_Filter_With_EndsWith_NameOf()
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               """
 
-public interface Factory {{}}
-public interface IService {{ }}
-public interface IServiceB {{ }}
-public class ServiceFactory : IService, IServiceB {{ }}
-public class ServiceA : IService {{ }}
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().{methodName}(nameof(Factory)))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               public interface Factory {}
+                               public interface IService { }
+                               public interface IServiceB { }
+                               public class ServiceFactory : IService, IServiceB { }
+                               public class ServiceA : IService { }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().EndsWith(nameof(Factory)))
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Theory]
-    [InlineData("Affix")]
-    [InlineData("Prefix")]
-    [InlineData("StartsWith")]
-    public async Task Should_Filter_With_StartsWith(string methodName)
+    [Fact]
+    public async Task Should_Filter_With_StartsWith()
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               """
 
-public interface Factory {{}}
-public interface IService {{ }}
-public interface IServiceB {{ }}
-public class FactoryService : IService, IServiceB {{ }}
-public class ServiceA : IService {{ }}
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().{methodName}(""Factory""))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               public interface Factory {}
+                               public interface IService { }
+                               public interface IServiceB { }
+                               public class FactoryService : IService, IServiceB { }
+                               public class ServiceA : IService { }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().StartsWith("Factory"))
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Theory]
-    [InlineData("Affix")]
-    [InlineData("Prefix")]
-    [InlineData("StartsWith")]
-    public async Task Should_Filter_With_StartsWith_NameOf(string methodName)
+    [Fact]
+    public async Task Should_Filter_With_StartsWith_NameOf()
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               """
 
-public interface Factory {{}}
-public interface IService {{ }}
-public interface IServiceB {{ }}
-public class FactoryService : IService, IServiceB {{ }}
-public class ServiceA : IService {{ }}
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().{methodName}(nameof(Factory)))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               public interface Factory {}
+                               public interface IService { }
+                               public interface IServiceB { }
+                               public class FactoryService : IService, IServiceB { }
+                               public class ServiceA : IService { }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().StartsWith(nameof(Factory)))
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Theory]
-    [InlineData("Includes")]
-    [InlineData("Contains")]
-    public async Task Should_Filter_With_Contains(string methodName)
+    [Fact]
+    public async Task Should_Filter_With_Contains()
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               """
 
-public interface Factory {{}}
-public interface IService {{ }}
-public interface IServiceB {{ }}
-public class ServFactoryice : IService, IServiceB {{ }}
-public class ServiceA : IService {{ }}
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().{methodName}(""Factory""))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               public interface Factory {}
+                               public interface IService { }
+                               public interface IServiceB { }
+                               public class ServFactoryice : IService, IServiceB { }
+                               public class ServiceA : IService { }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().Contains("Factory"))
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Theory]
-    [InlineData("Includes")]
-    [InlineData("Contains")]
-    public async Task Should_Filter_With_Contains_NameOf(string methodName)
+    [Fact]
+    public async Task Should_Filter_With_Contains_NameOf()
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               """
 
-public interface Factory {{}}
-public interface IService {{ }}
-public interface IServiceB {{ }}
-public class ServFactoryice : IService, IServiceB {{ }}
-public class ServiceA : IService {{ }}
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().{methodName}(nameof(Factory)))
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               public interface Factory {}
+                               public interface IService { }
+                               public interface IServiceB { }
+                               public class ServFactoryice : IService, IServiceB { }
+                               public class ServiceA : IService { }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo(typeof(IService)).AssignableTo<IServiceB>().Contains(nameof(Factory)))
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(methodName);
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Theory]
@@ -1444,38 +1444,40 @@ public static class Program {{
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using System;
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               $$"""
 
-public class MyAttribute : Attribute {{ }}
-public interface IService {{ }}
-public interface IServiceB {{ }}
-public class Service : IService, IServiceB {{ }}
-[MyAttribute]
-public class ServiceA : IService {{ }}
-public class ServiceB : IService {{ }}
+                               using System;
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.WithAttribute{
-                ( useTypeof ? "(typeof(MyAttribute))" : "<MyAttribute>()" )
-            })
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               public class MyAttribute : Attribute { }
+                               public interface IService { }
+                               public interface IServiceB { }
+                               public class Service : IService, IServiceB { }
+                               [MyAttribute]
+                               public class ServiceA : IService { }
+                               public class ServiceB : IService { }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.WithAttribute{{( useTypeof ? "(typeof(MyAttribute))" : "<MyAttribute>()" )}})
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
@@ -1492,38 +1494,40 @@ public static class Program {{
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using System;
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               $$"""
 
-public class MyAttribute : Attribute {{ }}
-public interface IService {{ }}
-public interface IServiceB {{ }}
-public class Service : IService, IServiceB {{ }}
-[MyAttribute]
-public class ServiceA : IService {{ }}
-public class ServiceB : IService {{ }}
+                               using System;
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)).WithoutAttribute{
-                ( useTypeof ? "(typeof(MyAttribute))" : "<MyAttribute>()" )
-            })
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               public class MyAttribute : Attribute { }
+                               public interface IService { }
+                               public interface IServiceB { }
+                               public class Service : IService, IServiceB { }
+                               [MyAttribute]
+                               public class ServiceA : IService { }
+                               public class ServiceB : IService { }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo(typeof(IService)).WithoutAttribute{{( useTypeof ? "(typeof(MyAttribute))" : "<MyAttribute>()" )}})
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
@@ -1547,66 +1551,68 @@ public static class Program {{
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               $$"""
 
-namespace TestProject.A
-{{
-    public interface IService {{ }}
-    public class Service : IService, TestProject.B.IServiceB {{ }}
-    public class ServiceA : IService {{ }}
-}}
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-namespace TestProject.A.C
-{{
-    public class ServiceC : IService {{ }}
-}}
+                               namespace TestProject.A
+                               {
+                                   public interface IService { }
+                                   public class Service : IService, TestProject.B.IServiceB { }
+                                   public class ServiceA : IService { }
+                               }
 
-namespace TestProject.B
-{{
-    public interface IServiceB {{ }}
-    public class ServiceB : TestProject.A.IService {{ }}
-}}
+                               namespace TestProject.A.C
+                               {
+                                   public class ServiceC : IService { }
+                               }
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.{
-                ( usingClass, usingTypeof, filter ) switch
-                {
-                    (false, false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\")",
-                    (false, false, NamespaceFilter.In)    => $"InNamespaces(\"{namespaceFilterValue}\")",
-                    (false, false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\")",
-                    (true, false, NamespaceFilter.Exact)  => $"InExactNamespaceOf(typeof({namespaceFilterValue}))",
-                    (true, false, NamespaceFilter.In)     => $"InNamespaceOf(typeof({namespaceFilterValue}))",
-                    (true, false, NamespaceFilter.NotIn)  => $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}))",
-                    (true, true, NamespaceFilter.Exact)   => $"InExactNamespaceOf<{namespaceFilterValue}>()",
-                    (true, true, NamespaceFilter.In)      => $"InNamespaceOf<{namespaceFilterValue}>()",
-                    (true, true, NamespaceFilter.NotIn)   => $"InNamespaces(\"TestProject\").NotInNamespaceOf<{namespaceFilterValue}>()",
-                    _                                     => "ERROR",
-                }
-            })
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               namespace TestProject.B
+                               {
+                                   public interface IServiceB { }
+                                   public class ServiceB : TestProject.A.IService { }
+                               }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	    provider.Scan(
+                                           services,
+                                       z => z
+                               			.FromAssemblies()
+                               			.AddClasses(x => x.{{( usingClass, usingTypeof, filter ) switch
+                                                                {
+                                                                    (false, false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\")",
+                                                                    (false, false, NamespaceFilter.In)    => $"InNamespaces(\"{namespaceFilterValue}\")",
+                                                                    (false, false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\")",
+                                                                    (true, false, NamespaceFilter.Exact)  => $"InExactNamespaceOf(typeof({namespaceFilterValue}))",
+                                                                    (true, false, NamespaceFilter.In)     => $"InNamespaceOf(typeof({namespaceFilterValue}))",
+                                                                    (true, false, NamespaceFilter.NotIn)  => $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}))",
+                                                                    (true, true, NamespaceFilter.Exact)   => $"InExactNamespaceOf<{namespaceFilterValue}>()",
+                                                                    (true, true, NamespaceFilter.In)      => $"InNamespaceOf<{namespaceFilterValue}>()",
+                                                                    (true, true, NamespaceFilter.NotIn)   => $"InNamespaces(\"TestProject\").NotInNamespaceOf<{namespaceFilterValue}>()",
+                                                                    _                                     => "ERROR",
+                                                                }}})
+                                           .AsSelf()
+                                           .AsImplementedInterfaces()
+                                           .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseHashedParameters(filter, namespaceFilterValue, count, usingClass, usingTypeof);
+        await Verify(new GeneratorTestResultsWithServices(result, services)).HashParameters().UseParameters(filter, namespaceFilterValue, count, usingClass, usingTypeof);
     }
 
     [Theory]
@@ -1626,64 +1632,66 @@ public static class Program {{
     {
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
+                               $$"""
 
-namespace TestProject.A
-{{
-    public interface IService {{ }}
-    public class Service : IService, TestProject.B.IServiceB {{ }}
-    public class ServiceA : IService {{ }}
-}}
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
 
-namespace TestProject.A.C
-{{
-    public class ServiceC : IService {{ }}
-}}
+                               namespace TestProject.A
+                               {
+                                   public interface IService { }
+                                   public class Service : IService, TestProject.B.IServiceB { }
+                                   public class ServiceA : IService { }
+                               }
 
-namespace TestProject.B
-{{
-    public interface IServiceB {{ }}
-    public class ServiceB : TestProject.A.IService {{ }}
-}}
+                               namespace TestProject.A.C
+                               {
+                                   public class ServiceC : IService { }
+                               }
 
-public static class Program {{
-    static void Main() {{ }}
-    static IServiceCollection LoadServices()
-    {{
-        var services = new ServiceCollection();
-	    services.ScanCompiled(
-        z => z
-			.FromAssemblies()
-			.AddClasses(x => x.{
-                ( usingClass, filter ) switch
-                {
-                    (false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
-                    (false, NamespaceFilter.In) => $"InNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
-                    (false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
-                    (true, NamespaceFilter.Exact) => $"InExactNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
-                    (true, NamespaceFilter.In) => $"InNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
-                    (true, NamespaceFilter.NotIn) =>
-                        $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
-                    _ => "ERROR",
-                }
-            })
-            .AsSelf()
-            .AsImplementedInterfaces()
-            .WithScopedLifetime()
-        );
-        return services;
-    }}
-}}
-"
+                               namespace TestProject.B
+                               {
+                                   public interface IServiceB { }
+                                   public class ServiceB : TestProject.A.IService { }
+                               }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	        provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.{{( usingClass, filter ) switch
+                                                                    {
+                                                                        (false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
+                                                                        (false, NamespaceFilter.In) => $"InNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
+                                                                        (false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
+                                                                        (true, NamespaceFilter.Exact) => $"InExactNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
+                                                                        (true, NamespaceFilter.In) => $"InNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
+                                                                        (true, NamespaceFilter.NotIn) =>
+                                                                            $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
+                                                                        _ => "ERROR",
+                                                                    }}})
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+
+                               """
                            )
                           .Build()
                           .GenerateAsync();
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseHashedParameters(filter, namespaceFilterValue, count, usingClass);
+        await Verify(new GeneratorTestResultsWithServices(result, services)).HashParameters().UseParameters(filter, namespaceFilterValue, count, usingClass);
     }
 
     [Theory]
@@ -1707,21 +1715,15 @@ public static class Program {{
                                  .WithLogger(logger)
                                  .WithAssemblyLoadContext(context)
                                  .AddSources(
-                                      $@"
-namespace DependencyProject{
-    suffix
-}
-{{
-    public interface IService{
-        suffix
-    } {{ }}
-    public class Service{
-        suffix
-    } : IService{
-        suffix
-    } {{ }}
-}}
-"
+                                      $$"""
+
+                                      namespace DependencyProject{{suffix}}
+                                      {
+                                          public interface IService{{suffix}} { }
+                                          public class Service{{suffix}} : IService{{suffix}} { }
+                                      }
+
+                                      """
                                   )
                                  .Build()
                                  .GenerateAsync();
@@ -1741,37 +1743,39 @@ namespace DependencyProject{
 
         var result = await Builder
                           .AddSources(
-                               $@"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using DependencyProjectA;
-using DependencyProjectB;
-using DependencyProjectC;
-using DependencyProjectD;
+                               $$"""
 
-namespace TestProject
-{{
-    public static class Program
-    {{
-        static void Main() {{ }}
-        static IServiceCollection LoadServices()
-        {{
-            var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-                .FromAssemblyOf{
-                    ( useTypeof ? "(typeof(IServiceB))" : "<IServiceB>()" )
-                }
-                .AddClasses()
-                .AsSelf()
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
-            );
-            return services;
-        }}
-    }}
-}}
-"
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
+                               using DependencyProjectA;
+                               using DependencyProjectB;
+                               using DependencyProjectC;
+                               using DependencyProjectD;
+
+                               namespace TestProject
+                               {
+                                   public static class Program
+                                   {
+                                       static void Main() { }
+                                       static IServiceCollection LoadServices()
+                                       {
+                                           var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	        provider.Scan(
+                                               services,
+                                               z => z
+                                                   .FromAssemblyOf{{( useTypeof ? "(typeof(IServiceB))" : "<IServiceB>()" )}}
+                                                   .AddClasses()
+                                                   .AsSelf()
+                                                   .AsImplementedInterfaces()
+                                                   .WithSingletonLifetime()
+                                           );
+                                           return services;
+                                       }
+                                   }
+                               }
+
+                               """
                            )
                           .AddCompilationReferences(dependencies.ToArray())
                           .Build()
@@ -1840,19 +1844,15 @@ namespace RootDependencyProject
                            .WithLogger(logger)
                            .AddCompilationReferences(dependencies)
                            .AddSources(
-                                $@"
-namespace DependencyProject{
-    suffix
-}
-{{
-    {
-        string.Join("\n", additionalCode)
-    }
-    public class Service{
-        suffix
-    } : RootDependencyProject.IService {{ }}
-}}
-"
+                                $$"""
+
+                                namespace DependencyProject{{suffix}}
+                                {
+                                    {{string.Join("\n", additionalCode)}}
+                                    public class Service{{suffix}} : RootDependencyProject.IService { }
+                                }
+
+                                """
                             )
                            .Build()
                            .GenerateAsync();
@@ -1879,39 +1879,41 @@ namespace DependencyProject{
 
         var result = await Builder
                           .AddSources(
-                               $@"
+                               $$"""
 
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using RootDependencyProject;
-using DependencyProjectA;
-using DependencyProjectB;
-using DependencyProjectC;
-using DependencyProjectD;
 
-namespace TestProject
-{{
-    public static class Program
-    {{
-        static void Main() {{ }}
-        static IServiceCollection LoadServices()
-        {{
-            var services = new ServiceCollection();
-	        services.ScanCompiled(
-            z => z
-			    .FromAssemblyDependenciesOf{
-                    ( useTypeof ? $"(typeof({className}))" : $"<{className}>()" )
-                }
-                .AddClasses(x => x.AssignableTo(typeof(IService)), true)
-                .AsSelf()
-                .AsImplementedInterfaces()
-                .WithSingletonLifetime()
-            );
-            return services;
-        }}
-    }}
-}}
-"
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
+                               using RootDependencyProject;
+                               using DependencyProjectA;
+                               using DependencyProjectB;
+                               using DependencyProjectC;
+                               using DependencyProjectD;
+
+                               namespace TestProject
+                               {
+                                   public static class Program
+                                   {
+                                       static void Main() { }
+                                       static IServiceCollection LoadServices()
+                                       {
+                                           var services = new ServiceCollection();
+                                           var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	            provider.Scan(
+                                               services,
+                                               z => z
+                               			        .FromAssemblyDependenciesOf{{( useTypeof ? $"(typeof({className}))" : $"<{className}>()" )}}
+                                                   .AddClasses(x => x.AssignableTo(typeof(IService)), true)
+                                                   .AsSelf()
+                                                   .AsImplementedInterfaces()
+                                                   .WithSingletonLifetime()
+                                           );
+                                           return services;
+                                       }
+                                   }
+                               }
+
+                               """
                            )
                           .AddCompilationReferences(dependencies.ToArray())
                           .Build()

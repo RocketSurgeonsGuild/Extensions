@@ -45,14 +45,11 @@
         "Lint",
         "LintFiles",
         "LintGitAdd",
-        "LintPublicApiAnalyzers",
-        "MoveUnshippedToShipped",
         "Pack",
         "PostLint",
         "Prettier",
         "RegenerateBuildConfigurations",
         "Restore",
-        "ShipPublicApis",
         "Test",
         "TriggerCodeCoverageReports"
       ]

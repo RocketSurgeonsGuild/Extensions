@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
 // ReSharper disable MemberCanBePrivate.Global
 namespace Rocket.Surgery.DependencyInjection;
@@ -7,8 +6,9 @@ namespace Rocket.Surgery.DependencyInjection;
 /// <summary>
 ///     Attribute used to define the service registration of a given type
 /// </summary>
+[PublicAPI]
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public sealed class ServiceRegistrationAttribute : Attribute
+public class ServiceRegistrationAttribute : Attribute
 {
     /// <summary>
     ///     The default constructor
@@ -45,14 +45,23 @@ public sealed class ServiceRegistrationAttribute : Attribute
     ///     The lifetime
     /// </summary>
     public ServiceLifetime Lifetime { get; }
+}
+
+[PublicAPI]
+public sealed class ServiceRegistrationAttribute<TService> : ServiceRegistrationAttribute
+{
+    /// <summary>
+    ///     The default constructor
+    /// </summary>
+    public ServiceRegistrationAttribute() : base(typeof(TService))
+    {
+    }
 
     /// <summary>
-    ///     All the defined services types for the given type.
+    ///     Constructor to specify the lifetime
     /// </summary>
-    /// <param name="fallbackType"></param>
-    /// <returns></returns>
-    public IEnumerable<Type> GetServiceTypes(Type fallbackType)
+    /// <param name="lifetime"></param>
+    public ServiceRegistrationAttribute(ServiceLifetime lifetime) : base(typeof(TService), lifetime)
     {
-        return new ServiceDescriptorAttribute(ServiceType, Lifetime).GetServiceTypes(fallbackType);
     }
 }

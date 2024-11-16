@@ -8,17 +8,10 @@
   },
   References: [
     <in-memory assembly>,
-    <in-memory assembly>,
-    <in-memory assembly>,
-    <in-memory assembly>,
-    <in-memory assembly>,
-    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
-    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     mscorlib.dll,
     netstandard.dll,
     Rocket.Surgery.DependencyInjection.Extensions.dll,
-    Scrutor.dll,
     System.ComponentModel.dll,
     System.Core.dll,
     System.dll,
@@ -26,6 +19,26 @@
     System.Runtime.dll
   ],
   Services: [
+    {
+      Lifetime: Singleton,
+      ServiceType: DependencyProjectD.HardReferenceA,
+      ImplementationType: DependencyProjectD.HardReferenceA
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: DependencyProjectD.HardReferenceC,
+      ImplementationType: DependencyProjectD.HardReferenceC
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    },
     {
       Lifetime: Singleton,
       ServiceType: DependencyProjectD.ServiceD,
