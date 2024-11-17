@@ -45,7 +45,7 @@ public interface ICompiledTypeProvider
     /// </summary>
     /// <returns>IEnumerable{Type}.</returns>
     IEnumerable<Type> GetTypes(
-        Func<IReflectionAssemblySelector, IEnumerable<Type>> selector,
+        Func<IReflectionTypeSelector, IEnumerable<Type>> selector,
         [CallerLineNumber]
         int lineNumber = 0,
         [CallerFilePath]
@@ -55,7 +55,7 @@ public interface ICompiledTypeProvider
     );
 
     /// <summary>
-    ///    Scan for types using the given selector
+    ///     Scan for types using the given selector
     /// </summary>
     /// <returns>IEnumerable{Type}.</returns>
     IServiceCollection Scan(

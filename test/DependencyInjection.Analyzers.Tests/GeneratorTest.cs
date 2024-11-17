@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rocket.Surgery.DependencyInjection.Compiled;
@@ -55,7 +54,10 @@ public static class GetTypesTestsData
     {
         // ReSharper disable RedundantNameQualifier
         yield return TestMethod(
-            z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>().GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class))
+            z => z
+                .FromAssemblies()
+                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class))
         );
         yield return TestMethod(
             z => z
@@ -64,7 +66,9 @@ public static class GetTypesTestsData
                 .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class, TypeKindFilter.Enum))
         );
         yield return TestMethod(
-            z => z.FromAssemblies().GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotKindOf(TypeKindFilter.Delegate).NotKindOf(TypeKindFilter.Interface))
+            z => z
+                .FromAssemblies()
+                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotKindOf(TypeKindFilter.Delegate).NotKindOf(TypeKindFilter.Interface))
         );
         yield return TestMethod(
             z => z
@@ -108,26 +112,50 @@ public static class GetTypesTestsData
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotInfoOf(TypeInfoFilter.Visible).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotInfoOf(TypeInfoFilter.Visible)
+                         .NotAssignableTo<Attribute>()
+                         .NotInNamespaces("JetBrains.Annotations")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotInfoOf(TypeInfoFilter.ValueType).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotInfoOf(TypeInfoFilter.ValueType)
+                         .NotAssignableTo<Attribute>()
+                         .NotInNamespaces("JetBrains.Annotations")
+                 )
         );
 //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.NotInfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotInfoOf(TypeInfoFilter.Sealed).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotInfoOf(TypeInfoFilter.Sealed)
+                         .NotAssignableTo<Attribute>()
+                         .NotInNamespaces("JetBrains.Annotations")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotInfoOf(TypeInfoFilter.GenericType).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotInfoOf(TypeInfoFilter.GenericType)
+                         .NotAssignableTo<Attribute>()
+                         .NotInNamespaces("JetBrains.Annotations")
+                 )
         );
         #pragma warning disable CA2263
         yield return TestMethod(
@@ -147,7 +175,11 @@ public static class GetTypesTestsData
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().WithAttribute(typeof(System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute).FullName))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .WithAttribute(typeof(System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute).FullName)
+                 )
         );
         #pragma warning disable CA2263
         yield return TestMethod(
@@ -155,10 +187,11 @@ public static class GetTypesTestsData
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
                 .GetTypes(
-                     x => x.NotAssignableTo<ICompiledTypeProvider>()
-                           .WithoutAttribute(typeof(EditorBrowsableAttribute))
-                           .NotAssignableTo(typeof(Attribute))
-                           .NotInNamespaces("JetBrains.Annotations")
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .WithoutAttribute(typeof(EditorBrowsableAttribute))
+                         .NotAssignableTo(typeof(Attribute))
+                         .NotInNamespaces("JetBrains.Annotations")
                  )
         );
         #pragma warning restore CA2263
@@ -167,19 +200,31 @@ public static class GetTypesTestsData
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
                 .GetTypes(
-                     x => x.NotAssignableTo<ICompiledTypeProvider>()
-                           .WithoutAttribute<EditorBrowsableAttribute>()
-                           .NotAssignableTo<Attribute>()
-                           .NotInNamespaces("JetBrains.Annotations")
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .WithoutAttribute<EditorBrowsableAttribute>()
+                         .NotAssignableTo<Attribute>()
+                         .NotInNamespaces("JetBrains.Annotations")
                  )
         );
 //        yield return TestMethod(z => z.FromAssemblies().FromAssemblyOf<ConventionContext>().GetTypes(x => x.WithoutAttribute(typeof(JetBrains.Annotations.PublicAPIAttribute).FullName).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
         yield return TestMethod(
-            z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>().GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaceOf(typeof(ServiceCollectionServiceExtensions)))
+            z => z
+                .FromAssemblies()
+                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaceOf(typeof(ServiceCollectionServiceExtensions)))
         );
-        yield return TestMethod(z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>().GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaceOf<IServiceCollection>()));
         yield return TestMethod(
-            z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>().GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaces("Microsoft.Extensions.DependencyInjection"))
+            z => z
+                .FromAssemblies()
+                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaceOf<IServiceCollection>())
+        );
+        yield return TestMethod(
+            z => z
+                .FromAssemblies()
+                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaces("Microsoft.Extensions.DependencyInjection"))
         );
         yield return TestMethod(
             z => z
@@ -192,7 +237,7 @@ public static class GetTypesTestsData
         );
 
         static object[] TestMethod(
-            Func<IReflectionAssemblySelector, IEnumerable<Type>> func,
+            Func<IReflectionTypeSelector, IEnumerable<Type>> func,
             [CallerArgumentExpression(nameof(func))]
             string argument = null!
         )
@@ -208,11 +253,8 @@ public static class GetTypesTestsData
         }
     }
 
-    public record GetTypesItem(string Name, string Expression, Func<IReflectionAssemblySelector, IEnumerable<Type>> Selector)
+    public record GetTypesItem(string Name, string Expression, Func<IReflectionTypeSelector, IEnumerable<Type>> Selector)
     {
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
     }
 }
