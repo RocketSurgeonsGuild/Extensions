@@ -42,11 +42,6 @@ internal static class ReflectionCollection
         return results.Count == 0 ? TypesMethod : TypesMethod.WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results)));
     }
 
-    private static bool IsValidMethod(SyntaxNode node)
-    {
-        return GetTypesMethod(node) is { method: { }, selector: { } };
-    }
-
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel ) GetTypesMethod(GeneratorSyntaxContext context)
     {
         var baseData = GetTypesMethod(context.Node);
@@ -61,9 +56,8 @@ internal static class ReflectionCollection
         return ( baseData.method, baseData.selector, semanticModel: context.SemanticModel );
     }
 
-    public static (InvocationExpressionSyntax method, ExpressionSyntax selector ) GetTypesMethod(SyntaxNode node)
-    {
-        return node is InvocationExpressionSyntax
+    public static (InvocationExpressionSyntax method, ExpressionSyntax selector ) GetTypesMethod(SyntaxNode node) =>
+        node is InvocationExpressionSyntax
         {
             Expression: MemberAccessExpressionSyntax
             {
@@ -73,7 +67,6 @@ internal static class ReflectionCollection
         } invocationExpressionSyntax
             ? ( invocationExpressionSyntax, expression )
             : default;
-    }
 
     internal static ImmutableArray<Item> GetTypeDetails(
         SourceProductionContext context,
@@ -122,6 +115,8 @@ internal static class ReflectionCollection
 
         return items.ToImmutable();
     }
+
+    private static bool IsValidMethod(SyntaxNode node) => GetTypesMethod(node) is { method: { }, selector: { }, };
 
     private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<INamedTypeSymbol> types, HashSet<IAssemblySymbol> privateAssemblies)
     {
@@ -174,10 +169,10 @@ internal static class ReflectionCollection
                                                                       Block(SingletonList<StatementSyntax>(YieldStatement(SyntaxKind.YieldBreakStatement)))
                                                                   );
 
+    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
+    private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
+
     public record Request(SourceProductionContext Context, Compilation Compilation, ImmutableArray<Item> Items, HashSet<IAssemblySymbol> PrivateAssemblies);
 
     public record Item(SourceLocation Location, CompiledAssemblyFilter AssemblyFilter, CompiledTypeFilter TypeFilter);
-
-    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
-    private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
 }

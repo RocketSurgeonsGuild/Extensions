@@ -55,7 +55,7 @@ public interface ICompiledTypeProvider
     );
 
     /// <summary>
-    ///    Scan for types using the given selector
+    ///     Scan for types using the given selector
     /// </summary>
     /// <returns>IEnumerable{Type}.</returns>
     IServiceCollection Scan(
