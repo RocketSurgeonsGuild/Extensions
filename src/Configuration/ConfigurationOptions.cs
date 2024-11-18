@@ -8,17 +8,30 @@ public class ConfigOptions
     /// <summary>
     ///     Default Constructor
     /// </summary>
-    public ConfigOptions()
-    {
-    }
+    public ConfigOptions() { }
 
     /// <summary>
     ///     Default constructor with environment name
     /// </summary>
-    public ConfigOptions(string environmentName)
-    {
-        EnvironmentName = environmentName;
-    }
+    public ConfigOptions(string environmentName) => EnvironmentName = environmentName;
+
+    /// <summary>
+    ///     The environment name
+    /// </summary>
+    public string? EnvironmentName { get; private set; }
+
+    /// <summary>
+    ///     Additional settings providers to be inserted after the default application settings file (typically appsettings.json)
+    /// </summary>
+    internal List<ConfigOptionApplicationDelegate> ApplicationConfiguration { get; } =
+        new();
+
+    /// <summary>
+    ///     Additional settings providers to be inserted after the default environment application settings file (typically
+    ///     appsettings.{env}.json)
+    /// </summary>
+    internal List<ConfigOptionEnvironmentDelegate> EnvironmentConfiguration { get; } =
+        new();
 
     /// <summary>
     ///     Set the expected environment name
@@ -50,22 +63,4 @@ public class ConfigOptions
         EnvironmentConfiguration.Add(@delegate);
         return this;
     }
-
-    /// <summary>
-    ///     The environment name
-    /// </summary>
-    public string? EnvironmentName { get; private set; }
-
-    /// <summary>
-    ///     Additional settings providers to be inserted after the default application settings file (typically appsettings.json)
-    /// </summary>
-    internal List<ConfigOptionApplicationDelegate> ApplicationConfiguration { get; } =
-        new List<ConfigOptionApplicationDelegate>();
-
-    /// <summary>
-    ///     Additional settings providers to be inserted after the default environment application settings file (typically
-    ///     appsettings.{env}.json)
-    /// </summary>
-    internal List<ConfigOptionEnvironmentDelegate> EnvironmentConfiguration { get; } =
-        new List<ConfigOptionEnvironmentDelegate>();
 }

@@ -33,7 +33,7 @@ public static class LoggingAbstractionsExtensions
             scope,
             elapsed =>
             {
-                var a = args.Concat(new object[] { elapsed }).ToArray();
+                var a = args.Concat([elapsed]).ToArray();
                 logger.LogTrace($"Finished: {message} in {{ElapsedMilliseconds}}ms", a);
             }
         );
@@ -61,7 +61,7 @@ public static class LoggingAbstractionsExtensions
             scope,
             elapsed =>
             {
-                var a = args.Concat(new object[] { elapsed }).ToArray();
+                var a = args.Concat([elapsed]).ToArray();
                 logger.LogDebug($"Finished: {message} in {{ElapsedMilliseconds}}ms", a);
             }
         );
@@ -89,7 +89,7 @@ public static class LoggingAbstractionsExtensions
             scope,
             elapsed =>
             {
-                var a = args.Concat(new object[] { elapsed }).ToArray();
+                var a = args.Concat([elapsed]).ToArray();
                 logger.LogInformation($"Finished: {message} in {{ElapsedMilliseconds}}ms", a);
             }
         );
@@ -97,15 +97,11 @@ public static class LoggingAbstractionsExtensions
 
     private class NoopDisposable : IDisposable
     {
-        private NoopDisposable()
-        {
-        }
-
-        public void Dispose()
-        {
-        }
-
         public static readonly NoopDisposable Instance = new();
+
+        private NoopDisposable() { }
+
+        public void Dispose() { }
     }
 
     /// <summary>
@@ -128,7 +124,7 @@ public static class LoggingAbstractionsExtensions
         {
             _disposable = disposable;
             _action = action;
-            _sw = new Stopwatch();
+            _sw = new();
             _sw.Start();
         }
 

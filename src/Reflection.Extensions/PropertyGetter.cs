@@ -1,9 +1,8 @@
 #if NETSTANDARD2_0
 #pragma warning disable CS8602, CS8603
 #else
-using System.Diagnostics.CodeAnalysis;
-#endif
 using System.Collections.Concurrent;
+#endif
 using System.Linq.Expressions;
 
 namespace Rocket.Surgery.Reflection;
@@ -16,7 +15,7 @@ public class PropertyGetter
 {
     private readonly string? _separator;
     private readonly StringComparison _comparison;
-    private readonly ConcurrentDictionary<Type, TypeDelegate> _cachedTypeDelegates = new ConcurrentDictionary<Type, TypeDelegate>();
+    private readonly ConcurrentDictionary<Type, TypeDelegate> _cachedTypeDelegates = new();
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PropertyGetter" /> class.
@@ -38,10 +37,11 @@ public class PropertyGetter
     /// <param name="value">The value.</param>
     /// <returns></returns>
     public bool TryGet<T>(
-        object instance, string path,
-#if !NETSTANDARD2_0
+        object instance,
+        string path,
+        #if !NETSTANDARD2_0
         [NotNullWhen(true)]
-#endif
+        #endif
         out T? value
     )
     {
@@ -80,10 +80,11 @@ public class PropertyGetter
     /// <param name="value">The value.</param>
     /// <returns></returns>
     public bool TryGet(
-        object instance, string path,
-#if !NETSTANDARD2_0
+        object instance,
+        string path,
+        #if !NETSTANDARD2_0
         [NotNullWhen(true)]
-#endif
+        #endif
         out object? value
     )
     {
@@ -120,10 +121,11 @@ public class PropertyGetter
     /// <param name="type">The type.</param>
     /// <returns></returns>
     public bool TryGetPropertyType(
-        object instance, string path,
-#if !NETSTANDARD2_0
+        object instance,
+        string path,
+        #if !NETSTANDARD2_0
         [NotNullWhen(true)]
-#endif
+        #endif
         out Type? type
     )
     {
@@ -152,10 +154,11 @@ public class PropertyGetter
     /// <param name="propertyType">Type of the property.</param>
     /// <returns></returns>
     public bool TryGetPropertyType(
-        Type type, string path,
-#if !NETSTANDARD2_0
+        Type type,
+        string path,
+        #if !NETSTANDARD2_0
         [NotNullWhen(true)]
-#endif
+        #endif
         out Type? propertyType
     )
     {
@@ -194,10 +197,11 @@ public class PropertyGetter
     /// <param name="getter">The getter.</param>
     /// <returns></returns>
     public bool TryGetter<T>(
-        Type type, string path,
-#if !NETSTANDARD2_0
+        Type type,
+        string path,
+        #if !NETSTANDARD2_0
         [NotNullWhen(true)]
-#endif
+        #endif
         out Func<object, T>? getter
     )
     {
@@ -236,10 +240,11 @@ public class PropertyGetter
     /// <param name="getter">The getter.</param>
     /// <returns></returns>
     public bool TryGetter(
-        Type type, string path,
-#if !NETSTANDARD2_0
+        Type type,
+        string path,
+        #if !NETSTANDARD2_0
         [NotNullWhen(true)]
-#endif
+        #endif
         out Func<object, object>? getter
     )
     {
@@ -387,7 +392,7 @@ public class PropertyGetter
     {
         if (!_cachedTypeDelegates.TryGetValue(type, out var typeDelegate))
         {
-            _cachedTypeDelegates.TryAdd(type, typeDelegate = new TypeDelegate(type, _separator, _comparison));
+            _cachedTypeDelegates.TryAdd(type, typeDelegate = new(type, _separator, _comparison));
         }
 
         return typeDelegate;

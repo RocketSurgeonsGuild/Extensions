@@ -21,7 +21,7 @@ internal class TypeSymbolVisitor(Compilation compilation) : SymbolVisitor
         return visitor.GetTypes();
     }
 
-    private readonly List<INamedTypeSymbol> _types = new();
+    private readonly List<INamedTypeSymbol> _types = [];
 
     private void Accept<T>(IEnumerable<T> members)
         where T : ISymbol?
@@ -56,8 +56,5 @@ internal class TypeSymbolVisitor(Compilation compilation) : SymbolVisitor
         Accept(symbol.GetMembers());
     }
 
-    public ImmutableArray<INamedTypeSymbol> GetTypes()
-    {
-        return _types.Distinct(SymbolEqualityComparer.Default).OfType<INamedTypeSymbol>().ToImmutableArray();
-    }
+    public ImmutableArray<INamedTypeSymbol> GetTypes() => _types.Distinct(SymbolEqualityComparer.Default).OfType<INamedTypeSymbol>().ToImmutableArray();
 }

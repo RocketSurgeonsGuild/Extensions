@@ -50,9 +50,9 @@ public static class ModuleInitializer
             (builder, counter) =>
             {
                 if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>() is
-                    { Version: { Length: > 0, } version, })
+                    { Version: { Length: > 0 } version })
                     builder.Replace(version, "version");
-                if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0, } version2, })
+                if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0 } version2 })
                     builder.Replace(version2, "version");
                 // regex to replace the version number in this string Version=12.0.0.0,
                 var regex = new Regex("Version=(.*?),", RegexOptions.Compiled);
@@ -165,5 +165,3 @@ public static class ModuleInitializer
         }
     }
 }
-
-public record GeneratorTestResultsWithServices(GeneratorTestResults Results, IEnumerable<ServiceDescriptor> Services);

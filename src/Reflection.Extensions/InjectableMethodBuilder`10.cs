@@ -20,29 +20,21 @@ namespace Rocket.Surgery.Reflection;
 [PublicAPI]
 public class InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> : InjectableMethodBuilderBase
 {
-    internal InjectableMethodBuilder(TypeInfo containerType, ImmutableArray<string> methodNames) : base(containerType.AsType(), methodNames)
-    {
-    }
+    internal InjectableMethodBuilder(TypeInfo containerType, ImmutableArray<string> methodNames) : base(containerType.AsType(), methodNames) { }
 
     /// <summary>
     ///     Withes the parameter.
     /// </summary>
     /// <typeparam name="TNext">The type of the next.</typeparam>
     /// <returns></returns>
-    public InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, TNext> WithParameter<TNext>()
-    {
-        return new InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, TNext>(Container, MethodNames);
-    }
+    public InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9, TNext> WithParameter<TNext>() => new(Container, MethodNames);
 
     /// <summary>
     ///     Fors the method.
     /// </summary>
     /// <param name="methodName">Name of the method.</param>
     /// <returns></returns>
-    public InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> ForMethod(string methodName)
-    {
-        return new InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9>(Container, MethodNames.Add(methodName));
-    }
+    public InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> ForMethod(string methodName) => new(Container, MethodNames.Add(methodName));
 
     /// <summary>
     ///     Compiles this instance.
@@ -53,7 +45,7 @@ public class InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> : Inject
     {
         if (GetMethodInfo()?.IsStatic == true)
             throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
-        var (body, parameters) = base.Compile(
+        ( var body, var parameters ) = base.Compile(
             typeof(T).GetTypeInfo(),
             typeof(T2).GetTypeInfo(),
             typeof(T3).GetTypeInfo(),
@@ -76,7 +68,7 @@ public class InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> : Inject
     {
         if (GetMethodInfo()?.IsStatic == true)
             throw new NotSupportedException("Method must not be a static method to compile as an instance methods!");
-        var (body, parameters) = base.Compile(
+        ( var body, var parameters ) = base.Compile(
             typeof(T).GetTypeInfo(),
             typeof(T2).GetTypeInfo(),
             typeof(T3).GetTypeInfo(),
@@ -100,7 +92,7 @@ public class InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> : Inject
     {
         if (GetMethodInfo()?.IsStatic != true)
             throw new NotSupportedException("Method must be a static method to compile as an static methods!");
-        var (body, parameters) = base.Compile(
+        ( var body, var parameters ) = base.Compile(
             typeof(T).GetTypeInfo(),
             typeof(T2).GetTypeInfo(),
             typeof(T3).GetTypeInfo(),
@@ -123,7 +115,7 @@ public class InjectableMethodBuilder<T, T2, T3, T4, T5, T6, T7, T8, T9> : Inject
     {
         if (GetMethodInfo()?.IsStatic != true)
             throw new NotSupportedException("Method must be a static method to compile as an static methods!");
-        var (body, parameters) = base.Compile(
+        ( var body, var parameters ) = base.Compile(
             typeof(T).GetTypeInfo(),
             typeof(T2).GetTypeInfo(),
             typeof(T3).GetTypeInfo(),
