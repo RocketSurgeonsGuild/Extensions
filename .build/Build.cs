@@ -2,14 +2,11 @@ using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.Git;
-using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.MSBuild;
 using Rocket.Surgery.Nuke.DotNetCore;
-using Serilog;
 
 [PublicAPI]
 [UnsetVisualStudioEnvironmentVariables]
@@ -25,7 +22,6 @@ public partial class Pipeline : NukeBuild,
                                 ICanBuildWithDotNetCore,
                                 ICanTestWithDotNetCore,
                                 ICanPackWithDotNetCore,
-                                IHaveDataCollector,
                                 ICanClean,
                                 IHaveCommonLintTargets,
 //                                IHavePublicApis,
@@ -41,10 +37,7 @@ public partial class Pipeline : NukeBuild,
     ///     - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///     - Microsoft VSCode           https://nuke.build/vscode
     /// </summary>
-    public static int Main()
-    {
-        return Execute<Pipeline>(x => x.Default);
-    }
+    public static int Main() => Execute<Pipeline>(x => x.Default);
 
     [NonEntryTarget]
     private Target Default => _ => _
