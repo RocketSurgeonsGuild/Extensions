@@ -1,0 +1,73 @@
+﻿{
+  FinalDiagnostics: [
+    {
+      Id: CS0616,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Input0.cs: (11,1)-(11,16),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0616),
+      MessageFormat: '{0}' is not an attribute class,
+      Message: 'ServiceLifetime' is not an attribute class,
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS0616,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Input0.cs: (14,1)-(14,16),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0616),
+      MessageFormat: '{0}' is not an attribute class,
+      Message: 'ServiceLifetime' is not an attribute class,
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS0616,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Input0.cs: (8,1)-(8,16),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0616),
+      MessageFormat: '{0}' is not an attribute class,
+      Message: 'ServiceLifetime' is not an attribute class,
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    }
+  ],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  GlobalOptions: {
+    compiled_scan_assembly_load: true
+  },
+  References: [
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Private.CoreLib.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ]
+}

@@ -20,8 +20,13 @@
   Services: [
     {
       Lifetime: Scoped,
-      ServiceType: IServiceB,
+      ServiceType: Service,
       ImplementationType: Service
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: IServiceB,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
     },
     {
       Lifetime: Transient,

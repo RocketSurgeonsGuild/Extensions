@@ -28,7 +28,7 @@ internal static class SwitchGenerator
                     CaseSwitchLabel(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(lineGrouping.Key)))
                        .WithKeyword(
                             Token(
-                                TriviaList(Comment($"// FilePath: {location.FilePath} Expression: {location.ExpressionHash}")),
+                                TriviaList(Comment($"// FilePath: {location.FilePath.Replace("\\", "/")} Expression: {location.ExpressionHash}")),
                                 SyntaxKind.CaseKeyword,
                                 TriviaList()
                             )
@@ -49,7 +49,7 @@ internal static class SwitchGenerator
         Func<T, LiteralExpressionSyntax> literalFactory
     )
     {
-        if (blocks is [var localBlock,])
+        if (blocks is [var localBlock])
             return SwitchSection()
                   .AddStatements(localBlock.block.Statements.ToArray())
                   .AddStatements(BreakStatement());
@@ -63,7 +63,7 @@ internal static class SwitchGenerator
                     CaseSwitchLabel(literalFactory(item.Key))
                        .WithKeyword(
                             Token(
-                                TriviaList(Comment($"// FilePath: {location.FilePath} Expression: {location.ExpressionHash}")),
+                                TriviaList(Comment($"// FilePath: {location.FilePath.Replace("\\", "/")} Expression: {location.ExpressionHash}")),
                                 SyntaxKind.CaseKeyword,
                                 TriviaList()
                             )
@@ -99,10 +99,8 @@ internal static class SwitchGenerator
         );
     }
 
-    private static SwitchSectionSyntax generateExpressionHashSwitchStatement(IGrouping<string, (SourceLocation location, BlockSyntax block)> innerGroup)
-    {
-        return SwitchSection()
-              .AddStatements(innerGroup.FirstOrDefault().block?.Statements.ToArray() ?? Array.Empty<StatementSyntax>())
-              .AddStatements(BreakStatement());
-    }
+    private static SwitchSectionSyntax generateExpressionHashSwitchStatement(IGrouping<string, (SourceLocation location, BlockSyntax block)> innerGroup) =>
+        SwitchSection()
+           .AddStatements(innerGroup.FirstOrDefault().block?.Statements.ToArray() ?? Array.Empty<StatementSyntax>())
+           .AddStatements(BreakStatement());
 }
