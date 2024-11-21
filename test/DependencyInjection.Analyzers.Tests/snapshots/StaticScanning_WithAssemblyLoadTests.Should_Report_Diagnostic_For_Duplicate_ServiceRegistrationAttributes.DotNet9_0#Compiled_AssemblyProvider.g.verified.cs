@@ -29,8 +29,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: E1rFmFXAfRVp4vo5nKmnxg==
             case 18:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IService), typeof(global::Service)));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IService), typeof(global::Service)));
+                break;
+            // FilePath: {SolutionDirectory}src\DependencyInjection.Extensions\CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
+            case 20:
                 break;
         }
 

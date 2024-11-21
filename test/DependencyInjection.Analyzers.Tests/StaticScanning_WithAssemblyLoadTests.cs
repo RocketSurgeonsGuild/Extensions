@@ -1119,7 +1119,7 @@ public static class Program {
     }
 
     [Theory]
-    [InlineData(
+    [InlineData("Example1",
         """
         public interface IService { }
         public interface IServiceB { }
@@ -1134,7 +1134,7 @@ public static class Program {
         public class ServiceB : IService, IServiceB { }
         """
     )]
-    [InlineData(
+    [InlineData("Example2",
         """
         public interface IService { }
         public interface IServiceB { }
@@ -1152,7 +1152,7 @@ public static class Program {
         public class ServiceB : IService, IServiceB { }
         """
     )]
-    [InlineData(
+    [InlineData("Example3",
         """
 
         [RegistrationLifetime(ServiceLifetime.Scoped)]
@@ -1174,7 +1174,7 @@ public static class Program {
         public class ServiceB : IService, IServiceB { }
         """
     )]
-    [InlineData(
+    [InlineData("Example4",
         """
         public interface IService { }
         public interface IServiceB { }
@@ -1191,7 +1191,7 @@ public static class Program {
         public class ServiceB : IService, IServiceB { }
         """
     )]
-    public async Task Should_Support_ServiceRegistrations(string source)
+    public async Task Should_Support_ServiceRegistrations(string name, string source)
     {
         var result = await Builder
                           .AddSources(
@@ -1205,7 +1205,7 @@ using Microsoft.Extensions.DependencyInjection;
                            )
                           .Build()
                           .GenerateAsync();
-        await Verify(result).HashParameters().UseParameters(source);
+        await Verify(result).UseParameters(name);
     }
 
     [Theory]
