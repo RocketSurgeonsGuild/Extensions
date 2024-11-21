@@ -29,12 +29,12 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: nskv5bioVyhSCb9iPvu7/w==
             case 22:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IServiceB), typeof(global::Service)));
+                services.Add(ServiceDescriptor.Scoped(typeof(global::Service), typeof(global::Service)));
                 services.Add(ServiceDescriptor.Transient(typeof(global::ServiceA), typeof(global::ServiceA)));
-                services.Add(ServiceDescriptor.Transient(typeof(global::IService), a => a.GetRequiredService<global::ServiceA>()));
+                services.Add(ServiceDescriptor.Transient(typeof(global::IService), typeof(global::ServiceA)));
                 services.Add(ServiceDescriptor.Singleton(typeof(global::ServiceB), typeof(global::ServiceB)));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IService), a => a.GetRequiredService<global::ServiceB>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IServiceB), a => a.GetRequiredService<global::ServiceB>()));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::IService), typeof(global::ServiceB)));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::IServiceB), typeof(global::ServiceB)));
                 break;
         }
 

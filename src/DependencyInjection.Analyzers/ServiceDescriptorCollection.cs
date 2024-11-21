@@ -143,8 +143,6 @@ internal static class ServiceDescriptorCollection
         var asImplementedInterfaces = serviceTypes.ServiceTypeDescriptors.OfType<ImplementedInterfacesServiceTypeDescriptor>().Any();
         var asMatchingInterface = serviceTypes.ServiceTypeDescriptors.OfType<MatchingInterfaceServiceTypeDescriptor>().Any();
         var asSpecificTypes = serviceTypes.ServiceTypeDescriptors.OfType<CompiledServiceTypeDescriptor>().Select(z => z.Type).ToArray();
-        var usingAttributes = serviceTypes.ServiceTypeDescriptors.OfType<UsingAttributeServiceTypeDescriptor>().Any();
-        var serviceRegistrationAttribute = compilation.GetTypeByMetadataName("Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute")!;
         var registrationLifetimeAttribute = compilation.GetTypeByMetadataName("Rocket.Surgery.DependencyInjection.RegistrationLifetimeAttribute")!;
 
         var services = new List<InvocationExpressionSyntax>();
@@ -160,153 +158,103 @@ internal static class ServiceDescriptorCollection
                 privateAssemblies.Add(type.ContainingAssembly);
             }
 
-            if (usingAttributes)
-            {
-                var attributeDataElements = type
-                                           .GetAttributes()
-                                           .Where(
-                                                attribute => attribute.AttributeClass != null
-                                                 && SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceRegistrationAttribute)
-                                            )
-                                           .ToArray();
+            var discoveredLifetime =
+                type
+                   .GetAttributes()
+                   .SingleOrDefault(
+                        attribute => attribute.AttributeClass != null
+                         && SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, registrationLifetimeAttribute)
+                    );
 
-                var duplicates = attributeDataElements
-                                .Where(
-                                     attribute => attribute.ConstructorArguments.Length > 0 && attribute.ConstructorArguments[0].Kind == TypedConstantKind.Type
-                                 )
-                                .GroupBy(attribute => attribute.ConstructorArguments[0].Value as INamedTypeSymbol, SymbolEqualityComparer.Default)
-                                .SelectMany(grp => grp.Skip(1))
-                                .ToArray();
-                foreach (var duplicate in duplicates)
+            var serviceRegistrationAttributes =
+                type
+                   .GetAttributes()
+                   .Where(attribute => attribute.AttributeClass is { Name: "ServiceRegistrationAttribute" or "ServiceRegistration" })
+                   .ToArray();
+
+            // attribute priority for discovered services
+            // DiscoveredLifetimeAttribute -> ServiceRegistrationAttribute(lifetime?) -> ServiceRegistrationAttribute()
+
+            // attribute priority for service registrations
+            // ServiceRegistrationAttribute(lifetime?, types) -> DiscoveredLifetimeAttribute -> ServiceRegistrationAttribute(lifetime?) -> ServiceRegistrationAttribute()
+
+            // group all attributes and find any common services to create a lifetime map
+            var lifetimeValue = serviceTypes.GetLifetime();
+            lifetimeValue = serviceRegistrationAttributes
+                           .Where(z => z.ConstructorArguments.Length == 1)
+                           .Aggregate(lifetimeValue, (acc, attribute) => GetLifetimeValue(attribute) ?? acc);
+            lifetimeValue = GetLifetimeValue(discoveredLifetime) ?? lifetimeValue;
+
+            var lifetimeRegistrations = serviceRegistrationAttributes
+                                       .SelectMany(
+                                            attributeData =>
+                                            {
+                                                return ( attributeData switch
+                                                         {
+                                                             { ConstructorArguments: [_, { Kind: TypedConstantKind.Array, Values: { Length: > 0 } values }] } =>
+                                                                 values
+                                                                    .Where(argument => argument is { Kind: TypedConstantKind.Array, Values.Length: > 0 })
+                                                                    .SelectMany(z => z.Values)
+                                                                    .Where(z => z is { Kind: TypedConstantKind.Type, Type: INamedTypeSymbol })
+                                                                    .Select(z => z.Type)
+                                                                    .OfType<INamedTypeSymbol>(),
+                                                             { AttributeClass.TypeArguments: { Length: > 0 } typeArgs } => typeArgs.OfType<INamedTypeSymbol>(),
+                                                             _ => type.AllInterfaces.OfType<INamedTypeSymbol>()
+                                                         } )
+                                                   .Prepend(type);
+                                            },
+                                            (data, t) => ( Lifetime: GetLifetimeValue(data) ?? lifetimeValue, Type: t )
+                                        )
+                                       .GroupBy(z => z.Type.ToDisplayString())
+                                       .ToArray();
+            foreach (var registration in lifetimeRegistrations)
+            {
+                if (registration.Count() <= 1) continue;
+                foreach (var item in registration)
                 {
-                    // If there is no syntax it is probably not our code
-                    if (duplicate.ApplicationSyntaxReference == null)
-                        continue;
-                    context.ReportDiagnostic(
-                        Diagnostic.Create(
-                            Diagnostics.DuplicateServiceDescriptorAttribute,
-                            Location.Create(duplicate.ApplicationSyntaxReference.SyntaxTree, duplicate.ApplicationSyntaxReference.Span)
+                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.DuplicateServiceDescriptorAttribute, item.Type.Locations.FirstOrDefault()));
+                }
+            }
+
+            foreach (var (lifetime, serviceType) in lifetimeRegistrations.Select(z => z.First()))
+            {
+                // todo: start here
+                // need diagnostics for double registration
+                // need to get services from the generic arguments of the class
+
+                if (emittedTypes.Contains(serviceType)) continue;
+                services.Add(
+                    asSelf
+                        ? StatementGeneration.GenerateServiceFactory(
+                            compilation,
+                            serviceType,
+                            type,
+                            lifetime
+                        )
+                        : StatementGeneration.GenerateServiceType(
+                            compilation,
+                            serviceType,
+                            type,
+                            lifetime
+                        )
+                );
+                emittedTypes.Add(serviceType);
+            }
+
+            if (!emittedTypes.Any() && ( lifetimeRegistrations.Any() || discoveredLifetime is { } ))
+            {
+                foreach (var @interface in type.AllInterfaces.OrderBy(z => z.ToDisplayString()))
+                {
+                    if (emittedTypes.Contains(@interface)) continue;
+                    services.Add(
+                        StatementGeneration.GenerateServiceFactory(
+                            compilation,
+                            @interface,
+                            type,
+                            lifetimeValue
                         )
                     );
-                }
-
-                foreach (var attribute in attributeDataElements)
-                {
-                    if (attribute.AttributeClass == null)
-                        continue;
-                    if (!SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, serviceRegistrationAttribute))
-                        continue;
-
-                    INamedTypeSymbol? attributeServiceType = null;
-                    var lifetimeValue =  serviceTypes.GetLifetime();
-
-                    if (attribute.ConstructorArguments is [{ Kind: TypedConstantKind.Enum } _])
-                    {
-                        var members = attribute.ConstructorArguments[0].Type!
-                                               .GetMembers()
-                                               .OfType<IFieldSymbol>();
-                        if (attribute.ConstructorArguments[0].Value is int v)
-                        {
-                            var value = members
-                               .First(z => z.ConstantValue is int i && i == v);
-                            lifetimeValue = value.Name;
-                        }
-                    }
-                    else if (attribute.ConstructorArguments is [_, { Kind: TypedConstantKind.Enum } _])
-                    {
-                        var members = attribute.ConstructorArguments[1].Type!
-                                               .GetMembers()
-                                               .OfType<IFieldSymbol>();
-                        if (attribute.ConstructorArguments[1].Value is int v)
-                        {
-                            var value = members
-                               .First(z => z.ConstantValue is int i && i == v);
-                            lifetimeValue = value.Name;
-                        }
-                    }
-
-                    if (attribute.ConstructorArguments.Length == 0
-                     || attribute.ConstructorArguments is [{ Kind: TypedConstantKind.Enum }])
-                    {
-                        if (!emittedTypes.Contains(type))
-                        {
-                            services.Add(StatementGeneration.GenerateServiceType(compilation, type, type, lifetimeValue));
-
-                            if (!compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
-                            {
-                                privateAssemblies.Add(type.ContainingAssembly);
-                            }
-
-                            emittedTypes.Add(type);
-                        }
-
-                        foreach (var @interface in type.AllInterfaces)
-                        {
-                            if (!emittedTypes.Contains(@interface))
-                            {
-                                services.Add(
-                                    StatementGeneration.GenerateServiceFactory(
-                                        compilation,
-                                        @interface,
-                                        type,
-                                        lifetimeValue
-                                    )
-                                );
-                                emittedTypes.Add(@interface);
-                            }
-                        }
-
-                        foreach (var baseType in Helpers.GetBaseTypes(compilation, type))
-                        {
-                            if (!emittedTypes.Contains(baseType))
-                            {
-                                services.Add(
-                                    StatementGeneration.GenerateServiceFactory(
-                                        compilation,
-                                        baseType,
-                                        type,
-                                        lifetimeValue
-                                    )
-                                );
-                                emittedTypes.Add(baseType);
-                            }
-                        }
-                    }
-
-                    if (attribute.ConstructorArguments is [{ Kind: TypedConstantKind.Type } _])
-                    {
-                        attributeServiceType = attribute.ConstructorArguments[0].Value as INamedTypeSymbol;
-                    }
-
-                    if (attribute.ConstructorArguments.Length == 2)
-                    {
-                        attributeServiceType = attribute.ConstructorArguments[0].Value as INamedTypeSymbol;
-                    }
-
-                    if (attributeServiceType != null)
-                    {
-                        services.Add(
-                            asSelf
-                                ? StatementGeneration.GenerateServiceFactory(
-                                    compilation,
-                                    attributeServiceType,
-                                    type,
-                                    lifetimeValue
-                                )
-                                : StatementGeneration.GenerateServiceType(
-                                    compilation,
-                                    attributeServiceType,
-                                    type,
-                                    lifetimeValue
-                                )
-                        );
-                        if (!compilation.IsSymbolAccessibleWithin(attributeServiceType, compilation.Assembly))
-                        {
-                            privateAssemblies.Add(type.ContainingAssembly);
-                        }
-
-                        emittedTypes.Add(attributeServiceType);
-                    }
+                    emittedTypes.Add(@interface);
                 }
             }
 
@@ -360,56 +308,52 @@ internal static class ServiceDescriptorCollection
 
             if (asImplementedInterfaces)
             {
-                foreach (var @interface in type.AllInterfaces)
+                foreach (var @interface in type.AllInterfaces.OrderBy(z => z.ToDisplayString()))
                 {
-                    if (!emittedTypes.Contains(@interface))
-                    {
-                        services.Add(
-                            typeIsOpenGeneric || !asSelf
-                                ? StatementGeneration.GenerateServiceType(
-                                    compilation,
-                                    @interface,
-                                    type,
-                                    serviceTypes.GetLifetime()
-                                )
-                                : StatementGeneration.GenerateServiceFactory(
-                                    compilation,
-                                    @interface,
-                                    type,
-                                    serviceTypes.GetLifetime()
-                                )
-                        );
-                        if (!compilation.IsSymbolAccessibleWithin(@interface, compilation.Assembly))
-                        {
-                            privateAssemblies.Add(type.ContainingAssembly);
-                        }
-
-                        emittedTypes.Add(@interface);
-                    }
-                }
-            }
-
-            foreach (var asType in asSpecificTypes)
-            {
-                if (!emittedTypes.Contains(asType))
-                {
+                    if (emittedTypes.Contains(@interface)) continue;
                     services.Add(
-                        !asSelf
+                        typeIsOpenGeneric || !asSelf
                             ? StatementGeneration.GenerateServiceType(
                                 compilation,
-                                asType,
+                                @interface,
                                 type,
                                 serviceTypes.GetLifetime()
                             )
                             : StatementGeneration.GenerateServiceFactory(
                                 compilation,
-                                asType,
+                                @interface,
                                 type,
                                 serviceTypes.GetLifetime()
                             )
                     );
-                    emittedTypes.Add(asType);
+                    if (!compilation.IsSymbolAccessibleWithin(@interface, compilation.Assembly))
+                    {
+                        privateAssemblies.Add(type.ContainingAssembly);
+                    }
+
+                    emittedTypes.Add(@interface);
                 }
+            }
+
+            foreach (var asType in asSpecificTypes.OrderBy(z => z.ToDisplayString()))
+            {
+                if (emittedTypes.Contains(asType)) continue;
+                services.Add(
+                    !asSelf
+                        ? StatementGeneration.GenerateServiceType(
+                            compilation,
+                            asType,
+                            type,
+                            serviceTypes.GetLifetime()
+                        )
+                        : StatementGeneration.GenerateServiceFactory(
+                            compilation,
+                            asType,
+                            type,
+                            serviceTypes.GetLifetime()
+                        )
+                );
+                emittedTypes.Add(asType);
             }
         }
 
@@ -453,4 +397,29 @@ internal static class ServiceDescriptorCollection
         int Lifetime);
 
     private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
+
+    static string? GetLifetimeValue(AttributeData? attribute)
+    {
+        if (attribute is
+            {
+                ConstructorArguments:
+                [
+                    {
+                        Kind: TypedConstantKind.Enum,
+                        Type: { } discoveredType,
+                        Value: int discoveredValue
+                    },
+                    ..
+                ]
+            })
+        {
+            var value = discoveredType
+                       .GetMembers()
+                       .OfType<IFieldSymbol>()
+                       .First(z => z.ConstantValue is int i && i == discoveredValue);
+            return value.Name;
+        }
+
+        return null;
+    }
 }

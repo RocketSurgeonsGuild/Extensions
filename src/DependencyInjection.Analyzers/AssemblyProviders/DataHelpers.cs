@@ -139,10 +139,15 @@ internal static class DataHelpers
                    (_, InvocationExpressionSyntax
                    {
                        ArgumentList.Arguments:
-                       [{ Expression: InvocationExpressionSyntax
-                       {
-                           Expression: IdentifierNameSyntax { Identifier.Value: "nameof" },
-                       } nameofName, }, ..,],
+                       [
+                           {
+                               Expression: InvocationExpressionSyntax
+                               {
+                                   Expression: IdentifierNameSyntax { Identifier.Value: "nameof" },
+                               } nameofName,
+                           },
+                           ..,
+                       ],
                    }) => nameofName,
                    _ => throw new MustBeAnExpressionException(expression.GetLocation(), string.Join(", ", expression.ToFullString())),
                };

@@ -32,10 +32,14 @@ internal record CompiledTypeFilter
                            notAssignableToAnyTypes.All(z => !Helpers.HasImplicitGenericConversion(compilation, z, targetType)),
                        WithAttributeFilterDescriptor { Attribute: var attribute, } =>
                            targetType.GetAttributes().Any(z => SymbolEqualityComparer.Default.Equals(z.AttributeClass, attribute)),
+                       WithAnyAttributeFilterDescriptor { Attributes: var attributes, } =>
+                           handleWithAnyAttributeFilter(attributes, targetType),
                        WithoutAttributeFilterDescriptor { Attribute: var attribute, } =>
                            targetType.GetAttributes().All(z => !SymbolEqualityComparer.Default.Equals(z.AttributeClass, attribute)),
                        WithAttributeStringFilterDescriptor { AttributeClassName: var attribute, } =>
                            targetType.GetAttributes().Any(z => Helpers.GetFullMetadataName(z.AttributeClass) == attribute),
+                       WithAnyAttributeStringFilterDescriptor { AttributeClassNames: var attributes, } =>
+                           targetType.GetAttributes().Join(attributes, z => Helpers.GetFullMetadataName(z.AttributeClass), z => z, (_, _) => true).Any(),
                        WithoutAttributeStringFilterDescriptor { AttributeClassName: var attribute, } =>
                            targetType.GetAttributes().All(z => Helpers.GetFullMetadataName(z.AttributeClass) != attribute),
                        NamespaceFilterDescriptor { Filter: var filterName, Namespaces: var filterNamespaces, } =>
@@ -48,6 +52,24 @@ internal record CompiledTypeFilter
                            handleInfoFilter(include, typeInfos, targetType),
                        _ => throw new NotSupportedException(filterDescriptor.GetType().FullName),
                    };
+        }
+
+        static bool handleWithAnyAttributeFilter(ImmutableHashSet<INamedTypeSymbol> attributes, INamedTypeSymbol targetType)
+        {
+            var targetAttributes = targetType.GetAttributes();
+            foreach (var target in targetAttributes)
+            {
+                foreach (var attribute in attributes)
+                {
+                    if (attribute.Name == target.AttributeClass?.Name
+                     && SymbolEqualityComparer.Default.Equals(attribute.ContainingNamespace, target.AttributeClass?.ContainingNamespace))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         static bool handleNamespaceFilter(NamespaceFilter filterName, ImmutableHashSet<string> filterNamespaces, INamedTypeSymbol type)

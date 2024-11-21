@@ -654,10 +654,13 @@ public static class Program {
         """
         public interface IService { }
         public interface IServiceB { }
+
         [ServiceRegistration]
         public class Service : IService, IServiceB { }
+
         [ServiceRegistration]
         public class ServiceA : IService { }
+
         [ServiceRegistration]
         public class ServiceB : IService, IServiceB { }
         """)]

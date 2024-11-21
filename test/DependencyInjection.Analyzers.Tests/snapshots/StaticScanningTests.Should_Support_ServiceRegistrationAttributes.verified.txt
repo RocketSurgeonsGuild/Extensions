@@ -1,5 +1,38 @@
 ﻿{
-  FinalDiagnostics: [],
+  FinalDiagnostics: [
+    {
+      Id: CS1503,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Input0.cs: (8,21)-(8,43),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503),
+      MessageFormat: Argument {0}: cannot convert from '{1}' to '{2}',
+      Message: Argument 1: cannot convert from 'Microsoft.Extensions.DependencyInjection.ServiceLifetime' to 'System.Type?',
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS1503,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Input0.cs: (8,45)-(8,62),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503),
+      MessageFormat: Argument {0}: cannot convert from '{1}' to '{2}',
+      Message: Argument 2: cannot convert from 'System.Type' to 'Microsoft.Extensions.DependencyInjection.ServiceLifetime',
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    }
+  ],
   GeneratorDiagnostics: {
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
@@ -16,37 +49,5 @@
     System.dll,
     System.Private.CoreLib.dll,
     System.Runtime.dll
-  ],
-  Services: [
-    {
-      Lifetime: Scoped,
-      ServiceType: IServiceB,
-      ImplementationType: Service
-    },
-    {
-      Lifetime: Transient,
-      ServiceType: ServiceA,
-      ImplementationType: ServiceA
-    },
-    {
-      Lifetime: Transient,
-      ServiceType: IService,
-      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
-    },
-    {
-      Lifetime: Singleton,
-      ServiceType: ServiceB,
-      ImplementationType: ServiceB
-    },
-    {
-      Lifetime: Singleton,
-      ServiceType: IService,
-      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
-    },
-    {
-      Lifetime: Singleton,
-      ServiceType: IServiceB,
-      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
-    }
   ]
 }
