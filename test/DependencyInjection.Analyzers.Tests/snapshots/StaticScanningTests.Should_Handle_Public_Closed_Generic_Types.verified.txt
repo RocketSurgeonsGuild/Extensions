@@ -1,0 +1,28 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  GlobalOptions: {
+    compiled_scan_assembly_load: false
+  },
+  References: [
+    <in-memory assembly>,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  Services: [
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IRequestHandler`2[[RootDependencyProject.Request, RootDependencyProject, Version=version, Culture=neutral, PublicKeyToken=null],[RootDependencyProject.Response, RootDependencyProject, Version=version, Culture=neutral, PublicKeyToken=null]],
+      ImplementationType: RootDependencyProject.RequestHandler
+    }
+  ]
+}

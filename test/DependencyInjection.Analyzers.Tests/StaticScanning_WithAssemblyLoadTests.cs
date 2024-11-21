@@ -1119,7 +1119,8 @@ public static class Program {
     }
 
     [Theory]
-    [InlineData("Example1",
+    [InlineData(
+        "Example1",
         """
         public interface IService { }
         public interface IServiceB { }
@@ -1134,7 +1135,8 @@ public static class Program {
         public class ServiceB : IService, IServiceB { }
         """
     )]
-    [InlineData("Example2",
+    [InlineData(
+        "Example2",
         """
         public interface IService { }
         public interface IServiceB { }
@@ -1152,7 +1154,8 @@ public static class Program {
         public class ServiceB : IService, IServiceB { }
         """
     )]
-    [InlineData("Example3",
+    [InlineData(
+        "Example3",
         """
 
         [RegistrationLifetime(ServiceLifetime.Scoped)]
@@ -1174,7 +1177,8 @@ public static class Program {
         public class ServiceB : IService, IServiceB { }
         """
     )]
-    [InlineData("Example4",
+    [InlineData(
+        "Example4",
         """
         public interface IService { }
         public interface IServiceB { }

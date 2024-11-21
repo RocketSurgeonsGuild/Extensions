@@ -1,0 +1,43 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  GlobalOptions: {
+    compiled_scan_assembly_load: false
+  },
+  References: [
+    <in-memory assembly>,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  Services: [
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IRequestHandler`2[[Dependency1Project.Request0, Dependency0Project, Version=version, Culture=neutral, PublicKeyToken=null],[Dependency1Project.Response0, Dependency0Project, Version=version, Culture=neutral, PublicKeyToken=null]],
+      ImplementationType: Dependency1Project.RequestHandler0
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IRequestHandler`2[[Dependency1Project.Request1, Dependency1Project, Version=version, Culture=neutral, PublicKeyToken=null],[Dependency1Project.Response1, Dependency1Project, Version=version, Culture=neutral, PublicKeyToken=null]],
+      ImplementationType: Dependency1Project.RequestHandler1
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IRequestHandler`2[[Dependency1Project.Request2, Dependency2Project, Version=version, Culture=neutral, PublicKeyToken=null],[Dependency1Project.Response2, Dependency2Project, Version=version, Culture=neutral, PublicKeyToken=null]],
+      ImplementationType: Dependency1Project.RequestHandler2
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IRequestHandler`2[[Dependency1Project.Request3, Dependency3Project, Version=version, Culture=neutral, PublicKeyToken=null],[Dependency1Project.Response3, Dependency3Project, Version=version, Culture=neutral, PublicKeyToken=null]],
+      ImplementationType: Dependency1Project.RequestHandler3
+    }
+  ]
+}

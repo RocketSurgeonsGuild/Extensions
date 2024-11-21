@@ -1,0 +1,73 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  GlobalOptions: {
+    compiled_scan_assembly_load: false
+  },
+  References: [
+    <in-memory assembly>,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  Services: [
+    {
+      Lifetime: Singleton,
+      ServiceType: DependencyProjectC.HardReferenceA,
+      ImplementationType: DependencyProjectC.HardReferenceA
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: DependencyProjectC.ServiceC,
+      ImplementationType: DependencyProjectC.ServiceC
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: DependencyProjectD.HardReferenceA,
+      ImplementationType: DependencyProjectD.HardReferenceA
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: DependencyProjectD.HardReferenceC,
+      ImplementationType: DependencyProjectD.HardReferenceC
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: DependencyProjectD.ServiceD,
+      ImplementationType: DependencyProjectD.ServiceD
+    },
+    {
+      Lifetime: Singleton,
+      ServiceType: RootDependencyProject.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    }
+  ]
+}

@@ -28,7 +28,7 @@ internal static class SwitchGenerator
                     CaseSwitchLabel(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(lineGrouping.Key)))
                        .WithKeyword(
                             Token(
-                                TriviaList(Comment($"// FilePath: {location.FilePath} Expression: {location.ExpressionHash}")),
+                                TriviaList(Comment($"// FilePath: {location.FilePath.Replace("\\", "/")} Expression: {location.ExpressionHash}")),
                                 SyntaxKind.CaseKeyword,
                                 TriviaList()
                             )
@@ -63,7 +63,7 @@ internal static class SwitchGenerator
                     CaseSwitchLabel(literalFactory(item.Key))
                        .WithKeyword(
                             Token(
-                                TriviaList(Comment($"// FilePath: {location.FilePath} Expression: {location.ExpressionHash}")),
+                                TriviaList(Comment($"// FilePath: {location.FilePath.Replace("\\", "/")} Expression: {location.ExpressionHash}")),
                                 SyntaxKind.CaseKeyword,
                                 TriviaList()
                             )
