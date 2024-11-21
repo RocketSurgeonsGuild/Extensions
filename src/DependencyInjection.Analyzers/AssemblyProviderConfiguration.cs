@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
@@ -20,7 +19,7 @@ internal static partial class AssemblyProviderConfiguration
     {
         var assemblySymbols = compilation
                              .References.Select(compilation.GetAssemblyOrModuleSymbol)
-                             .Concat([compilation.Assembly,])
+                             .Concat([compilation.Assembly])
                              .Select(
                                   symbol =>
                                   {
@@ -32,7 +31,7 @@ internal static partial class AssemblyProviderConfiguration
                                   }
                               )
                              .Where(z => z is { })
-                             .GroupBy(z => z.MetadataName, z => z, (s, symbols) => (Key: s, Symbol: symbols.First()))
+                             .GroupBy(z => z.MetadataName, z => z, (s, symbols) => ( Key: s, Symbol: symbols.First() ))
                              .ToImmutableDictionary(z => z.Key, z => z.Symbol);
 
         var assemblyRequests = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
@@ -44,18 +43,18 @@ internal static partial class AssemblyProviderConfiguration
             var attributes = assembly.GetAttributes();
             foreach (var attribute in attributes)
             {
-                if (attribute is not { AttributeClass.MetadataName : "AssemblyMetadataAttribute", }) continue;
+                if (attribute is not { AttributeClass.MetadataName : "AssemblyMetadataAttribute" }) continue;
                 try
                 {
                     switch (attribute)
                     {
-                        case { ConstructorArguments: [{ Value: AssembliesKey, }, { Value: string getAssembliesData, },], }:
+                        case { ConstructorArguments: [{ Value: AssembliesKey }, { Value: string getAssembliesData }] }:
                             assemblyRequests.Add(GetAssembliesFromString(assemblySymbols, getAssembliesData));
                             break;
-                        case { ConstructorArguments: [{ Value: ReflectionTypesKey, }, { Value: string reflectionData, },], }:
+                        case { ConstructorArguments: [{ Value: ReflectionTypesKey }, { Value: string reflectionData }] }:
                             reflectionRequests.Add(GetReflectionFromString(compilation, assemblySymbols, reflectionData));
                             break;
-                        case { ConstructorArguments: [{ Value: ServiceDescriptorTypesKey, }, { Value: string serviceDescriptorData, },], }:
+                        case { ConstructorArguments: [{ Value: ServiceDescriptorTypesKey }, { Value: string serviceDescriptorData }] }:
                             serviceDescriptorRequests.Add(GetServiceDescriptorFromString(compilation, assemblySymbols, serviceDescriptorData));
                             break;
                     }
@@ -179,15 +178,9 @@ internal static partial class AssemblyProviderConfiguration
         return CompressString(result);
     }
 
-    private static byte[] DecompressString(string base64String)
-    {
-        return Convert.FromBase64String(base64String);
-    }
+    private static byte[] DecompressString(string base64String) => Convert.FromBase64String(base64String);
 
-    private static string CompressString(byte[] bytes)
-    {
-        return Convert.ToBase64String(bytes);
-    }
+    private static string CompressString(byte[] bytes) => Convert.ToBase64String(bytes);
 
     private static AssemblyFilterData LoadAssemblyFilterData(CompiledAssemblyFilter filter)
     {
@@ -216,7 +209,7 @@ internal static partial class AssemblyProviderConfiguration
                .Select(z => new NamespaceFilterData(z.Filter, z.Namespaces.OrderBy(z => z).ToImmutableArray()))
                .OrderBy(z => string.Join(",", z.Namespaces.OrderBy(static z => z)))
                .ThenBy(z => z.Filter)
-               .Select(z => z with { Namespaces = z.Namespaces.OrderBy(z => z).ToImmutableArray(), })
+               .Select(z => z with { Namespaces = z.Namespaces.OrderBy(z => z).ToImmutableArray() })
                .ToImmutableArray(),
             typeFilter
                .TypeFilterDescriptors.OfType<NameFilterDescriptor>()
@@ -300,14 +293,15 @@ internal static partial class AssemblyProviderConfiguration
                .ToImmutableArray(),
             typeFilter
                .TypeFilterDescriptors
-               .SelectMany(f =>
-                               f switch
-                                {
-                                    WithAnyAttributeStringFilterDescriptor descriptor => descriptor.AttributeClassNames.Select(
-                                        z => new WithAttributeStringData(true, z)
-                                    ),
-                                    _ => [],
-                                }
+               .SelectMany(
+                    f =>
+                        f switch
+                        {
+                            WithAnyAttributeStringFilterDescriptor descriptor => descriptor.AttributeClassNames.Select(
+                                z => new WithAttributeStringData(true, z)
+                            ),
+                            _ => [],
+                        }
                 )
                .Where(z => z is { })
                .OrderBy(z => z.Attribute)
@@ -520,7 +514,7 @@ internal static partial class AssemblyProviderConfiguration
                      MatchingInterfaceServiceTypeDescriptor     => "m",
                      SelfServiceTypeDescriptor                  => "s",
                      UsingAttributeServiceTypeDescriptor        => "u",
-                     _                                          => throw new ArgumentOutOfRangeException(nameof(z))
+                     _                                          => throw new ArgumentOutOfRangeException(nameof(z)),
                  }
         );
         return new(
@@ -558,7 +552,7 @@ internal static partial class AssemblyProviderConfiguration
                     "m" => new MatchingInterfaceServiceTypeDescriptor(),
                     "s" => new SelfServiceTypeDescriptor(),
                     "u" => new UsingAttributeServiceTypeDescriptor(),
-                    _   => throw new ArgumentOutOfRangeException(nameof(data))
+                    _   => throw new ArgumentOutOfRangeException(nameof(data)),
                 }
             );
         }

@@ -20,7 +20,7 @@ internal static class ServiceDescriptorCollection
         return valueProvider
               .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetTypesMethod(syntaxContext))
               .Combine(hasAssemblyLoadContext)
-              .Where(z => z is { Right: true, Left: { method: { }, selector: { }, }, })
+              .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
               .Select((tuple, _) => tuple.Left)
               .Collect();
     }
@@ -44,39 +44,6 @@ internal static class ServiceDescriptorCollection
                .WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results), ReturnStatement(IdentifierName("services"))));
     }
 
-    private static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel ) GetTypesMethod(GeneratorSyntaxContext context)
-    {
-        var baseData = GetMethod(context.Node);
-        if (baseData.method is null
-         || baseData.selector is null
-         || context.SemanticModel.GetTypeInfo(baseData.selector).ConvertedType is not INamedTypeSymbol
-            {
-                TypeArguments: [{ Name: IServiceDescriptorAssemblySelector, }, ..,],
-            })
-            return default;
-
-        return ( baseData.method, baseData.selector, semanticModel: context.SemanticModel );
-    }
-
-    private static bool IsValidMethod(SyntaxNode node)
-    {
-        return GetMethod(node) is { method: { }, selector: { } };
-    }
-
-    private static (InvocationExpressionSyntax method, ExpressionSyntax selector ) GetMethod(SyntaxNode node)
-    {
-        return node is InvocationExpressionSyntax
-        {
-            Expression: MemberAccessExpressionSyntax
-            {
-                Name.Identifier.Text: "Scan",
-            },
-            ArgumentList.Arguments: [.., { Expression: { } expression, },],
-        } invocationExpressionSyntax
-            ? ( invocationExpressionSyntax, expression )
-            : default;
-    }
-
     internal static ImmutableArray<Item> GetTypeDetails(
         SourceProductionContext context,
         Compilation compilation,
@@ -94,7 +61,7 @@ internal static class ServiceDescriptorCollection
                 List<ITypeFilterDescriptor> typeFilters =
                 [
                     new TypeKindFilterDescriptor(true, ImmutableHashSet.Create(TypeKind.Class)),
-                    new TypeInfoFilterDescriptor(false, ImmutableHashSet.Create(TypeInfoFilter.Abstract))
+                    new TypeInfoFilterDescriptor(false, ImmutableHashSet.Create(TypeInfoFilter.Abstract)),
                 ];
                 List<IServiceTypeDescriptor> serviceDescriptors = new();
                 var classFilter = ClassFilter.All;
@@ -130,6 +97,34 @@ internal static class ServiceDescriptorCollection
 
         return items.ToImmutable();
     }
+
+    private static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel ) GetTypesMethod(GeneratorSyntaxContext context)
+    {
+        var baseData = GetMethod(context.Node);
+        if (baseData.method is null
+         || baseData.selector is null
+         || context.SemanticModel.GetTypeInfo(baseData.selector).ConvertedType is not INamedTypeSymbol
+            {
+                TypeArguments: [{ Name: IServiceDescriptorAssemblySelector }, ..],
+            })
+            return default;
+
+        return ( baseData.method, baseData.selector, semanticModel: context.SemanticModel );
+    }
+
+    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
+
+    private static (InvocationExpressionSyntax method, ExpressionSyntax selector ) GetMethod(SyntaxNode node) =>
+        node is InvocationExpressionSyntax
+        {
+            Expression: MemberAccessExpressionSyntax
+            {
+                Name.Identifier.Text: "Scan",
+            },
+            ArgumentList.Arguments: [.., { Expression: { } expression }],
+        } invocationExpressionSyntax
+            ? ( invocationExpressionSyntax, expression )
+            : default;
 
     private static BlockSyntax GenerateDescriptors(
         SourceProductionContext context,
@@ -197,7 +192,7 @@ internal static class ServiceDescriptorCollection
                                                                     .Select(z => z.Type)
                                                                     .OfType<INamedTypeSymbol>(),
                                                              { AttributeClass.TypeArguments: { Length: > 0 } typeArgs } => typeArgs.OfType<INamedTypeSymbol>(),
-                                                             _ => type.AllInterfaces.OfType<INamedTypeSymbol>()
+                                                             _ => type.AllInterfaces.OfType<INamedTypeSymbol>(),
                                                          } )
                                                    .Prepend(type);
                                             },
@@ -233,7 +228,7 @@ internal static class ServiceDescriptorCollection
 
             if (abort) return Block();
 
-            foreach (var (lifetime, serviceType) in lifetimeRegistrations.Select(z => z.First()))
+            foreach (( var lifetime, var serviceType ) in lifetimeRegistrations.Select(z => z.First()))
             {
                 // todo: start here
                 // need diagnostics for double registration
@@ -403,19 +398,9 @@ internal static class ServiceDescriptorCollection
             )
            .WithBody(Block(ReturnStatement(IdentifierName("services"))));
 
-    public record Request(SourceProductionContext Context, Compilation Compilation, ImmutableArray<Item> Items, HashSet<IAssemblySymbol> PrivateAssemblies);
-
-    public record Item
-    (
-        SourceLocation Location,
-        CompiledAssemblyFilter AssemblyFilter,
-        CompiledTypeFilter TypeFilter,
-        CompiledServiceTypeDescriptors ServicesTypeFilter,
-        int Lifetime);
-
     private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
 
-    static string? GetLifetimeValue(AttributeData? attribute)
+    private static string? GetLifetimeValue(AttributeData? attribute)
     {
         if (attribute is
             {
@@ -424,10 +409,10 @@ internal static class ServiceDescriptorCollection
                     {
                         Kind: TypedConstantKind.Enum,
                         Type: { } discoveredType,
-                        Value: int discoveredValue
+                        Value: int discoveredValue,
                     },
-                    ..
-                ]
+                    ..,
+                ],
             })
         {
             var value = discoveredType
@@ -439,4 +424,14 @@ internal static class ServiceDescriptorCollection
 
         return null;
     }
+
+    public record Request(SourceProductionContext Context, Compilation Compilation, ImmutableArray<Item> Items, HashSet<IAssemblySymbol> PrivateAssemblies);
+
+    public record Item
+    (
+        SourceLocation Location,
+        CompiledAssemblyFilter AssemblyFilter,
+        CompiledTypeFilter TypeFilter,
+        CompiledServiceTypeDescriptors ServicesTypeFilter,
+        int Lifetime);
 }

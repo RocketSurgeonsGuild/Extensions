@@ -22,33 +22,33 @@ internal record CompiledTypeFilter
         {
             return filterDescriptor switch
                    {
-                       AssignableToTypeFilterDescriptor { Type: var assignableToType, } =>
+                       AssignableToTypeFilterDescriptor { Type: var assignableToType } =>
                            Helpers.HasImplicitGenericConversion(compilation, assignableToType, targetType),
-                       NotAssignableToTypeFilterDescriptor { Type: var notAssignableToType, } =>
+                       NotAssignableToTypeFilterDescriptor { Type: var notAssignableToType } =>
                            !Helpers.HasImplicitGenericConversion(compilation, notAssignableToType, targetType),
-                       AssignableToAnyTypeFilterDescriptor { Types: var assignableToAnyTypes, } =>
+                       AssignableToAnyTypeFilterDescriptor { Types: var assignableToAnyTypes } =>
                            assignableToAnyTypes.Any(z => Helpers.HasImplicitGenericConversion(compilation, z, targetType)),
-                       NotAssignableToAnyTypeFilterDescriptor { Types: var notAssignableToAnyTypes, } =>
+                       NotAssignableToAnyTypeFilterDescriptor { Types: var notAssignableToAnyTypes } =>
                            notAssignableToAnyTypes.All(z => !Helpers.HasImplicitGenericConversion(compilation, z, targetType)),
-                       WithAttributeFilterDescriptor { Attribute: var attribute, } =>
+                       WithAttributeFilterDescriptor { Attribute: var attribute } =>
                            targetType.GetAttributes().Any(z => SymbolEqualityComparer.Default.Equals(z.AttributeClass, attribute)),
-                       WithAnyAttributeFilterDescriptor { Attributes: var attributes, } =>
+                       WithAnyAttributeFilterDescriptor { Attributes: var attributes } =>
                            handleWithAnyAttributeFilter(attributes, targetType),
-                       WithoutAttributeFilterDescriptor { Attribute: var attribute, } =>
+                       WithoutAttributeFilterDescriptor { Attribute: var attribute } =>
                            targetType.GetAttributes().All(z => !SymbolEqualityComparer.Default.Equals(z.AttributeClass, attribute)),
-                       WithAttributeStringFilterDescriptor { AttributeClassName: var attribute, } =>
+                       WithAttributeStringFilterDescriptor { AttributeClassName: var attribute } =>
                            targetType.GetAttributes().Any(z => Helpers.GetFullMetadataName(z.AttributeClass) == attribute),
-                       WithAnyAttributeStringFilterDescriptor { AttributeClassNames: var attributes, } =>
+                       WithAnyAttributeStringFilterDescriptor { AttributeClassNames: var attributes } =>
                            targetType.GetAttributes().Join(attributes, z => Helpers.GetFullMetadataName(z.AttributeClass), z => z, (_, _) => true).Any(),
-                       WithoutAttributeStringFilterDescriptor { AttributeClassName: var attribute, } =>
+                       WithoutAttributeStringFilterDescriptor { AttributeClassName: var attribute } =>
                            targetType.GetAttributes().All(z => Helpers.GetFullMetadataName(z.AttributeClass) != attribute),
-                       NamespaceFilterDescriptor { Filter: var filterName, Namespaces: var filterNamespaces, } =>
+                       NamespaceFilterDescriptor { Filter: var filterName, Namespaces: var filterNamespaces } =>
                            handleNamespaceFilter(filterName, filterNamespaces, targetType),
-                       NameFilterDescriptor { Filter: var filterName, Names: var filterNames, } =>
+                       NameFilterDescriptor { Filter: var filterName, Names: var filterNames } =>
                            handleNameFilter(filterName, filterNames, targetType),
-                       TypeKindFilterDescriptor { Include: var include, TypeKinds: var typeKinds, } =>
+                       TypeKindFilterDescriptor { Include: var include, TypeKinds: var typeKinds } =>
                            handleKindFilter(include, typeKinds, targetType),
-                       TypeInfoFilterDescriptor { Include: var include, TypeInfos: var typeInfos, } =>
+                       TypeInfoFilterDescriptor { Include: var include, TypeInfos: var typeInfos } =>
                            handleInfoFilter(include, typeInfos, targetType),
                        _ => throw new NotSupportedException(filterDescriptor.GetType().FullName),
                    };
@@ -97,7 +97,7 @@ internal record CompiledTypeFilter
 
         static bool handleKindFilter(bool include, ImmutableHashSet<TypeKind> typeKinds, INamedTypeSymbol type)
         {
-            return include switch { true => typeKinds.Any(kind => type.TypeKind == kind), false => typeKinds.All(kind => type.TypeKind != kind), };
+            return include switch { true => typeKinds.Any(kind => type.TypeKind == kind), false => typeKinds.All(kind => type.TypeKind != kind) };
         }
 
         static bool handleInfoFilter(bool include, ImmutableHashSet<TypeInfoFilter> typeKinds, INamedTypeSymbol type)

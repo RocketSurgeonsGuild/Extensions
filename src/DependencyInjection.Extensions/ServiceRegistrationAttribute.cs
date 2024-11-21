@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
@@ -7,7 +6,7 @@ using Rocket.Surgery.DependencyInjection.Compiled;
 namespace Rocket.Surgery.DependencyInjection;
 
 /// <summary>
-/// Defines the lifetime that should be used service registrations created using the <see cref="ICompiledTypeProvider"/>
+///     Defines the lifetime that should be used service registrations created using the <see cref="ICompiledTypeProvider" />
 /// </summary>
 [PublicAPI]
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
@@ -18,13 +17,10 @@ public class RegistrationLifetimeAttribute : Attribute
     ///     Constructor to specify the lifetime
     /// </summary>
     /// <param name="lifetime"></param>
-    public RegistrationLifetimeAttribute(ServiceLifetime lifetime)
-    {
-        Lifetime = lifetime;
-    }
+    public RegistrationLifetimeAttribute(ServiceLifetime lifetime) => Lifetime = lifetime;
 
     /// <summary>
-    /// The lifetime
+    ///     The lifetime
     /// </summary>
     public ServiceLifetime Lifetime { get; }
 }
@@ -40,7 +36,7 @@ public class ServiceRegistrationAttribute : Attribute
     /// <summary>
     ///     Constructor to specify the service type including optional runtime
     /// </summary>
-    /// <remarks>The default lifetime is <see cref="ServiceLifetime.Singleton"/></remarks>
+    /// <remarks>The default lifetime is <see cref="ServiceLifetime.Singleton" /></remarks>
     /// <param name="serviceTypes"></param>
     public ServiceRegistrationAttribute(params Type[] serviceTypes) : this(ServiceLifetime.Singleton, serviceTypes) { }
 
@@ -67,7 +63,7 @@ public class ServiceRegistrationAttribute : Attribute
 }
 
 /// <summary>
-///    Attribute used to define the service registration of a given type
+///     Attribute used to define the service registration of a given type
 /// </summary>
 /// <typeparam name="TService"></typeparam>
 [PublicAPI]
@@ -81,7 +77,7 @@ public sealed class ServiceRegistrationAttribute<TService> : ServiceRegistration
 }
 
 /// <summary>
-///    Attribute used to define the service registration of a given type
+///     Attribute used to define the service registration of a given type
 /// </summary>
 /// <typeparam name="TService1"></typeparam>
 /// <typeparam name="TService2"></typeparam>
@@ -96,7 +92,7 @@ public sealed class ServiceRegistrationAttribute<TService1, TService2> : Service
 }
 
 /// <summary>
-///    Attribute used to define the service registration of a given type
+///     Attribute used to define the service registration of a given type
 /// </summary>
 /// <typeparam name="TService1"></typeparam>
 /// <typeparam name="TService2"></typeparam>
@@ -117,7 +113,7 @@ public sealed class ServiceRegistrationAttribute<TService1, TService2, TService3
 }
 
 /// <summary>
-///    Attribute used to define the service registration of a given type
+///     Attribute used to define the service registration of a given type
 /// </summary>
 /// <typeparam name="TService1"></typeparam>
 /// <typeparam name="TService2"></typeparam>

@@ -724,7 +724,6 @@ public static class Program {
                           .GenerateAsync();
 
 
-
 //        await Verify(result);
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
@@ -928,243 +927,6 @@ public static class Program {
                           .GenerateAsync();
 
         await Verify(result);
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(5)]
-    public async Task Should_Handle_Private_Generic_Classes_Within_Multiple_Dependencies(int dependencyCount)
-    {
-        var dependencies = new List<GeneratorTestResults>();
-        var rootGenerator = await GeneratorTestContextBuilder
-                                 .Create()
-                                 .WithProjectName("RootDependencyProject")
-                                 .WithAssemblyLoadContext(AssemblyLoadContext)
-                                 .AddSources(
-                                      @"
-namespace RootDependencyProject
-{
-    public interface IRequest<T> { }
-    public interface IRequestHandler<T, R> where T : IRequest<R> { }
-}
-"
-                                  )
-                                 .Build()
-                                 .GenerateAsync();
-        dependencies.Add(rootGenerator);
-
-        for (var i = 0; i < dependencyCount; i++)
-        {
-            var dependency = await GeneratorTestContextBuilder
-                                  .Create()
-                                  .WithProjectName($"Dependency{i}Project")
-                                  .WithAssemblyLoadContext(AssemblyLoadContext)
-                                  .AddCompilationReferences(rootGenerator)
-                                  .AddSources(
-                                       $$"""
-
-                                       using RootDependencyProject;
-
-                                       namespace Dependency{{1}}Project
-                                       {
-                                           {{( i % 2 == 0 ? "public" : "" )}} class Request{{i}} : IRequest<Response{{i}}> { }
-                                           {{( i % 2 == 0 ? "public" : "" )}} class Response{{i}} { }
-                                           {{( i % 2 == 0 ? "public" : "" )}} class RequestHandler{{i}} : IRequestHandler<Request{{i}}, Response{{i}}>  { }
-                                       }
-
-                                       """
-                                   )
-                                  .Build()
-                                  .GenerateAsync();
-            dependencies.Add(dependency);
-        }
-
-
-        var result = await Builder
-                          .AddSources(
-                               @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using RootDependencyProject;
-
-namespace TestProject
-{
-    public static class Program
-    {
-        static void Main() { }
-        static IServiceCollection LoadServices()
-        {
-            var services = new ServiceCollection();
-            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-	        provider.Scan(
-                services,
-                z => z
-			        .FromAssemblies()
-			        .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
-                    .AsImplementedInterfaces()
-                    .WithSingletonLifetime()
-            );
-            return services;
-        }
-    }
-}
-"
-                           )
-                          .AddCompilationReferences(dependencies.ToArray())
-                          .Build()
-                          .GenerateAsync();
-
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(5)]
-    public async Task Should_Handle_Private_Classes_Within_Multiple_Dependencies(int dependencyCount)
-    {
-        var dependencies = new List<GeneratorTestResults>();
-        var rootGenerator = await GeneratorTestContextBuilder
-                                 .Create()
-                                 .WithProjectName("RootDependencyProject")
-                                 .WithAssemblyLoadContext(AssemblyLoadContext)
-                                 .AddSources(
-                                      @"
-namespace RootDependencyProject
-{
-    public interface IService { }
-}
-"
-                                  )
-                                 .Build()
-                                 .GenerateAsync();
-        dependencies.Add(rootGenerator);
-
-        for (var i = 0; i < dependencyCount; i++)
-        {
-            var dependency = await GeneratorTestContextBuilder
-                                  .Create()
-                                  .WithProjectName($"Dependency{i}Project")
-                                  .WithAssemblyLoadContext(AssemblyLoadContext)
-                                  .AddCompilationReferences(rootGenerator)
-                                  .AddSources(
-                                       $$"""
-
-                                       namespace Dependency{{1}}Project
-                                       {
-                                           class Service{{i}} : RootDependencyProject.IService { }
-                                       }
-
-                                       """
-                                   )
-                                  .Build()
-                                  .GenerateAsync();
-            dependencies.Add(dependency);
-        }
-
-
-        var result = await Builder
-                          .AddSources(
-                               @"
-using Rocket.Surgery.DependencyInjection.Compiled;
-using Microsoft.Extensions.DependencyInjection;
-using RootDependencyProject;
-
-namespace TestProject
-{
-    public static class Program
-    {
-        static void Main() { }
-        static IServiceCollection LoadServices()
-        {
-            var services = new ServiceCollection();
-            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-	        provider.Scan(
-                services,
-                z => z
-			        .FromAssemblies()
-			        .AddClasses(x => x.AssignableTo<IService>())
-                    .AsImplementedInterfaces()
-                    .WithSingletonLifetime()
-            );
-            return services;
-        }
-    }
-}
-"
-                           )
-                          .AddCompilationReferences(dependencies.ToArray())
-                          .Build()
-                          .GenerateAsync();
-
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
-    }
-
-    [Theory]
-    [InlineData(ServiceLifetime.Scoped)]
-    [InlineData(ServiceLifetime.Singleton)]
-    [InlineData(ServiceLifetime.Transient)]
-    public async Task Should_Have_Correct_Lifetime(ServiceLifetime serviceLifetime)
-    {
-        var result = await Builder
-                          .AddSources(
-                               $$"""
-
-                               using Rocket.Surgery.DependencyInjection.Compiled;
-                               using Microsoft.Extensions.DependencyInjection;
-
-                               public interface IService;
-                               public class Service : IService;
-                               public interface IServiceB;
-                               public class ServiceB : IServiceB;
-
-                               public static class Program {
-                                   static void Main() { }
-                                   static IServiceCollection LoadServices()
-                                   {
-                                       var services = new ServiceCollection();
-                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                                       provider.Scan(
-                                           services,
-                                           z => z
-                               			    .FromAssemblies()
-                               			    .AddClasses(x => x.AssignableTo<IService>())
-                                               .AsSelf()
-                                               .AsImplementedInterfaces()
-                                               .With{{serviceLifetime}}Lifetime()
-                                       );
-
-                               	        provider.Scan(
-                                           services,
-                                           z => z
-                               			    .FromAssemblies()
-                               			    .AddClasses(x => x.AssignableTo<IServiceB>(), false)
-                                               .AsSelf()
-                                               .AsMatchingInterface()
-                                               .WithLifetime(ServiceLifetime.{{serviceLifetime}})
-                                       );
-                                       return services;
-                                   }
-                               }
-                               """
-                           )
-                          .Build()
-                          .GenerateAsync();
-
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(serviceLifetime);
     }
 
     [Fact]
@@ -1438,6 +1200,243 @@ namespace TestProject
     }
 
     [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    public async Task Should_Handle_Private_Generic_Classes_Within_Multiple_Dependencies(int dependencyCount)
+    {
+        var dependencies = new List<GeneratorTestResults>();
+        var rootGenerator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(AssemblyLoadContext)
+                                 .AddSources(
+                                      @"
+namespace RootDependencyProject
+{
+    public interface IRequest<T> { }
+    public interface IRequestHandler<T, R> where T : IRequest<R> { }
+}
+"
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
+        dependencies.Add(rootGenerator);
+
+        for (var i = 0; i < dependencyCount; i++)
+        {
+            var dependency = await GeneratorTestContextBuilder
+                                  .Create()
+                                  .WithProjectName($"Dependency{i}Project")
+                                  .WithAssemblyLoadContext(AssemblyLoadContext)
+                                  .AddCompilationReferences(rootGenerator)
+                                  .AddSources(
+                                       $$"""
+
+                                       using RootDependencyProject;
+
+                                       namespace Dependency{{1}}Project
+                                       {
+                                           {{( i % 2 == 0 ? "public" : "" )}} class Request{{i}} : IRequest<Response{{i}}> { }
+                                           {{( i % 2 == 0 ? "public" : "" )}} class Response{{i}} { }
+                                           {{( i % 2 == 0 ? "public" : "" )}} class RequestHandler{{i}} : IRequestHandler<Request{{i}}, Response{{i}}>  { }
+                                       }
+
+                                       """
+                                   )
+                                  .Build()
+                                  .GenerateAsync();
+            dependencies.Add(dependency);
+        }
+
+
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+using RootDependencyProject;
+
+namespace TestProject
+{
+    public static class Program
+    {
+        static void Main() { }
+        static IServiceCollection LoadServices()
+        {
+            var services = new ServiceCollection();
+            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	        provider.Scan(
+                services,
+                z => z
+			        .FromAssemblies()
+			        .AddClasses(x => x.AssignableTo(typeof(IRequestHandler<,>)))
+                    .AsImplementedInterfaces()
+                    .WithSingletonLifetime()
+            );
+            return services;
+        }
+    }
+}
+"
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    public async Task Should_Handle_Private_Classes_Within_Multiple_Dependencies(int dependencyCount)
+    {
+        var dependencies = new List<GeneratorTestResults>();
+        var rootGenerator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(AssemblyLoadContext)
+                                 .AddSources(
+                                      @"
+namespace RootDependencyProject
+{
+    public interface IService { }
+}
+"
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
+        dependencies.Add(rootGenerator);
+
+        for (var i = 0; i < dependencyCount; i++)
+        {
+            var dependency = await GeneratorTestContextBuilder
+                                  .Create()
+                                  .WithProjectName($"Dependency{i}Project")
+                                  .WithAssemblyLoadContext(AssemblyLoadContext)
+                                  .AddCompilationReferences(rootGenerator)
+                                  .AddSources(
+                                       $$"""
+
+                                       namespace Dependency{{1}}Project
+                                       {
+                                           class Service{{i}} : RootDependencyProject.IService { }
+                                       }
+
+                                       """
+                                   )
+                                  .Build()
+                                  .GenerateAsync();
+            dependencies.Add(dependency);
+        }
+
+
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+using RootDependencyProject;
+
+namespace TestProject
+{
+    public static class Program
+    {
+        static void Main() { }
+        static IServiceCollection LoadServices()
+        {
+            var services = new ServiceCollection();
+            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	        provider.Scan(
+                services,
+                z => z
+			        .FromAssemblies()
+			        .AddClasses(x => x.AssignableTo<IService>())
+                    .AsImplementedInterfaces()
+                    .WithSingletonLifetime()
+            );
+            return services;
+        }
+    }
+}
+"
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
+    }
+
+    [Theory]
+    [InlineData(ServiceLifetime.Scoped)]
+    [InlineData(ServiceLifetime.Singleton)]
+    [InlineData(ServiceLifetime.Transient)]
+    public async Task Should_Have_Correct_Lifetime(ServiceLifetime serviceLifetime)
+    {
+        var result = await Builder
+                          .AddSources(
+                               $$"""
+
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
+
+                               public interface IService;
+                               public class Service : IService;
+                               public interface IServiceB;
+                               public class ServiceB : IServiceB;
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                                       provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo<IService>())
+                                               .AsSelf()
+                                               .AsImplementedInterfaces()
+                                               .With{{serviceLifetime}}Lifetime()
+                                       );
+                               
+                               	        provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableTo<IServiceB>(), false)
+                                               .AsSelf()
+                                               .AsMatchingInterface()
+                                               .WithLifetime(ServiceLifetime.{{serviceLifetime}})
+                                       );
+                                       return services;
+                                   }
+                               }
+                               """
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(serviceLifetime);
+    }
+
+    [Theory]
     [InlineData(true)]
     [InlineData(false)]
     public async Task Should_Filter_WithAttribute(bool useTypeof)
@@ -1587,15 +1586,15 @@ namespace TestProject
                                			.AddClasses(x => x.{{( usingClass, usingTypeof, filter ) switch
                                                                 {
                                                                     (false, false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\")",
-                                                                    (false, false, NamespaceFilter.In)    => $"InNamespaces(\"{namespaceFilterValue}\")",
+                                                                    (false, false, NamespaceFilter.In) => $"InNamespaces(\"{namespaceFilterValue}\")",
                                                                     (false, false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\")",
-                                                                    (true, false, NamespaceFilter.Exact)  => $"InExactNamespaceOf(typeof({namespaceFilterValue}))",
-                                                                    (true, false, NamespaceFilter.In)     => $"InNamespaceOf(typeof({namespaceFilterValue}))",
-                                                                    (true, false, NamespaceFilter.NotIn)  => $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}))",
-                                                                    (true, true, NamespaceFilter.Exact)   => $"InExactNamespaceOf<{namespaceFilterValue}>()",
-                                                                    (true, true, NamespaceFilter.In)      => $"InNamespaceOf<{namespaceFilterValue}>()",
-                                                                    (true, true, NamespaceFilter.NotIn)   => $"InNamespaces(\"TestProject\").NotInNamespaceOf<{namespaceFilterValue}>()",
-                                                                    _                                     => "ERROR",
+                                                                    (true, false, NamespaceFilter.Exact) => $"InExactNamespaceOf(typeof({namespaceFilterValue}))",
+                                                                    (true, false, NamespaceFilter.In) => $"InNamespaceOf(typeof({namespaceFilterValue}))",
+                                                                    (true, false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}))",
+                                                                    (true, true, NamespaceFilter.Exact) => $"InExactNamespaceOf<{namespaceFilterValue}>()",
+                                                                    (true, true, NamespaceFilter.In) => $"InNamespaceOf<{namespaceFilterValue}>()",
+                                                                    (true, true, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaceOf<{namespaceFilterValue}>()",
+                                                                    _ => "ERROR",
                                                                 }}})
                                            .AsSelf()
                                            .AsImplementedInterfaces()
@@ -1612,7 +1611,9 @@ namespace TestProject
 
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).HashParameters().UseParameters(filter, namespaceFilterValue, count, usingClass, usingTypeof);
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+             .HashParameters()
+             .UseParameters(filter, namespaceFilterValue, count, usingClass, usingTypeof);
     }
 
     [Theory]
