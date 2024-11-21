@@ -743,7 +743,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 public interface IService { }
 public interface IServiceB { }
-[ServiceRegistration(typeof(IServiceB), ServiceLifetime.Scoped)]
+[ServiceRegistration(ServiceLifetime.Scoped, typeof(IServiceB))]
 public class Service : IService, IServiceB { }
 [ServiceRegistration(ServiceLifetime.Transient)]
 public class ServiceA : IService { }
@@ -901,8 +901,8 @@ using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
 public interface IService { }
-[ServiceRegistration(typeof(IService), ServiceLifetime.Scoped)]
-[ServiceRegistration(typeof(IService), ServiceLifetime.Singleton)]
+[ServiceRegistration(ServiceLifetime.Scoped, typeof(IService))]
+[ServiceRegistration<IService>(ServiceLifetime.Singleton)]
 public class Service : IService { }
 
 public static class Program {

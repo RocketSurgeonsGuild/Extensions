@@ -649,6 +649,89 @@ public static class Program {
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
+    [Theory]
+    [InlineData(
+        """
+        public interface IService { }
+        public interface IServiceB { }
+        [ServiceRegistration]
+        public class Service : IService, IServiceB { }
+        [ServiceRegistration]
+        public class ServiceA : IService { }
+        [ServiceRegistration]
+        public class ServiceB : IService, IServiceB { }
+        """)]
+    [InlineData(
+        """
+        public interface IService { }
+        public interface IServiceB { }
+
+        [RegistrationLifetime(ServiceLifetime.Scoped)]
+        [ServiceRegistration]
+        public class Service : IService, IServiceB { }
+
+        [RegistrationLifetime(ServiceLifetime.Transient)]
+        [ServiceRegistration]
+        public class ServiceA : IService { }
+
+        [RegistrationLifetime(ServiceLifetime.Singleton)]
+        [ServiceRegistration]
+        public class ServiceB : IService, IServiceB { }
+        """)]
+    [InlineData(
+        """
+
+        [RegistrationLifetime(ServiceLifetime.Scoped)]
+        public interface IService { }
+
+        [RegistrationLifetime(ServiceLifetime.Transient)]
+        public interface IServiceB { }
+
+        [RegistrationLifetime(ServiceLifetime.Singleton)]
+        public interface IServiceC { }
+
+        [ServiceRegistration]
+        public class Service : IService, IServiceB { }
+
+        [ServiceRegistration]
+        public class ServiceA : IService, IServiceC { }
+
+        [ServiceRegistration]
+        public class ServiceB : IService, IServiceB { }
+        """)]
+    [InlineData(
+        """
+        public interface IService { }
+        public interface IServiceB { }
+
+        [ServiceRegistration(ServiceLifetime.Scoped, typeof(IService))]
+        [ServiceRegistration<IServiceB>(ServiceLifetime.Singleton)]
+        public class Service : IService, IServiceB { }
+
+        [RegistrationLifetime(ServiceLifetime.Transient)]
+        [ServiceRegistration]
+        public class ServiceA : IService { }
+
+        [ServiceRegistration]
+        public class ServiceB : IService, IServiceB { }
+        """)]
+    public async Task Should_Support_ServiceRegistrations(string source)
+    {
+        var result = await Builder
+                          .AddSources(
+                               $@"
+using System;
+using Rocket.Surgery.DependencyInjection;
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+{source}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+        await Verify(result).HashParameters().UseParameters(source);
+    }
+
     [Fact]
     public async Task Should_Support_ServiceRegistrationAttributes()
     {
@@ -662,7 +745,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 public interface IService { }
 public interface IServiceB { }
-[ServiceRegistration(typeof(IServiceB), ServiceLifetime.Scoped)]
+[ServiceRegistration(ServiceLifetime.Scoped, typeof(IServiceB))]
 public class Service : IService, IServiceB { }
 [ServiceRegistration(ServiceLifetime.Transient)]
 public class ServiceA : IService { }
@@ -690,7 +773,6 @@ public static class Program {
                            )
                           .Build()
                           .GenerateAsync();
-
 
         var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
@@ -820,8 +902,8 @@ using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
 public interface IService { }
-[ServiceRegistration(typeof(IService), ServiceLifetime.Scoped)]
-[ServiceRegistration(typeof(IService), ServiceLifetime.Singleton)]
+[ServiceRegistration(ServiceLifetime.Scoped, typeof(IService))]
+[ServiceRegistration<IService>(ServiceLifetime.Singleton)]
 public class Service : IService { }
 
 public static class Program {

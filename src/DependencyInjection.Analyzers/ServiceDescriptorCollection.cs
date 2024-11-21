@@ -145,6 +145,7 @@ internal static class ServiceDescriptorCollection
         var asSpecificTypes = serviceTypes.ServiceTypeDescriptors.OfType<CompiledServiceTypeDescriptor>().Select(z => z.Type).ToArray();
         var usingAttributes = serviceTypes.ServiceTypeDescriptors.OfType<UsingAttributeServiceTypeDescriptor>().Any();
         var serviceRegistrationAttribute = compilation.GetTypeByMetadataName("Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute")!;
+        var registrationLifetimeAttribute = compilation.GetTypeByMetadataName("Rocket.Surgery.DependencyInjection.RegistrationLifetimeAttribute")!;
 
         var services = new List<InvocationExpressionSyntax>();
 
@@ -197,7 +198,7 @@ internal static class ServiceDescriptorCollection
                         continue;
 
                     INamedTypeSymbol? attributeServiceType = null;
-                    var lifetimeValue = serviceTypes.GetLifetime();
+                    var lifetimeValue =  serviceTypes.GetLifetime();
 
                     if (attribute.ConstructorArguments is [{ Kind: TypedConstantKind.Enum } _])
                     {
