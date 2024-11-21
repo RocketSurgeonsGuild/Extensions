@@ -188,8 +188,8 @@ internal static class ServiceDescriptorCollection
                                                          {
                                                              { ConstructorArguments: [_, { Kind: TypedConstantKind.Array, Values: { Length: > 0 } values }] } =>
                                                                  values
-                                                                    .Where(z => z is { Kind: TypedConstantKind.Type, Type: INamedTypeSymbol })
-                                                                    .Select(z => z.Type)
+                                                                    .Where(z => z is { Kind: TypedConstantKind.Type, Value: INamedTypeSymbol })
+                                                                    .Select(z => z.Value)
                                                                     .OfType<INamedTypeSymbol>(),
                                                              { AttributeClass.TypeArguments: { Length: > 0 } typeArgs } => typeArgs.OfType<INamedTypeSymbol>(),
                                                              _ => type.AllInterfaces.OfType<INamedTypeSymbol>(),

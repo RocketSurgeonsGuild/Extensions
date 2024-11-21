@@ -25,7 +25,7 @@
     },
     {
       Lifetime: Scoped,
-      ServiceType: System.Type,
+      ServiceType: IServiceB,
       ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
     },
     {
