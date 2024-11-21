@@ -193,8 +193,6 @@ internal static class ServiceDescriptorCollection
                                                          {
                                                              { ConstructorArguments: [_, { Kind: TypedConstantKind.Array, Values: { Length: > 0 } values }] } =>
                                                                  values
-                                                                    .Where(argument => argument is { Kind: TypedConstantKind.Array, Values.Length: > 0 })
-                                                                    .SelectMany(z => z.Values)
                                                                     .Where(z => z is { Kind: TypedConstantKind.Type, Type: INamedTypeSymbol })
                                                                     .Select(z => z.Type)
                                                                     .OfType<INamedTypeSymbol>(),
@@ -203,18 +201,37 @@ internal static class ServiceDescriptorCollection
                                                          } )
                                                    .Prepend(type);
                                             },
-                                            (data, t) => ( Lifetime: GetLifetimeValue(data) ?? lifetimeValue, Type: t )
+                                            (data, serviceType) =>
+                                            {
+                                                var serviceAttribute = serviceType
+                                                                      .GetAttributes()
+                                                                      .FirstOrDefault(
+                                                                           z => z.AttributeClass != null
+                                                                            && SymbolEqualityComparer.Default.Equals(
+                                                                                   z.AttributeClass,
+                                                                                   registrationLifetimeAttribute
+                                                                               )
+                                                                       );
+                                                return ( Lifetime: GetLifetimeValue(serviceAttribute) ?? GetLifetimeValue(data) ?? lifetimeValue,
+                                                         Type: serviceType );
+                                            }
                                         )
                                        .GroupBy(z => z.Type.ToDisplayString())
                                        .ToArray();
+
+            var abort = false;
             foreach (var registration in lifetimeRegistrations)
             {
                 if (registration.Count() <= 1) continue;
                 foreach (var item in registration)
                 {
+                    if (!item.Type.DeclaringSyntaxReferences.Any()) continue;
                     context.ReportDiagnostic(Diagnostic.Create(Diagnostics.DuplicateServiceDescriptorAttribute, item.Type.Locations.FirstOrDefault()));
+                    abort = true;
                 }
             }
+
+            if (abort) return Block();
 
             foreach (var (lifetime, serviceType) in lifetimeRegistrations.Select(z => z.First()))
             {
@@ -224,7 +241,7 @@ internal static class ServiceDescriptorCollection
 
                 if (emittedTypes.Contains(serviceType)) continue;
                 services.Add(
-                    asSelf
+                    !SymbolEqualityComparer.Default.Equals(serviceType, type)
                         ? StatementGeneration.GenerateServiceFactory(
                             compilation,
                             serviceType,

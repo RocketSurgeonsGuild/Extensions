@@ -277,6 +277,44 @@ internal static partial class AssemblyProviderConfiguration
                .ToImmutableArray(),
             typeFilter
                .TypeFilterDescriptors
+               .SelectMany(
+                    f => f switch
+                         {
+                             WithAnyAttributeFilterDescriptor descriptor =>
+                                 descriptor.Attributes
+                                           .Select(
+                                                attribute => new WithAttributeData(
+                                                    true,
+                                                    attribute.ContainingAssembly.MetadataName,
+                                                    Helpers.GetFullMetadataName(attribute),
+                                                    attribute.IsUnboundGenericType
+                                                )
+                                            ),
+                             _ => [],
+                         }
+                )
+               .Where(z => z is { })
+               .OrderBy(z => z.Assembly)
+               .ThenBy(z => z.Attribute)
+               .ThenBy(z => z.Include)
+               .ToImmutableArray(),
+            typeFilter
+               .TypeFilterDescriptors
+               .SelectMany(f =>
+                               f switch
+                                {
+                                    WithAnyAttributeStringFilterDescriptor descriptor => descriptor.AttributeClassNames.Select(
+                                        z => new WithAttributeStringData(true, z)
+                                    ),
+                                    _ => [],
+                                }
+                )
+               .Where(z => z is { })
+               .OrderBy(z => z.Attribute)
+               .ThenBy(z => z.Include)
+               .ToImmutableArray(),
+            typeFilter
+               .TypeFilterDescriptors
                .Select(
                     f => f switch
                          {
@@ -400,6 +438,30 @@ internal static partial class AssemblyProviderConfiguration
             );
         }
 
+        var withAnyAttributeFilter = new List<INamedTypeSymbol>();
+        foreach (var item in data.WithAnyAttributeFilters)
+        {
+            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type) continue;
+            if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
+            withAnyAttributeFilter.Add(type);
+        }
+
+        if (withAnyAttributeFilter.Any())
+        {
+            descriptors.Add(new WithAnyAttributeFilterDescriptor(withAnyAttributeFilter.ToImmutableHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default)));
+        }
+
+        var withAnyAttributeStringFilter = new List<string>();
+        foreach (var item in data.WithAnyAttributeStringFilters)
+        {
+            withAnyAttributeStringFilter.Add(item.Attribute);
+        }
+
+        if (withAnyAttributeStringFilter.Any())
+        {
+            descriptors.Add(new WithAnyAttributeStringFilterDescriptor(withAnyAttributeStringFilter.ToImmutableHashSet()));
+        }
+
         foreach (var item in data.AssignableToTypeFilters)
         {
             if (findType(assemblySymbols, compilation, item.Assembly, item.Type) is not { } type) continue;
@@ -474,6 +536,8 @@ internal static partial class AssemblyProviderConfiguration
             typeData.TypeInfoFilters,
             typeData.WithAttributeFilters,
             typeData.WithAttributeStringFilters,
+            typeData.WithAnyAttributeFilters,
+            typeData.WithAnyAttributeStringFilters,
             typeData.AssignableToTypeFilters,
             typeData.AssignableToAnyTypeFilters,
             serviceDescriptors.ToImmutableArray(),
@@ -585,6 +649,10 @@ internal static partial class AssemblyProviderConfiguration
         ImmutableArray<WithAttributeData> WithAttributeFilters,
         [property: JsonPropertyName("s")]
         ImmutableArray<WithAttributeStringData> WithAttributeStringFilters,
+        [property: JsonPropertyName("wa")]
+        ImmutableArray<WithAttributeData> WithAnyAttributeFilters,
+        [property: JsonPropertyName("sa")]
+        ImmutableArray<WithAttributeStringData> WithAnyAttributeStringFilters,
         [property: JsonPropertyName("at")]
         ImmutableArray<AssignableToTypeData> AssignableToTypeFilters,
         [property: JsonPropertyName("ta")]
@@ -605,6 +673,8 @@ internal static partial class AssemblyProviderConfiguration
         ImmutableArray<TypeInfoFilterData> TypeInfoFilters,
         ImmutableArray<WithAttributeData> WithAttributeFilters,
         ImmutableArray<WithAttributeStringData> WithAttributeStringFilters,
+        ImmutableArray<WithAttributeData> WithAnyAttributeFilters,
+        ImmutableArray<WithAttributeStringData> WithAnyAttributeStringFilters,
         ImmutableArray<AssignableToTypeData> AssignableToTypeFilters,
         ImmutableArray<AssignableToAnyTypeData> AssignableToAnyTypeFilters,
         ImmutableArray<string> ServiceTypeDescriptors,
@@ -622,6 +692,8 @@ internal static partial class AssemblyProviderConfiguration
         TypeInfoFilters,
         WithAttributeFilters,
         WithAttributeStringFilters,
+        WithAnyAttributeFilters,
+        WithAnyAttributeStringFilters,
         AssignableToTypeFilters,
         AssignableToAnyTypeFilters
     );

@@ -49,7 +49,6 @@ public class ServiceRegistrationAttribute : Attribute
     /// </summary>
     /// <param name="serviceTypes"></param>
     /// <param name="lifetime"></param>
-    [OverloadResolutionPriority(1)]
     public ServiceRegistrationAttribute(ServiceLifetime lifetime, params Type[] serviceTypes)
     {
         ServiceTypes = [..serviceTypes];

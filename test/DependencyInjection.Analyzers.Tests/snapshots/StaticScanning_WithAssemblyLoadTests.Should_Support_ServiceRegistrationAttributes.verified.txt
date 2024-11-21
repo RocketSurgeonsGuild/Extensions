@@ -24,6 +24,11 @@
       ImplementationType: Service
     },
     {
+      Lifetime: Scoped,
+      ServiceType: System.Type,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+    },
+    {
       Lifetime: Transient,
       ServiceType: ServiceA,
       ImplementationType: ServiceA
@@ -31,7 +36,7 @@
     {
       Lifetime: Transient,
       ServiceType: IService,
-      ImplementationType: ServiceA
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
     },
     {
       Lifetime: Singleton,
@@ -41,12 +46,12 @@
     {
       Lifetime: Singleton,
       ServiceType: IService,
-      ImplementationType: ServiceB
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
     },
     {
       Lifetime: Singleton,
       ServiceType: IServiceB,
-      ImplementationType: ServiceB
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
     }
   ]
 }

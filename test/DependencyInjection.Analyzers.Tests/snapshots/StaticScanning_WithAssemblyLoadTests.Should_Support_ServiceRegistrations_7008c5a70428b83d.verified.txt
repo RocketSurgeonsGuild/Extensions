@@ -7,7 +7,7 @@
         Title: Duplicate service descriptor attribute,
         Severity: Warning,
         WarningLevel: 1,
-        Location: Input0.cs: (9,13)-(9,20),
+        Location: Input0.cs: (10,13)-(10,20),
         MessageFormat: Cannot have more than one service descriptor attribute for a given type,
         Message: Cannot have more than one service descriptor attribute for a given type,
         Category: Dependency Injection
@@ -17,27 +17,7 @@
         Title: Duplicate service descriptor attribute,
         Severity: Warning,
         WarningLevel: 1,
-        Location: Input0.cs: (9,13)-(9,20),
-        MessageFormat: Cannot have more than one service descriptor attribute for a given type,
-        Message: Cannot have more than one service descriptor attribute for a given type,
-        Category: Dependency Injection
-      },
-      {
-        Id: RSGD0005,
-        Title: Duplicate service descriptor attribute,
-        Severity: Warning,
-        WarningLevel: 1,
-        Location: Input0.cs: (9,13)-(9,20),
-        MessageFormat: Cannot have more than one service descriptor attribute for a given type,
-        Message: Cannot have more than one service descriptor attribute for a given type,
-        Category: Dependency Injection
-      },
-      {
-        Id: RSGD0005,
-        Title: Duplicate service descriptor attribute,
-        Severity: Warning,
-        WarningLevel: 1,
-        Location: Input0.cs: (9,13)-(9,20),
+        Location: Input0.cs: (10,13)-(10,20),
         MessageFormat: Cannot have more than one service descriptor attribute for a given type,
         Message: Cannot have more than one service descriptor attribute for a given type,
         Category: Dependency Injection
