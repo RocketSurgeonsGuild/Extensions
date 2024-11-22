@@ -213,7 +213,7 @@ internal static partial class AssemblyProviderConfiguration
                .ToImmutableArray(),
             typeFilter
                .TypeFilterDescriptors.OfType<NameFilterDescriptor>()
-               .Select(z => new NameFilterData(z.Filter, z.Names.OrderBy(z => z).ToImmutableArray()))
+               .Select(z => new NameFilterData(z.Include, z.Filter, z.Names.OrderBy(z => z).ToImmutableArray()))
                .OrderBy(z => string.Join(",", z.Names.OrderBy(static z => z)))
                .ThenBy(z => z.Filter)
                .ToImmutableArray(),
@@ -405,7 +405,7 @@ internal static partial class AssemblyProviderConfiguration
 
         foreach (var item in data.NameFilters)
         {
-            descriptors.Add(new NameFilterDescriptor(item.Filter, item.Names.ToImmutableHashSet()));
+            descriptors.Add(new NameFilterDescriptor(item.Include, item.Filter, item.Names.ToImmutableHashSet()));
         }
 
         foreach (var item in data.TypeKindFilters)
@@ -747,6 +747,8 @@ internal static partial class AssemblyProviderConfiguration
 
     internal record NameFilterData
     (
+        [property: JsonPropertyName("i")]
+        bool Include,
         [property: JsonPropertyName("f")]
         TextDirectionFilter Filter,
         [property: JsonPropertyName("n")]

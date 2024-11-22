@@ -19,7 +19,7 @@ internal static class AssemblyCollection
         return valueProvider
               .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetMethod(syntaxContext))
               .Combine(hasAssemblyLoadContext)
-              .Where(z => z is { Right: true, Left: { method: { }, selector: { }, }, })
+              .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
               .Select((tuple, _) => tuple.Left)
               .Collect();
     }
@@ -90,11 +90,6 @@ internal static class AssemblyCollection
         );
     }
 
-    private static bool IsValidMethod(SyntaxNode node)
-    {
-        return GetMethod(node) is { method: { }, selector: { } };
-    }
-
     public static MethodDeclarationSyntax Execute(
         Request request
     )
@@ -104,7 +99,7 @@ internal static class AssemblyCollection
 
         var assemblySymbols = compilation
                              .References.Select(compilation.GetAssemblyOrModuleSymbol)
-                             .Concat([compilation.Assembly,])
+                             .Concat([compilation.Assembly])
                              .Select(
                                   symbol => symbol switch
                                             {
@@ -140,26 +135,26 @@ internal static class AssemblyCollection
          || baseData.selector is null
          || context.SemanticModel.GetTypeInfo(baseData.selector).ConvertedType is not INamedTypeSymbol
             {
-                TypeArguments: [{ Name: "IAssemblyProviderAssemblySelector", }, ..,],
+                TypeArguments: [{ Name: IReflectionAssemblySelector }, ..],
             })
             return default;
 
         return ( baseData.method, baseData.selector, semanticModel: context.SemanticModel );
     }
 
-    public static (InvocationExpressionSyntax method, ExpressionSyntax selector ) GetMethod(SyntaxNode node)
-    {
-        return node is InvocationExpressionSyntax
+    public static (InvocationExpressionSyntax method, ExpressionSyntax selector ) GetMethod(SyntaxNode node) =>
+        node is InvocationExpressionSyntax
         {
             Expression: MemberAccessExpressionSyntax
             {
                 Name.Identifier.Text: "GetAssemblies",
             },
-            ArgumentList.Arguments: [{ Expression: { } expression, },],
+            ArgumentList.Arguments: [{ Expression: { } expression }],
         } invocationExpressionSyntax
             ? ( invocationExpressionSyntax, expression )
             : default;
-    }
+
+    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
 
     private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<IAssemblySymbol> assemblies, HashSet<IAssemblySymbol> privateAssemblies)
     {
@@ -321,6 +316,8 @@ internal static class AssemblyCollection
               .AddMembers(getAssembliesMethod, reflectionMethod, serviceDescriptorMethod)
               .AddMembers(privateMembers.ToArray());
     }
+
+    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
 
     public record CollectRequest
     (
