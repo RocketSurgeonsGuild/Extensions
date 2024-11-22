@@ -44,8 +44,8 @@ internal record CompiledTypeFilter
                            targetType.GetAttributes().All(z => Helpers.GetFullMetadataName(z.AttributeClass) != attribute),
                        NamespaceFilterDescriptor { Filter: var filterName, Namespaces: var filterNamespaces } =>
                            handleNamespaceFilter(filterName, filterNamespaces, targetType),
-                       NameFilterDescriptor { Filter: var filterName, Names: var filterNames } =>
-                           handleNameFilter(filterName, filterNames, targetType),
+                       NameFilterDescriptor { Include: var include, Filter: var filterName, Names: var filterNames } =>
+                           handleNameFilter(include, filterName, filterNames, targetType),
                        TypeKindFilterDescriptor { Include: var include, TypeKinds: var typeKinds } =>
                            handleKindFilter(include, typeKinds, targetType),
                        TypeInfoFilterDescriptor { Include: var include, TypeInfos: var typeInfos } =>
@@ -84,14 +84,17 @@ internal record CompiledTypeFilter
                    };
         }
 
-        static bool handleNameFilter(TextDirectionFilter filterName, ImmutableHashSet<string> filterNames, INamedTypeSymbol type)
+        static bool handleNameFilter(bool include, TextDirectionFilter filterName, ImmutableHashSet<string> filterNames, INamedTypeSymbol type)
         {
-            return filterName switch
+            return ( include, filterName ) switch
                    {
-                       TextDirectionFilter.Contains   => filterNames.Any(name => type.Name.Contains(name)),
-                       TextDirectionFilter.StartsWith => filterNames.Any(name => type.Name.StartsWith(name)),
-                       TextDirectionFilter.EndsWith   => filterNames.Any(name => type.Name.EndsWith(name)),
-                       _                              => throw new NotImplementedException(),
+                       (true, TextDirectionFilter.Contains)    => filterNames.Any(name => type.Name.Contains(name)),
+                       (false, TextDirectionFilter.Contains)   => !filterNames.Any(name => type.Name.Contains(name)),
+                       (true, TextDirectionFilter.EndsWith)    => filterNames.Any(name => type.Name.EndsWith(name)),
+                       (false, TextDirectionFilter.EndsWith)   => !filterNames.Any(name => type.Name.EndsWith(name)),
+                       (true, TextDirectionFilter.StartsWith)  => filterNames.Any(name => type.Name.StartsWith(name)),
+                       (false, TextDirectionFilter.StartsWith) => !filterNames.Any(name => type.Name.StartsWith(name)),
+                       _                                       => throw new NotImplementedException(),
                    };
         }
 

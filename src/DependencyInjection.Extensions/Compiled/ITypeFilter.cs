@@ -58,7 +58,23 @@ public interface ITypeFilter
     /// <param name="value"></param>
     /// <param name="values"></param>
     /// <returns></returns>
+    ITypeFilter NotEndsWith(string value, params string[] values);
+
+    /// <summary>
+    ///     Will match all types that start with
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     ITypeFilter StartsWith(string value, params string[] values);
+
+    /// <summary>
+    ///     Will match all types that start with
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    ITypeFilter NotStartsWith(string value, params string[] values);
 
     /// <summary>
     ///     Will match all types that contain the given values
@@ -67,6 +83,14 @@ public interface ITypeFilter
     /// <param name="values"></param>
     /// <returns></returns>
     ITypeFilter Contains(string value, params string[] values);
+
+    /// <summary>
+    ///     Will match all types that contain the given values
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    ITypeFilter NotContains(string value, params string[] values);
 
     /// <summary>
     ///     Will match all types in the exact same namespace as the type <typeparamref name="T" />

@@ -225,7 +225,7 @@ internal static class DataHelpers
                        createNamespaceTypeFilterDescriptor(context, name, expression, semanticModel),
                    ({ Identifier.Text: "InExactNamespaces" or "InNamespaces" or "NotInNamespaces" }, _) =>
                        createNamespaceStringFilterDescriptor(context, name, expression, semanticModel),
-                   ({ Identifier.Text: "EndsWith" or "StartsWith" or "Contains" }, _) =>
+                   ({ Identifier.Text: "EndsWith" or "StartsWith" or "Contains" or "NotEndsWith" or "NotStartsWith" or "NotContains" }, _) =>
                        createNameFilterDescriptor(context, name, expression),
                    ({ Identifier.Text: "KindOf" or "NotKindOf" }, _) =>
                        createTypeKindFilterDescriptor(context, name, expression),
@@ -276,7 +276,7 @@ internal static class DataHelpers
                 : new AssignableToAnyTypeFilterDescriptor(arguments);
         }
 
-        static NameFilterDescriptor createNameFilterDescriptor(
+        static ITypeFilterDescriptor createNameFilterDescriptor(
             SourceProductionContext context,
             SimpleNameSyntax name,
             InvocationExpressionSyntax expression
@@ -284,9 +284,9 @@ internal static class DataHelpers
         {
             var filter = name.Identifier.Text switch
                          {
-                             "EndsWith"   => TextDirectionFilter.EndsWith,
-                             "StartsWith" => TextDirectionFilter.StartsWith,
-                             "Contains"   => TextDirectionFilter.Contains,
+                             "EndsWith" or "NotEndsWith"     => TextDirectionFilter.EndsWith,
+                             "StartsWith" or "NotStartsWith" => TextDirectionFilter.StartsWith,
+                             "Contains" or "NotContains"     => TextDirectionFilter.Contains,
                              _ => throw new NotSupportedException(
                                  $"Not supported name filter. Method: {name.ToFullString()}  {expression.ToFullString()} method."
                              ),
@@ -303,7 +303,7 @@ internal static class DataHelpers
                 stringValues.Add(item);
             }
 
-            return new(filter, stringValues.ToImmutable());
+            return new NameFilterDescriptor(!name.Identifier.Text.StartsWith("Not"), filter, stringValues.ToImmutable());
         }
 
         static NamespaceFilterDescriptor createNamespaceTypeFilterDescriptor(

@@ -1938,6 +1938,140 @@ namespace RootDependencyProject
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(className, useTypeof, expectedCount);
     }
 
+
+    [Theory]
+    [InlineData("ServiceA", false, 2)]
+    [InlineData("ServiceB", false, 0)]
+    [InlineData("ServiceC", false, 1)]
+    [InlineData("ServiceA", true, 2)]
+    [InlineData("ServiceB", true, 0)]
+    [InlineData("ServiceC", true, 1)]
+    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyDependenciesOf_For_GetTypes(string className, bool useTypeof, int expectedCount)
+    {
+        var dependencies = new List<GeneratorTestResults>();
+
+        static async Task<GeneratorTestResults> CreateRoot(
+            AssemblyLoadContext context,
+            ILogger logger,
+            params GeneratorTestResults[] dependencies
+        )
+        {
+            var generator = await GeneratorTestContextBuilder
+                                 .Create()
+                                 .WithProjectName("RootDependencyProject")
+                                 .WithAssemblyLoadContext(context)
+                                 .WithLogger(logger)
+                                 .AddCompilationReferences(dependencies)
+                                 .AddSources(
+                                      @"
+namespace RootDependencyProject
+{
+    public interface IService { }
+}
+"
+                                  )
+                                 .Build()
+                                 .GenerateAsync();
+            generator.AssertCompilationWasSuccessful();
+            generator.AssertGenerationWasSuccessful();
+            return generator;
+        }
+
+        static async Task<GeneratorTestResults> CreateServiceDependency(
+            AssemblyLoadContext context,
+            ILogger logger,
+            string suffix,
+            params GeneratorTestResults[] dependencies
+        )
+        {
+            var additionalCode = dependencies
+                                .Where(z => z.FinalCompilation.AssemblyName?.StartsWith("DependencyProject") == true)
+                                .Select(
+                                     z =>
+                                         $"class HardReference{z.FinalCompilation.AssemblyName?.Substring(z.FinalCompilation.AssemblyName.Length - 1)} : {z.FinalCompilation.AssemblyName + ".Service" + z.FinalCompilation.AssemblyName?.Substring(z.FinalCompilation.AssemblyName.Length - 1)} {{ }}"
+                                 );
+            var dep = await GeneratorTestContextBuilder
+                           .Create()
+                           .WithProjectName("DependencyProject" + suffix)
+                           .WithAssemblyLoadContext(context)
+                           .WithLogger(logger)
+                           .AddCompilationReferences(dependencies)
+                           .AddSources(
+                                $$"""
+
+                                namespace DependencyProject{{suffix}}
+                                {
+                                    {{string.Join("\n", additionalCode)}}
+                                    public class Service{{suffix}} : RootDependencyProject.IService { }
+                                }
+
+                                """
+                            )
+                           .Build()
+                           .GenerateAsync();
+            return dep;
+        }
+
+        var root = await CreateRoot(AssemblyLoadContext, Logger);
+        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, "A", root);
+        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, "B", root);
+        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, "C", dependencyA, root);
+        var dependencyD = await CreateServiceDependency(
+            AssemblyLoadContext,
+            Logger,
+            "D",
+            dependencyA,
+            dependencyC,
+            root
+        );
+        dependencies.Add(root);
+        dependencies.Add(dependencyA);
+        dependencies.Add(dependencyB);
+        dependencies.Add(dependencyC);
+        dependencies.Add(dependencyD);
+
+        var result = await Builder
+                          .AddSources(
+                               $$"""
+
+
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
+                               using RootDependencyProject;
+                               using DependencyProjectA;
+                               using DependencyProjectB;
+                               using DependencyProjectC;
+                               using DependencyProjectD;
+
+                               namespace TestProject
+                               {
+                                   public static class Program
+                                   {
+                                       static void Main() { }
+                                       static IServiceCollection LoadServices()
+                                       {
+                                           var services = new ServiceCollection();
+                                            var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	            var types = provider.GetTypes(z => z
+                               			       .FromAssemblyDependenciesOf{{( useTypeof ? $"(typeof({className}))" : $"<{className}>()" )}}
+                                               .AddClasses(x => x.AssignableTo(typeof(IService)), true)
+                                            );
+                                           return services;
+                                       }
+                                   }
+                               }
+
+                               """
+                           )
+                          .AddCompilationReferences(dependencies.ToArray())
+                          .Build()
+                          .GenerateAsync();
+
+
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(className, useTypeof, expectedCount);
+    }
+
     private static class StaticHelper
     {
         public static IServiceCollection ExecuteStaticServiceCollectionMethod(Assembly? assembly, string className, string methodName)

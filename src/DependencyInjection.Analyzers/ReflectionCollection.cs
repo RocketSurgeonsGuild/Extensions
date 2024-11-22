@@ -49,7 +49,7 @@ internal static class ReflectionCollection
          || baseData.selector is null
          || context.SemanticModel.GetTypeInfo(baseData.selector).ConvertedType is not INamedTypeSymbol
             {
-                TypeArguments: [{ Name: IReflectionAssemblySelector, }, ..,],
+                TypeArguments: [{ Name: IReflectionTypeSelector, }, ..,],
             })
             return default;
 
@@ -169,7 +169,6 @@ internal static class ReflectionCollection
                                                                       Block(SingletonList<StatementSyntax>(YieldStatement(SyntaxKind.YieldBreakStatement)))
                                                                   );
 
-    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
     private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
 
     public record Request(SourceProductionContext Context, Compilation Compilation, ImmutableArray<Item> Items, HashSet<IAssemblySymbol> PrivateAssemblies);

@@ -140,7 +140,7 @@ internal static class AssemblyCollection
          || baseData.selector is null
          || context.SemanticModel.GetTypeInfo(baseData.selector).ConvertedType is not INamedTypeSymbol
             {
-                TypeArguments: [{ Name: "IAssemblyProviderAssemblySelector", }, ..,],
+                TypeArguments: [{ Name: IReflectionAssemblySelector, }, ..,],
             })
             return default;
 
@@ -333,4 +333,5 @@ internal static class AssemblyCollection
     public record Request(SourceProductionContext Context, Compilation Compilation, ImmutableArray<Item> Items, HashSet<IAssemblySymbol> PrivateAssemblies);
 
     public record Item(SourceLocation Location, CompiledAssemblyFilter AssemblyFilter);
+    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes","{scrubbed}")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -19,7 +20,43 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        switch (lineNumber)
+        {
+            // FilePath: Input0.cs Expression: 4JkA75+iM2mmKKeeBXtpXQ==
+            case 14:
+                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider);
+                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection);
+                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>);
+                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService);
+                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService);
+                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope);
+                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory);
+                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorTypeSelector);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceTypeSelector);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ITypeFilter);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<>);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,,,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<>);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,,,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >);
+                yield return typeof(global::System.ComponentModel.IChangeTracking);
+                yield return typeof(global::System.ComponentModel.IEditableObject);
+                yield return typeof(global::System.ComponentModel.IRevertibleChangeTracking);
+                yield return typeof(global::System.IServiceProvider);
+                break;
+        }
     }
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
