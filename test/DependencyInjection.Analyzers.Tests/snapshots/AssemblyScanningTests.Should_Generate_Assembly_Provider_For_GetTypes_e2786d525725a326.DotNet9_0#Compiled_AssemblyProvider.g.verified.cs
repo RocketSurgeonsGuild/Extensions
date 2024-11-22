@@ -9,6 +9,7 @@ using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 using System.Runtime.Loader;
 
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes","{scrubbed}")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -26,7 +27,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             case 14:
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>);
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.Polyfill+SpanSplitEnumerator`1");
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`1");
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`6");
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`5");

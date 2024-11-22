@@ -9,6 +9,7 @@ using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 using System.Runtime.Loader;
 
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes","{scrubbed}")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -22,40 +23,25 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     {
         switch (lineNumber)
         {
-            // FilePath: Input0.cs Expression: UUVsjiKdPxCv1RwULYWcog==
+            // FilePath: Input0.cs Expression: ZeYaTHVOHFXsiFEpfgNBkQ==
             case 14:
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities);
-                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ActivatorUtilitiesUpdateHandler");
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorInfoEx");
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher");
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext");
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+StackAllocatedObjects");
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructorAttribute);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.KeyedService);
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.KeyedService+AnyKeyObj");
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection);
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ServiceCollection+ServiceCollectionDebugView");
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceKeyAttribute);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<>);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >);
+                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >);
                 break;
         }
     }

@@ -9,6 +9,7 @@ using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 using System.Runtime.Loader;
 
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes","{scrubbed}")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -22,7 +23,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     {
         switch (lineNumber)
         {
-            // FilePath: Input0.cs Expression: qJCkIC7zmkHHl6XYJ5WLww==
+            // FilePath: Input0.cs Expression: K57vOwMsm9Byn8CKS+FTpQ==
             case 14:
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("FxResources.Microsoft.Extensions.DependencyInjection.Abstractions.SR");
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities);
@@ -38,8 +39,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.KeyedService);
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.KeyedService+AnyKeyObj");
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection);
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ServiceCollection+ServiceCollectionDebugView");
@@ -58,8 +57,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.GuidPolyfill");
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.IntPolyfill");
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.LongPolyfill");
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.Polyfill+SpanSplitEnumerator`1");
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.Polyfill+SpanSplitEnumeratorMode");
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.RegexPolyfill");
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.SBytePolyfill");
                 yield return RocketSurgeryDependencyInjectionExtensions.GetType("Polyfills.ShortPolyfill");
@@ -93,14 +90,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >);
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >);
                 yield return typeof(global::System.ComponentModel.CancelEventArgs);
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("System.Diagnostics.CodeAnalysis.FeatureGuardAttribute");
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("System.Diagnostics.CodeAnalysis.FeatureSwitchDefinitionAttribute");
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("System.Diagnostics.DebuggerDisableUserUnhandledExceptionsAttribute");
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute");
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("System.Runtime.CompilerServices.ParamCollectionAttribute");
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("System.SR");
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("System.Threading.Lock");
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("System.Threading.Lock+Scope");
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("System.ThrowHelper");
                 break;
         }
