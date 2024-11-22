@@ -61,8 +61,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -73,8 +72,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class, TypeKindFilter.Enum)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -85,8 +83,7 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotKindOf(TypeKindFilter.Delegate)
                          .NotKindOf(TypeKindFilter.Interface)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -97,8 +94,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .InfoOf(TypeInfoFilter.Abstract)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -109,8 +105,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .InfoOf(TypeInfoFilter.Visible)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -121,8 +116,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .InfoOf(TypeInfoFilter.ValueType)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
 //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.InfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
@@ -134,8 +128,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .InfoOf(TypeInfoFilter.Sealed)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -146,8 +139,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .InfoOf(TypeInfoFilter.GenericType)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
 //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.InfoOf(TypeInfoFilter.GenericTypeDefinition).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
@@ -159,8 +151,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.Abstract)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -172,8 +163,7 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.Visible)
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -191,8 +181,7 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.ValueType)
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
 //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.NotInfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
@@ -205,8 +194,7 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.Sealed)
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -218,8 +206,7 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.GenericType)
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         #pragma warning disable CA2263
@@ -231,8 +218,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .WithAttribute(typeof(EditorBrowsableAttribute))
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         #pragma warning restore CA2263
@@ -244,8 +230,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .WithAttribute<EditorBrowsableAttribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -256,8 +241,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .WithAttribute(typeof(System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute).FullName)
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         #pragma warning disable CA2263
@@ -270,8 +254,7 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .WithoutAttribute(typeof(EditorBrowsableAttribute))
                          .NotAssignableTo(typeof(Attribute))
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         #pragma warning restore CA2263
@@ -284,8 +267,7 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .WithoutAttribute<EditorBrowsableAttribute>()
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
 //        yield return TestMethod(z => z.FromAssemblies().FromAssemblyOf<ConventionContext>().GetTypes(x => x.WithoutAttribute(typeof(JetBrains.Annotations.PublicAPIAttribute).FullName).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
@@ -297,8 +279,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .InNamespaceOf(typeof(ServiceCollectionServiceExtensions))
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -309,8 +290,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .InNamespaceOf<IServiceCollection>()
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -321,8 +301,7 @@ public static class GetTypesTestsData
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .InNamespaces("Microsoft.Extensions.DependencyInjection")
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -333,8 +312,7 @@ public static class GetTypesTestsData
                      true,
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
-                         .NotInNamespaces("JetBrains.Annotations")
-                         .NotStartsWith("Polyfills")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System").NotStartsWith("Polyfill")
                  )
         );
 
@@ -347,14 +325,15 @@ public static class GetTypesTestsData
             // TODO: REmove this once tests pass
             // .Replace("\r", "").Replace("\n", "")
             argument = argument
+                      .Replace(".NotInNamespaces(\"JetBrains.Annotations\", \"Polyfills\", \"System\")", "")
                       .Replace(".NotInNamespaces(\"JetBrains.Annotations\")", "")
                       .Replace(".NotStartsWith(\"Polyfills\")", "");
             var typeName = argument[( argument.LastIndexOf("=> x") + 5 )..^1]
-                          .Split(new[] { '\r', '\n', }, StringSplitOptions.RemoveEmptyEntries)
+                          .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                           .Select(z => z.Trim())
                           .Aggregate("", (x, y) => x + y)
                           .Trim();
-            return [new GetTypesItem(typeName, argument, func),];
+            return [new GetTypesItem(typeName, argument, func)];
         }
     }
 

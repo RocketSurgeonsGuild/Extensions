@@ -20,7 +20,7 @@ internal static class ReflectionCollection
         return valueProvider
               .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetTypesMethod(syntaxContext))
               .Combine(hasAssemblyLoadContext)
-              .Where(z => z is { Right: true, Left: { method: { }, selector: { }, }, })
+              .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
               .Select((tuple, _) => tuple.Left)
               .Collect();
     }
@@ -49,7 +49,7 @@ internal static class ReflectionCollection
          || baseData.selector is null
          || context.SemanticModel.GetTypeInfo(baseData.selector).ConvertedType is not INamedTypeSymbol
             {
-                TypeArguments: [{ Name: IReflectionTypeSelector, }, ..,],
+                TypeArguments: [{ Name: IReflectionTypeSelector }, ..],
             })
             return default;
 
@@ -63,7 +63,7 @@ internal static class ReflectionCollection
             {
                 Name.Identifier.Text: "GetTypes",
             },
-            ArgumentList.Arguments: [.., { Expression: { } expression, },],
+            ArgumentList.Arguments: [.., { Expression: { } expression }],
         } invocationExpressionSyntax
             ? ( invocationExpressionSyntax, expression )
             : default;
@@ -116,7 +116,7 @@ internal static class ReflectionCollection
         return items.ToImmutable();
     }
 
-    private static bool IsValidMethod(SyntaxNode node) => GetTypesMethod(node) is { method: { }, selector: { }, };
+    private static bool IsValidMethod(SyntaxNode node) => GetTypesMethod(node) is { method: { }, selector: { } };
 
     private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<INamedTypeSymbol> types, HashSet<IAssemblySymbol> privateAssemblies)
     {
