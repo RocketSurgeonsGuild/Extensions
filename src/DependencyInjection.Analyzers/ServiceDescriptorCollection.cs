@@ -320,7 +320,12 @@ internal static class ServiceDescriptorCollection
 
             if (asImplementedInterfaces)
             {
-                foreach (var @interface in type.AllInterfaces.OrderBy(z => z.ToDisplayString()))
+                // filter here
+                var interfaces = type.AllInterfaces;
+                // todo: filter interfaces by type filter or implemented interfaces filter exression (a reuse of the type filter)
+                // It should support open generic types as well (think abstract validator from fluent validation)
+
+                foreach (var @interface in interfaces.OrderBy(z => z.ToDisplayString()))
                 {
                     if (emittedTypes.Contains(@interface)) continue;
                     services.Add(
@@ -432,6 +437,7 @@ internal static class ServiceDescriptorCollection
         SourceLocation Location,
         CompiledAssemblyFilter AssemblyFilter,
         CompiledTypeFilter TypeFilter,
-        CompiledServiceTypeDescriptors ServicesTypeFilter,
+        CompiledTypeFilter InterfaceFilter,
+        char Type,
         int Lifetime);
 }

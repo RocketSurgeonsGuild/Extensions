@@ -143,7 +143,7 @@ internal static partial class AssemblyProviderConfiguration
         var data = new ReflectionCollectionData(
             item.Location,
             LoadAssemblyFilterData(item.AssemblyFilter),
-            LoadTypeFilterData(item.AssemblyFilter, item.TypeFilter)
+            LoadTypeFilterData(item.TypeFilter)
         );
         var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.ReflectionCollectionData);
         return CompressString(result);
@@ -161,7 +161,7 @@ internal static partial class AssemblyProviderConfiguration
         var assemblyFilter = LoadAssemblyFilter(data.Assembly, assemblySymbols);
         var typeFilter = LoadTypeFilter(compilation, data.Type, assemblySymbols);
         // next up is services, and lifetime.
-        var servicesFilter = LoadServiceDescriptorFilter(data.ServiceDescriptor);
+        var servicesFilter = LoadServiceDescriptorFilter(compilation, data.ServiceDescriptor, assemblySymbols);
         return new(data.Location, assemblyFilter, typeFilter, servicesFilter, data.Lifetime);
     }
 
@@ -170,8 +170,9 @@ internal static partial class AssemblyProviderConfiguration
         var data = new ServiceDescriptorCollectionData(
             item.Location,
             LoadAssemblyFilterData(item.AssemblyFilter),
-            LoadTypeFilterData(item.AssemblyFilter, item.TypeFilter),
-            LoadServiceDescriptorsData(item.AssemblyFilter, item.TypeFilter, item.ServicesTypeFilter),
+            LoadTypeFilterData(item.TypeFilter),
+            LoadServiceDescriptorsData(item.ServicesTypeFilter),
+            LoadTypeFilterData(item.InterfaceFilter),
             item.Lifetime
         );
         var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.ServiceDescriptorCollectionData);
@@ -193,15 +194,9 @@ internal static partial class AssemblyProviderConfiguration
         );
     }
 
-    private static TypeFilterData LoadTypeFilterData(CompiledAssemblyFilter assemblyFilter, CompiledTypeFilter typeFilter)
+    private static TypeFilterData LoadTypeFilterData(CompiledTypeFilter typeFilter)
     {
-        var assemblyData = LoadAssemblyFilterData(assemblyFilter);
         return new(
-            assemblyData.AllAssembly,
-            assemblyData.IncludeSystem,
-            assemblyData.Assembly,
-            assemblyData.NotAssembly,
-            assemblyData.AssemblyDependencies,
             typeFilter.ClassFilter,
             typeFilter
                .TypeFilterDescriptors
@@ -481,65 +476,51 @@ internal static partial class AssemblyProviderConfiguration
         }
 
         return new(data.Filter, descriptors.ToImmutable());
+    }
 
-        static INamedTypeSymbol? findType(
-            ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
-            Compilation compilation,
-            string assemblyName,
-            string typeName
-        )
-        {
-            if (CompiledAssemblyFilter._coreAssemblies.Contains(assemblyName)) return compilation.GetTypeByMetadataName(typeName);
+    static INamedTypeSymbol? findType(
+        ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
+        Compilation compilation,
+        string assemblyName,
+        string typeName
+    )
+    {
+        if (CompiledAssemblyFilter._coreAssemblies.Contains(assemblyName)) return compilation.GetTypeByMetadataName(typeName);
 
-            return !assemblySymbols.TryGetValue(assemblyName, out var assembly)
-             || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type
-                    ? compilation.GetTypeByMetadataName(typeName)
-                    : type;
-        }
+        return !assemblySymbols.TryGetValue(assemblyName, out var assembly)
+         || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type
+                ? compilation.GetTypeByMetadataName(typeName)
+                : type;
     }
 
     private static ServiceDescriptorFilterData LoadServiceDescriptorsData(
-        CompiledAssemblyFilter assemblyFilter,
-        CompiledTypeFilter typeFilter,
         CompiledServiceTypeDescriptors serviceTypeDescriptors
     )
     {
-        var assemblyData = LoadAssemblyFilterData(assemblyFilter);
-        var typeData = LoadTypeFilterData(assemblyFilter, typeFilter);
         var serviceDescriptors = serviceTypeDescriptors.ServiceTypeDescriptors.Select(
             z => z switch
                  {
-                     CompiledServiceTypeDescriptor              => "c",
-                     ImplementedInterfacesServiceTypeDescriptor => "i",
-                     MatchingInterfaceServiceTypeDescriptor     => "m",
-                     SelfServiceTypeDescriptor                  => "s",
-                     UsingAttributeServiceTypeDescriptor        => "u",
-                     _                                          => throw new ArgumentOutOfRangeException(nameof(z)),
+                     ImplementedInterfacesServiceTypeDescriptor => new('i', TypeFilter: LoadTypeFilterData()),
+                     MatchingInterfaceServiceTypeDescriptor     => new('m'),
+                     SelfServiceTypeDescriptor                  => new('s'),
+                     AsTypeFilterServiceTypeDescriptor          => new('a'),
+                     CompiledServiceTypeDescriptor c => new ServiceTypeData(
+                         'c',
+                         TypeData: new(c.Type.ContainingAssembly.MetadataName, c.Type.MetadataName, c.Type.IsUnboundGenericType)
+                     ),
+                     _ => throw new ArgumentOutOfRangeException(nameof(z)),
                  }
         );
-        return new(
-            assemblyData.AllAssembly,
-            assemblyData.IncludeSystem,
-            assemblyData.Assembly,
-            assemblyData.NotAssembly,
-            assemblyData.AssemblyDependencies,
-            typeData.Filter,
-            typeData.NamespaceFilters,
-            typeData.NameFilters,
-            typeData.TypeKindFilters,
-            typeData.TypeInfoFilters,
-            typeData.WithAttributeFilters,
-            typeData.WithAttributeStringFilters,
-            typeData.WithAnyAttributeFilters,
-            typeData.WithAnyAttributeStringFilters,
-            typeData.AssignableToTypeFilters,
-            typeData.AssignableToAnyTypeFilters,
-            serviceDescriptors.ToImmutableArray(),
-            serviceTypeDescriptors.Lifetime
-        );
+        return new(serviceDescriptors.ToImmutableArray(), serviceTypeDescriptors.Lifetime);
     }
 
-    private static CompiledServiceTypeDescriptors LoadServiceDescriptorFilter(ServiceDescriptorFilterData data)
+    private record ServiceTypeData(char Identifier, AnyTypeData? TypeData = null, TypeInfoFilterData? TypeFilter = null);
+
+    private static CompiledServiceTypeDescriptors LoadServiceDescriptorFilter(
+        Compilation compilation,
+        ServiceDescriptorFilterData data,
+        ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
+    )
     {
         var descriptors = ImmutableArray.CreateBuilder<IServiceTypeDescriptor>();
         foreach (var item in data.ServiceTypeDescriptors)
@@ -547,12 +528,12 @@ internal static partial class AssemblyProviderConfiguration
             descriptors.Add(
                 item switch
                 {
-                    "c" => new CompiledServiceTypeDescriptor(),
-                    "i" => new ImplementedInterfacesServiceTypeDescriptor(),
-                    "m" => new MatchingInterfaceServiceTypeDescriptor(),
-                    "s" => new SelfServiceTypeDescriptor(),
-                    "u" => new UsingAttributeServiceTypeDescriptor(),
-                    _   => throw new ArgumentOutOfRangeException(nameof(data)),
+                    ['c', .. var rest] => new CompiledServiceTypeDescriptor(findType(assemblySymbols, compilation, /* omg bed time */, rest)),
+                    "i"                => new ImplementedInterfacesServiceTypeDescriptor(),
+                    "m"                => new MatchingInterfaceServiceTypeDescriptor(),
+                    "s"                => new SelfServiceTypeDescriptor(),
+                    "a"                => new AsTypeFilterServiceTypeDescriptor(),
+                    _                  => throw new ArgumentOutOfRangeException(nameof(data)),
                 }
             );
         }
@@ -624,72 +605,34 @@ internal static partial class AssemblyProviderConfiguration
 
     private record TypeFilterData
     (
-        bool AllAssembly,
-        bool IncludeSystem,
-        ImmutableArray<string> Assembly,
-        ImmutableArray<string> NotAssembly,
-        ImmutableArray<string> AssemblyDependencies,
-        [property: JsonPropertyName("f")]
+        [property: JsonPropertyName("b")]
         ClassFilter Filter,
-        [property: JsonPropertyName("nsf")]
+        [property: JsonPropertyName("c")]
         ImmutableArray<NamespaceFilterData> NamespaceFilters,
-        [property: JsonPropertyName("nf")]
+        [property: JsonPropertyName("d")]
         ImmutableArray<NameFilterData> NameFilters,
-        [property: JsonPropertyName("tk")]
+        [property: JsonPropertyName("e")]
         ImmutableArray<TypeKindFilterData> TypeKindFilters,
-        [property: JsonPropertyName("ti")]
+        [property: JsonPropertyName("f")]
         ImmutableArray<TypeInfoFilterData> TypeInfoFilters,
-        [property: JsonPropertyName("w")]
+        [property: JsonPropertyName("g")]
         ImmutableArray<WithAttributeData> WithAttributeFilters,
-        [property: JsonPropertyName("s")]
+        [property: JsonPropertyName("h")]
         ImmutableArray<WithAttributeStringData> WithAttributeStringFilters,
-        [property: JsonPropertyName("wa")]
+        [property: JsonPropertyName("i")]
         ImmutableArray<WithAttributeData> WithAnyAttributeFilters,
-        [property: JsonPropertyName("sa")]
+        [property: JsonPropertyName("j")]
         ImmutableArray<WithAttributeStringData> WithAnyAttributeStringFilters,
-        [property: JsonPropertyName("at")]
+        [property: JsonPropertyName("k")]
         ImmutableArray<AssignableToTypeData> AssignableToTypeFilters,
-        [property: JsonPropertyName("ta")]
+        [property: JsonPropertyName("l")]
         ImmutableArray<AssignableToAnyTypeData> AssignableToAnyTypeFilters
-    ) : AssemblyFilterData(AllAssembly, IncludeSystem, Assembly, NotAssembly, AssemblyDependencies);
+    );
 
     private record ServiceDescriptorFilterData
     (
-        bool AllAssembly,
-        bool IncludeSystem,
-        ImmutableArray<string> Assembly,
-        ImmutableArray<string> NotAssembly,
-        ImmutableArray<string> AssemblyDependencies,
-        ClassFilter Filter,
-        ImmutableArray<NamespaceFilterData> NamespaceFilters,
-        ImmutableArray<NameFilterData> NameFilters,
-        ImmutableArray<TypeKindFilterData> TypeKindFilters,
-        ImmutableArray<TypeInfoFilterData> TypeInfoFilters,
-        ImmutableArray<WithAttributeData> WithAttributeFilters,
-        ImmutableArray<WithAttributeStringData> WithAttributeStringFilters,
-        ImmutableArray<WithAttributeData> WithAnyAttributeFilters,
-        ImmutableArray<WithAttributeStringData> WithAnyAttributeStringFilters,
-        ImmutableArray<AssignableToTypeData> AssignableToTypeFilters,
-        ImmutableArray<AssignableToAnyTypeData> AssignableToAnyTypeFilters,
-        ImmutableArray<string> ServiceTypeDescriptors,
+        ImmutableArray<ServiceTypeData> ServiceTypeDescriptors,
         int Lifetime
-    ) : TypeFilterData(
-        AllAssembly,
-        IncludeSystem,
-        Assembly,
-        NotAssembly,
-        AssemblyDependencies,
-        Filter,
-        NamespaceFilters,
-        NameFilters,
-        TypeKindFilters,
-        TypeInfoFilters,
-        WithAttributeFilters,
-        WithAttributeStringFilters,
-        WithAnyAttributeFilters,
-        WithAnyAttributeStringFilters,
-        AssignableToTypeFilters,
-        AssignableToAnyTypeFilters
     );
 
     internal record WithAttributeData

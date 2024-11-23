@@ -525,12 +525,6 @@ internal static class DataHelpers
             yield break;
         }
 
-        if (name.ToFullString() == "UsingAttributes")
-        {
-            yield return new UsingAttributeServiceTypeDescriptor();
-            yield break;
-        }
-
         if (name.ToFullString() == "AsSelfWithInterfaces")
         {
             yield return new SelfServiceTypeDescriptor();
@@ -538,7 +532,27 @@ internal static class DataHelpers
             yield break;
         }
 
-        if (name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1)
+        if (name is  { Identifier.Value: "As" })
+        {
+            var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
+            if (typeSyntax == null)
+            {
+                yield break;
+            }
+
+            var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
+            switch (typeInfo)
+            {
+                case INamedTypeSymbol nts:
+                    yield return new CompiledServiceTypeDescriptor(nts);
+                    yield break;
+                default:
+                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                    yield break;
+            }
+        }
+
+        if (name is GenericNameSyntax { Identifier.Value: "As", TypeArgumentList.Arguments.Count: 1 })
         {
             var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
             if (typeSyntax == null)
