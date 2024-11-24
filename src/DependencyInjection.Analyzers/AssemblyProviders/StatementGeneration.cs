@@ -69,7 +69,7 @@ internal static class StatementGeneration
         if (type.IsGenericType && !type.IsOpenGenericType())
         {
             var result = compilation.IsSymbolAccessibleWithin(type.ConstructUnboundGenericType(), compilation.Assembly);
-            if (result)
+            if (!result)
             {
                 var name = ParseTypeName(type.ConstructUnboundGenericType().ToDisplayString());
                 if (name is GenericNameSyntax genericNameSyntax)
@@ -99,7 +99,8 @@ internal static class StatementGeneration
             }
         }
 
-        if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)) return TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)));
+        if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
+            return TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)));
 
         return GetPrivateType(compilation, type);
     }

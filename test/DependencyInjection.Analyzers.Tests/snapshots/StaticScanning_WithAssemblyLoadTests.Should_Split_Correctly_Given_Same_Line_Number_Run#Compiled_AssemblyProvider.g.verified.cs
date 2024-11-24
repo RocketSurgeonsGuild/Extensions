@@ -34,13 +34,13 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 {
                     // FilePath: Input1.cs Expression: A6yjy1/sDfCZYryJ841HEQ==
                     case "Input1.cs":
-                        services.Add(ServiceDescriptor.Singleton(typeof(global::Service), typeof(global::Service)));
-                        services.Add(ServiceDescriptor.Singleton(typeof(global::IService), a => a.GetRequiredService<global::Service>()));
+                        services.Add(ServiceDescriptor.Singleton<global::Service, global::Service>());
+                        services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::Service>()));
                         break;
                     // FilePath: Input2.cs Expression: fhNv/1snT1EgMxIUt2qh7Q==
                     case "Input2.cs":
-                        services.Add(ServiceDescriptor.Scoped(typeof(global::ServiceB), typeof(global::ServiceB)));
-                        services.Add(ServiceDescriptor.Scoped(typeof(global::IServiceB), a => a.GetRequiredService<global::ServiceB>()));
+                        services.Add(ServiceDescriptor.Scoped<global::ServiceB, global::ServiceB>());
+                        services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
                         break;
                 }
 

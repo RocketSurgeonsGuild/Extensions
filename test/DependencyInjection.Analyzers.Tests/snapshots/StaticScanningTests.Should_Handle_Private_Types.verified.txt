@@ -27,7 +27,7 @@
     {
       Lifetime: Singleton,
       ServiceType: RootDependencyProject.IService,
-      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+      ImplementationFactory: System.Func`2[System.IServiceProvider,RootDependencyProject.IService]
     }
   ]
 }

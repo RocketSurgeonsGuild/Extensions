@@ -230,7 +230,6 @@ internal static class AssemblyCollection
                     typeFilters,
                     serviceDescriptors,
                     ref lifetime,
-                    compilation.ObjectType,
                     ref classFilter,
                     context.CancellationToken
                 );

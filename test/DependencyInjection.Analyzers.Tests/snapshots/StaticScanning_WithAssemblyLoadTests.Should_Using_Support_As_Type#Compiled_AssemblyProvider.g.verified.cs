@@ -29,7 +29,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: nq9T1iBLdNPpqzJrTdNMCQ==
             case 15:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IService), typeof(global::Service)));
+                services.Add(ServiceDescriptor.Scoped<global::IService, global::Service>());
                 break;
         }
 

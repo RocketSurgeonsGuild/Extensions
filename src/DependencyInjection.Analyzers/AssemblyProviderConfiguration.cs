@@ -172,7 +172,6 @@ internal static partial class AssemblyProviderConfiguration
             LoadAssemblyFilterData(item.AssemblyFilter),
             LoadTypeFilterData(item.TypeFilter),
             LoadServiceDescriptorsData(item.ServicesTypeFilter),
-            LoadTypeFilterData(item.InterfaceFilter),
             item.Lifetime
         );
         var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.ServiceDescriptorCollectionData);
@@ -500,10 +499,13 @@ internal static partial class AssemblyProviderConfiguration
         var serviceDescriptors = serviceTypeDescriptors.ServiceTypeDescriptors.Select(
             z => z switch
                  {
-                     ImplementedInterfacesServiceTypeDescriptor => new('i', TypeFilter: LoadTypeFilterData()),
-                     MatchingInterfaceServiceTypeDescriptor     => new('m'),
-                     SelfServiceTypeDescriptor                  => new('s'),
-                     AsTypeFilterServiceTypeDescriptor          => new('a'),
+                     ImplementedInterfacesServiceTypeDescriptor i => new(
+                         'i',
+                         TypeFilter: i.InterfaceFilter is { } ? LoadTypeFilterData(i.InterfaceFilter) : null
+                     ),
+                     MatchingInterfaceServiceTypeDescriptor => new('m'),
+                     SelfServiceTypeDescriptor              => new('s'),
+                     AsTypeFilterServiceTypeDescriptor      => new('a'),
                      CompiledServiceTypeDescriptor c => new ServiceTypeData(
                          'c',
                          TypeData: new(c.Type.ContainingAssembly.MetadataName, c.Type.MetadataName, c.Type.IsUnboundGenericType)
@@ -514,7 +516,7 @@ internal static partial class AssemblyProviderConfiguration
         return new(serviceDescriptors.ToImmutableArray(), serviceTypeDescriptors.Lifetime);
     }
 
-    private record ServiceTypeData(char Identifier, AnyTypeData? TypeData = null, TypeInfoFilterData? TypeFilter = null);
+    private record ServiceTypeData(char Identifier, AnyTypeData? TypeData = null, TypeFilterData? TypeFilter = null);
 
     private static CompiledServiceTypeDescriptors LoadServiceDescriptorFilter(
         Compilation compilation,
@@ -528,12 +530,15 @@ internal static partial class AssemblyProviderConfiguration
             descriptors.Add(
                 item switch
                 {
-                    ['c', .. var rest] => new CompiledServiceTypeDescriptor(findType(assemblySymbols, compilation, /* omg bed time */, rest)),
-                    "i"                => new ImplementedInterfacesServiceTypeDescriptor(),
-                    "m"                => new MatchingInterfaceServiceTypeDescriptor(),
-                    "s"                => new SelfServiceTypeDescriptor(),
-                    "a"                => new AsTypeFilterServiceTypeDescriptor(),
-                    _                  => throw new ArgumentOutOfRangeException(nameof(data)),
+                    { Identifier: 'c', TypeData: { } typeData } =>
+                        new CompiledServiceTypeDescriptor(findType(assemblySymbols, compilation, typeData.Assembly, typeData.Type)!),
+                    { Identifier: 'i', TypeFilter: { } typeFilter } =>
+                        new ImplementedInterfacesServiceTypeDescriptor(LoadTypeFilter(compilation, typeFilter, assemblySymbols)),
+                    { Identifier: 'i' } => new ImplementedInterfacesServiceTypeDescriptor(null),
+                    { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
+                    { Identifier: 's' } => new SelfServiceTypeDescriptor(),
+                    { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
+                    _                   => throw new ArgumentOutOfRangeException(nameof(data)),
                 }
             );
         }

@@ -31,7 +31,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: 3OfsQex7NYRaroSlneP6BQ==
             case 15:
                 services.Add(ServiceDescriptor.Singleton(RootDependencyProject.GetType("RootDependencyProject.Service"), RootDependencyProject.GetType("RootDependencyProject.Service")));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), a => a.GetRequiredService(RootDependencyProject.GetType("RootDependencyProject.Service")) as global::RootDependencyProject.IService));
+                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService(RootDependencyProject.GetType("RootDependencyProject.Service")) as global::RootDependencyProject.IService));
                 break;
         }
 

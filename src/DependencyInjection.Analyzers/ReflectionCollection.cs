@@ -94,7 +94,6 @@ internal static class ReflectionCollection
                     typeFilters,
                     new(),
                     ref lifetime,
-                    compilation.ObjectType,
                     ref classFilter,
                     context.CancellationToken
                 );

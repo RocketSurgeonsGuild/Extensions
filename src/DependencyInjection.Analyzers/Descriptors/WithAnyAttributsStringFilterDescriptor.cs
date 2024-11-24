@@ -4,4 +4,4 @@ using System.Diagnostics;
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 [DebuggerDisplay("{ToString()}")]
-internal readonly record struct WithAnyAttributeStringFilterDescriptor(ImmutableHashSet<string> AttributeClassNames) : ITypeFilterDescriptor;
+internal record WithAnyAttributeStringFilterDescriptor(ImmutableHashSet<string> AttributeClassNames) : ITypeFilterDescriptor;

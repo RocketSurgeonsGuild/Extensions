@@ -29,7 +29,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: i/Q9YfbrangthmO+cbE3ag==
             case 15:
-                services.Add(ServiceDescriptor.Singleton(typeof(RootDependencyProject.IRequestHandler<, >).MakeGenericType(typeof(global::Dependency1Project.Request0), typeof(global::Dependency1Project.Response0)), typeof(global::Dependency1Project.RequestHandler0)));
+                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IRequestHandler<global::Dependency1Project.Request0, global::Dependency1Project.Response0>, global::Dependency1Project.RequestHandler0>());
                 break;
         }
 

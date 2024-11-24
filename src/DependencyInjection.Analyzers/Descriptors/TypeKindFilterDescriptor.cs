@@ -5,4 +5,4 @@ using Microsoft.CodeAnalysis;
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 [DebuggerDisplay("{ToString()}")]
-internal readonly record struct TypeKindFilterDescriptor(bool Include, ImmutableHashSet<TypeKind> TypeKinds) : ITypeFilterDescriptor;
+internal record TypeKindFilterDescriptor(bool Include, ImmutableHashSet<TypeKind> TypeKinds) : ITypeFilterDescriptor;

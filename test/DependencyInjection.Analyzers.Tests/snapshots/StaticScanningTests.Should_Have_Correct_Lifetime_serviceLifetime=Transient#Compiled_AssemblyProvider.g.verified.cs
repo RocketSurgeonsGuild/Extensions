@@ -30,13 +30,13 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: VqjTzPUvZqKsVjt7V35sQA==
             case 16:
-                services.Add(ServiceDescriptor.Transient(typeof(global::Service), typeof(global::Service)));
-                services.Add(ServiceDescriptor.Transient(typeof(global::IService), a => a.GetRequiredService<global::Service>()));
+                services.Add(ServiceDescriptor.Transient<global::Service, global::Service>());
+                services.Add(ServiceDescriptor.Transient<global::IService>(a => a.GetRequiredService<global::Service>()));
                 break;
             // FilePath: Input0.cs Expression: jEruq2OuBOo50b7gHMAwSQ==
             case 26:
-                services.Add(ServiceDescriptor.Transient(typeof(global::ServiceB), typeof(global::ServiceB)));
-                services.Add(ServiceDescriptor.Transient(typeof(global::IServiceB), a => a.GetRequiredService<global::ServiceB>()));
+                services.Add(ServiceDescriptor.Transient<global::ServiceB, global::ServiceB>());
+                services.Add(ServiceDescriptor.Transient<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
                 break;
         }
 

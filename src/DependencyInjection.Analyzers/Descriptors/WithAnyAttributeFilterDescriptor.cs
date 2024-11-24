@@ -5,4 +5,4 @@ using Microsoft.CodeAnalysis;
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 [DebuggerDisplay("{ToString()}")]
-internal readonly record struct WithAnyAttributeFilterDescriptor(ImmutableHashSet<INamedTypeSymbol> Attributes) : ITypeFilterDescriptor;
+internal record WithAnyAttributeFilterDescriptor(ImmutableHashSet<INamedTypeSymbol> Attributes) : ITypeFilterDescriptor;

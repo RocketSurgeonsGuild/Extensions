@@ -29,13 +29,13 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: q1XDNowA0B+UjNLeBZPMAw==
             case 29:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::TestProject.A.Service), typeof(global::TestProject.A.Service)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::TestProject.A.IService), a => a.GetRequiredService<global::TestProject.A.Service>()));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::TestProject.B.IServiceB), a => a.GetRequiredService<global::TestProject.A.Service>()));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::TestProject.A.ServiceA), typeof(global::TestProject.A.ServiceA)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::TestProject.A.IService), a => a.GetRequiredService<global::TestProject.A.ServiceA>()));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::TestProject.B.ServiceB), typeof(global::TestProject.B.ServiceB)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::TestProject.A.IService), a => a.GetRequiredService<global::TestProject.B.ServiceB>()));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.Service, global::TestProject.A.Service>());
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.A.Service>()));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.B.IServiceB>(a => a.GetRequiredService<global::TestProject.A.Service>()));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.ServiceA, global::TestProject.A.ServiceA>());
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.A.ServiceA>()));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.B.ServiceB, global::TestProject.B.ServiceB>());
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.B.ServiceB>()));
                 break;
         }
 

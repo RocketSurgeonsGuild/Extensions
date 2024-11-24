@@ -1,5 +1,86 @@
 ﻿{
-  FinalDiagnostics: [],
+  FinalDiagnostics: [
+    {
+      Id: CS1503,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs: (31,97)-(31,154),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503),
+      MessageFormat: Argument {0}: cannot convert from '{1}' to '{2}',
+      Message: Argument 1: cannot convert from 'System.Type' to 'System.Func<System.IServiceProvider, RootDependencyProject.IService>',
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS1503,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs: (32,97)-(32,154),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503),
+      MessageFormat: Argument {0}: cannot convert from '{1}' to '{2}',
+      Message: Argument 1: cannot convert from 'System.Type' to 'System.Func<System.IServiceProvider, RootDependencyProject.IService>',
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS1503,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs: (33,97)-(33,154),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503),
+      MessageFormat: Argument {0}: cannot convert from '{1}' to '{2}',
+      Message: Argument 1: cannot convert from 'System.Type' to 'System.Func<System.IServiceProvider, RootDependencyProject.IService>',
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS1503,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs: (34,97)-(34,154),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503),
+      MessageFormat: Argument {0}: cannot convert from '{1}' to '{2}',
+      Message: Argument 1: cannot convert from 'System.Type' to 'System.Func<System.IServiceProvider, RootDependencyProject.IService>',
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    },
+    {
+      Id: CS1503,
+      Title: ,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs: (35,97)-(35,154),
+      HelpLink: https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS1503),
+      MessageFormat: Argument {0}: cannot convert from '{1}' to '{2}',
+      Message: Argument 1: cannot convert from 'System.Type' to 'System.Func<System.IServiceProvider, RootDependencyProject.IService>',
+      Category: Compiler,
+      CustomTags: [
+        Compiler,
+        Telemetry,
+        NotConfigurable
+      ]
+    }
+  ],
   GeneratorDiagnostics: {
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
@@ -17,32 +98,5 @@
     System.dll,
     System.Private.CoreLib.dll,
     System.Runtime.dll
-  ],
-  Services: [
-    {
-      Lifetime: Singleton,
-      ServiceType: RootDependencyProject.IService,
-      ImplementationType: Dependency1Project.Service0
-    },
-    {
-      Lifetime: Singleton,
-      ServiceType: RootDependencyProject.IService,
-      ImplementationType: Dependency1Project.Service1
-    },
-    {
-      Lifetime: Singleton,
-      ServiceType: RootDependencyProject.IService,
-      ImplementationType: Dependency1Project.Service2
-    },
-    {
-      Lifetime: Singleton,
-      ServiceType: RootDependencyProject.IService,
-      ImplementationType: Dependency1Project.Service3
-    },
-    {
-      Lifetime: Singleton,
-      ServiceType: RootDependencyProject.IService,
-      ImplementationType: Dependency1Project.Service4
-    }
   ]
 }

@@ -268,6 +268,29 @@ internal static class Helpers
     }
 
 
+    public static INamedTypeSymbol GetClosedGenericConversion(
+        Compilation compilation,
+        INamedTypeSymbol assignableToType,
+        INamedTypeSymbol assignableFromType
+    )
+    {
+        if (assignableToType is not {IsUnboundGenericType: true, Arity: > 0, })
+            return assignableToType;
+
+        if (GetUnboundGenericType(assignableFromType) is { } unboundFromType && compilation.HasImplicitConversion(assignableToType, unboundFromType))
+        {
+            // TODO:
+            return assignableToType;
+//            return assignableToType.Construct(assignableFromType.TypeArguments.ToArray());
+        }
+
+        var matchingInterfaces = assignableFromType
+                                .AllInterfaces
+                                .Where(symbol => symbol is { } && compilation.HasImplicitConversion(GetUnboundGenericType(symbol), assignableToType));
+        return matchingInterfaces.FirstOrDefault() ?? assignableToType;
+    }
+
+
     public static bool HasImplicitGenericConversion(
         Compilation compilation,
         INamedTypeSymbol assignableToType,
@@ -280,6 +303,8 @@ internal static class Helpers
             return true;
         if (compilation.HasImplicitConversion(assignableFromType, assignableToType)) return true;
         if (assignableToType is not { Arity: > 0, IsUnboundGenericType: true, }) return false;
+        if (GetUnboundGenericType(assignableFromType) is { } unboundAssignableFromType && compilation.HasImplicitConversion(assignableToType, unboundAssignableFromType))
+            return true;
 
         var matchingBaseTypes = GetBaseTypes(compilation, assignableFromType)
                                .Select(GetUnboundGenericType)

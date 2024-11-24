@@ -34,7 +34,7 @@ internal static class StatementGeneration
                     )
                 );
 
-            return GenerateServiceType(serviceTypeExpression, implementationTypeExpression, lifetime);
+            return GenerateServiceType(serviceType, serviceTypeExpression, implementationType, implementationTypeExpression, lifetime);
         }
         else
         {
@@ -53,7 +53,7 @@ internal static class StatementGeneration
                         IdentifierName(Helpers.GetGenericDisplayName(serviceType))
                     )
                 );
-            return GenerateServiceType(serviceTypeExpression, implementationTypeExpression, lifetime);
+            return GenerateServiceType(serviceType, serviceTypeExpression, implementationType, implementationTypeExpression, lifetime);
         }
     }
 
@@ -66,7 +66,82 @@ internal static class StatementGeneration
     {
         var serviceTypeExpression = AssemblyProviders.StatementGeneration.GetTypeOfExpression(compilation, serviceType);
         var implementationTypeExpression = AssemblyProviders.StatementGeneration.GetTypeOfExpression(compilation, implementationType);
-        return GenerateServiceType(serviceTypeExpression, implementationTypeExpression, lifetime);
+        return GenerateServiceType(serviceType, serviceTypeExpression, implementationType, implementationTypeExpression, lifetime);
+    }
+
+    public static InvocationExpressionSyntax GenerateServiceType(
+        INamedTypeSymbol serviceType,
+        ExpressionSyntax serviceTypeExpression,
+        INamedTypeSymbol implementationType,
+        ExpressionSyntax implementationTypeExpression,
+        string lifetime
+    )
+    {
+        switch ( serviceTypeExpression, implementationTypeExpression )
+        {
+            case (TypeOfExpressionSyntax serviceTypeOfExpression, TypeOfExpressionSyntax implementationTypeOfExpression) when !serviceType.IsUnboundGenericType && !implementationType.IsUnboundGenericType:
+                return InvocationExpression(
+                    MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        IdentifierName("ServiceDescriptor"),
+                        GenericName(lifetime)
+                           .WithTypeArgumentList(
+                                TypeArgumentList(
+                                    SeparatedList<TypeSyntax>(
+                                        [
+                                            serviceTypeOfExpression.Type,
+                                            implementationTypeOfExpression.Type,
+                                        ]
+                                    )
+                                )
+                            )
+                    )
+                );
+            case (TypeOfExpressionSyntax { Type: not GenericNameSyntax { IsUnboundGenericName: true } } serviceTypeOfExpression, { } ) when !serviceType.IsUnboundGenericType:
+                return InvocationExpression(
+                    MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        IdentifierName("ServiceDescriptor"),
+                        GenericName(lifetime)
+                           .WithTypeArgumentList(
+                                TypeArgumentList(
+                                    SeparatedList<TypeSyntax>(
+                                        [
+                                            serviceTypeOfExpression.Type
+                                        ]
+                                    )
+                                )
+                            )
+                    )
+                )
+               .WithArgumentList(
+                    ArgumentList(
+                        SeparatedList(
+                            [
+                                Argument(implementationTypeExpression),
+                            ]
+                        )
+                    )
+                );
+            default:
+                return InvocationExpression(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName("ServiceDescriptor"),
+                            IdentifierName(lifetime)
+                        )
+                    )
+                   .WithArgumentList(
+                        ArgumentList(
+                            SeparatedList(
+                                [
+                                    Argument(serviceTypeExpression),
+                                    Argument(implementationTypeExpression!),
+                                ]
+                            )
+                        )
+                    );
+        }
     }
 
     public static bool IsOpenGenericType(this INamedTypeSymbol type)
@@ -80,7 +155,7 @@ internal static class StatementGeneration
         IdentifierName(lifetime)
     );
 
-    private static InvocationExpressionSyntax GenerateServiceType(
+    private static InvocationExpressionSyntax GenerateServiceType_(
         ExpressionSyntax serviceTypeExpression,
         ExpressionSyntax implementationTypeExpression,
         string lifetime

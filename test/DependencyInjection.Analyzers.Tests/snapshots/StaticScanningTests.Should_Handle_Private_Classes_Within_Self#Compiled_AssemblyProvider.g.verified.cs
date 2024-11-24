@@ -31,9 +31,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: Na/OfX2a2Fx0+IoPnlDWxQ==
             case 16:
                 services.Add(ServiceDescriptor.Scoped(DependencyProject.GetType("DependencyProject.Service"), DependencyProject.GetType("DependencyProject.Service")));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::DependencyProject.IService), a => a.GetRequiredService(DependencyProject.GetType("DependencyProject.Service")) as global::DependencyProject.IService));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::TestProject.Service), typeof(global::TestProject.Service)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::DependencyProject.IService), a => a.GetRequiredService<global::TestProject.Service>()));
+                services.Add(ServiceDescriptor.Scoped<global::DependencyProject.IService>(a => a.GetRequiredService(DependencyProject.GetType("DependencyProject.Service")) as global::DependencyProject.IService));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.Service, global::TestProject.Service>());
+                services.Add(ServiceDescriptor.Scoped<global::DependencyProject.IService>(a => a.GetRequiredService<global::TestProject.Service>()));
                 break;
         }
 

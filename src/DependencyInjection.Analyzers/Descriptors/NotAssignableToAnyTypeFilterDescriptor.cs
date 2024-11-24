@@ -5,4 +5,4 @@ using Microsoft.CodeAnalysis;
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 [DebuggerDisplay("{ToString()}")]
-internal readonly record struct NotAssignableToAnyTypeFilterDescriptor(ImmutableHashSet<INamedTypeSymbol> Types) : ITypeFilterDescriptor;
+internal record NotAssignableToAnyTypeFilterDescriptor(ImmutableHashSet<INamedTypeSymbol> Types) : ITypeFilterDescriptor;

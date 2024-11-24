@@ -29,8 +29,8 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: omcyEv9CPv2iVxD3d0bsmQ==
             case 21:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::Service), typeof(global::Service)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IService), a => a.GetRequiredService<global::Service>()));
+                services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());
+                services.Add(ServiceDescriptor.Scoped<global::IService>(a => a.GetRequiredService<global::Service>()));
                 break;
         }
 
