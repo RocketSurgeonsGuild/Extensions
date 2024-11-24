@@ -16,7 +16,6 @@ internal static class DataHelpers
         List<ITypeFilterDescriptor> typeFilters,
         List<IServiceTypeDescriptor> serviceTypeFilters,
         ref int lifetime,
-        INamedTypeSymbol objectType,
         ref ClassFilter classFilter,
         CancellationToken cancellationToken
     )
@@ -50,55 +49,53 @@ internal static class DataHelpers
                 typeFilters,
                 serviceTypeFilters,
                 ref lifetime,
-                objectType,
                 ref classFilter,
                 cancellationToken
             );
         }
 
         var type = ModelExtensions.GetTypeInfo(semanticModel, memberAccessExpressionSyntax.Expression);
-        if (type.Type is { })
+        if (type.Type is null) return;
+        var typeName = type.Type.ToDisplayString();
+        if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector"
+                     or "Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector")
         {
-            var typeName = type.Type.ToDisplayString();
-            if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector"
-                         or "Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector")
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                var selector = HandleCompiledAssemblySelector(semanticModel, expression, memberAccessExpressionSyntax.Name);
-                if (selector is { }) assemblies.Add(selector);
-            }
+            if (cancellationToken.IsCancellationRequested) return;
+            var selector = HandleCompiledAssemblySelector(semanticModel, expression, memberAccessExpressionSyntax.Name);
+            if (selector is { }) assemblies.Add(selector);
+        }
 
-            if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector"
-                         or "Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorTypeSelector")
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                var selector = HandleCompiledAssemblySelector(semanticModel, expression, memberAccessExpressionSyntax.Name);
-                if (selector is { })
-                    assemblies.Add(selector);
-                else
-                    classFilter = HandleCompiledImplementationTypeSelector(expression, memberAccessExpressionSyntax.Name);
-            }
+        if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector"
+                     or "Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorTypeSelector")
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            var selector = HandleCompiledAssemblySelector(semanticModel, expression, memberAccessExpressionSyntax.Name);
+            if (selector is { })
+                assemblies.Add(selector);
+            else
+                classFilter = HandleCompiledImplementationTypeSelector(expression, memberAccessExpressionSyntax.Name);
+        }
 
-            if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ITypeFilter")
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                if (HandleCompiledTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name) is { } filter)
-                    typeFilters.Add(filter);
-            }
+        if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ITypeFilter")
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            if (HandleCompiledTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name) is { } filter)
+                typeFilters.Add(filter);
+        }
 
-            if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IServiceTypeSelector"
-                         or "Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector")
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                serviceTypeFilters.AddRange(HandleCompiledServiceTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
-            }
+        if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IServiceTypeSelector"
+                     or "Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector")
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            serviceTypeFilters.AddRange(HandleCompiledServiceTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
+        }
 
-            if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector")
-            {
-                if (cancellationToken.IsCancellationRequested) return;
-                if (HandleCompiledServiceLifetimeFilter(expression, memberAccessExpressionSyntax.Name) is { } filter)
-                    lifetime = filter;
-            }
+        if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector")
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            if (HandleCompiledServiceLifetimeFilter(expression, memberAccessExpressionSyntax.Name) is { } filter)
+                lifetime = filter;
+            return;
         }
 
         foreach (var argument in expression.ArgumentList.Arguments.Where(argument => argument.Expression is SimpleLambdaExpressionSyntax))
@@ -112,7 +109,6 @@ internal static class DataHelpers
                 typeFilters,
                 serviceTypeFilters,
                 ref lifetime,
-                objectType,
                 ref classFilter,
                 cancellationToken
             );
@@ -231,7 +227,8 @@ internal static class DataHelpers
                        createTypeKindFilterDescriptor(context, name, expression),
                    ({ Identifier.Text: "InfoOf" or "NotInfoOf" }, _) =>
                        createTypeInfoFilterDescriptor(context, name, expression),
-                   _ => throw new NotSupportedException($"Not supported type filter. Method: {name.ToFullString()}  {expression.ToFullString()} method."),
+                   _ => null,
+//                   _ => throw new NotSupportedException($"Not supported type filter. Method: {name.ToFullString()}  {expression.ToFullString()} method."),
                };
 
         static ITypeFilterDescriptor createAssignableToTypeFilterDescriptor(SimpleNameSyntax name, INamedTypeSymbol namedType)
@@ -513,9 +510,38 @@ internal static class DataHelpers
             yield break;
         }
 
-        if (name.ToFullString() == "AsImplementedInterfaces")
+        if (name.ToFullString() == "AsSelfWithInterfaces")
         {
-            yield return new ImplementedInterfacesServiceTypeDescriptor();
+            yield return new SelfServiceTypeDescriptor();
+        }
+
+        if (name.ToFullString() is "AsImplementedInterfaces" or "AsSelfWithInterfaces")
+        {
+            CompiledTypeFilter? interfaceFilter = null;
+            if (expression is
+                {
+                    ArgumentList.Arguments: [{ Expression: SimpleLambdaExpressionSyntax { ExpressionBody: InvocationExpressionSyntax expressionBody } }],
+                })
+            {
+                var interfaceFilters = new List<ITypeFilterDescriptor>();
+                var classFilter = ClassFilter.All;
+                var lifetime = 0;
+                HandleInvocationExpressionSyntax(
+                    context,
+                    semanticModel,
+                    expressionBody,
+                    [],
+                    interfaceFilters,
+                    [],
+                    ref lifetime,
+                    ref classFilter,
+                    context.CancellationToken
+                );
+                // ReSharper disable once UseCollectionExpression
+                interfaceFilter = new(classFilter, interfaceFilters.ToImmutableArray());
+            }
+
+            yield return new ImplementedInterfacesServiceTypeDescriptor(interfaceFilter);
             yield break;
         }
 
@@ -525,26 +551,27 @@ internal static class DataHelpers
             yield break;
         }
 
-        if (name.ToFullString() == "UsingAttributes")
-        {
-            yield return new UsingAttributeServiceTypeDescriptor();
-            yield break;
-        }
-
-        if (name.ToFullString() == "AsSelfWithInterfaces")
-        {
-            yield return new SelfServiceTypeDescriptor();
-            yield return new ImplementedInterfacesServiceTypeDescriptor();
-            yield break;
-        }
-
-        if (name is GenericNameSyntax genericNameSyntax && genericNameSyntax.TypeArgumentList.Arguments.Count == 1)
+        if (name is { Identifier.Value: "As" })
         {
             var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
-            if (typeSyntax == null)
+            if (typeSyntax == null) yield break;
+
+            var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
+            switch (typeInfo)
             {
-                yield break;
+                case INamedTypeSymbol nts:
+                    yield return new CompiledServiceTypeDescriptor(nts);
+                    yield break;
+                default:
+                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                    yield break;
             }
+        }
+
+        if (name is GenericNameSyntax { Identifier.Value: "As", TypeArgumentList.Arguments.Count: 1 })
+        {
+            var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
+            if (typeSyntax == null) yield break;
 
             var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
             switch (typeInfo)

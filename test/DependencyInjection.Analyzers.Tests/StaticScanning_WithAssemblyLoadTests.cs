@@ -668,31 +668,12 @@ public class Service : IService, IServiceB { }
 public class ServiceA : IService { }
 [ServiceRegistration]
 public class ServiceB : IService, IServiceB { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-	    provider.Scan(
-            services,
-            z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
 "
                            )
                           .Build()
                           .GenerateAsync();
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(result);
     }
 
     [Fact]
@@ -822,24 +803,6 @@ public interface IService { }
 [ServiceRegistration(ServiceLifetime.Scoped, typeof(IService))]
 [ServiceRegistration<IService>(ServiceLifetime.Singleton)]
 public class Service : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-	    provider.Scan(
-            services,
-            z => z
-			.FromAssemblies()
-			.AddClasses(x => x.AssignableTo(typeof(IService)))
-            .UsingAttributes()
-            .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
 "
                            )
                           .Build()

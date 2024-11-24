@@ -3,10 +3,7 @@ using System.Diagnostics;
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 [DebuggerDisplay("{ToString()}")]
-internal readonly record struct IncludeSystemAssembliesDescriptor : IAssemblyDescriptor
+internal record IncludeSystemAssembliesDescriptor : IAssemblyDescriptor
 {
-    public override string ToString()
-    {
-        return "IncludeSystemAssemblies";
-    }
+    public override string ToString() => "IncludeSystemAssemblies";
 }

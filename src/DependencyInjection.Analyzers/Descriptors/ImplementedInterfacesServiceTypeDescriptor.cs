@@ -1,3 +1,5 @@
+using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
+
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
-internal record struct ImplementedInterfacesServiceTypeDescriptor : IServiceTypeDescriptor;
+internal record ImplementedInterfacesServiceTypeDescriptor(CompiledTypeFilter? InterfaceFilter) : IServiceTypeDescriptor;

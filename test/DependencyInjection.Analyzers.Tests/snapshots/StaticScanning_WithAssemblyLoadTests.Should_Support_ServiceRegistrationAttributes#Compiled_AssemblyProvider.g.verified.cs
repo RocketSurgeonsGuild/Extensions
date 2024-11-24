@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
-[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ServiceDescriptorTypes","{scrubbed}")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -27,25 +26,15 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     {
         switch (lineNumber)
         {
-            // FilePath: Input0.cs Expression: nskv5bioVyhSCb9iPvu7/w==
-            case 22:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::Service), typeof(global::Service)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IServiceB), a => a.GetRequiredService<global::Service>()));
-                services.Add(ServiceDescriptor.Transient(typeof(global::ServiceA), typeof(global::ServiceA)));
-                services.Add(ServiceDescriptor.Transient(typeof(global::IService), a => a.GetRequiredService<global::ServiceA>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::ServiceB), typeof(global::ServiceB)));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IService), a => a.GetRequiredService<global::ServiceB>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IServiceB), a => a.GetRequiredService<global::ServiceB>()));
-                break;
             // FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
             case 20:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::Service), typeof(global::Service)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IServiceB), a => a.GetRequiredService<global::Service>()));
-                services.Add(ServiceDescriptor.Transient(typeof(global::ServiceA), typeof(global::ServiceA)));
-                services.Add(ServiceDescriptor.Transient(typeof(global::IService), a => a.GetRequiredService<global::ServiceA>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::ServiceB), typeof(global::ServiceB)));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IService), a => a.GetRequiredService<global::ServiceB>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IServiceB), a => a.GetRequiredService<global::ServiceB>()));
+                services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());
+                services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::Service>()));
+                services.Add(ServiceDescriptor.Transient<global::ServiceA, global::ServiceA>());
+                services.Add(ServiceDescriptor.Transient<global::IService>(a => a.GetRequiredService<global::ServiceA>()));
+                services.Add(ServiceDescriptor.Singleton<global::ServiceB, global::ServiceB>());
+                services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::ServiceB>()));
+                services.Add(ServiceDescriptor.Singleton<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
                 break;
         }
 

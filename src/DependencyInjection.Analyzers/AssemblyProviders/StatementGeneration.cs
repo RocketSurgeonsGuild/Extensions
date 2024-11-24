@@ -53,23 +53,21 @@ internal static class StatementGeneration
     }
 
 
-    public static ExpressionSyntax? GetAssemblyExpression(Compilation compilation, IAssemblySymbol assembly)
-    {
-        return FindTypeInAssembly.FindType(compilation, assembly) is { } keyholdType
+    public static ExpressionSyntax? GetAssemblyExpression(Compilation compilation, IAssemblySymbol assembly) =>
+        FindTypeInAssembly.FindType(compilation, assembly) is { } keyholdType
             ? MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
                 GetTypeOfExpression(compilation, keyholdType),
                 IdentifierName("Assembly")
             )
             : null;
-    }
 
     public static ExpressionSyntax GetTypeOfExpression(Compilation compilation, INamedTypeSymbol type)
     {
         if (type.IsGenericType && !type.IsOpenGenericType())
         {
             var result = compilation.IsSymbolAccessibleWithin(type.ConstructUnboundGenericType(), compilation.Assembly);
-            if (result)
+            if (!result)
             {
                 var name = ParseTypeName(type.ConstructUnboundGenericType().ToDisplayString());
                 if (name is GenericNameSyntax genericNameSyntax)
@@ -99,21 +97,16 @@ internal static class StatementGeneration
             }
         }
 
-        if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)) return TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)));
+        if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
+            return TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)));
 
         return GetPrivateType(compilation, type);
     }
 
 
-    public static NameSyntax GetPrivateAssembly(IAssemblySymbol type)
-    {
-        return IdentifierName(AssemblyVariableName(type));
-    }
+    public static NameSyntax GetPrivateAssembly(IAssemblySymbol type) => IdentifierName(AssemblyVariableName(type));
 
-    public static string AssemblyVariableName(IAssemblySymbol symbol)
-    {
-        return SpecialCharacterRemover.Replace(symbol.MetadataName, "");
-    }
+    public static string AssemblyVariableName(IAssemblySymbol symbol) => SpecialCharacterRemover.Replace(symbol.MetadataName, "");
 
     public static bool IsOpenGenericType(this INamedTypeSymbol type)
     {

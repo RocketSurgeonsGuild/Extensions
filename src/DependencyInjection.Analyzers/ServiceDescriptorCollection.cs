@@ -75,7 +75,6 @@ internal static class ServiceDescriptorCollection
                     typeFilters,
                     serviceDescriptors,
                     ref lifetime,
-                    compilation.ObjectType,
                     ref classFilter,
                     context.CancellationToken
                 );
@@ -135,7 +134,7 @@ internal static class ServiceDescriptorCollection
     )
     {
         var asSelf = serviceTypes.ServiceTypeDescriptors.OfType<SelfServiceTypeDescriptor>().Any() || !serviceTypes.ServiceTypeDescriptors.Any();
-        var asImplementedInterfaces = serviceTypes.ServiceTypeDescriptors.OfType<ImplementedInterfacesServiceTypeDescriptor>().Any();
+        var asImplementedInterfaces = serviceTypes.ServiceTypeDescriptors.OfType<ImplementedInterfacesServiceTypeDescriptor>().ToArray();
         var asMatchingInterface = serviceTypes.ServiceTypeDescriptors.OfType<MatchingInterfaceServiceTypeDescriptor>().Any();
         var asSpecificTypes = serviceTypes.ServiceTypeDescriptors.OfType<CompiledServiceTypeDescriptor>().Select(z => z.Type).ToArray();
         var registrationLifetimeAttribute = compilation.GetTypeByMetadataName("Rocket.Surgery.DependencyInjection.RegistrationLifetimeAttribute")!;
@@ -253,23 +252,6 @@ internal static class ServiceDescriptorCollection
                 emittedTypes.Add(serviceType);
             }
 
-            if (!emittedTypes.Any() && ( lifetimeRegistrations.Any() || discoveredLifetime is { } ))
-            {
-                foreach (var @interface in type.AllInterfaces.OrderBy(z => z.ToDisplayString()))
-                {
-                    if (emittedTypes.Contains(@interface)) continue;
-                    services.Add(
-                        StatementGeneration.GenerateServiceFactory(
-                            compilation,
-                            @interface,
-                            type,
-                            lifetimeValue
-                        )
-                    );
-                    emittedTypes.Add(@interface);
-                }
-            }
-
             if (asSelf && !emittedTypes.Contains(type))
             {
                 services.Add(
@@ -318,9 +300,20 @@ internal static class ServiceDescriptorCollection
                 }
             }
 
-            if (asImplementedInterfaces)
+            if (asImplementedInterfaces is { Length: > 0 })
             {
-                foreach (var @interface in type.AllInterfaces.OrderBy(z => z.ToDisplayString()))
+                // filter here
+                var interfaces = new List<INamedTypeSymbol>();
+                // todo: filter interfaces by type filter or implemented interfaces filter expression (a reuse of the type filter)
+                // It should support open generic types as well (think abstract validator from fluent validation)
+                interfaces.AddRange(
+                    asImplementedInterfaces is [{ InterfaceFilter: { } filter }]
+                        ? type.AllInterfaces.Where(item => filter.IsMatch(compilation, item))
+                        : type.AllInterfaces
+                );
+
+
+                foreach (var @interface in interfaces.OrderBy(z => z.ToDisplayString()))
                 {
                     if (emittedTypes.Contains(@interface)) continue;
                     services.Add(
@@ -350,22 +343,40 @@ internal static class ServiceDescriptorCollection
             foreach (var asType in asSpecificTypes.OrderBy(z => z.ToDisplayString()))
             {
                 if (emittedTypes.Contains(asType)) continue;
+                if (!Helpers.HasImplicitGenericConversion(compilation, asType, type)) continue;
                 services.Add(
                     !asSelf
                         ? StatementGeneration.GenerateServiceType(
                             compilation,
-                            asType,
+                            Helpers.GetClosedGenericConversion(compilation, asType, type),
                             type,
                             serviceTypes.GetLifetime()
                         )
                         : StatementGeneration.GenerateServiceFactory(
                             compilation,
-                            asType,
+                            Helpers.GetClosedGenericConversion(compilation, asType, type),
                             type,
                             serviceTypes.GetLifetime()
                         )
                 );
                 emittedTypes.Add(asType);
+            }
+
+            if (!emittedTypes.Any() && ( lifetimeRegistrations.Any() || discoveredLifetime is { } ) && !asMatchingInterface)
+            {
+                foreach (var @interface in type.AllInterfaces.OrderBy(z => z.ToDisplayString()))
+                {
+                    if (emittedTypes.Contains(@interface)) continue;
+                    services.Add(
+                        StatementGeneration.GenerateServiceFactory(
+                            compilation,
+                            @interface,
+                            type,
+                            lifetimeValue
+                        )
+                    );
+                    emittedTypes.Add(@interface);
+                }
             }
         }
 

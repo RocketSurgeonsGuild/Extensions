@@ -28,14 +28,14 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
             case 20:
-                services.Add(ServiceDescriptor.Singleton(typeof(global::Service), typeof(global::Service)));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IService), a => a.GetRequiredService<global::Service>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IServiceB), a => a.GetRequiredService<global::Service>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::ServiceA), typeof(global::ServiceA)));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IService), a => a.GetRequiredService<global::ServiceA>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::ServiceB), typeof(global::ServiceB)));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IService), a => a.GetRequiredService<global::ServiceB>()));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::IServiceB), a => a.GetRequiredService<global::ServiceB>()));
+                services.Add(ServiceDescriptor.Singleton<global::Service, global::Service>());
+                services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::Service>()));
+                services.Add(ServiceDescriptor.Singleton<global::IServiceB>(a => a.GetRequiredService<global::Service>()));
+                services.Add(ServiceDescriptor.Singleton<global::ServiceA, global::ServiceA>());
+                services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::ServiceA>()));
+                services.Add(ServiceDescriptor.Singleton<global::ServiceB, global::ServiceB>());
+                services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::ServiceB>()));
+                services.Add(ServiceDescriptor.Singleton<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
                 break;
         }
 

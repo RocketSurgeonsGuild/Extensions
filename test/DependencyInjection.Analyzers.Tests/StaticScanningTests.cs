@@ -730,6 +730,314 @@ public static class Program {
     }
 
     [Fact]
+    public async Task Should_Filter_AssignableToAny_And_Filter_Interfaces()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public interface IServiceB { }
+public class Service : IService, IServiceB { }
+public class ServiceA : IService { }
+public class ServiceB : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
+                .AsSelf()
+                .AsImplementedInterfaces(z => z.AssignableTo<IServiceB>())
+                .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+//        await Verify(result);
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+    [Fact]
+    public async Task Should_Filter_AssignableToAny_And_Filter_Interfaces2()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public interface IServiceB { }
+public class Service : IService, IServiceB { }
+public class ServiceA : IService { }
+public class ServiceB : IService { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
+                .AsImplementedInterfaces(z => z.AssignableTo<IServiceB>())
+                .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+//        await Verify(result);
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+
+    [Fact]
+    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService<T> { }
+public interface IOther { }
+public class Service : IService<int>, IService<string>, IOther { }
+public class ServiceA : IService<string>, IOther { }
+public class ServiceB : IService<decimal>, IOther { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IOther)))
+                .AsSelf()
+                .AsImplementedInterfaces(z => z.AssignableTo(typeof(IService<>)))
+                .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+//        await Verify(result);
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+
+    [Fact]
+    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces2()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService<T> { }
+public interface IOther { }
+public class Service : IService<int>, IService<string>, IOther { }
+public class ServiceA : IService<string>, IOther { }
+public class ServiceB : IService<decimal>, IOther { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IOther)))
+                .AsImplementedInterfaces(z => z.AssignableTo(typeof(IService<>)))
+                .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+//        await Verify(result);
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+
+    [Fact]
+    public async Task Should_Filter_As_And_Filter_Interfaces()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService { }
+public interface IServiceB { }
+public class Service : IService, IServiceB { }
+public class ServiceA : IService { }
+public class ServiceB : IServiceB { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IService)))
+                .As<IService>()
+                .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+//        await Verify(result);
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+
+    [Fact]
+    public async Task Should_Filter_As_And_Filter_Generic_Interfaces()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService<T> { }
+public interface IOther { }
+public class Service : IService<int>, IService<string>, IOther { }
+public class ServiceA : IService<string>, IOther { }
+public class ServiceB : IService<decimal> { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IOther)))
+                .AsSelf()
+                .As(typeof(IService<>))
+                .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+//        await Verify(result);
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+    [Fact]
+    public async Task Should_Filter_As_And_Filter_Generic_Interfaces2()
+    {
+        var result = await Builder
+                          .AddSources(
+                               @"
+using Rocket.Surgery.DependencyInjection.Compiled;
+using Microsoft.Extensions.DependencyInjection;
+
+public interface IService<T> { }
+public interface IOther { }
+public class Service : IService<int>, IService<string>, IOther { }
+public class ServiceA : IService<string>, IOther { }
+public class ServiceB : IService<decimal> { }
+
+public static class Program {
+    static void Main() { }
+    static IServiceCollection LoadServices()
+    {
+        var services = new ServiceCollection();
+        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+	    provider.Scan(
+            services,
+            z => z
+			    .FromAssemblies()
+			    .AddClasses(x => x.AssignableToAny(typeof(IOther)))
+                .As(typeof(IService<>))
+                .WithScopedLifetime()
+        );
+        return services;
+    }
+}
+"
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+//        await Verify(result);
+        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
+    [Fact]
     public async Task Should_Support_ServiceRegistrationAttributes()
     {
         var result = await Builder
@@ -748,32 +1056,12 @@ public class Service : IService, IServiceB { }
 public class ServiceA : IService { }
 [ServiceRegistration]
 public class ServiceB : IService, IServiceB { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-	    provider.Scan(
-            services,
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableToAny(typeof(IService), typeof(IServiceB)))
-                .UsingAttributes()
-                .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
 "
                            )
                           .Build()
                           .GenerateAsync();
 
-
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(result);
     }
 
     [Fact]
@@ -903,24 +1191,6 @@ public interface IService { }
 [ServiceRegistration(ServiceLifetime.Scoped, typeof(IService))]
 [ServiceRegistration<IService>(ServiceLifetime.Singleton)]
 public class Service : IService { }
-
-public static class Program {
-    static void Main() { }
-    static IServiceCollection LoadServices()
-    {
-        var services = new ServiceCollection();
-        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-	    provider.Scan(
-            services,
-            z => z
-			    .FromAssemblies()
-			    .AddClasses(x => x.AssignableTo(typeof(IService)))
-                .UsingAttributes()
-                .WithSingletonLifetime()
-        );
-        return services;
-    }
-}
 "
                            )
                           .Build()

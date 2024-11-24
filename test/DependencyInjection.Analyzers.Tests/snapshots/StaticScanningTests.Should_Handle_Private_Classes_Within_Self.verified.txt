@@ -27,7 +27,7 @@
     {
       Lifetime: Scoped,
       ServiceType: DependencyProject.IService,
-      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+      ImplementationFactory: System.Func`2[System.IServiceProvider,DependencyProject.IService]
     },
     {
       Lifetime: Scoped,
@@ -37,7 +37,7 @@
     {
       Lifetime: Scoped,
       ServiceType: DependencyProject.IService,
-      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
+      ImplementationFactory: System.Func`2[System.IServiceProvider,DependencyProject.IService]
     }
   ]
 }

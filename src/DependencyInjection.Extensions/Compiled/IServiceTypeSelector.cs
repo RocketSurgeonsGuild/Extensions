@@ -18,9 +18,20 @@ public interface IServiceTypeSelector
     IServiceLifetimeSelector As<T>();
 
     /// <summary>
+    ///     Registers each matching concrete type as
+    ///     <param name="type">type</param>
+    /// </summary>
+    IServiceLifetimeSelector As(Type type);
+
+    /// <summary>
     ///     Registers each matching concrete type as all of its implemented interfaces.
     /// </summary>
     IServiceLifetimeSelector AsImplementedInterfaces();
+
+    /// <summary>
+    ///     Registers each matching concrete type as all of its implemented interfaces.
+    /// </summary>
+    IServiceLifetimeSelector AsImplementedInterfaces(Action<ITypeFilter> action);
 
     /// <summary>
     ///     Registers each matching concrete type as all of its implemented interfaces, by returning an instance of the main type
@@ -28,12 +39,12 @@ public interface IServiceTypeSelector
     IServiceLifetimeSelector AsSelfWithInterfaces();
 
     /// <summary>
+    ///     Registers each matching concrete type as all of its implemented interfaces, by returning an instance of the main type
+    /// </summary>
+    IServiceLifetimeSelector AsSelfWithInterfaces(Action<ITypeFilter> action);
+
+    /// <summary>
     ///     Registers the type with the first found matching interface name.  (e.g. ClassName is matched to IClassName)
     /// </summary>
     IServiceLifetimeSelector AsMatchingInterface();
-
-    /// <summary>
-    ///     Registers each matching concrete type according to their ServiceDescriptorAttribute.
-    /// </summary>
-    IServiceLifetimeSelector UsingAttributes();
 }
