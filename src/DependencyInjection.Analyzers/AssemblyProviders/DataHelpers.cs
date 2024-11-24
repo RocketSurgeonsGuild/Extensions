@@ -518,7 +518,10 @@ internal static class DataHelpers
         if (name.ToFullString() is "AsImplementedInterfaces" or "AsSelfWithInterfaces")
         {
             CompiledTypeFilter? interfaceFilter = null;
-            if (expression is { ArgumentList.Arguments: [{ Expression: SimpleLambdaExpressionSyntax { ExpressionBody: InvocationExpressionSyntax expressionBody  } }] })
+            if (expression is
+                {
+                    ArgumentList.Arguments: [{ Expression: SimpleLambdaExpressionSyntax { ExpressionBody: InvocationExpressionSyntax expressionBody } }],
+                })
             {
                 var interfaceFilters = new List<ITypeFilterDescriptor>();
                 var classFilter = ClassFilter.All;
@@ -537,6 +540,7 @@ internal static class DataHelpers
                 // ReSharper disable once UseCollectionExpression
                 interfaceFilter = new(classFilter, interfaceFilters.ToImmutableArray());
             }
+
             yield return new ImplementedInterfacesServiceTypeDescriptor(interfaceFilter);
             yield break;
         }

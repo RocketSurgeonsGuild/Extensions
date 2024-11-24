@@ -18,7 +18,8 @@ public interface IServiceTypeSelector
     IServiceLifetimeSelector As<T>();
 
     /// <summary>
-    ///     Registers each matching concrete type as <param name="type">type</param>
+    ///     Registers each matching concrete type as
+    ///     <param name="type">type</param>
     /// </summary>
     IServiceLifetimeSelector As(Type type);
 

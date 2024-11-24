@@ -53,16 +53,14 @@ internal static class StatementGeneration
     }
 
 
-    public static ExpressionSyntax? GetAssemblyExpression(Compilation compilation, IAssemblySymbol assembly)
-    {
-        return FindTypeInAssembly.FindType(compilation, assembly) is { } keyholdType
+    public static ExpressionSyntax? GetAssemblyExpression(Compilation compilation, IAssemblySymbol assembly) =>
+        FindTypeInAssembly.FindType(compilation, assembly) is { } keyholdType
             ? MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
                 GetTypeOfExpression(compilation, keyholdType),
                 IdentifierName("Assembly")
             )
             : null;
-    }
 
     public static ExpressionSyntax GetTypeOfExpression(Compilation compilation, INamedTypeSymbol type)
     {
@@ -106,15 +104,9 @@ internal static class StatementGeneration
     }
 
 
-    public static NameSyntax GetPrivateAssembly(IAssemblySymbol type)
-    {
-        return IdentifierName(AssemblyVariableName(type));
-    }
+    public static NameSyntax GetPrivateAssembly(IAssemblySymbol type) => IdentifierName(AssemblyVariableName(type));
 
-    public static string AssemblyVariableName(IAssemblySymbol symbol)
-    {
-        return SpecialCharacterRemover.Replace(symbol.MetadataName, "");
-    }
+    public static string AssemblyVariableName(IAssemblySymbol symbol) => SpecialCharacterRemover.Replace(symbol.MetadataName, "");
 
     public static bool IsOpenGenericType(this INamedTypeSymbol type)
     {

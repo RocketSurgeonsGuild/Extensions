@@ -5,8 +5,5 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 [DebuggerDisplay("{ToString()}")]
 internal record AllAssemblyDescriptor : IAssemblyDescriptor
 {
-    public override string ToString()
-    {
-        return "All";
-    }
+    public override string ToString() => "All";
 }

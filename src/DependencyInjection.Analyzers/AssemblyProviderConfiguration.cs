@@ -477,7 +477,7 @@ internal static partial class AssemblyProviderConfiguration
         return new(data.Filter, descriptors.ToImmutable());
     }
 
-    static INamedTypeSymbol? findType(
+    private static INamedTypeSymbol? findType(
         ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
         Compilation compilation,
         string assemblyName,
@@ -508,15 +508,13 @@ internal static partial class AssemblyProviderConfiguration
                      AsTypeFilterServiceTypeDescriptor      => new('a'),
                      CompiledServiceTypeDescriptor c => new ServiceTypeData(
                          'c',
-                         TypeData: new(c.Type.ContainingAssembly.MetadataName, c.Type.MetadataName, c.Type.IsUnboundGenericType)
+                         new(c.Type.ContainingAssembly.MetadataName, c.Type.MetadataName, c.Type.IsUnboundGenericType)
                      ),
                      _ => throw new ArgumentOutOfRangeException(nameof(z)),
                  }
         );
         return new(serviceDescriptors.ToImmutableArray(), serviceTypeDescriptors.Lifetime);
     }
-
-    private record ServiceTypeData(char Identifier, AnyTypeData? TypeData = null, TypeFilterData? TypeFilter = null);
 
     private static CompiledServiceTypeDescriptors LoadServiceDescriptorFilter(
         Compilation compilation,
@@ -545,6 +543,8 @@ internal static partial class AssemblyProviderConfiguration
 
         return new(descriptors.ToImmutable(), data.Lifetime);
     }
+
+    private record ServiceTypeData(char Identifier, AnyTypeData? TypeData = null, TypeFilterData? TypeFilter = null);
 
     [JsonSourceGenerationOptions]
     [JsonSerializable(typeof(AssemblyCollectionData))]

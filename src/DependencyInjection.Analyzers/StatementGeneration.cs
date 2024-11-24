@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -79,7 +78,8 @@ internal static class StatementGeneration
     {
         switch ( serviceTypeExpression, implementationTypeExpression )
         {
-            case (TypeOfExpressionSyntax serviceTypeOfExpression, TypeOfExpressionSyntax implementationTypeOfExpression) when !serviceType.IsUnboundGenericType && !implementationType.IsUnboundGenericType:
+            case (TypeOfExpressionSyntax serviceTypeOfExpression, TypeOfExpressionSyntax implementationTypeOfExpression)
+                when !serviceType.IsUnboundGenericType && !implementationType.IsUnboundGenericType:
                 return InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
@@ -97,32 +97,25 @@ internal static class StatementGeneration
                             )
                     )
                 );
-            case (TypeOfExpressionSyntax { Type: not GenericNameSyntax { IsUnboundGenericName: true } } serviceTypeOfExpression, { } ) when !serviceType.IsUnboundGenericType:
+            case (TypeOfExpressionSyntax { Type: not GenericNameSyntax { IsUnboundGenericName: true } } serviceTypeOfExpression, { })
+                when !serviceType.IsUnboundGenericType:
                 return InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName("ServiceDescriptor"),
-                        GenericName(lifetime)
-                           .WithTypeArgumentList(
-                                TypeArgumentList(
-                                    SeparatedList<TypeSyntax>(
-                                        [
-                                            serviceTypeOfExpression.Type
-                                        ]
-                                    )
-                                )
-                            )
-                    )
-                )
-               .WithArgumentList(
-                    ArgumentList(
-                        SeparatedList(
-                            [
-                                Argument(implementationTypeExpression),
-                            ]
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName("ServiceDescriptor"),
+                            GenericName(lifetime)
+                               .WithTypeArgumentList(TypeArgumentList(SeparatedList<TypeSyntax>([serviceTypeOfExpression.Type])))
                         )
                     )
-                );
+                   .WithArgumentList(
+                        ArgumentList(
+                            SeparatedList(
+                                [
+                                    Argument(implementationTypeExpression),
+                                ]
+                            )
+                        )
+                    );
             default:
                 return InvocationExpression(
                         MemberAccessExpression(
