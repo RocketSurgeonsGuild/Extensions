@@ -2,7 +2,7 @@ using System.Text;
 
 #pragma warning disable CA1055 // Uri return values should not be strings
 
-namespace Rocket.Surgery.Encoding;
+namespace Rocket.Surgery.Extensions.Encoding;
 
 /// <summary>
 ///     Base3264Encoding is a standard base 32/64 encoder/decoder

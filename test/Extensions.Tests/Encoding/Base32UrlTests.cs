@@ -1,4 +1,4 @@
-using Rocket.Surgery.Encoding;
+using Rocket.Surgery.Extensions.Encoding;
 using Rocket.Surgery.Extensions.Testing;
 using Xunit;
 using Xunit.Abstractions;

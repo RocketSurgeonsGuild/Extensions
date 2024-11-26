@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Rocket.Surgery.Encoding;
+namespace Rocket.Surgery.Extensions.Encoding;
 
 /// <summary>
 ///     Modified Base64 for URL applications ('base64url' encoding)

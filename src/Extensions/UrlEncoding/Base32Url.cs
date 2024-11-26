@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Rocket.Surgery.Encoding;
+namespace Rocket.Surgery.Extensions.Encoding;
 
 /// <summary>
 ///     Base32Url is a standard base 32 encoder/decoder except that padding turned
