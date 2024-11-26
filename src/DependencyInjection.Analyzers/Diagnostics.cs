@@ -61,7 +61,7 @@ internal static class Diagnostics
     public static DiagnosticDescriptor UnhandledException { get; } = new(
         "RSGD0006",
         "Unhandled exception",
-        "Unhandled exception has occured {2} {0}\nStack Trace: {1}",
+        "Unhandled exception has occured {2} {0} -- Stack Trace: {1} {3}",
         Category,
         DiagnosticSeverity.Warning,
         true
