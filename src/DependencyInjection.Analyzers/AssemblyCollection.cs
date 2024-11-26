@@ -126,7 +126,7 @@ internal static class AssemblyCollection
             }
             catch (Exception e)
             {
-                request.Context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name));
+                request.Context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name, e.ToString()));
             }
         }
 
@@ -256,7 +256,7 @@ internal static class AssemblyCollection
             }
             catch (Exception e)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name));
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name, e.ToString()));
             }
         }
 
