@@ -12,21 +12,6 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding;
 /// </summary>
 public class Base32UrlTests : AutoFakeTest
 {
-    private static readonly string[][] rfc4684TestVectors =
-    {
-        new[] { "f", "MY======" },
-        new[] { "fo", "MZXQ====" },
-        new[] { "foo", "MZXW6===" },
-        new[] { "foob", "MZXW6YQ=" },
-        new[] { "fooba", "MZXW6YTB" },
-        new[] { "foobar", "MZXW6YTBOI======" },
-        new[] { "", "" }
-    };
-
-    public Base32UrlTests(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
-
     [Fact]
     public void Rfc4648TestVectorsEncodeDecode()
     {
@@ -51,7 +36,8 @@ public class Base32UrlTests : AutoFakeTest
         Assert.Throws<ArgumentException>(
             () =>
                 Assert.Equal(
-                    "Hello World!", System.Text.Encoding.ASCII.GetString(new Base32Url(false, true, false).Decode("JBS\t\r\n WY3D\tPE BLW64\n TMM\r QQQ"))
+                    "Hello World!",
+                    System.Text.Encoding.ASCII.GetString(new Base32Url(false, true, false).Decode("JBS\t\r\n WY3D\tPE BLW64\n TMM\r QQQ"))
                 )
         );
     }
@@ -76,9 +62,9 @@ public class Base32UrlTests : AutoFakeTest
 
         foreach (var s in rfc4684TestVectors)
         {
-#pragma warning disable CA1308 // Normalize strings to uppercase
+            #pragma warning disable CA1308 // Normalize strings to uppercase
             var encodedS1 = s[1].ToLowerInvariant();
-#pragma warning restore CA1308 // Normalize strings to uppercase
+            #pragma warning restore CA1308 // Normalize strings to uppercase
             Assert.Equal(System.Text.Encoding.ASCII.GetString(enc.Decode(encodedS1)), s[0]);
         }
     }
@@ -139,7 +125,8 @@ public class Base32UrlTests : AutoFakeTest
                 var tcnt = -1;
 
                 var result = Array.TrueForAll(
-                    d, _ =>
+                    d,
+                    _ =>
                     {
                         tcnt++;
                         return r[tcnt] == d[tcnt];
@@ -150,4 +137,17 @@ public class Base32UrlTests : AutoFakeTest
             }
         }
     }
+
+    public Base32UrlTests(ITestOutputHelper outputHelper) : base(outputHelper) { }
+
+    private static readonly string[][] rfc4684TestVectors =
+    {
+        new[] { "f", "MY======" },
+        new[] { "fo", "MZXQ====" },
+        new[] { "foo", "MZXW6===" },
+        new[] { "foob", "MZXW6YQ=" },
+        new[] { "fooba", "MZXW6YTB" },
+        new[] { "foobar", "MZXW6YTBOI======" },
+        new[] { "", "" },
+    };
 }

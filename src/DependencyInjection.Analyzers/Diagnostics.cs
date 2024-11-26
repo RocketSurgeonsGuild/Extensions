@@ -4,9 +4,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 internal static class Diagnostics
 {
-    private const string Category = "Dependency Injection";
-
-    public static DiagnosticDescriptor MustBeAnExpression { get; } = new DiagnosticDescriptor(
+    public static DiagnosticDescriptor MustBeAnExpression { get; } = new(
         "RSGD0001",
         "Must be a expression",
         "Methods that will be analyzed statically must be an expression, blocks and variables are not allowed",
@@ -15,7 +13,7 @@ internal static class Diagnostics
         true
     );
 
-    public static DiagnosticDescriptor MustBeTypeOf { get; } = new DiagnosticDescriptor(
+    public static DiagnosticDescriptor MustBeTypeOf { get; } = new(
         "RSGD0002",
         "Must use typeof",
         "Method must be called with typeof, variables are not allowed",
@@ -24,7 +22,7 @@ internal static class Diagnostics
         true
     );
 
-    public static DiagnosticDescriptor UnhandledSymbol { get; } = new DiagnosticDescriptor(
+    public static DiagnosticDescriptor UnhandledSymbol { get; } = new(
         "RSGD0003",
         "Symbol could not be handled",
         "The indicated symbol could not be handled correctly",
@@ -33,7 +31,7 @@ internal static class Diagnostics
         true
     );
 
-    public static DiagnosticDescriptor NamespaceMustBeAString { get; } = new DiagnosticDescriptor(
+    public static DiagnosticDescriptor NamespaceMustBeAString { get; } = new(
         "RSGD0004",
         "Namespace must be a string",
         "The given namespace must be a constant string",
@@ -42,7 +40,7 @@ internal static class Diagnostics
         true
     );
 
-    public static DiagnosticDescriptor DuplicateServiceDescriptorAttribute { get; } = new DiagnosticDescriptor(
+    public static DiagnosticDescriptor DuplicateServiceDescriptorAttribute { get; } = new(
         "RSGD0005",
         "Duplicate service descriptor attribute",
         "Cannot have more than one service descriptor attribute for a given type",
@@ -60,7 +58,7 @@ internal static class Diagnostics
         true
     );
 
-    public static DiagnosticDescriptor UnhandledException { get; } = new DiagnosticDescriptor(
+    public static DiagnosticDescriptor UnhandledException { get; } = new(
         "RSGD0006",
         "Unhandled exception",
         "Unhandled exception has occured {2} {0}\nStack Trace: {1}",
@@ -68,4 +66,6 @@ internal static class Diagnostics
         DiagnosticSeverity.Warning,
         true
     );
+
+    private const string Category = "Dependency Injection";
 }
