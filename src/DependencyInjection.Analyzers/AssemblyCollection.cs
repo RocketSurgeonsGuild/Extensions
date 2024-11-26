@@ -131,7 +131,7 @@ internal static class AssemblyCollection
                         Diagnostics.UnhandledException,
                         null,
                         e.Message,
-                        e.StackTrace,
+                        e.StackTrace.Replace("\r", "").Replace("\n", ""),
                         e.GetType().Name,
                         e.ToString()
                     )
