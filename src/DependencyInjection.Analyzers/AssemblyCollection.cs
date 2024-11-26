@@ -115,12 +115,19 @@ internal static class AssemblyCollection
 
         foreach (var item in request.Items)
         {
-            var filterAssemblies = assemblySymbols
-                                  .Where(z => item.AssemblyFilter.IsMatch(compilation, z))
-                                  .ToArray();
+            try
+            {
+                var filterAssemblies = assemblySymbols
+                                      .Where(z => item.AssemblyFilter.IsMatch(compilation, z))
+                                      .ToArray();
 
-            if (filterAssemblies.Length == 0) continue;
-            results.Add(( item.Location, GenerateDescriptors(compilation, filterAssemblies, request.PrivateAssemblies) ));
+                if (filterAssemblies.Length == 0) continue;
+                results.Add(( item.Location, GenerateDescriptors(compilation, filterAssemblies, request.PrivateAssemblies) ));
+            }
+            catch (Exception e)
+            {
+                request.Context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name));
+            }
         }
 
         return results.Count == 0 ? AssembliesMethod : AssembliesMethod.WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results)));
@@ -246,6 +253,10 @@ internal static class AssemblyCollection
             catch (MustBeAnExpressionException e)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
+            }
+            catch (Exception e)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name));
             }
         }
 

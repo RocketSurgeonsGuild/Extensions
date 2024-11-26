@@ -32,10 +32,17 @@ internal static class ServiceDescriptorCollection
         var results = new List<(SourceLocation location, BlockSyntax block)>();
         foreach (var item in request.Items)
         {
-            var reducedTypes = AssemblyProviders.TypeSymbolVisitor.GetTypes(request.Compilation, item.AssemblyFilter, item.TypeFilter);
-            if (reducedTypes.Length == 0) continue;
-            var localBlock = GenerateDescriptors(request.Context, request.Compilation, reducedTypes, item.ServicesTypeFilter, request.PrivateAssemblies);
-            results.Add(( item.Location, localBlock ));
+            try
+            {
+                var reducedTypes = AssemblyProviders.TypeSymbolVisitor.GetTypes(request.Compilation, item.AssemblyFilter, item.TypeFilter);
+                if (reducedTypes.Length == 0) continue;
+                var localBlock = GenerateDescriptors(request.Context, request.Compilation, reducedTypes, item.ServicesTypeFilter, request.PrivateAssemblies);
+                results.Add(( item.Location, localBlock ));
+            }
+            catch (Exception e)
+            {
+                request.Context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name));
+            }
         }
 
         return results.Count == 0
@@ -91,6 +98,10 @@ internal static class ServiceDescriptorCollection
             catch (MustBeAnExpressionException e)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
+            }
+            catch (Exception e)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name));
             }
         }
 

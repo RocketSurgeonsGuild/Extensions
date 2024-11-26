@@ -14,28 +14,28 @@ public static class TopographicalSortExtensions
     /// <param name="dependencies">The dependencies.</param>
     public static IEnumerable<T> TopographicalSort<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> dependencies)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(dependencies);
 
         var sorted = new List<T>();
         var visited = new HashSet<T>();
 
         foreach (var item in source)
+        {
             Visit(item, visited, sorted, dependencies);
+        }
 
         return sorted;
     }
 
     private static void Visit<T>(T item, HashSet<T> visited, List<T> sorted, Func<T, IEnumerable<T>> dependencies)
     {
-        if (!visited.Contains(item))
+        if (visited.Add(item))
         {
-            visited.Add(item);
-
             foreach (var dep in dependencies(item))
+            {
                 Visit(dep, visited, sorted, dependencies);
+            }
 
             sorted.Add(item);
         }

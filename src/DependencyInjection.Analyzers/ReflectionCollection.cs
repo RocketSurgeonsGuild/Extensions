@@ -33,10 +33,17 @@ internal static class ReflectionCollection
         var results = new List<(SourceLocation location, BlockSyntax block)>();
         foreach (var item in request.Items)
         {
-            var reducedTypes = AssemblyProviders.TypeSymbolVisitor.GetTypes(compilation, item.AssemblyFilter, item.TypeFilter);
-            if (reducedTypes.Length == 0) continue;
-            var localBlock = GenerateDescriptors(compilation, reducedTypes, request.PrivateAssemblies);
-            results.Add(( item.Location, localBlock ));
+            try
+            {
+                var reducedTypes = AssemblyProviders.TypeSymbolVisitor.GetTypes(compilation, item.AssemblyFilter, item.TypeFilter);
+                if (reducedTypes.Length == 0) continue;
+                var localBlock = GenerateDescriptors(compilation, reducedTypes, request.PrivateAssemblies);
+                results.Add(( item.Location, localBlock ));
+            }
+            catch (Exception e)
+            {
+                request.Context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name));
+            }
         }
 
         return results.Count == 0 ? TypesMethod : TypesMethod.WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results)));
@@ -109,6 +116,10 @@ internal static class ReflectionCollection
             catch (MustBeAnExpressionException e)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
+            }
+            catch (Exception e)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledException, null, e.Message, e.StackTrace, e.GetType().Name));
             }
         }
 

@@ -21,7 +21,7 @@ public enum Nullability
     /// <summary>
     ///     Non Nullable
     /// </summary>
-    NonNullable
+    NonNullable,
 }
 
 /// <summary>
@@ -71,7 +71,9 @@ public static class NullableExtensions
     {
         if (method == null) return Nullability.NotDefined;
         return NullabilityHelper(
-            method.ReturnType, method.DeclaringType, method.ReturnTypeCustomAttributes.GetCustomAttributes(false).OfType<CustomAttributeData>()
+            method.ReturnType,
+            method.DeclaringType,
+            method.ReturnTypeCustomAttributes.GetCustomAttributes(false).OfType<CustomAttributeData>()
         );
     }
 
@@ -103,8 +105,7 @@ public static class NullableExtensions
         {
             var context = type.CustomAttributes
                               .FirstOrDefault(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.NullableContextAttribute");
-            if (context?.ConstructorArguments.Count == 1 &&
-                context.ConstructorArguments[0].ArgumentType == typeof(byte))
+            if (context?.ConstructorArguments.Count == 1 && context.ConstructorArguments[0].ArgumentType == typeof(byte))
             {
                 return (byte)context.ConstructorArguments[0].Value! == 2 ? Nullability.Nullable : Nullability.NonNullable;
             }

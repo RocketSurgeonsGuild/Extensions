@@ -1,4 +1,4 @@
-using Rocket.Surgery.Encoding;
+using Rocket.Surgery.Extensions.Encoding;
 using Rocket.Surgery.Extensions.Testing;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,13 +12,6 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding;
 /// </summary>
 public class Base3264EncodingTests : AutoFakeTest
 {
-    private const string Chars =
-        @"!""#$%&'()*+,-./:;<=>?@[\]^_`{|}~€‚ƒ„…†‡ˆ‰Š‹Œ¼½¾¿ÀÁÂÃÄÅÆÇÈÏÐÑÕ×ØÛÜÝÞßåæçéíðñõö÷øüýþÿabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ electricity 電	电	電 red 紅	红	紅";
-
-    public Base3264EncodingTests(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
-
     [Fact]
     public void TestEncodeDecode()
     {
@@ -83,7 +76,7 @@ public class Base3264EncodingTests : AutoFakeTest
         var g = Guid.NewGuid();
         var enc = new Base32Url(false, true, true, "AaCDEFGHIJKLMNOPQRSTUVWXYZ123456");
         var o = enc.Encode(g.ToByteArray());
-        Assert.Equal(g, new Guid(enc.Decode(o)));
+        Assert.Equal(g, new(enc.Decode(o)));
     }
 
     [Fact]
@@ -129,117 +122,117 @@ public class Base3264EncodingTests : AutoFakeTest
         var knownValues = new Dictionary<string, Dictionary<EncodingType, string>>
         {
             {
-                "Hello World!", new Dictionary<EncodingType, string>
+                "Hello World!", new()
                 {
                     { EncodingType.Base64, "SGVsbG8gV29ybGQh" },
                     { EncodingType.Base64Url, "SGVsbG8gV29ybGQh" },
                     { EncodingType.Base32Url, "JBSWY3DPEBLW64TMMQQQ" },
                     { EncodingType.ZBase32, "jb1sa5dxrbms6huccooo" },
                     { EncodingType.Base32LowProfanity, "jbPsT5d2rbms6hRGGHHH" },
-                    { EncodingType.Base32Crockford, "91JPRV3F41BPYWKCCGGG" }
+                    { EncodingType.Base32Crockford, "91JPRV3F41BPYWKCCGGG" },
                 }
             },
             {
-                "Lorem", new Dictionary<EncodingType, string>
+                "Lorem", new()
                 {
                     { EncodingType.Base64, "TG9yZW0=" },
                     { EncodingType.Base64Url, "TG9yZW0" },
                     { EncodingType.Base32Url, "JRXXEZLN" },
                     { EncodingType.ZBase32, "jtzzr3mp" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mp" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD" },
                 }
             },
             {
-                "Lorem ipsum", new Dictionary<EncodingType, string>
+                "Lorem ipsum", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0=" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0" },
                     { EncodingType.Base32Url, "JRXXEZLNEBUXA43VNU" },
                     { EncodingType.ZBase32, "jtzzr3mprbwzyh5ipw" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpY" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDM" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDM" },
                 }
             },
             {
-                "Lorem ipsum dolor", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3I=" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3I" },
                     { EncodingType.Base32Url, "JRXXEZLNEBUXA43VNUQGI33MN5ZA" },
                     { EncodingType.ZBase32, "jtzzr3mprbwzyh5ipwoge55cp73y" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpYHgN55Gp73y" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS0" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS0" },
                 }
             },
             {
-                "Lorem ipsum dolor sit", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0" },
                     { EncodingType.Base32Url, "JRXXEZLNEBUXA43VNUQGI33MN5ZCA43JOQ" },
                     { EncodingType.ZBase32, "jtzzr3mprbwzyh5ipwoge55cp73nyh5jqo" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpYHgN55Gp73nyh5jqH" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EG" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EG" },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet,", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet,", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQs" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQs" },
                     { EncodingType.Base32Url, "JRXXEZLNEBUXA43VNUQGI33MN5ZCA43JOQQGC3LFOQWA" },
                     { EncodingType.ZBase32, "jtzzr3mprbwzyh5ipwoge55cp73nyh5jqoogn5mfqosy" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpYHgN55Gp73nyh5jqHHgn5mfqHsy" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP0" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP0" },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVy" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVy" },
                     { EncodingType.Base32Url, "JRXXEZLNEBUXA43VNUQGI33MN5ZCA43JOQQGC3LFOQWCAY3PNZZWKY3UMV2HK4Q" },
                     { EncodingType.ZBase32, "jtzzr3mprbwzyh5ipwoge55cp73nyh5jqoogn5mfqosnya5xp33ska5wci48kho" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpYHgN55Gp73nyh5jqHHgn5mfqHsnyT52p33skT5YGSJ8khH" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWG" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWG" },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2Npbmc=" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2Npbmc" },
                     { EncodingType.Base32Url, "JRXXEZLNEBUXA43VNUQGI33MN5ZCA43JOQQGC3LFOQWCAY3PNZZWKY3UMV2HK4RAMFSGS4DJONRWS3TH" },
                     { EncodingType.ZBase32, "jtzzr3mprbwzyh5ipwoge55cp73nyh5jqoogn5mfqosnya5xp33ska5wci48khtycf1g1hdjqpts15u8" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpYHgN55Gp73nyh5jqHHgn5mfqHsnyT52p33skT5YGSJ8khtyGfPgPhdjqptsP5R8" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK7" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK7" },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit,", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit,", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCw=" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCw" },
                     { EncodingType.Base32Url, "JRXXEZLNEBUXA43VNUQGI33MN5ZCA43JOQQGC3LFOQWCAY3PNZZWKY3UMV2HK4RAMFSGS4DJONRWS3THEBSWY2LUFQ" },
                     { EncodingType.ZBase32, "jtzzr3mprbwzyh5ipwoge55cp73nyh5jqoogn5mfqosnya5xp33ska5wci48khtycf1g1hdjqpts15u8rb1sa4mwfo" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpYHgN55Gp73nyh5jqHHgn5mfqHsnyT52p33skT5YGSJ8khtyGfPgPhdjqptsP5R8rbPsTJmYfH" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5G" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5G" },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwgc2Vk" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwgc2Vk" },
                     { EncodingType.Base32Url, "JRXXEZLNEBUXA43VNUQGI33MN5ZCA43JOQQGC3LFOQWCAY3PNZZWKY3UMV2HK4RAMFSGS4DJONRWS3THEBSWY2LUFQQHGZLE" },
                     { EncodingType.ZBase32, "jtzzr3mprbwzyh5ipwoge55cp73nyh5jqoogn5mfqosnya5xp33ska5wci48khtycf1g1hdjqpts15u8rb1sa4mwfoo8g3mr" },
                     { EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpYHgN55Gp73nyh5jqHHgn5mfqHsnyT52p33skT5YGSJ8khtyGfPgPhdjqptsP5R8rbPsTJmYfHH8g3mr" },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB4" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB4" },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwgc2VkIGRv" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwgc2VkIGRv" },
@@ -248,11 +241,11 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32LowProfanity, "jtzzr3mprbYzyh5SpYHgN55Gp73nyh5jqHHgn5mfqHsnyT52p33skT5YGSJ8khtyGfPgPhdjqptsP5R8rbPsTJmYfHH8g3mrrbPg6"
                     },
-                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y" }
+                    { EncodingType.Base32Crockford, "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y" },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwgc2VkIGRvIGVpdXNtb2Q=" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwgc2VkIGRvIGVpdXNtb2Q" },
@@ -271,11 +264,11 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCG"
-                    }
+                    },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor", new()
                 {
                     { EncodingType.Base64, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwgc2VkIGRvIGVpdXNtb2QgdGVtcG9y" },
                     { EncodingType.Base64Url, "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwgc2VkIGRvIGVpdXNtb2QgdGVtcG9y" },
@@ -294,11 +287,11 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCGG78SBDE1QQ4"
-                    }
+                    },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt", new()
                 {
                     {
                         EncodingType.Base64,
@@ -323,11 +316,11 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCGG78SBDE1QQ4839DSHPJS39CHTPWX0"
-                    }
+                    },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut", new()
                 {
                     {
                         EncodingType.Base64,
@@ -352,11 +345,11 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCGG78SBDE1QQ4839DSHPJS39CHTPWX10ENT0"
-                    }
+                    },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore", new()
                 {
                     {
                         EncodingType.Base64,
@@ -381,11 +374,11 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCGG78SBDE1QQ4839DSHPJS39CHTPWX10ENT20V31C9QQ4S8"
-                    }
+                    },
                 }
             },
             {
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et", new Dictionary<EncodingType, string>
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et", new()
                 {
                     {
                         EncodingType.Base64,
@@ -410,12 +403,12 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCGG78SBDE1QQ4839DSHPJS39CHTPWX10ENT20V31C9QQ4S90CNT0"
-                    }
+                    },
                 }
             },
             {
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore",
-                new Dictionary<EncodingType, string>
+                new()
                 {
                     {
                         EncodingType.Base64,
@@ -440,12 +433,12 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCGG78SBDE1QQ4839DSHPJS39CHTPWX10ENT20V31C9QQ4S90CNT20S3FDHQQ4S8"
-                    }
+                    },
                 }
             },
             {
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna",
-                new Dictionary<EncodingType, string>
+                new()
                 {
                     {
                         EncodingType.Base64,
@@ -470,12 +463,12 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCGG78SBDE1QQ4839DSHPJS39CHTPWX10ENT20V31C9QQ4S90CNT20S3FDHQQ4S90DNGPEVK1"
-                    }
+                    },
                 }
             },
             {
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                new Dictionary<EncodingType, string>
+                new()
                 {
                     {
                         EncodingType.Base64,
@@ -500,9 +493,9 @@ public class Base3264EncodingTests : AutoFakeTest
                     {
                         EncodingType.Base32Crockford,
                         "9HQQ4SBD41MQ0WVNDMG68VVCDXS20WV9EGG62VB5EGP20RVFDSSPARVMCNT7AWH0C5J6JW39EDHPJVK741JPRTBM5GG76SB441J6Y835D5TQ6VBFCGG78SBDE1QQ4839DSHPJS39CHTPWX10ENT20V31C9QQ4S90CNT20S3FDHQQ4S90DNGPEVK141GPRTBHENGJW"
-                    }
+                    },
                 }
-            }
+            },
         };
 
         foreach (var de in knownValues)
@@ -541,4 +534,9 @@ public class Base3264EncodingTests : AutoFakeTest
              Console.WriteLine("}},");
          }*/
     }
+
+    public Base3264EncodingTests(ITestOutputHelper outputHelper) : base(outputHelper) { }
+
+    private const string Chars =
+        @"!""#$%&'()*+,-./:;<=>?@[\]^_`{|}~€‚ƒ„…†‡ˆ‰Š‹Œ¼½¾¿ÀÁÂÃÄÅÆÇÈÏÐÑÕ×ØÛÜÝÞßåæçéíðñõö÷øüýþÿabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ electricity 電	电	電 red 紅	红	紅";
 }
