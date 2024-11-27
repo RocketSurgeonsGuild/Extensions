@@ -2,8 +2,8 @@ using System.Reflection;
 using System.Runtime.Loader;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
+using Serilog;
 using Xunit.Abstractions;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
@@ -1683,7 +1683,7 @@ namespace TestProject
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-                               
+
                                	        provider.Scan(
                                            services,
                                            z => z

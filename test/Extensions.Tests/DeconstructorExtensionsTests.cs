@@ -5,12 +5,8 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests;
 
-public class DeconstructorExtensionsTests : AutoFakeTest
+public class DeconstructorExtensionsTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUnitTestContext>(XUnitTestContext.Create(outputHelper))
 {
-    public DeconstructorExtensionsTests(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
-
     [Fact]
     public void Deconstructs_TheTarget_KeyValuePair()
     {

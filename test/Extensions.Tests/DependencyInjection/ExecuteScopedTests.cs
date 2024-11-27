@@ -10,17 +10,16 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.DependencyInjection;
 
-public class ExecuteScopedTests : LoggerTest
+public class ExecuteScopedTests : LoggerTest<XUnitTestContext>
 {
-    private int _value;
     private readonly IServiceProvider _serviceProvider;
 
-    public ExecuteScopedTests(ITestOutputHelper outputHelper) : base(outputHelper, LogLevel.Information)
+    public ExecuteScopedTests(ITestOutputHelper outputHelper) : base(XUnitTestContext.Create(outputHelper))
     {
-        _value = 0;
+        var value = 0;
         _serviceProvider = new ServiceCollection()
                           .AddExecuteScopedServices()
-                          .AddScoped(_ => new ScopedValue(_value++))
+                          .AddScoped(_ => new ScopedValue(value++))
                           .AddScoped<Service1>()
                           .AddScoped<Service2>()
                           .AddScoped<Service3>()

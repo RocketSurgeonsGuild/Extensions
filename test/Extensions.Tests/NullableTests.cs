@@ -8,12 +8,8 @@ using Xunit.Abstractions;
 #pragma warning disable CS8618
 namespace Rocket.Surgery.Extensions.Tests;
 
-public class NullableTests : LoggerTest
+public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTestContext>(XUnitTestContext.Create(outputHelper))
 {
-    public NullableTests(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
-
     [Fact]
     public void Checks_Nullable_Property()
     {

@@ -8,12 +8,8 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests;
 
-public class PropertyGetterTests : AutoFakeTest
+public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUnitTestContext>(XUnitTestContext.Create(outputHelper))
 {
-    public PropertyGetterTests(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
-
     [Fact]
     public void Fixture_Thing()
     {

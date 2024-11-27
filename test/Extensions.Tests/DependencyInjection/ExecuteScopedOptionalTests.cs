@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
+using Serilog.Events;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,12 +12,12 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.DependencyInjection;
 
-public class ExecuteScopedOptionalTests : LoggerTest
+public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
 {
     private int _value;
     private readonly IServiceProvider _serviceProvider;
 
-    public ExecuteScopedOptionalTests(ITestOutputHelper outputHelper) : base(outputHelper, LogLevel.Information)
+    public ExecuteScopedOptionalTests(ITestOutputHelper outputHelper) : base(XUnitTestContext.Create(outputHelper, LogEventLevel.Information))
     {
         _value = 0;
         _serviceProvider = new ServiceCollection()

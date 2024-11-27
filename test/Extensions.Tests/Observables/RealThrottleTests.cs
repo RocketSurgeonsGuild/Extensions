@@ -8,14 +8,9 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.Observables;
 
-public class RealThrottleTests : LoggerTest
+public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUnitTestContext>(XUnitTestContext.Create(testOutputHelper))
 {
-    private readonly TestScheduler _scheduler;
-
-    public RealThrottleTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper, LogLevel.Information)
-    {
-        _scheduler = new TestScheduler();
-    }
+    private readonly TestScheduler _scheduler = new();
 
     [Fact]
     public void Should_Throttle_On_Leading_Edge()

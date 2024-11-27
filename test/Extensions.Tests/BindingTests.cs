@@ -24,12 +24,8 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests;
 
-public class JsonBinderTests : AutoFakeTest
+public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUnitTestContext>(XUnitTestContext.Create(outputHelper))
 {
-    public JsonBinderTests(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
-
     private class AutoProperty
     {
         public string Value { get; set; }
@@ -414,7 +410,7 @@ public class JsonBinderTests : AutoFakeTest
         result.CustomFields["something"].ToString().Should().Be("1123");
         result.CustomFields["somethingelse"]["value"]!.ToString().Should().Be("1456");
 
-        Logger.LogInformation(JsonConvert.SerializeObject(result.CustomFields));
+        Logger.Information(JsonConvert.SerializeObject(result.CustomFields));
 
         binder.From(result)
               .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
@@ -465,7 +461,7 @@ public class JsonBinderTests : AutoFakeTest
         result.ComplexProperty.CustomFields.Should().NotBeEmpty();
         result.CustomFields.Should().NotBeEmpty();
 
-        Logger.LogInformation(JsonConvert.SerializeObject(result.CustomFields));
+        Logger.Information(JsonConvert.SerializeObject(result.CustomFields));
     }
 
 
