@@ -71,7 +71,6 @@
                 <ModulePath>.*Microsoft\.CodeAnalysis\.CSharp\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.CodeAnalysis\.CSharp\.Features\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.CodeAnalysis\.CSharp\.Workspaces\.dll</ModulePath>
-                <ModulePath>.*Microsoft\.CodeCoverage\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.Extensions\.Configuration\.Abstractions\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.Extensions\.Configuration\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.Extensions\.Configuration\.Ini\.dll</ModulePath>
@@ -80,6 +79,8 @@
                 <ModulePath>.*Microsoft\.Extensions\.Logging\.Abstractions\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.Reactive\.Testing\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.SourceLink\.GitHub\.dll</ModulePath>
+                <ModulePath>.*Microsoft\.Testing\.Extensions\.CodeCoverage\.dll</ModulePath>
+                <ModulePath>.*Microsoft\.Testing\.Extensions\.TrxReport\.dll</ModulePath>
                 <ModulePath>.*NetEscapades\.Configuration\.Yaml\.dll</ModulePath>
                 <ModulePath>.*NETStandard\.Library\.dll</ModulePath>
                 <ModulePath>.*Newtonsoft\.Json\.dll</ModulePath>

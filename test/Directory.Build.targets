@@ -1,6 +1,7 @@
 <Project>
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeCoverage" />
+        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+        <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
         <PackageReference Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" />
         <PackageReference Include="Bogus" />
         <PackageReference Include="FluentAssertions" />
