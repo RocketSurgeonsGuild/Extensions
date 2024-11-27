@@ -46,7 +46,7 @@ internal static class ServiceDescriptorCollection
                         Diagnostics.UnhandledException,
                         null,
                         e.Message,
-                        e.StackTrace,
+                        e.StackTrace.Replace("\r", "").Replace("\n", ""),
                         e.GetType().Name,
                         e.ToString()
                     )
@@ -115,7 +115,7 @@ internal static class ServiceDescriptorCollection
                         Diagnostics.UnhandledException,
                         null,
                         e.Message,
-                        e.StackTrace,
+                        e.StackTrace.Replace("\r", "").Replace("\n", ""),
                         e.GetType().Name,
                         e.ToString()
                     )
@@ -165,7 +165,7 @@ internal static class ServiceDescriptorCollection
         var asSelf = serviceTypes.ServiceTypeDescriptors.OfType<SelfServiceTypeDescriptor>().Any() || !serviceTypes.ServiceTypeDescriptors.Any();
         var asImplementedInterfaces = serviceTypes.ServiceTypeDescriptors.OfType<ImplementedInterfacesServiceTypeDescriptor>().ToArray();
         var asMatchingInterface = serviceTypes.ServiceTypeDescriptors.OfType<MatchingInterfaceServiceTypeDescriptor>().Any();
-        var asSpecificTypes = serviceTypes.ServiceTypeDescriptors.OfType<CompiledServiceTypeDescriptor>().Select(z => z.Type).ToArray();
+        var asSpecificTypes = serviceTypes.ServiceTypeDescriptors.OfType<CompiledServiceTypeDescriptor>().Select(z => z.Type).Where(z => z is { }).ToArray();
         var registrationLifetimeAttribute = compilation.GetTypeByMetadataName("Rocket.Surgery.DependencyInjection.RegistrationLifetimeAttribute")!;
 
         var services = new List<InvocationExpressionSyntax>();
