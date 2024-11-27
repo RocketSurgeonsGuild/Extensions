@@ -30,11 +30,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: MpVnQwuMrx82b7Q/xd6OBQ==
             case 15:
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(Dependency0Project.GetType("Dependency1Project.Service0")));
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(Dependency1Project.GetType("Dependency1Project.Service1")));
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(Dependency2Project.GetType("Dependency1Project.Service2")));
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(Dependency3Project.GetType("Dependency1Project.Service3")));
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(Dependency4Project.GetType("Dependency1Project.Service4")));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency0Project.GetType("Dependency1Project.Service0")));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency1Project.GetType("Dependency1Project.Service1")));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency2Project.GetType("Dependency1Project.Service2")));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency3Project.GetType("Dependency1Project.Service3")));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency4Project.GetType("Dependency1Project.Service4")));
                 break;
         }
 
