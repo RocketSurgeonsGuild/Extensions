@@ -26,6 +26,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             case 14:
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher");
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext");
+                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+StackAllocatedObjects");
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime);
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter);
