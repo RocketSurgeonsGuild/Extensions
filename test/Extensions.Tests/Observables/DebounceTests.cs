@@ -7,8 +7,6 @@ namespace Rocket.Surgery.Extensions.Tests.Observables;
 
 public class DebounceTests() : LoggerTest(Defaults.LoggerTest)
 {
-    private readonly TestScheduler _scheduler = new();
-
     [Test]
     public void Should_Debounce_On_Leading_Edge()
     {

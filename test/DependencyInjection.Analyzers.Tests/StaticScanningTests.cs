@@ -86,21 +86,6 @@ public class AssemblyScanningTests : GeneratorTest
 
 public class StaticScanningTests : GeneratorTest
 {
-    private static class StaticHelper
-    {
-        public static async Task<IServiceCollection> ExecuteStaticServiceCollectionMethod(Assembly? assembly, string className, string methodName)
-        {
-            if (assembly == null) return new ServiceCollection();
-            var @class = assembly.GetTypes().FirstOrDefault(z => z.IsClass && z.Name == className)!;
-            await Assert.That(@class).IsNotNull();
-
-            var method = @class.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-            await Assert.That(method).IsNotNull();
-
-            return ( method!.Invoke(null, []) as IServiceCollection )!;
-        }
-    }
-
     [Test]
     public async Task Should_Handle_Public_Types()
     {
@@ -1705,7 +1690,7 @@ namespace TestProject
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-                               
+
                                	        provider.Scan(
                                            services,
                                            z => z
@@ -2215,5 +2200,20 @@ namespace RootDependencyProject
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(className, useTypeof);
+    }
+
+    private static class StaticHelper
+    {
+        public static async Task<IServiceCollection> ExecuteStaticServiceCollectionMethod(Assembly? assembly, string className, string methodName)
+        {
+            if (assembly == null) return new ServiceCollection();
+            var @class = assembly.GetTypes().FirstOrDefault(z => z.IsClass && z.Name == className)!;
+            await Assert.That(@class).IsNotNull();
+
+            var method = @class.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            await Assert.That(method).IsNotNull();
+
+            return ( method!.Invoke(null, []) as IServiceCollection )!;
+        }
     }
 }

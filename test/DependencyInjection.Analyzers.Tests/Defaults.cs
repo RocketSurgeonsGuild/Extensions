@@ -1,6 +1,5 @@
 using Rocket.Surgery.Extensions.Testing;
 using Serilog;
-using Serilog.Sinks.Spectre;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
