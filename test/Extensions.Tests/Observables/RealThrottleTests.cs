@@ -82,4 +82,6 @@ public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
 
         receiver.GetMarbles().Should().Be(output);
     }
+
+    private readonly TestScheduler _scheduler = new();
 }

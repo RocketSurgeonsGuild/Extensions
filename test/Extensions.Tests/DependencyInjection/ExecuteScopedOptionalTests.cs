@@ -277,6 +277,21 @@ public class ExecuteScopedOptionalTests : LoggerTest
              .ConfigureAwait(false);
     }
 
+    public ExecuteScopedOptionalTests() : base(Defaults.LoggerTest)
+    {
+        _value = 0;
+        _serviceProvider = new ServiceCollection()
+                          .AddExecuteScopedServices()
+                          .AddScoped(_ => new ScopedValue(_value++))
+                          .AddScoped<Service1>()
+                          .AddScoped<Service2>()
+                          .AddScoped<Service3>()
+                          .AddScoped<Service4>()
+                          .AddScoped<Service5>()
+                          .AddScoped<Service6>()
+                          .BuildServiceProvider();
+    }
+
     private int _value;
     private readonly IServiceProvider _serviceProvider;
 

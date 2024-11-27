@@ -274,6 +274,23 @@ public class ExecuteScopedTests : LoggerTest
              .ConfigureAwait(false);
     }
 
+    public ExecuteScopedTests() : base(Defaults.LoggerTest)
+    {
+        var value = 0;
+        _serviceProvider = new ServiceCollection()
+                          .AddExecuteScopedServices()
+                          .AddScoped(_ => new ScopedValue(value++))
+                          .AddScoped<Service1>()
+                          .AddScoped<Service2>()
+                          .AddScoped<Service3>()
+                          .AddScoped<Service4>()
+                          .AddScoped<Service5>()
+                          .AddScoped<Service6>()
+                          .BuildServiceProvider();
+    }
+
+    private readonly IServiceProvider _serviceProvider;
+
     [Test]
     [MethodDataSource(nameof(ExecuteScopedTypes))]
     public async Task Should_Resolve_ExecuteScoped(Type serviceType, Type implementationType) =>
