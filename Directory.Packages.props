@@ -30,7 +30,7 @@
         <PackageVersion Include="Polyfill" Version="7.5.0" />
         <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
         <PackageVersion Include="GitVersion.Tool" Version="6.0.5" />
-        <PackageVersion Include="Nuke.Common" Version="8.1.4" />
+        <PackageVersion Include="Nuke.Common" Version="9.0.1" />
         <PackageVersion Include="ReportGenerator" Version="5.4.1" />
         <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.8.119" />
         <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
