@@ -115,7 +115,7 @@ internal static class StatementGeneration
                                   .WithTypeArgumentList(TypeArgumentList(SeparatedList([serviceTypeSyntax, implementationTypeSyntax])))
                            )
                        ),
-                   (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, not TypeOfExpressionSyntax)
+                   (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, SimpleLambdaExpressionSyntax)
                        when !IsOpenGenericType(serviceType) =>
                        InvocationExpression(
                                MemberAccessExpression(
