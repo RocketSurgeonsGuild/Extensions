@@ -1,11 +1,12 @@
 <Project>
     <ItemGroup>
-        <PackageReference Include="Microsoft.CodeCoverage" />
+        <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+        <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
         <PackageReference Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" />
         <PackageReference Include="Bogus" />
         <PackageReference Include="FluentAssertions" />
 
-        <PackageReference Include="Rocket.Surgery.Extensions.Testing" />
+        <PackageReference Include="Rocket.Surgery.Extensions.Testing.TUnit" />
         <PackageReference Include="TUnit" />
         <PackageReference Include="Verify.TUnit" />
         <PackageReference Include="Serilog.Sinks.Console" />

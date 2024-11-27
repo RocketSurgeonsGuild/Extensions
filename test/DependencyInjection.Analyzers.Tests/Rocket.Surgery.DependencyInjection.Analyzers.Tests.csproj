@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFrameworks>net9.0</TargetFrameworks>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.csproj" />
@@ -13,7 +13,6 @@
         <PackageReference Include="Rocket.Surgery.Extensions.Testing.SourceGenerators" />
         <PackageReference Include="Microsoft.Extensions.Configuration" />
         <PackageReference Include="Microsoft.Reactive.Testing" />
-        <PackageReference Include="JetBrains.Annotations" PrivateAssets="All" />
 
         <!-- this is weird -->
         <Compile Remove="snapshots\**\*.cs" />

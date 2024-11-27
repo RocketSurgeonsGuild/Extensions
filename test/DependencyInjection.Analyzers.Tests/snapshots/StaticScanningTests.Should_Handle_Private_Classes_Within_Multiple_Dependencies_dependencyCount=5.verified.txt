@@ -84,9 +84,6 @@
   GeneratorDiagnostics: {
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
-  GlobalOptions: {
-    compiled_scan_assembly_load: false
-  },
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

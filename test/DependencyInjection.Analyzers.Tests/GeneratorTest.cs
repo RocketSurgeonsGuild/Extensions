@@ -6,38 +6,32 @@ using Rocket.Surgery.Extensions.Testing.SourceGenerators;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
+internal static class GeneratorBuilderConstants
+{
+    public static GeneratorTestContextBuilder Builder { get; } = GeneratorTestContextBuilder
+                                                                .Create()
+                                                                .WithGenerator<CompiledServiceScanningGenerator>()
+                                                                .AddReferences(
+                                                                     typeof(ActivatorUtilities).Assembly,
+                                                                     typeof(IServiceProvider).Assembly,
+                                                                     typeof(IServiceCollection).Assembly,
+                                                                     typeof(ServiceCollection).Assembly,
+                                                                     typeof(ServiceRegistrationAttribute).Assembly,
+                                                                     typeof(EditorBrowsableAttribute).Assembly,
+                                                                     typeof(Attribute).Assembly
+                                                                 )
+                                                                .IgnoreOutputFile("CompiledServiceScanningExtensions.cs");
+}
+
 public abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
 {
     protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
     protected AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
 
-    public virtual Task InitializeAsync()
+    [Before(Test)]
+    public void InitializeAsync()
     {
-        Builder = GeneratorTestContextBuilder
-                 .Create()
-                 .WithGenerator<CompiledServiceScanningGenerator>()
-                 .WithAssemblyLoadContext(AssemblyLoadContext)
-                 .AddReferences(
-                      typeof(ActivatorUtilities).Assembly,
-                      typeof(IServiceProvider).Assembly,
-                      typeof(IServiceCollection).Assembly,
-                      typeof(ServiceCollection).Assembly,
-                      typeof(ServiceRegistrationAttribute).Assembly,
-                      typeof(EditorBrowsableAttribute).Assembly,
-                      typeof(Attribute).Assembly
-                  )
-                 .IgnoreOutputFile("CompiledServiceScanningExtensions.cs");
-        return Task.CompletedTask;
-    }
-
-    public virtual Task DisposeAsync()
-    {
-        if (AssemblyLoadContext is IDisposable disposable)
-        {
-            Disposables.Add(disposable);
-        }
-
-        Disposables.Dispose();
-        return Task.CompletedTask;
+        Builder = GeneratorBuilderConstants.Builder.WithAssemblyLoadContext(AssemblyLoadContext);
+        if (AssemblyLoadContext is IDisposable disposable) Disposables.Add(disposable);
     }
 }

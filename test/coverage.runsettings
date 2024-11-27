@@ -68,9 +68,9 @@
                 <ModulePath>.*JetBrains\.ReSharper\.GlobalTools\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.CodeAnalysis\.Analyzers\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.CodeAnalysis\.BannedApiAnalyzers\.dll</ModulePath>
+                <ModulePath>.*Microsoft\.CodeAnalysis\.CSharp\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.CodeAnalysis\.CSharp\.Features\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.CodeAnalysis\.CSharp\.Workspaces\.dll</ModulePath>
-                <ModulePath>.*Microsoft\.CodeCoverage\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.Extensions\.Configuration\.Abstractions\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.Extensions\.Configuration\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.Extensions\.Configuration\.Ini\.dll</ModulePath>
@@ -79,15 +79,17 @@
                 <ModulePath>.*Microsoft\.Extensions\.Logging\.Abstractions\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.Reactive\.Testing\.dll</ModulePath>
                 <ModulePath>.*Microsoft\.SourceLink\.GitHub\.dll</ModulePath>
+                <ModulePath>.*Microsoft\.Testing\.Extensions\.CodeCoverage\.dll</ModulePath>
+                <ModulePath>.*Microsoft\.Testing\.Extensions\.TrxReport\.dll</ModulePath>
                 <ModulePath>.*NetEscapades\.Configuration\.Yaml\.dll</ModulePath>
                 <ModulePath>.*NETStandard\.Library\.dll</ModulePath>
                 <ModulePath>.*Newtonsoft\.Json\.dll</ModulePath>
                 <ModulePath>.*Nuke\.Common\.dll</ModulePath>
                 <ModulePath>.*Polyfill\.dll</ModulePath>
                 <ModulePath>.*ReportGenerator\.dll</ModulePath>
-                <ModulePath>.*Rocket\.Surgery\.Extensions\.Testing\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.Extensions\.Testing\.FakeItEasy\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.Extensions\.Testing\.SourceGenerators\.dll</ModulePath>
+                <ModulePath>.*Rocket\.Surgery\.Extensions\.Testing\.TUnit\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.MSBuild\.CI\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.MSBuild\.GitVersion\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.MSBuild\.SourceLink\.dll</ModulePath>
@@ -97,7 +99,7 @@
                 <ModulePath>.*Roslynator\.CodeFixes\.dll</ModulePath>
                 <ModulePath>.*Roslynator\.Formatting\.Analyzers\.dll</ModulePath>
                 <ModulePath>.*Roslynator\.Refactorings\.dll</ModulePath>
-                <ModulePath>.*Serilog\.Sinks\.Spectre\.dll</ModulePath>
+                <ModulePath>.*Serilog\.Sinks\.Console\.dll</ModulePath>
                 <ModulePath>.*System\.Collections\.Immutable\.dll</ModulePath>
                 <ModulePath>.*System\.Interactive\.Async\.dll</ModulePath>
                 <ModulePath>.*System\.Interactive\.dll</ModulePath>
