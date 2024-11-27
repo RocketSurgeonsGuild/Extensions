@@ -25,9 +25,6 @@
       }
     ]
   },
-  GlobalOptions: {
-    compiled_scan_assembly_load: false
-  },
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

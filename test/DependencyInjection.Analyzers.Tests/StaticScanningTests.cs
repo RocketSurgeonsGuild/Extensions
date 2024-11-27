@@ -1,90 +1,12 @@
 using System.Reflection;
 using System.Runtime.Loader;
-using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
 using Serilog;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
-public class AssemblyScanningTests : GeneratorTest
-{
-    [Test]
-    [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetTypes(GetTypesTestsData.GetTypesItem getTypesItem)
-    {
-        var result = await Builder
-                          .AddSources(
-                               $$$""""
-                               using Rocket.Surgery.DependencyInjection;
-                               using Rocket.Surgery.DependencyInjection.Compiled;
-                               using Microsoft.Extensions.DependencyInjection;
-                               using System.ComponentModel;
-                               using System.Threading;
-                               using System.Threading.Tasks;
-                               using System;
-
-                               public static class Program
-                               {
-                                   static void Main()
-                                   {
-                                        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                               	        provider.GetTypes({{{getTypesItem.Expression}}});
-                                   }
-                               }
-                               """"
-                           )
-                          .Build()
-                          .GenerateAsync();
-
-        await Verify(result).UseParameters(getTypesItem.Name).HashParameters();
-    }
-
-    [Test]
-    [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetTypes_From_Another_Assembly(GetTypesTestsData.GetTypesItem getTypesItem)
-    {
-        using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
-        var other = await Builder
-                         .WithProjectName("OtherProject")
-                         .AddSources(
-                              $$$""""
-                              using Rocket.Surgery.DependencyInjection;
-                              using Rocket.Surgery.DependencyInjection.Compiled;
-                              using Microsoft.Extensions.DependencyInjection;
-                              using System.ComponentModel;
-                              using System.Threading;
-                              using System.Threading.Tasks;
-                              using System;
-
-                              public static class Program
-                              {
-                                  static void Main()
-                                  {
-                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                              	       provider.GetTypes({{{getTypesItem.Expression}}});
-                                  }
-                              }
-                              """"
-                          )
-                         .Build()
-                         .GenerateAsync();
-
-        var diags = other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ToArray();
-        if (diags.Length > 0) await Verify(diags).UseParameters(getTypesItem.Name).HashParameters();
-
-        other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
-
-        var result = await Builder
-                          .AddCompilationReferences(other)
-                          .Build()
-                          .GenerateAsync();
-
-        await Verify(result).UseParameters(getTypesItem.Name).HashParameters();
-    }
-}
-
-public class StaticScanningTests : GeneratorTest
+public class StaticScanningTests() : GeneratorTest
 {
     [Test]
     public async Task Should_Handle_Public_Types()
@@ -1658,8 +1580,7 @@ namespace TestProject
 
     [Test]
     public async Task Should_Have_Correct_Lifetime(
-//        [Matrix(ServiceLifetime.Scoped, ServiceLifetime.Singleton, ServiceLifetime.Transient)]
-        [Matrix]
+        [Matrix(ServiceLifetime.Scoped, ServiceLifetime.Singleton, ServiceLifetime.Transient)]
         ServiceLifetime serviceLifetime
     )
     {
@@ -1714,7 +1635,7 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Filter_WithAttribute([Matrix] bool useTypeof)
+    public async Task Should_Filter_WithAttribute([Matrix(true, false)] bool useTypeof)
     {
         var result = await Builder
                           .AddSources(
@@ -1762,7 +1683,7 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Filter_WithoutAttribute([Matrix] bool useTypeof)
+    public async Task Should_Filter_WithoutAttribute([Matrix(true, false)] bool useTypeof)
     {
         var result = await Builder
                           .AddSources(
@@ -1825,9 +1746,9 @@ namespace TestProject
             "TestProject.A.C.ServiceC"
         )]
         string namespaceFilterValue,
-        [Matrix]
+        [Matrix(true, false)]
         bool usingClass,
-        [Matrix]
+        [Matrix(true, false)]
         bool usingTypeof
     )
     {
@@ -1907,7 +1828,7 @@ namespace TestProject
         string namespaceFilterValue,
         [Matrix("TestProject.B", "TestProject.B.ServiceB")]
         string namespaceFilterValueSecond,
-        [Matrix]
+        [Matrix(true, false)]
         bool usingClass
     )
     {
@@ -1976,7 +1897,7 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyOf([Matrix] bool useTypeof)
+    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyOf([Matrix(true, false)] bool useTypeof)
     {
         var dependencies = new List<GeneratorTestResults>();
 
@@ -2069,7 +1990,7 @@ namespace TestProject
     public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyDependenciesOf(
         [Matrix("ServiceA", "ServiceB", "ServiceC")]
         string className,
-        [Matrix]
+        [Matrix(true, false)]
         bool useTypeof
     )
     {

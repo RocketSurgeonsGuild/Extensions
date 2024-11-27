@@ -1,0 +1,54 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  References: [
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  Services: [
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.Service,
+      ImplementationType: TestProject.A.Service
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.A.IService]
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.B.IServiceB,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.B.IServiceB]
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.ServiceA,
+      ImplementationType: TestProject.A.ServiceA
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.A.IService]
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.B.ServiceB,
+      ImplementationType: TestProject.B.ServiceB
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.A.IService]
+    }
+  ]
+}
