@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Linq;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using Rocket.Surgery.Extensions.Testing;
 using Xunit;
@@ -8,15 +7,8 @@ using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.Observables;
 
-public class DebounceTests : LoggerTest
+public class DebounceTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUnitTestContext>(XUnitTestContext.Create(testOutputHelper))
 {
-    private readonly TestScheduler _scheduler;
-
-    public DebounceTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper, LogLevel.Information)
-    {
-        _scheduler = new TestScheduler();
-    }
-
     [Fact]
     public void Should_Debounce_On_Leading_Edge()
     {
@@ -53,8 +45,9 @@ public class DebounceTests : LoggerTest
         var observable = _scheduler.CreateHotObservable(input);
 
         var receiver = _scheduler.CreateObserver<char>();
-        observable.Debounce(TimeSpan.FromTicks(20), false, true, _scheduler)
-                  .Subscribe(receiver);
+        observable
+           .Debounce(TimeSpan.FromTicks(20), false, true, _scheduler)
+           .Subscribe(receiver);
         _scheduler.Start();
 
         receiver.GetMarbles().Should().Be(output);
@@ -68,8 +61,9 @@ public class DebounceTests : LoggerTest
         var observable = _scheduler.CreateHotObservable(input);
 
         var receiver = _scheduler.CreateObserver<char>();
-        observable.Debounce(TimeSpan.FromTicks(30), true, true, _scheduler)
-                  .Subscribe(receiver);
+        observable
+           .Debounce(TimeSpan.FromTicks(30), true, true, _scheduler)
+           .Subscribe(receiver);
         _scheduler.Start();
 
         receiver.GetMarbles().Should().Be(output);
@@ -83,10 +77,13 @@ public class DebounceTests : LoggerTest
         var observable = _scheduler.CreateHotObservable(input);
 
         var receiver = _scheduler.CreateObserver<char>();
-        observable.Debounce(TimeSpan.FromTicks(15), true, true, _scheduler)
-                  .Subscribe(receiver);
+        observable
+           .Debounce(TimeSpan.FromTicks(15), true, true, _scheduler)
+           .Subscribe(receiver);
         _scheduler.Start();
 
         receiver.GetMarbles().Should().Be(output);
     }
+
+    private readonly TestScheduler _scheduler = new();
 }

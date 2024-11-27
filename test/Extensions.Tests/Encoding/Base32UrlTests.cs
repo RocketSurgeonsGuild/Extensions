@@ -10,7 +10,7 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding;
 ///     TODO: Anyone feels like it some more comprehensive testing of the crockford encoding would be helpful. Cheers, Mhano
 ///     TODO: Tests evolved a bit over time, refactoring to organise might be needed if adding significant test cases.
 /// </summary>
-public class Base32UrlTests : AutoFakeTest
+public class Base32UrlTests : AutoFakeTest<XUnitTestContext>
 {
     [Fact]
     public void Rfc4648TestVectorsEncodeDecode()
@@ -138,7 +138,7 @@ public class Base32UrlTests : AutoFakeTest
         }
     }
 
-    public Base32UrlTests(ITestOutputHelper outputHelper) : base(outputHelper) { }
+    public Base32UrlTests(ITestOutputHelper outputHelper) : base(XUnitTestContext.Create(outputHelper)) { }
 
     private static readonly string[][] rfc4684TestVectors =
     {

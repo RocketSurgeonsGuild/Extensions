@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
@@ -11,7 +10,8 @@ using Xunit.Abstractions;
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 public abstract class GeneratorTest
-    (ITestOutputHelper testOutputHelper, bool compiled_scan_assembly_load) : LoggerTest(testOutputHelper, LogLevel.Trace), IAsyncLifetime
+    (ITestOutputHelper testOutputHelper, bool compiled_scan_assembly_load)
+    : LoggerTest<XUnitTestContext>(XUnitTestContext.Create(testOutputHelper)), IAsyncLifetime
 {
     public GeneratorTestContextBuilder Builder { get; protected set; } = null!;
     public AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
