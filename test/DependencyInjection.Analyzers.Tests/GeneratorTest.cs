@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
-using Rocket.Surgery.DependencyInjection.Compiled;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
 

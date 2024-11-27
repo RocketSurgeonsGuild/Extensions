@@ -212,7 +212,7 @@ public static class GetTypesTestsData
                 .GetTypes(
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
-                         .WithAttribute(typeof(System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute).FullName)
+                         .WithAttribute(typeof(RequiresUnreferencedCodeAttribute).FullName)
                          .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
                          .NotStartsWith("Polyfill")
                  )
