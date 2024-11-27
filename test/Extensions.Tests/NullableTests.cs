@@ -241,7 +241,6 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
     {
         public MyObject _field;
         public MyObject Property { get; set; }
-
         public MyObject Method(MyObject value) => value;
     }
 
