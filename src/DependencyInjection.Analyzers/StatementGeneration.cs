@@ -100,51 +100,52 @@ internal static class StatementGeneration
     {
         var isServiceTypeAccessible = compilation.IsSymbolAccessibleWithin(serviceType, compilation.Assembly);
         var isImplementationTypeAccessible = compilation.IsSymbolAccessibleWithin(implementationType, compilation.Assembly);
-        return (isServiceTypeAccessible, serviceTypeExpression, isImplementationTypeAccessible, implementationTypeExpression)
-switch
-        {
-            (true, TypeOfExpressionSyntax serviceTypeOfExpression, true, TypeOfExpressionSyntax implementationTypeOfExpression)
-                            when serviceType is { IsUnboundGenericType: false } && implementationType is { IsUnboundGenericType: false } => InvocationExpression(
-                                MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierName("ServiceDescriptor"),
-                                    GenericName(lifetime)
-                                       .WithTypeArgumentList(
-                                            TypeArgumentList(
-                                                SeparatedList(
-                                                    [
-                                                        serviceTypeOfExpression.Type,
-                                            implementationTypeOfExpression.Type,
-                                                    ]
-                                                )
-                                            )
-                                        )
-                                )
-                            ),
-            (true, TypeOfExpressionSyntax { Type: not GenericNameSyntax { IsUnboundGenericName: true } } serviceTypeOfExpression, _, { })
-                            when serviceType is { IsUnboundGenericType: false } => InvocationExpression(
-                                    MemberAccessExpression(
-                                        SyntaxKind.SimpleMemberAccessExpression,
-                                        IdentifierName("ServiceDescriptor"),
-                                        GenericName(lifetime)
-                                           .WithTypeArgumentList(TypeArgumentList(SeparatedList([serviceTypeOfExpression.Type])))
-                                    )
-                                )
-                               .WithArgumentList(
-                                    ArgumentList(
-                                        SeparatedList(
-                                            [
-                                                Argument(implementationTypeExpression),
-                                            ]
-                                        )
-                                    )
-                                ),
-            _ => InvocationExpression(
-                            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ServiceDescriptor"), IdentifierName(lifetime))
-                        )
-                       .WithArgumentList(ArgumentList(SeparatedList([Argument(serviceTypeExpression), Argument(implementationTypeExpression!),]))),
-        };
+        return ( isServiceTypeAccessible, serviceTypeExpression, isImplementationTypeAccessible, implementationTypeExpression )
+               switch
+               {
+                   (true, TypeOfExpressionSyntax serviceTypeOfExpression, true, TypeOfExpressionSyntax implementationTypeOfExpression)
+                       when serviceType is { IsUnboundGenericType: false } && implementationType is { IsUnboundGenericType: false } => InvocationExpression(
+                           MemberAccessExpression(
+                               SyntaxKind.SimpleMemberAccessExpression,
+                               IdentifierName("ServiceDescriptor"),
+                               GenericName(lifetime)
+                                  .WithTypeArgumentList(
+                                       TypeArgumentList(
+                                           SeparatedList(
+                                               [
+                                                   serviceTypeOfExpression.Type,
+                                                   implementationTypeOfExpression.Type,
+                                               ]
+                                           )
+                                       )
+                                   )
+                           )
+                       ),
+                   (true, TypeOfExpressionSyntax { Type: not GenericNameSyntax { IsUnboundGenericName: true } } serviceTypeOfExpression, _, { })
+                       when serviceType is { IsUnboundGenericType: false } => InvocationExpression(
+                               MemberAccessExpression(
+                                   SyntaxKind.SimpleMemberAccessExpression,
+                                   IdentifierName("ServiceDescriptor"),
+                                   GenericName(lifetime)
+                                      .WithTypeArgumentList(TypeArgumentList(SeparatedList([serviceTypeOfExpression.Type])))
+                               )
+                           )
+                          .WithArgumentList(
+                               ArgumentList(
+                                   SeparatedList(
+                                       [
+                                           Argument(implementationTypeExpression),
+                                       ]
+                                   )
+                               )
+                           ),
+                   _ => InvocationExpression(
+                           MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ServiceDescriptor"), IdentifierName(lifetime))
+                       )
+                      .WithArgumentList(ArgumentList(SeparatedList([Argument(serviceTypeExpression), Argument(implementationTypeExpression!)]))),
+               };
     }
 
-    public static bool IsOpenGenericType(this INamedTypeSymbol type) => type.IsGenericType && ( type.IsUnboundGenericType || type.TypeArguments.All(z => z.TypeKind == TypeKind.TypeParameter) );
+    public static bool IsOpenGenericType(this INamedTypeSymbol type) =>
+        type.IsGenericType && ( type.IsUnboundGenericType || type.TypeArguments.All(z => z.TypeKind == TypeKind.TypeParameter) );
 }
