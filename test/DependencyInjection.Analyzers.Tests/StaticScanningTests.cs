@@ -1626,7 +1626,7 @@ namespace TestProject
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-                               
+
                                	        provider.Scan(
                                            services,
                                            z => z
@@ -1752,12 +1752,7 @@ namespace TestProject
         [Matrix(
             "TestProject.A",
             "TestProject.A.IService",
-            "TestProject.A.IService",
-            "TestProject.A",
-            "TestProject.A.IService",
-            "TestProject.A.IService",
             "TestProject.A.C",
-            "TestProject.A.C.ServiceC",
             "TestProject.A.C.ServiceC"
         )]
         string namespaceFilterValue,
@@ -1908,7 +1903,7 @@ namespace TestProject
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).HashParameters().UseParameters(filter, namespaceFilterValue, usingClass);
+        await Verify(new GeneratorTestResultsWithServices(result, services)).HashParameters().UseParameters(filter, namespaceFilterValue, namespaceFilterValueSecond, usingClass);
     }
 
     [Test]

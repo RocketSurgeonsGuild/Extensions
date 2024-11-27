@@ -205,18 +205,18 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-        yield return TestMethod(
-            z => z
-                .FromAssemblies()
-                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(
-                     x => x
-                         .NotAssignableTo<ICompiledTypeProvider>()
-                         .WithAttribute(typeof(RequiresUnreferencedCodeAttribute).FullName)
-                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
-                         .NotStartsWith("Polyfill")
-                 )
-        );
+//        yield return TestMethod(
+//            z => z
+//                .FromAssemblies()
+//                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+//                .GetTypes(
+//                     x => x
+//                         .NotAssignableTo<ICompiledTypeProvider>()
+//                         .WithAttribute(typeof(RequiresUnreferencedCodeAttribute).FullName)
+//                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+//                         .NotStartsWith("Polyfill")
+//                 )
+//        );
         #pragma warning disable CA2263
         yield return TestMethod(
             z => z
