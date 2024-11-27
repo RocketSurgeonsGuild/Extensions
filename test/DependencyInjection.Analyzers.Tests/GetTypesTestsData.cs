@@ -10,61 +10,115 @@ public static class GetTypesTestsData
     // IEnumerable<Func<BindDelegate>>
     public static IEnumerable<Func<GetTypesItem>> GetTypesData()
     {
-        // ReSharper disable RedundantNameQualifier
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class, TypeKindFilter.Enum))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotKindOf(TypeKindFilter.Delegate, TypeKindFilter.Class, TypeKindFilter.Enum)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotKindOf(TypeKindFilter.Delegate).NotKindOf(TypeKindFilter.Interface))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotKindOf(TypeKindFilter.Delegate)
+                         .NotKindOf(TypeKindFilter.Interface)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InfoOf(TypeInfoFilter.Abstract).NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .InfoOf(TypeInfoFilter.Abstract)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InfoOf(TypeInfoFilter.Visible).NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .InfoOf(TypeInfoFilter.Visible)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InfoOf(TypeInfoFilter.ValueType).NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .InfoOf(TypeInfoFilter.ValueType)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
 //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.InfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InfoOf(TypeInfoFilter.Sealed).NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .InfoOf(TypeInfoFilter.Sealed)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InfoOf(TypeInfoFilter.GenericType).NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .InfoOf(TypeInfoFilter.GenericType)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
 //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.InfoOf(TypeInfoFilter.GenericTypeDefinition).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().NotInfoOf(TypeInfoFilter.Abstract).NotInNamespaces("JetBrains.Annotations"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotInfoOf(TypeInfoFilter.Abstract)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
@@ -75,8 +129,15 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.Visible)
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
                  )
+        );
+        yield return TestMethod(
+            z => z
+                .FromAssemblies()
+                .FromAssemblyDependenciesOf<ServiceRegistrationAttribute>()
+                .GetTypes(x => x.WithAnyAttribute(typeof(ServiceRegistrationAttribute)))
         );
         yield return TestMethod(
             z => z
@@ -87,7 +148,8 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.ValueType)
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
                  )
         );
 //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.NotInfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
@@ -100,7 +162,8 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.Sealed)
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
                  )
         );
         yield return TestMethod(
@@ -112,7 +175,8 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .NotInfoOf(TypeInfoFilter.GenericType)
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
                  )
         );
         #pragma warning disable CA2263
@@ -120,14 +184,38 @@ public static class GetTypesTestsData
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().WithAttribute(typeof(EditorBrowsableAttribute)))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .WithAttribute(typeof(EditorBrowsableAttribute))
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         #pragma warning restore CA2263
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().WithAttribute<EditorBrowsableAttribute>())
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .WithAttribute<EditorBrowsableAttribute>()
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
+        );
+        yield return TestMethod(
+            z => z
+                .FromAssemblies()
+                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .WithAttribute(typeof(System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute).FullName)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         #pragma warning disable CA2263
         yield return TestMethod(
@@ -139,7 +227,8 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .WithoutAttribute(typeof(EditorBrowsableAttribute))
                          .NotAssignableTo(typeof(Attribute))
-                         .NotInNamespaces("JetBrains.Annotations")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
                  )
         );
         #pragma warning restore CA2263
@@ -152,7 +241,8 @@ public static class GetTypesTestsData
                          .NotAssignableTo<ICompiledTypeProvider>()
                          .WithoutAttribute<EditorBrowsableAttribute>()
                          .NotAssignableTo<Attribute>()
-                         .NotInNamespaces("JetBrains.Annotations")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
                  )
         );
 //        yield return TestMethod(z => z.FromAssemblies().FromAssemblyOf<ConventionContext>().GetTypes(x => x.WithoutAttribute(typeof(JetBrains.Annotations.PublicAPIAttribute).FullName).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
@@ -160,19 +250,37 @@ public static class GetTypesTestsData
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaceOf(typeof(ServiceCollectionServiceExtensions)))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .InNamespaceOf(typeof(ServiceCollectionServiceExtensions))
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaceOf<IServiceCollection>())
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .InNamespaceOf<IServiceCollection>()
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
                 .FromAssemblies()
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-                .GetTypes(x => x.NotAssignableTo<ICompiledTypeProvider>().InNamespaces("Microsoft.Extensions.DependencyInjection"))
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .InNamespaces("Microsoft.Extensions.DependencyInjection")
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
         );
         yield return TestMethod(
             z => z
@@ -180,7 +288,10 @@ public static class GetTypesTestsData
                 .NotFromAssemblyOf<ServiceRegistrationAttribute>()
                 .GetTypes(
                      true,
-                     x => x.NotAssignableTo<ICompiledTypeProvider>().NotInNamespaces("JetBrains.Annotations")
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
                  )
         );
 

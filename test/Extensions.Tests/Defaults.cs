@@ -1,6 +1,5 @@
 using Rocket.Surgery.Extensions.Testing;
 using Serilog;
-using Serilog.Sinks.Spectre;
 
 namespace Rocket.Surgery.Extensions.Tests;
 
@@ -9,6 +8,6 @@ internal static class Defaults
 {
     public static void LoggerTest<T>(T context, LoggerConfiguration configuration) where T : ILoggingTestContext
     {
-        configuration.WriteTo.Spectre(RocketSurgeonsTestingDefaults.LogFormat);
+        configuration.WriteTo.Console(outputTemplate: RocketSurgeonsTestingDefaults.OutputTemplate);
     }
 }

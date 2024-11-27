@@ -2,14 +2,12 @@
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using Rocket.Surgery.Extensions.Testing;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.Observables;
 
-public class DebounceTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUnitTestContext>(XUnitTestContext.Create(testOutputHelper))
+public class DebounceTests() : LoggerTest(Defaults.LoggerTest)
 {
-    [Fact]
+    [Test]
     public void Should_Debounce_On_Leading_Edge()
     {
         var input = " a-b-c-d-|";
@@ -23,7 +21,7 @@ public class DebounceTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUni
         receiver.GetMarbles().Should().Be(output);
     }
 
-    [Fact]
+    [Test]
     public void Should_Debounce_With_Unit()
     {
         var input = " a-b-c-d-|";
@@ -37,7 +35,7 @@ public class DebounceTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUni
         receiver.GetMarbles().Should().Be(output);
     }
 
-    [Fact]
+    [Test]
     public void Should_Debounce_On_Trailing_Edge()
     {
         var input = " a-b-c-d-|";
@@ -53,7 +51,7 @@ public class DebounceTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUni
         receiver.GetMarbles().Should().Be(output);
     }
 
-    [Fact]
+    [Test]
     public void Should_Debounce_On_Both_Edges()
     {
         var input = " a-b-c-d-|";
@@ -69,7 +67,7 @@ public class DebounceTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUni
         receiver.GetMarbles().Should().Be(output);
     }
 
-    [Fact]
+    [Test]
     public void Should_Ignore_Overlap()
     {
         var input = " a-b-c-d-|";

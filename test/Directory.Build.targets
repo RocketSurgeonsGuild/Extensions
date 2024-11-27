@@ -8,7 +8,7 @@
         <PackageReference Include="Rocket.Surgery.Extensions.Testing" />
         <PackageReference Include="TUnit" />
         <PackageReference Include="Verify.TUnit" />
-        <PackageReference Include="Serilog.Sinks.Spectre" />
+        <PackageReference Include="Serilog.Sinks.Console" />
     </ItemGroup>
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
 </Project>

@@ -4,14 +4,13 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
 using Serilog;
-using Xunit.Abstractions;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
-public class AssemblyScanningTests(ITestOutputHelper testOutputHelper) : GeneratorTest(testOutputHelper, false)
+public class AssemblyScanningTests() : GeneratorTest
 {
-    [Theory]
-    [MemberData(nameof(GetTypesTestsData.GetTypesData), MemberType = typeof(GetTypesTestsData))]
+    [Test]
+    [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
     public async Task Should_Generate_Assembly_Provider_For_GetTypes(GetTypesTestsData.GetTypesItem getTypesItem)
     {
         var result = await Builder
@@ -41,9 +40,8 @@ public class AssemblyScanningTests(ITestOutputHelper testOutputHelper) : Generat
         await Verify(result).UseParameters(getTypesItem.Name).HashParameters();
     }
 
-
-    [Theory]
-    [MemberData(nameof(GetTypesTestsData.GetTypesData), MemberType = typeof(GetTypesTestsData))]
+    [Test]
+    [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
     public async Task Should_Generate_Assembly_Provider_For_GetTypes_From_Another_Assembly(GetTypesTestsData.GetTypesItem getTypesItem)
     {
         using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
@@ -86,9 +84,9 @@ public class AssemblyScanningTests(ITestOutputHelper testOutputHelper) : Generat
     }
 }
 
-public class StaticScanningTests(ITestOutputHelper testOutputHelper) : GeneratorTest(testOutputHelper, false)
+public class StaticScanningTests() : GeneratorTest
 {
-    [Fact]
+    [Test]
     public async Task Should_Handle_Public_Types()
     {
         var result = await Builder
@@ -131,11 +129,11 @@ public static class Program {
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Handle_Private_Types()
     {
         var dependencies = new List<GeneratorTestResults>();
@@ -193,11 +191,11 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Handle_Public_Open_Generic_Types()
     {
         var result = await Builder
@@ -239,11 +237,11 @@ public static class Program {
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Handle_Private_Open_Generic_Types()
     {
         var dependencies = new List<GeneratorTestResults>();
@@ -298,11 +296,11 @@ public static class Program {
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Handle_Public_Closed_Generic_Types()
     {
         var dependencies = new List<GeneratorTestResults>();
@@ -362,11 +360,11 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Handle_Private_Closed_Generic_Types()
     {
         var dependencies = new List<GeneratorTestResults>();
@@ -426,11 +424,11 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Ignore_Abstract_Classes()
     {
         var result = await Builder
@@ -467,11 +465,11 @@ public static class Program {
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Using_Support_As_Type()
     {
         var result = await Builder
@@ -507,11 +505,11 @@ public static class Program {
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Handle_Private_Classes_Within_Self()
     {
         var dependency = await GeneratorTestContextBuilder
@@ -567,11 +565,11 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Split_Correctly_Given_Same_Line_Number_Run()
     {
         var result = await Builder
@@ -638,13 +636,13 @@ public static class Program2 {
                           .GenerateAsync();
 
 
-        var services1 = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "Method");
-        var services2 = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program2", "Method");
+        var services1 = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "Method");
+        var services2 = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program2", "Method");
 
         await Verify(new GeneratorTestResultsWithServices(result, services1.Concat(services2)));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_AssignableTo()
     {
         var result = await Builder
@@ -681,11 +679,11 @@ public static class Program {
                           .Build()
                           .GenerateAsync();
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_AssignableToAny()
     {
         var result = await Builder
@@ -725,11 +723,11 @@ public static class Program {
 
 
 //        await Verify(result);
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_AssignableToAny_And_Filter_Interfaces()
     {
         var result = await Builder
@@ -769,11 +767,11 @@ public static class Program {
 
 
 //        await Verify(result);
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_AssignableToAny_And_Filter_Interfaces2()
     {
         var result = await Builder
@@ -812,12 +810,12 @@ public static class Program {
 
 
 //        await Verify(result);
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces()
     {
         var result = await Builder
@@ -857,12 +855,12 @@ public static class Program {
 
 
 //        await Verify(result);
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces2()
     {
         var result = await Builder
@@ -901,12 +899,12 @@ public static class Program {
 
 
 //        await Verify(result);
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_As_And_Filter_Interfaces()
     {
         var result = await Builder
@@ -945,12 +943,12 @@ public static class Program {
 
 
 //        await Verify(result);
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_As_And_Filter_Generic_Interfaces()
     {
         var result = await Builder
@@ -990,11 +988,11 @@ public static class Program {
 
 
 //        await Verify(result);
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_As_And_Filter_Generic_Interfaces2()
     {
         var result = await Builder
@@ -1033,11 +1031,11 @@ public static class Program {
 
 
 //        await Verify(result);
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Support_ServiceRegistrationAttributes()
     {
         var result = await Builder
@@ -1064,7 +1062,7 @@ public class ServiceB : IService, IServiceB { }
         await Verify(result);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Report_Diagnostic_When_Not_Using_Expressions()
     {
         var result = await Builder
@@ -1102,7 +1100,7 @@ public static class Program {
         await Verify(result);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Report_Diagnostic_Not_Given_A_Compiled_Type()
     {
         var result = await Builder
@@ -1139,7 +1137,7 @@ public static class Program {
         await Verify(result);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Report_Diagnostic_Not_Given_A_Static_Namespace()
     {
         var result = await Builder
@@ -1176,7 +1174,7 @@ public static class Program {
         await Verify(result);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Report_Diagnostic_For_Duplicate_ServiceRegistrationAttributes()
     {
         var result = await Builder
@@ -1199,7 +1197,7 @@ public class Service : IService { }
         await Verify(result);
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_With_EndsWith()
     {
         var result = await Builder
@@ -1240,11 +1238,11 @@ public class Service : IService { }
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_With_EndsWith_NameOf()
     {
         var result = await Builder
@@ -1285,11 +1283,11 @@ public class Service : IService { }
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_With_StartsWith()
     {
         var result = await Builder
@@ -1330,11 +1328,11 @@ public class Service : IService { }
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_With_StartsWith_NameOf()
     {
         var result = await Builder
@@ -1375,11 +1373,11 @@ public class Service : IService { }
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_With_Contains()
     {
         var result = await Builder
@@ -1420,11 +1418,11 @@ public class Service : IService { }
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Fact]
+    [Test]
     public async Task Should_Filter_With_Contains_NameOf()
     {
         var result = await Builder
@@ -1465,18 +1463,22 @@ public class Service : IService { }
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(5)]
-    public async Task Should_Handle_Private_Generic_Classes_Within_Multiple_Dependencies(int dependencyCount)
+    [Test]
+    public async Task Should_Handle_Private_Generic_Classes_Within_Multiple_Dependencies(
+        [Matrix(
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+        )]
+        int dependencyCount
+    )
     {
         var dependencies = new List<GeneratorTestResults>();
         var rootGenerator = await GeneratorTestContextBuilder
@@ -1558,18 +1560,22 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(2)]
-    [InlineData(3)]
-    [InlineData(4)]
-    [InlineData(5)]
-    public async Task Should_Handle_Private_Classes_Within_Multiple_Dependencies(int dependencyCount)
+    [Test]
+    public async Task Should_Handle_Private_Classes_Within_Multiple_Dependencies(
+        [Matrix(
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+        )]
+        int dependencyCount
+    )
     {
         var dependencies = new List<GeneratorTestResults>();
         var rootGenerator = await GeneratorTestContextBuilder
@@ -1646,15 +1652,16 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
     }
 
-    [Theory]
-    [InlineData(ServiceLifetime.Scoped)]
-    [InlineData(ServiceLifetime.Singleton)]
-    [InlineData(ServiceLifetime.Transient)]
-    public async Task Should_Have_Correct_Lifetime(ServiceLifetime serviceLifetime)
+    [Test]
+    public async Task Should_Have_Correct_Lifetime(
+//        [Matrix(ServiceLifetime.Scoped, ServiceLifetime.Singleton, ServiceLifetime.Transient)]
+        [Matrix]
+        ServiceLifetime serviceLifetime
+    )
     {
         var result = await Builder
                           .AddSources(
@@ -1683,7 +1690,7 @@ namespace TestProject
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-                               
+
                                	        provider.Scan(
                                            services,
                                            z => z
@@ -1702,14 +1709,12 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(serviceLifetime);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task Should_Filter_WithAttribute(bool useTypeof)
+    [Test]
+    public async Task Should_Filter_WithAttribute([Matrix] bool useTypeof)
     {
         var result = await Builder
                           .AddSources(
@@ -1752,14 +1757,12 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task Should_Filter_WithoutAttribute(bool useTypeof)
+    [Test]
+    public async Task Should_Filter_WithoutAttribute([Matrix] bool useTypeof)
     {
         var result = await Builder
                           .AddSources(
@@ -1802,21 +1805,31 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
     }
 
-    [Theory]
-    [InlineData(NamespaceFilter.Exact, "TestProject.A", 5, false, false)]
-    [InlineData(NamespaceFilter.Exact, "TestProject.A.IService", 5, true, false)]
-    [InlineData(NamespaceFilter.Exact, "TestProject.A.IService", 5, true, true)]
-    [InlineData(NamespaceFilter.In, "TestProject.A", 7, false, false)]
-    [InlineData(NamespaceFilter.In, "TestProject.A.IService", 7, true, false)]
-    [InlineData(NamespaceFilter.In, "TestProject.A.IService", 7, true, true)]
-    [InlineData(NamespaceFilter.NotIn, "TestProject.A.C", 7, false, false)]
-    [InlineData(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", 7, true, false)]
-    [InlineData(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", 7, true, true)]
-    public async Task Should_Filter_Namespaces(NamespaceFilter filter, string namespaceFilterValue, int count, bool usingClass, bool usingTypeof)
+    [Test]
+    public async Task Should_Filter_Namespaces(
+        [Matrix(NamespaceFilter.Exact, NamespaceFilter.In, NamespaceFilter.NotIn)]
+        NamespaceFilter filter,
+        [Matrix(
+            "TestProject.A",
+            "TestProject.A.IService",
+            "TestProject.A.IService",
+            "TestProject.A",
+            "TestProject.A.IService",
+            "TestProject.A.IService",
+            "TestProject.A.C",
+            "TestProject.A.C.ServiceC",
+            "TestProject.A.C.ServiceC"
+        )]
+        string namespaceFilterValue,
+        [Matrix]
+        bool usingClass,
+        [Matrix]
+        bool usingTypeof
+    )
     {
         var result = await Builder
                           .AddSources(
@@ -1880,24 +1893,21 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .HashParameters()
-             .UseParameters(filter, namespaceFilterValue, count, usingClass, usingTypeof);
+             .UseParameters(filter, namespaceFilterValue, usingClass, usingTypeof);
     }
 
-    [Theory]
-    [InlineData(NamespaceFilter.Exact, "TestProject.A", "TestProject.B", 7, false)]
-    [InlineData(NamespaceFilter.Exact, "TestProject.A.ServiceA", "TestProject.B.ServiceB", 7, true)]
-    [InlineData(NamespaceFilter.In, "TestProject.A", "TestProject.B", 9, false)]
-    [InlineData(NamespaceFilter.In, "TestProject.A.ServiceA", "TestProject.B.ServiceB", 9, true)]
-    [InlineData(NamespaceFilter.NotIn, "TestProject.A.C", "TestProject.B", 5, false)]
-    [InlineData(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", "TestProject.B.ServiceB", 5, true)]
+    [Test]
     public async Task Should_Filter_Multiple_Namespaces(
+        [Matrix(NamespaceFilter.Exact, NamespaceFilter.In, NamespaceFilter.NotIn)]
         NamespaceFilter filter,
+        [Matrix("TestProject.A", "TestProject.A.ServiceA", "TestProject.A.C", "TestProject.A.C.ServiceC")]
         string namespaceFilterValue,
+        [Matrix("TestProject.B", "TestProject.B.ServiceB")]
         string namespaceFilterValueSecond,
-        int count,
+        [Matrix]
         bool usingClass
     )
     {
@@ -1961,14 +1971,12 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).HashParameters().UseParameters(filter, namespaceFilterValue, count, usingClass);
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).HashParameters().UseParameters(filter, namespaceFilterValue, usingClass);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyOf(bool useTypeof)
+    [Test]
+    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyOf([Matrix] bool useTypeof)
     {
         var dependencies = new List<GeneratorTestResults>();
 
@@ -2053,18 +2061,17 @@ namespace TestProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
     }
 
-    [Theory]
-    [InlineData("ServiceA", false, 2)]
-    [InlineData("ServiceB", false, 0)]
-    [InlineData("ServiceC", false, 1)]
-    [InlineData("ServiceA", true, 2)]
-    [InlineData("ServiceB", true, 0)]
-    [InlineData("ServiceC", true, 1)]
-    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyDependenciesOf(string className, bool useTypeof, int expectedCount)
+    [Test]
+    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyDependenciesOf(
+        [Matrix("ServiceA", "ServiceB", "ServiceC")]
+        string className,
+        [Matrix]
+        bool useTypeof
+    )
     {
         var dependencies = new List<GeneratorTestResults>();
 
@@ -2191,22 +2198,22 @@ namespace RootDependencyProject
                           .GenerateAsync();
 
 
-        var services = StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(className, useTypeof, expectedCount);
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(className, useTypeof);
     }
 
     private static class StaticHelper
     {
-        public static IServiceCollection ExecuteStaticServiceCollectionMethod(Assembly? assembly, string className, string methodName)
+        public static async Task<IServiceCollection> ExecuteStaticServiceCollectionMethod(Assembly? assembly, string className, string methodName)
         {
             if (assembly == null) return new ServiceCollection();
             var @class = assembly.GetTypes().FirstOrDefault(z => z.IsClass && z.Name == className)!;
-            Assert.NotNull(@class);
+            await Assert.That(@class).IsNotNull();
 
             var method = @class.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-            Assert.NotNull(method);
+            await Assert.That(method).IsNotNull();
 
-            return ( method!.Invoke(null, Array.Empty<object>()) as IServiceCollection )!;
+            return ( method!.Invoke(null, []) as IServiceCollection )!;
         }
     }
 }

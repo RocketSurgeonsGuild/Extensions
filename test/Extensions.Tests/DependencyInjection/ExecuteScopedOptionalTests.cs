@@ -1,19 +1,18 @@
+using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
 using Serilog.Events;
-using Xunit;
-using Xunit.Abstractions;
 
 #pragma warning disable IDE0058, RCS1021, IDE0053, CS1998
 #pragma warning disable CS8602
 
 namespace Rocket.Surgery.Extensions.Tests.DependencyInjection;
 
-public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
+public class ExecuteScopedOptionalTests : LoggerTest
 {
-    [Fact]
+    [Test]
     public async Task Work_With_One_Service()
     {
         var executor = _serviceProvider.WithScopedOptional<Service1>();
@@ -23,7 +22,7 @@ public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
         await executor.Invoke(async s => { s.ScopedValue.Value.Should().Be(3); }).ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Two_Services()
     {
         var executor = _serviceProvider.WithScopedOptional<Service1, Service2>();
@@ -66,7 +65,7 @@ public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Three_Services()
     {
         var executor = _serviceProvider.WithScopedOptional<Service1, Service2, Service3>();
@@ -113,7 +112,7 @@ public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Four_Services()
     {
         var executor = _serviceProvider.WithScopedOptional<Service1, Service2, Service3, Service4>();
@@ -164,7 +163,7 @@ public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Five_Services()
     {
         var executor = _serviceProvider.WithScopedOptional<Service1, Service2, Service3, Service4, Service5>();
@@ -219,7 +218,7 @@ public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Six_Services()
     {
         var executor = _serviceProvider.WithScopedOptional<Service1, Service2, Service3, Service4, Service5, Service6>();
@@ -278,7 +277,7 @@ public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    public ExecuteScopedOptionalTests(ITestOutputHelper outputHelper) : base(XUnitTestContext.Create(outputHelper, LogEventLevel.Information))
+    public ExecuteScopedOptionalTests() : base(Defaults.LoggerTest)
     {
         _value = 0;
         _serviceProvider = new ServiceCollection()
@@ -296,21 +295,53 @@ public class ExecuteScopedOptionalTests : LoggerTest<XUnitTestContext>
     private int _value;
     private readonly IServiceProvider _serviceProvider;
 
-    [Theory]
-    [InlineData(typeof(IExecuteScopedOptional<Service1>), typeof(ExecuteScopedOptional<Service1>))]
-    [InlineData(typeof(IExecuteScopedOptional<Service1, Service2>), typeof(ExecuteScopedOptional<Service1, Service2>))]
-    [InlineData(typeof(IExecuteScopedOptional<Service1, Service2, Service3>), typeof(ExecuteScopedOptional<Service1, Service2, Service3>))]
-    [InlineData(typeof(IExecuteScopedOptional<Service1, Service2, Service3, Service4>), typeof(ExecuteScopedOptional<Service1, Service2, Service3, Service4>))]
-    [InlineData(
-        typeof(IExecuteScopedOptional<Service1, Service2, Service3, Service4, Service5>),
-        typeof(ExecuteScopedOptional<Service1, Service2, Service3, Service4, Service5>)
-    )]
-    [InlineData(
-        typeof(IExecuteScopedOptional<Service1, Service2, Service3, Service4, Service5, Service6>),
-        typeof(ExecuteScopedOptional<Service1, Service2, Service3, Service4, Service5, Service6>)
-    )]
+    [Test]
+    [MethodDataSource(nameof(ExecuteScopedOptionalTypes))]
     public async Task Should_Resolve_ExecuteScopedOptional(Type serviceType, Type implementationType) =>
         _serviceProvider.GetService(serviceType).Should().BeOfType(implementationType);
+
+
+    public static IEnumerable<Func<(Type serviceType, Type implementationType)>> ExecuteScopedOptionalTypes()
+    {
+        var interfaces = typeof(IExecuteScopedOptional<>)
+                        .Assembly.GetExportedTypes()
+                        .Where(
+                             z => z is
+                             {
+                                 IsGenericTypeDefinition: true,
+                                 Name: ['I', 'E', 'x', 'e', 'c', 'u', 't', 'e', 'S', 'c', 'o', 'p', 'e', 'd', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', ..]
+                             }
+                         );
+        var implementations = typeof(IExecuteScopedOptional<>)
+                             .Assembly.GetExportedTypes()
+                             .Where(
+                                  z => z is
+                                  {
+                                      IsGenericTypeDefinition: true,
+                                      Name: ['E', 'x', 'e', 'c', 'u', 't', 'e', 'S', 'c', 'o', 'p', 'e', 'd', 'O', 'p', 't', 'i', 'o', 'n', 'a', 'l', ..]
+                                  }
+                              );
+
+        List<Type> services = [typeof(Service1), typeof(Service2), typeof(Service3), typeof(Service4), typeof(Service5), typeof(Service6),];
+
+        foreach (var (serviceType, implementationType) in interfaces.Join(
+                     implementations,
+                     z => z.Name.Substring(1),
+                     z => z.Name,
+                     (serviceType, implementationType) => ( serviceType, implementationType )
+                 ))
+        {
+            yield return () => (
+                             serviceType.MakeGenericType(services.Take(serviceType.GetGenericArguments().Length).ToArray()),
+                             implementationType.MakeGenericType(services.Take(implementationType.GetGenericArguments().Length).ToArray())
+                         );
+        }
+
+        yield return () => (
+                         typeof(IExecuteScopedOptional<Service1>),
+                         typeof(ExecuteScopedOptional<Service1>)
+                     );
+    }
 
     private class ScopedValue
     {
