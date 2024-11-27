@@ -125,7 +125,7 @@ internal static class StatementGeneration
                        ),
                    (true, TypeOfExpressionSyntax
                        {
-                           Type: not GenericNameSyntax { IsUnboundGenericName: true }
+                           Type: not GenericNameSyntax { IsUnboundGenericName: true },
                        } serviceTypeOfExpression, _, not TypeOfExpressionSyntax)
                        when serviceType is { IsUnboundGenericType: false } => InvocationExpression(
                                MemberAccessExpression(
