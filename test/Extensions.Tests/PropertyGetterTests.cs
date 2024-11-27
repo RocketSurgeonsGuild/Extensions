@@ -20,7 +20,7 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
         {
             A = "123",
             B = 1,
-            C = null
+            C = null,
         };
 
         var value = getter.Get(fixture, "A");
@@ -41,14 +41,14 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
 
         var fixture = new Fixture_Thing2
         {
-            Thing1 = new Fixture_Thing
+            Thing1 = new()
             {
                 A = "123",
                 B = 1,
-                C = null
+                C = null,
             },
             D = 123,
-            E = 1234L
+            E = 1234L,
         };
 
         var value = getter.Get(fixture, "Thing1.A");
@@ -75,14 +75,14 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
 
         var fixture = new Fixture_Thing2
         {
-            Thing1 = new Fixture_Thing
+            Thing1 = new()
             {
                 A = "123",
                 B = 1,
-                C = null
+                C = null,
             },
             D = 123,
-            E = 1234L
+            E = 1234L,
         };
 
 
@@ -99,14 +99,14 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
 
         var fixture = new Fixture_Thing2
         {
-            Thing1 = new Fixture_Thing
+            Thing1 = new()
             {
                 A = "123",
                 B = 1,
-                C = null
+                C = null,
             },
             D = 123,
-            E = 1234L
+            E = 1234L,
         };
 
         getter.TryGetPropertyDelegate(fixture, "thing1.a", out _).Should().BeFalse();
@@ -121,73 +121,73 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
             {
                 item,
                 "Things[0].A",
-                "123"
+                "123",
             };
             yield return new[]
             {
                 item,
                 "Things[0].B",
-                1
+                1,
             };
             yield return new[]
             {
                 item,
                 "Things[0].C",
-                null
+                null,
             };
             yield return new[]
             {
                 item,
                 "Things[1].A",
-                "456"
+                "456",
             };
             yield return new[]
             {
                 item,
                 "Things[1].B",
-                2
+                2,
             };
             yield return new[]
             {
                 item,
                 "Things[1].C",
-                1L
+                1L,
             };
             yield return new[]
             {
                 item,
                 "Things[2].A",
-                "789"
+                "789",
             };
             yield return new[]
             {
                 item,
                 "Things[2].B",
-                3
+                3,
             };
             yield return new[]
             {
                 item,
                 "Things[2].C",
-                null
+                null,
             };
             yield return new[]
             {
                 item,
                 "Values[0]",
-                "1"
+                "1",
             };
             yield return new[]
             {
                 item,
                 "Values[1]",
-                "2"
+                "2",
             };
             yield return new[]
             {
                 item,
                 "Values[2]",
-                "3"
+                "3",
             };
         }
     }
@@ -200,73 +200,73 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
             {
                 item,
                 "Things__0__A",
-                "123"
+                "123",
             };
             yield return new[]
             {
                 item,
                 "Things__0__B",
-                1
+                1,
             };
             yield return new[]
             {
                 item,
                 "Things__0__C",
-                null
+                null,
             };
             yield return new[]
             {
                 item,
                 "Things__1__A",
-                "456"
+                "456",
             };
             yield return new[]
             {
                 item,
                 "Things__1__B",
-                2
+                2,
             };
             yield return new[]
             {
                 item,
                 "Things__1__C",
-                1L
+                1L,
             };
             yield return new[]
             {
                 item,
                 "Things__2__A",
-                "789"
+                "789",
             };
             yield return new[]
             {
                 item,
                 "Things__2__B",
-                3
+                3,
             };
             yield return new[]
             {
                 item,
                 "Things__2__C",
-                null
+                null,
             };
             yield return new[]
             {
                 item,
                 "Values__0",
-                "1"
+                "1",
             };
             yield return new[]
             {
                 item,
                 "Values__1",
-                "2"
+                "2",
             };
             yield return new[]
             {
                 item,
                 "Values__2",
-                "3"
+                "3",
             };
         }
     }
@@ -278,7 +278,7 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
             yield return new[]
             {
                 item,
-                "Things[hello world].A"
+                "Things[hello world].A",
             };
         }
     }
@@ -293,22 +293,22 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
                 {
                     A = "123",
                     B = 1,
-                    C = null
+                    C = null,
                 },
                 new Fixture_Thing
                 {
                     A = "456",
                     B = 2,
-                    C = 1L
+                    C = 1L,
                 },
                 new Fixture_Thing
                 {
                     A = "789",
                     B = 3,
-                    C = null
-                }
+                    C = null,
+                },
             }.AsEnumerable(),
-            Values = new[] { "1", "2", "3" }.AsEnumerable()
+            Values = new[] { "1", "2", "3" }.AsEnumerable(),
         };
         yield return new Fixture_Array
         {
@@ -318,51 +318,51 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
                 {
                     A = "123",
                     B = 1,
-                    C = null
+                    C = null,
                 },
                 new Fixture_Thing
                 {
                     A = "456",
                     B = 2,
-                    C = 1L
+                    C = 1L,
                 },
                 new Fixture_Thing
                 {
                     A = "789",
                     B = 3,
-                    C = null
-                }
+                    C = null,
+                },
             },
-            Values = new[] { "1", "2", "3" }
+            Values = new[] { "1", "2", "3" },
         };
         yield return new Fixture_Collection
         {
             Things = new Collection<Fixture_Thing>
             {
-                new Fixture_Thing
+                new()
                 {
                     A = "123",
                     B = 1,
-                    C = null
+                    C = null,
                 },
-                new Fixture_Thing
+                new()
                 {
                     A = "456",
                     B = 2,
-                    C = 1L
+                    C = 1L,
                 },
-                new Fixture_Thing
+                new()
                 {
                     A = "789",
                     B = 3,
-                    C = null
-                }
+                    C = null,
+                },
             },
-            Values = new Collection<string> { "1", "2", "3" }
+            Values = new() { "1", "2", "3" },
         };
         yield return new Fixture_ReadOnlyCollection
         {
-            Things = new ReadOnlyCollection<Fixture_Thing>(
+            Things = new(
                 new List<Fixture_Thing>(
                     new[]
                     {
@@ -370,49 +370,49 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
                         {
                             A = "123",
                             B = 1,
-                            C = null
+                            C = null,
                         },
                         new Fixture_Thing
                         {
                             A = "456",
                             B = 2,
-                            C = 1L
+                            C = 1L,
                         },
                         new Fixture_Thing
                         {
                             A = "789",
                             B = 3,
-                            C = null
-                        }
+                            C = null,
+                        },
                     }
                 )
             ),
-            Values = new ReadOnlyCollection<string>(new Collection<string> { "1", "2", "3" })
+            Values = new ReadOnlyCollection<string>(new Collection<string> { "1", "2", "3" }),
         };
         yield return new Fixture_List
         {
             Things = new List<Fixture_Thing>
             {
-                new Fixture_Thing
+                new()
                 {
                     A = "123",
                     B = 1,
-                    C = null
+                    C = null,
                 },
-                new Fixture_Thing
+                new()
                 {
                     A = "456",
                     B = 2,
-                    C = 1L
+                    C = 1L,
                 },
-                new Fixture_Thing
+                new()
                 {
                     A = "789",
                     B = 3,
-                    C = null
-                }
+                    C = null,
+                },
             },
-            Values = new List<string> { "1", "2", "3" }
+            Values = new() { "1", "2", "3" },
         };
         yield return new Fixture_ReadOnlyList
         {
@@ -424,24 +424,24 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
                         {
                             A = "123",
                             B = 1,
-                            C = null
+                            C = null,
                         },
                         new Fixture_Thing
                         {
                             A = "456",
                             B = 2,
-                            C = 1L
+                            C = 1L,
                         },
                         new Fixture_Thing
                         {
                             A = "789",
                             B = 3,
-                            C = null
-                        }
+                            C = null,
+                        },
                     }
                 )
             ),
-            Values = new ReadOnlyCollection<string>(new Collection<string> { "1", "2", "3" })
+            Values = new ReadOnlyCollection<string>(new Collection<string> { "1", "2", "3" }),
         };
     }
 
@@ -453,73 +453,73 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
             {
                 item,
                 "Things[A].A",
-                "123"
+                "123",
             };
             yield return new[]
             {
                 item,
                 "Things[A].B",
-                1
+                1,
             };
             yield return new[]
             {
                 item,
                 "Things[A].C",
-                null
+                null,
             };
             yield return new[]
             {
                 item,
                 "Things[B].A",
-                "456"
+                "456",
             };
             yield return new[]
             {
                 item,
                 "Things[B].B",
-                2
+                2,
             };
             yield return new[]
             {
                 item,
                 "Things[B].C",
-                1L
+                1L,
             };
             yield return new[]
             {
                 item,
                 "Things[C].A",
-                "789"
+                "789",
             };
             yield return new[]
             {
                 item,
                 "Things[C].B",
-                3
+                3,
             };
             yield return new[]
             {
                 item,
                 "Things[C].C",
-                null
+                null,
             };
             yield return new[]
             {
                 item,
                 "Values[A]",
-                "1"
+                "1",
             };
             yield return new[]
             {
                 item,
                 "Values[B]",
-                "2"
+                "2",
             };
             yield return new[]
             {
                 item,
                 "Values[C]",
-                "3"
+                "3",
             };
         }
     }
@@ -528,73 +528,73 @@ public class PropertyGetterTests(ITestOutputHelper outputHelper) : AutoFakeTest<
     {
         yield return new Fixture_Dictionary
         {
-            Things = new Dictionary<string, Fixture_Thing>
+            Things = new()
             {
                 {
                     "A",
-                    new Fixture_Thing
+                    new()
                     {
                         A = "123",
                         B = 1,
-                        C = null
+                        C = null,
                     }
                 },
                 {
                     "B",
-                    new Fixture_Thing
+                    new()
                     {
                         A = "456",
                         B = 2,
-                        C = 1L
+                        C = 1L,
                     }
                 },
                 {
                     "C",
-                    new Fixture_Thing
+                    new()
                     {
                         A = "789",
                         B = 3,
-                        C = null
+                        C = null,
                     }
-                }
+                },
             },
-            Values = new Dictionary<string, string> { { "A", "1" }, { "B", "2" }, { "C", "3" } }
+            Values = new Dictionary<string, string> { { "A", "1" }, { "B", "2" }, { "C", "3" } },
         };
         yield return new Fixture_ReadOnlyDictionary
         {
-            Things = new ReadOnlyDictionary<string, Fixture_Thing>(
+            Things = new(
                 new Dictionary<string, Fixture_Thing>
                 {
                     {
                         "A",
-                        new Fixture_Thing
+                        new()
                         {
                             A = "123",
                             B = 1,
-                            C = null
+                            C = null,
                         }
                     },
                     {
                         "B",
-                        new Fixture_Thing
+                        new()
                         {
                             A = "456",
                             B = 2,
-                            C = 1L
+                            C = 1L,
                         }
                     },
                     {
                         "C",
-                        new Fixture_Thing
+                        new()
                         {
                             A = "789",
                             B = 3,
-                            C = null
+                            C = null,
                         }
-                    }
+                    },
                 }
             ),
-            Values = new ReadOnlyDictionary<string, string>(new Dictionary<string, string> { { "A", "1" }, { "B", "2" }, { "C", "3" } })
+            Values = new ReadOnlyDictionary<string, string>(new Dictionary<string, string> { { "A", "1" }, { "B", "2" }, { "C", "3" } }),
         };
     }
 

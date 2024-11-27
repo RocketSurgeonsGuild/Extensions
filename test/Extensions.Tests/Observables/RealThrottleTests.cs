@@ -1,6 +1,5 @@
 ﻿using System.Reactive.Linq;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Reactive.Testing;
 using Rocket.Surgery.Extensions.Testing;
 using Xunit;
@@ -10,8 +9,6 @@ namespace Rocket.Surgery.Extensions.Tests.Observables;
 
 public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUnitTestContext>(XUnitTestContext.Create(testOutputHelper))
 {
-    private readonly TestScheduler _scheduler = new();
-
     [Fact]
     public void Should_Throttle_On_Leading_Edge()
     {
@@ -48,8 +45,9 @@ public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<
         var observable = _scheduler.CreateHotObservable(input);
 
         var receiver = _scheduler.CreateObserver<char>();
-        observable.RealThrottle(TimeSpan.FromTicks(20), false, true, _scheduler)
-                  .Subscribe(receiver);
+        observable
+           .RealThrottle(TimeSpan.FromTicks(20), false, true, _scheduler)
+           .Subscribe(receiver);
         _scheduler.Start();
 
         receiver.GetMarbles().Should().Be(output);
@@ -63,8 +61,9 @@ public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<
         var observable = _scheduler.CreateHotObservable(input);
 
         var receiver = _scheduler.CreateObserver<char>();
-        observable.RealThrottle(TimeSpan.FromTicks(5), false, true, _scheduler)
-                  .Subscribe(receiver);
+        observable
+           .RealThrottle(TimeSpan.FromTicks(5), false, true, _scheduler)
+           .Subscribe(receiver);
         _scheduler.Start();
 
         receiver.GetMarbles().Should().Be(output);
@@ -78,10 +77,13 @@ public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<
         var observable = _scheduler.CreateHotObservable(input);
 
         var receiver = _scheduler.CreateObserver<char>();
-        observable.RealThrottle(TimeSpan.FromTicks(40), true, true, _scheduler)
-                  .Subscribe(receiver);
+        observable
+           .RealThrottle(TimeSpan.FromTicks(40), true, true, _scheduler)
+           .Subscribe(receiver);
         _scheduler.Start();
 
         receiver.GetMarbles().Should().Be(output);
     }
+
+    private readonly TestScheduler _scheduler = new();
 }

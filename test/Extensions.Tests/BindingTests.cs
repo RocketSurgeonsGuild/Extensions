@@ -2,7 +2,6 @@
 using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rocket.Surgery.Binding;
@@ -26,6 +25,26 @@ namespace Rocket.Surgery.Extensions.Tests;
 
 public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUnitTestContext>(XUnitTestContext.Create(outputHelper))
 {
+    [Fact]
+    public void GetKey_Default()
+    {
+        var binder = new JsonBinder();
+
+        var values = binder.GetValues(new { a = new { b = new { value = "ABC" } } });
+
+        values.Should().Contain(x => x.Key == "a:b:value");
+    }
+
+    [Fact]
+    public void GetKey_CustomSep()
+    {
+        var binder = new JsonBinder("__");
+
+        var values = binder.GetValues(new { a = new { b = new { value = "ABC" } } });
+
+        values.Should().Contain(x => x.Key == "a__b__value");
+    }
+
     private class AutoProperty
     {
         public string Value { get; set; }
@@ -39,18 +58,20 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
 
         var keyValuePairs = new[]
         {
-            new KeyValuePair<string, string>("value", "123")
+            new KeyValuePair<string, string>("value", "123"),
         };
         var result = (AutoProperty)@delegate(binder, typeof(AutoProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
         result.Value.Should().Be("123");
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     private class ReadonlyAutoProperty
@@ -66,18 +87,20 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
 
         var keyValuePairs = new[]
         {
-            new KeyValuePair<string, string>("value", "123")
+            new KeyValuePair<string, string>("value", "123"),
         };
         var result = (ReadonlyAutoProperty)@delegate(binder, typeof(ReadonlyAutoProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
         result.Value.Should().Be("123");
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     [UsedImplicitly]
@@ -94,18 +117,20 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
 
         var keyValuePairs = new[]
         {
-            new KeyValuePair<string, string>("value", "123")
+            new KeyValuePair<string, string>("value", "123"),
         };
         var result = (PrivateSetterProperty)@delegate(binder, typeof(PrivateSetterProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
         result.Value.Should().Be("123");
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     private class ComplexProperty
@@ -123,19 +148,21 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
         var keyValuePairs = new[]
         {
             new KeyValuePair<string, string>("value", "123"),
-            new KeyValuePair<string, string>("AutoProperty:value", "456")
+            new KeyValuePair<string, string>("AutoProperty:value", "456"),
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
         result.Value.Should().Be("123");
         result.AutoProperty.Value.Should().Be("456");
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     [Theory]
@@ -147,19 +174,21 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
         var keyValuePairs = new[]
         {
             new KeyValuePair<string, string>("value", "123"),
-            new KeyValuePair<string, string>("AutoProperty__value", "456")
+            new KeyValuePair<string, string>("AutoProperty__value", "456"),
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
         result.Value.Should().Be("123");
         result.AutoProperty.Value.Should().Be("456");
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     [Theory]
@@ -170,19 +199,21 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
 
         var keyValuePairs = new[]
         {
-            new KeyValuePair<string, string>("value", "123")
+            new KeyValuePair<string, string>("value", "123"),
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
         result.Value.Should().Be("123");
         result.AutoProperty.Should().BeNull();
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().Contain(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .Contain(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     private class ArrayProperties
@@ -219,25 +250,29 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
         {
             new KeyValuePair<string, string>("Values:0:value", "123"),
             new KeyValuePair<string, string>("Values:1:value", "456"),
-            new KeyValuePair<string, string>("Values:2:value", "789")
+            new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (ArrayProperties)@delegate(binder, typeof(ArrayProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Values.Should().BeEquivalentTo(
-            new[]
-            {
-                new AutoProperty { Value = "123" },
-                new AutoProperty { Value = "456" },
-                new AutoProperty { Value = "789" }
-            }
-        );
+        result
+           .Values.Should()
+           .BeEquivalentTo(
+                new[]
+                {
+                    new AutoProperty { Value = "123" },
+                    new AutoProperty { Value = "456" },
+                    new AutoProperty { Value = "789" },
+                }
+            );
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     [Theory]
@@ -249,18 +284,20 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
         {
             new KeyValuePair<string, string>("Values:0", "123"),
             new KeyValuePair<string, string>("Values:1", "456"),
-            new KeyValuePair<string, string>("Values:2", "789")
+            new KeyValuePair<string, string>("Values:2", "789"),
         };
         var result = (SimpleArrayProperties)@delegate(binder, typeof(SimpleArrayProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
         result.Values.Should().BeEquivalentTo("123", "456", "789");
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     [Theory]
@@ -272,25 +309,29 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
         {
             new KeyValuePair<string, string>("Values:0:value", "123"),
             new KeyValuePair<string, string>("Values:1:value", "456"),
-            new KeyValuePair<string, string>("Values:2:value", "789")
+            new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (EnumerableProperties)@delegate(binder, typeof(EnumerableProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Values.Should().BeEquivalentTo(
-            new[]
-            {
-                new AutoProperty { Value = "123" },
-                new AutoProperty { Value = "456" },
-                new AutoProperty { Value = "789" }
-            }
-        );
+        result
+           .Values.Should()
+           .BeEquivalentTo(
+                new[]
+                {
+                    new AutoProperty { Value = "123" },
+                    new AutoProperty { Value = "456" },
+                    new AutoProperty { Value = "789" },
+                }
+            );
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     [Theory]
@@ -302,25 +343,29 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
         {
             new KeyValuePair<string, string>("Values:0:value", "123"),
             new KeyValuePair<string, string>("Values:1:value", "456"),
-            new KeyValuePair<string, string>("Values:2:value", "789")
+            new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (IListProperties)@delegate(binder, typeof(IListProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Values.Should().BeEquivalentTo(
-            new[]
-            {
-                new AutoProperty { Value = "123" },
-                new AutoProperty { Value = "456" },
-                new AutoProperty { Value = "789" }
-            }
-        );
+        result
+           .Values.Should()
+           .BeEquivalentTo(
+                new[]
+                {
+                    new AutoProperty { Value = "123" },
+                    new AutoProperty { Value = "456" },
+                    new AutoProperty { Value = "789" },
+                }
+            );
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     [Theory]
@@ -332,56 +377,43 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
         {
             new KeyValuePair<string, string>("Values:0:value", "123"),
             new KeyValuePair<string, string>("Values:1:value", "456"),
-            new KeyValuePair<string, string>("Values:2:value", "789")
+            new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (ListProperties)@delegate(binder, typeof(ListProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Values.Should().BeEquivalentTo(
-            new[]
-            {
-                new AutoProperty { Value = "123" },
-                new AutoProperty { Value = "456" },
-                new AutoProperty { Value = "789" }
-            }
-        );
+        result
+           .Values.Should()
+           .BeEquivalentTo(
+                new[]
+                {
+                    new AutoProperty { Value = "123" },
+                    new AutoProperty { Value = "456" },
+                    new AutoProperty { Value = "789" },
+                }
+            );
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
-    }
-
-    [Fact]
-    public void GetKey_Default()
-    {
-        var binder = new JsonBinder();
-
-        var values = binder.GetValues(new { a = new { b = new { value = "ABC" } } });
-
-        values.Should().Contain(x => x.Key == "a:b:value");
-    }
-
-    [Fact]
-    public void GetKey_CustomSep()
-    {
-        var binder = new JsonBinder("__");
-
-        var values = binder.GetValues(new { a = new { b = new { value = "ABC" } } });
-
-        values.Should().Contain(x => x.Key == "a__b__value");
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     private class DerivedComplexProperty : ComplexProperty
     {
-        [JsonExtensionData] public IDictionary<string, JToken> CustomFields { get; set; }
+        [JsonExtensionData]
+        public IDictionary<string, JToken> CustomFields { get; set; }
     }
 
     private class ExtraProperties
     {
         public DerivedComplexProperty ComplexProperty { get; }
-        [JsonExtensionData] public IDictionary<string, JToken> CustomFields { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> CustomFields { get; set; }
     }
 
     [Theory]
@@ -412,12 +444,14 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
 
         Logger.Information(JsonConvert.SerializeObject(result.CustomFields));
 
-        binder.From(result)
-              .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-              .Should().BeEquivalentTo(
-                   keyValuePairs
-                      .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-               );
+        binder
+           .From(result)
+           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+           .Should()
+           .BeEquivalentTo(
+                keyValuePairs
+                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
+            );
     }
 
     private class PopulatesFixture
@@ -425,7 +459,9 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
         public string A { get; set; }
         public int B { get; set; }
         public DerivedComplexProperty ComplexProperty { get; }
-        [JsonExtensionData] public IDictionary<string, JToken> CustomFields { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> CustomFields { get; set; }
     }
 
     [Theory]
@@ -476,38 +512,38 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
     {
         yield return new object[]
         {
-            (BindDelegate)Bind
+            (BindDelegate)Bind,
         };
         yield return new object[]
         {
-            (BindDelegate)Bind2
-        };
-
-        yield return new object[]
-        {
-            (BindDelegate)BindJsonSerializer
-        };
-        yield return new object[]
-        {
-            (BindDelegate)Bind2JsonSerializer
+            (BindDelegate)Bind2,
         };
 
         yield return new object[]
         {
-            (BindDelegate)BindConfiguration
+            (BindDelegate)BindJsonSerializer,
         };
         yield return new object[]
         {
-            (BindDelegate)Bind2Configuration
+            (BindDelegate)Bind2JsonSerializer,
         };
 
         yield return new object[]
         {
-            (BindDelegate)BindConfigurationJsonSerializer
+            (BindDelegate)BindConfiguration,
         };
         yield return new object[]
         {
-            (BindDelegate)Bind2ConfigurationJsonSerializer
+            (BindDelegate)Bind2Configuration,
+        };
+
+        yield return new object[]
+        {
+            (BindDelegate)BindConfigurationJsonSerializer,
+        };
+        yield return new object[]
+        {
+            (BindDelegate)Bind2ConfigurationJsonSerializer,
         };
     }
 
@@ -522,53 +558,51 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
     {
         yield return new object[]
         {
-            (PopulateDelegate)Populate
+            (PopulateDelegate)Populate,
         };
         yield return new object[]
         {
-            (PopulateDelegate)PopulateJsonSerializer
+            (PopulateDelegate)PopulateJsonSerializer,
         };
         yield return new object[]
         {
-            (PopulateDelegate)PopulateConfiguration
+            (PopulateDelegate)PopulateConfiguration,
         };
         yield return new object[]
         {
-            (PopulateDelegate)PopulateConfigurationJsonSerializer
+            (PopulateDelegate)PopulateConfigurationJsonSerializer,
         };
     }
 
-    private static object Populate(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
-    {
-        return binder.Populate(value, values);
-    }
+    private static object Populate(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values) =>
+        binder.Populate(value, values);
 
-    private static object PopulateJsonSerializer(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
-    {
-        return binder.Populate(value, values, serializer);
-    }
+    private static object PopulateJsonSerializer(
+        JsonBinder binder,
+        object value,
+        JsonSerializer serializer,
+        IEnumerable<KeyValuePair<string, string>> values
+    ) => binder.Populate(value, values, serializer);
 
-    private static object Bind(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
-    {
-        return binder.Bind(objectType, values);
-    }
+    private static object Bind(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values) =>
+        binder.Bind(objectType, values);
 
-    private static object BindJsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
-    {
-        return binder.Bind(objectType, values, serializer);
-    }
+    private static object BindJsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values) =>
+        binder.Bind(objectType, values, serializer);
 
     [CanBeNull]
     private static object Bind2(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
     {
-        var method = typeof(JsonBinderTests).GetTypeInfo()
-                                            .GetMethod(nameof(BindGeneric), BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(JsonBinderTests)
+                    .GetTypeInfo()
+                    .GetMethod(nameof(BindGeneric), BindingFlags.Static | BindingFlags.NonPublic)!;
         return method
               .MakeGenericMethod(objectType)
               .Invoke(
-                   null, new object[]
+                   null,
+                   new object[]
                    {
-                       binder, values
+                       binder, values,
                    }
                );
     }
@@ -576,29 +610,27 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
     [CanBeNull]
     private static object Bind2JsonSerializer(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
     {
-        var method = typeof(JsonBinderTests).GetTypeInfo()
-                                            .GetMethod(nameof(BindGenericJsonSerializer), BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(JsonBinderTests)
+                    .GetTypeInfo()
+                    .GetMethod(nameof(BindGenericJsonSerializer), BindingFlags.Static | BindingFlags.NonPublic)!;
         return method
               .MakeGenericMethod(objectType)
               .Invoke(
-                   null, new object[]
+                   null,
+                   new object[]
                    {
-                       binder, serializer, values
+                       binder, serializer, values,
                    }
                );
     }
 
     private static T BindGeneric<T>(JsonBinder binder, IEnumerable<KeyValuePair<string, string>> values)
-        where T : class, new()
-    {
-        return binder.Bind<T>(values);
-    }
+        where T : class, new() =>
+        binder.Bind<T>(values);
 
     private static T BindGenericJsonSerializer<T>(JsonBinder binder, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
-        where T : class, new()
-    {
-        return binder.Bind<T>(values, serializer);
-    }
+        where T : class, new() =>
+        binder.Bind<T>(values, serializer);
 
     private static object PopulateConfiguration(JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
     {
@@ -608,7 +640,10 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
     }
 
     private static object PopulateConfigurationJsonSerializer(
-        JsonBinder binder, object value, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values
+        JsonBinder binder,
+        object value,
+        JsonSerializer serializer,
+        IEnumerable<KeyValuePair<string, string>> values
     )
     {
         var config = new ConfigurationBuilder();
@@ -624,7 +659,10 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
     }
 
     private static object BindConfigurationJsonSerializer(
-        JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values
+        JsonBinder binder,
+        Type objectType,
+        JsonSerializer serializer,
+        IEnumerable<KeyValuePair<string, string>> values
     )
     {
         var config = new ConfigurationBuilder();
@@ -635,31 +673,38 @@ public class JsonBinderTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUni
     [CanBeNull]
     private static object Bind2Configuration(JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values)
     {
-        var method = typeof(JsonBinderTests).GetTypeInfo()
-                                            .GetMethod(nameof(BindConfigurationGeneric), BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(JsonBinderTests)
+                    .GetTypeInfo()
+                    .GetMethod(nameof(BindConfigurationGeneric), BindingFlags.Static | BindingFlags.NonPublic)!;
         return method
               .MakeGenericMethod(objectType)
               .Invoke(
-                   null, new object[]
+                   null,
+                   new object[]
                    {
-                       binder, values
+                       binder, values,
                    }
                );
     }
 
     [CanBeNull]
     private static object Bind2ConfigurationJsonSerializer(
-        JsonBinder binder, Type objectType, JsonSerializer serializer, IEnumerable<KeyValuePair<string, string>> values
+        JsonBinder binder,
+        Type objectType,
+        JsonSerializer serializer,
+        IEnumerable<KeyValuePair<string, string>> values
     )
     {
-        var method = typeof(JsonBinderTests).GetTypeInfo()
-                                            .GetMethod(nameof(BindConfigurationGenericJsonSerializer), BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(JsonBinderTests)
+                    .GetTypeInfo()
+                    .GetMethod(nameof(BindConfigurationGenericJsonSerializer), BindingFlags.Static | BindingFlags.NonPublic)!;
         return method
               .MakeGenericMethod(objectType)
               .Invoke(
-                   null, new object[]
+                   null,
+                   new object[]
                    {
-                       binder, serializer, values
+                       binder, serializer, values,
                    }
                );
     }
