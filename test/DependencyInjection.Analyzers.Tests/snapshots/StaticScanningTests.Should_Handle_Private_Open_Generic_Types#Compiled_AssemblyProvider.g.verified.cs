@@ -31,7 +31,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: jwpZbvlWPFRLk7VHxDXpyQ==
             case 12:
                 services.Add(ServiceDescriptor.Scoped(RootDependencyProject.GetType("RootDependencyProject.Service`1"), RootDependencyProject.GetType("RootDependencyProject.Service`1")));
-                services.Add(ServiceDescriptor.Scoped<global::RootDependencyProject.IService<>>(RootDependencyProject.GetType("RootDependencyProject.Service`1")));
+                services.Add(ServiceDescriptor.Scoped(typeof(global::RootDependencyProject.IService<>), RootDependencyProject.GetType("RootDependencyProject.Service`1")));
                 break;
         }
 

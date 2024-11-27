@@ -1,1 +1,1 @@
-﻿namespace Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
+namespace Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
