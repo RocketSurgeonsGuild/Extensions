@@ -9,6 +9,65 @@ namespace Rocket.Surgery.Extensions.Tests.DependencyInjection;
 
 public class ExecuteScopedTests : LoggerTest
 {
+    public static IEnumerable<Func<(Type serviceType, Type implementationType)>> ExecuteScopedTypes()
+    {
+        var interfaces = typeof(IExecuteScopedOptional<>)
+                        .Assembly.GetExportedTypes()
+                        .Where(
+                             z => z is
+                             {
+                                 IsGenericTypeDefinition: true,
+                                 Name: ['I', 'E', 'x', 'e', 'c', 'u', 't', 'e', 'S', 'c', 'o', 'p', 'e', 'd', ..],
+                             }
+                         );
+        var implementations = typeof(IExecuteScopedOptional<>)
+                             .Assembly.GetExportedTypes()
+                             .Where(
+                                  z => z is
+                                  {
+                                      IsGenericTypeDefinition: true,
+                                      Name: ['E', 'x', 'e', 'c', 'u', 't', 'e', 'S', 'c', 'o', 'p', 'e', 'd', ..],
+                                  }
+                              );
+
+        List<Type> services = [typeof(Service1), typeof(Service2), typeof(Service3), typeof(Service4), typeof(Service5), typeof(Service6)];
+
+        foreach (( var serviceType, var implementationType ) in interfaces.Join(
+                     implementations,
+                     z => z.Name.Substring(1),
+                     z => z.Name,
+                     (serviceType, implementationType) => ( serviceType, implementationType )
+                 ))
+        {
+            yield return () => (
+                             serviceType.MakeGenericType(services.Take(serviceType.GetGenericArguments().Length).ToArray()),
+                             implementationType.MakeGenericType(services.Take(implementationType.GetGenericArguments().Length).ToArray())
+                         );
+        }
+
+        yield return () => (
+                         typeof(IExecuteScoped<Service1>),
+                         typeof(ExecuteScoped<Service1>)
+                     );
+    }
+
+    private readonly IServiceProvider _serviceProvider;
+
+    public ExecuteScopedTests() : base(Defaults.LoggerTest)
+    {
+        var value = 0;
+        _serviceProvider = new ServiceCollection()
+                          .AddExecuteScopedServices()
+                          .AddScoped(_ => new ScopedValue(value++))
+                          .AddScoped<Service1>()
+                          .AddScoped<Service2>()
+                          .AddScoped<Service3>()
+                          .AddScoped<Service4>()
+                          .AddScoped<Service5>()
+                          .AddScoped<Service6>()
+                          .BuildServiceProvider();
+    }
+
     [Test]
     public async Task Work_With_One_Service()
     {
@@ -274,70 +333,10 @@ public class ExecuteScopedTests : LoggerTest
              .ConfigureAwait(false);
     }
 
-    public ExecuteScopedTests() : base(Defaults.LoggerTest)
-    {
-        var value = 0;
-        _serviceProvider = new ServiceCollection()
-                          .AddExecuteScopedServices()
-                          .AddScoped(_ => new ScopedValue(value++))
-                          .AddScoped<Service1>()
-                          .AddScoped<Service2>()
-                          .AddScoped<Service3>()
-                          .AddScoped<Service4>()
-                          .AddScoped<Service5>()
-                          .AddScoped<Service6>()
-                          .BuildServiceProvider();
-    }
-
-    private readonly IServiceProvider _serviceProvider;
-
     [Test]
     [MethodDataSource(nameof(ExecuteScopedTypes))]
     public async Task Should_Resolve_ExecuteScoped(Type serviceType, Type implementationType) =>
         _serviceProvider.GetService(serviceType).Should().BeOfType(implementationType);
-
-
-    public  static IEnumerable<Func<(Type serviceType, Type implementationType)>> ExecuteScopedTypes()
-    {
-        var interfaces = typeof(IExecuteScopedOptional<>)
-                        .Assembly.GetExportedTypes()
-                        .Where(
-                             z => z is
-                             {
-                                 IsGenericTypeDefinition: true,
-                                 Name: ['I', 'E', 'x', 'e', 'c', 'u', 't', 'e', 'S', 'c', 'o', 'p', 'e', 'd', ..]
-                             }
-                         );
-        var implementations = typeof(IExecuteScopedOptional<>)
-                             .Assembly.GetExportedTypes()
-                             .Where(
-                                  z => z is
-                                  {
-                                      IsGenericTypeDefinition: true,
-                                      Name: ['E', 'x', 'e', 'c', 'u', 't', 'e', 'S', 'c', 'o', 'p', 'e', 'd', ..]
-                                  }
-                              );
-
-        List<Type> services = [typeof(Service1), typeof(Service2), typeof(Service3), typeof(Service4), typeof(Service5), typeof(Service6),];
-
-        foreach (var (serviceType, implementationType) in interfaces.Join(
-                     implementations,
-                     z => z.Name.Substring(1),
-                     z => z.Name,
-                     (serviceType, implementationType) => ( serviceType, implementationType )
-                 ))
-        {
-            yield return () => (
-                             serviceType.MakeGenericType(services.Take(serviceType.GetGenericArguments().Length).ToArray()),
-                             implementationType.MakeGenericType(services.Take(implementationType.GetGenericArguments().Length).ToArray())
-                         );
-        }
-
-        yield return () => (
-                         typeof(IExecuteScoped<Service1>),
-                         typeof(ExecuteScoped<Service1>)
-                     );
-    }
 
     private class ScopedValue
     {

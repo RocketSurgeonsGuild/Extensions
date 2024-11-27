@@ -7,6 +7,8 @@ namespace Rocket.Surgery.Extensions.Tests.Observables;
 
 public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
 {
+    private readonly TestScheduler _scheduler = new();
+
     [Test]
     public void Should_Throttle_On_Leading_Edge()
     {
@@ -82,6 +84,4 @@ public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
 
         receiver.GetMarbles().Should().Be(output);
     }
-
-    private readonly TestScheduler _scheduler = new();
 }
