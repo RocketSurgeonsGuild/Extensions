@@ -1746,21 +1746,16 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Filter_Namespaces(
-        [Matrix(NamespaceFilter.Exact, NamespaceFilter.In, NamespaceFilter.NotIn)]
-        NamespaceFilter filter,
-        [Matrix(
-            "TestProject.A",
-            "TestProject.A.IService",
-            "TestProject.A.C",
-            "TestProject.A.C.ServiceC"
-        )]
-        string namespaceFilterValue,
-        [Matrix(true, false)]
-        bool usingClass,
-        [Matrix(true, false)]
-        bool usingTypeof
-    )
+    [Arguments(NamespaceFilter.Exact, "TestProject.A", false, false)]
+    [Arguments(NamespaceFilter.Exact, "TestProject.A.IService", true, false)]
+    [Arguments(NamespaceFilter.Exact, "TestProject.A.IService", true, true)]
+    [Arguments(NamespaceFilter.In, "TestProject.A", false, false)]
+    [Arguments(NamespaceFilter.In, "TestProject.A.IService", true, false)]
+    [Arguments(NamespaceFilter.In, "TestProject.A.IService", true, true)]
+    [Arguments(NamespaceFilter.NotIn, "TestProject.A.C", false, false)]
+    [Arguments(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", true, false)]
+    [Arguments(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", true, true)]
+    public async Task Should_Filter_Namespaces(NamespaceFilter filter, string namespaceFilterValue, bool usingClass, bool usingTypeof)
     {
         var result = await Builder
                           .AddSources(
@@ -1831,16 +1826,13 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Filter_Multiple_Namespaces(
-        [Matrix(NamespaceFilter.Exact, NamespaceFilter.In, NamespaceFilter.NotIn)]
-        NamespaceFilter filter,
-        [Matrix("TestProject.A", "TestProject.A.ServiceA", "TestProject.A.C", "TestProject.A.C.ServiceC")]
-        string namespaceFilterValue,
-        [Matrix("TestProject.B", "TestProject.B.ServiceB")]
-        string namespaceFilterValueSecond,
-        [Matrix(true, false)]
-        bool usingClass
-    )
+    [Arguments(NamespaceFilter.Exact, "TestProject.A", "TestProject.B", false)]
+    [Arguments(NamespaceFilter.Exact, "TestProject.A.ServiceA", "TestProject.B.ServiceB", true)]
+    [Arguments(NamespaceFilter.In, "TestProject.A", "TestProject.B", false)]
+    [Arguments(NamespaceFilter.In, "TestProject.A.ServiceA", "TestProject.B.ServiceB", true)]
+    [Arguments(NamespaceFilter.NotIn, "TestProject.A.C", "TestProject.B", false)]
+    [Arguments(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", "TestProject.B.ServiceB", true)]
+    public async Task Should_Filter_Multiple_Namespaces(NamespaceFilter filter, string namespaceFilterValue, string namespaceFilterValueSecond, bool usingClass)
     {
         var result = await Builder
                           .AddSources(

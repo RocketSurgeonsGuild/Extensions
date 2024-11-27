@@ -178,11 +178,11 @@ internal static class AssemblyCollection
         foreach (var assembly in assemblies.OrderBy(z => z.ToDisplayString()))
         {
             // TODO: Make this always use the load context?
-            if (AssemblyProviders.StatementGeneration.GetAssemblyExpression(compilation, assembly) is not { } assemblyExpression)
+            if (StatementGeneration.GetAssemblyExpression(compilation, assembly) is not { } assemblyExpression)
             {
                 privateAssemblies.Add(assembly);
                 block = block.AddStatements(
-                    YieldStatement(SyntaxKind.YieldReturnStatement, AssemblyProviders.StatementGeneration.GetPrivateAssembly(assembly))
+                    YieldStatement(SyntaxKind.YieldReturnStatement, StatementGeneration.GetPrivateAssembly(assembly))
                 );
                 continue;
             }
@@ -295,7 +295,7 @@ internal static class AssemblyCollection
         var serviceDescriptorMethod = ServiceDescriptorCollection.Execute(new(context, compilation, implementationItems, privateAssemblies));
         var privateMembers = privateAssemblies
                             .OrderBy(z => z.ToDisplayString())
-                            .SelectMany(AssemblyProviders.StatementGeneration.AssemblyDeclaration)
+                            .SelectMany(StatementGeneration.AssemblyDeclaration)
                             .ToList();
         if (privateAssemblies.Any())
         {
