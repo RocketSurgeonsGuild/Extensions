@@ -60,20 +60,6 @@ public partial class Pipeline : NukeBuild,
     public GitVersion GitVersion { get; } = null!;
 
     public Target Test => _ => _;
-    public Target Lint => _ => _;
-
-    /// <summary>
-    ///     Only run the JetBrains cleanup code when running on the server
-    /// </summary>
-    public Target JetBrainsCleanupCode => _ => _
-                                              .Inherit<ICanDotNetFormat>(x => x.JetBrainsCleanupCode)
-                                              .OnlyWhenStatic(() => IsServerBuild);
-
-    [OptionalGitRepository]
-    public GitRepository? GitRepository { get; }
-
-    [Parameter("Configuration to build")]
-    public Configuration Configuration { get; } = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     [NonEntryTarget]
     public Target DotnetCoreTest => d => d
@@ -167,4 +153,19 @@ public partial class Pipeline : NukeBuild,
 //                                             )
 //                                         )
     ;
+
+    public Target Lint => _ => _;
+
+    /// <summary>
+    ///     Only run the JetBrains cleanup code when running on the server
+    /// </summary>
+    public Target JetBrainsCleanupCode => _ => _
+                                              .Inherit<ICanDotNetFormat>(x => x.JetBrainsCleanupCode)
+                                              .OnlyWhenStatic(() => IsServerBuild);
+
+    [OptionalGitRepository]
+    public GitRepository? GitRepository { get; }
+
+    [Parameter("Configuration to build")]
+    public Configuration Configuration { get; } = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 }
