@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net9.0</TargetFrameworks>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\src\Binding.Extensions\Rocket.Surgery.Extensions.Binding.csproj" />
         <ProjectReference Include="..\..\src\Reflection.Extensions\Rocket.Surgery.Reflection.Extensions.csproj" />
-        <ProjectReference Include="..\..\src\Unions.Extensions\Rocket.Surgery.Extensions.Unions.csproj" />
         <ProjectReference Include="..\..\src\Extensions\Rocket.Surgery.Extensions.csproj" />
         <ProjectReference Include="..\..\src\Reactive.Extensions\Rocket.Surgery.Reactive.Extensions.csproj" />
         <ProjectReference Include="..\..\src\DependencyInjection.Extensions\Rocket.Surgery.DependencyInjection.Extensions.csproj" />

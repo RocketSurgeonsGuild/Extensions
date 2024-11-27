@@ -11,6 +11,27 @@ namespace Rocket.Surgery.Reflection;
 /// <seealso cref="IEquatable{PropertyDelegate}" />
 public class PropertyDelegate : IEquatable<PropertyDelegate?>
 {
+    /// <summary>
+    ///     Implements the operator ==.
+    /// </summary>
+    /// <param name="delegate1">The delegate1.</param>
+    /// <param name="delegate2">The delegate2.</param>
+    /// <returns>
+    ///     The result of the operator.
+    /// </returns>
+    public static bool operator ==(PropertyDelegate? delegate1, PropertyDelegate? delegate2) =>
+        EqualityComparer<PropertyDelegate>.Default.Equals(delegate1!, delegate2!);
+
+    /// <summary>
+    ///     Implements the operator !=.
+    /// </summary>
+    /// <param name="delegate1">The delegate1.</param>
+    /// <param name="delegate2">The delegate2.</param>
+    /// <returns>
+    ///     The result of the operator.
+    /// </returns>
+    public static bool operator !=(PropertyDelegate? delegate1, PropertyDelegate? delegate2) => !( delegate1 == delegate2 );
+
     private static readonly MethodInfo CreateStronglyTypedExpressionMethod = typeof(PropertyDelegate)
                                                                             .GetTypeInfo()
                                                                             .GetDeclaredMethod(nameof(CreateStronglyTypedExpression))!;
@@ -79,12 +100,9 @@ public class PropertyDelegate : IEquatable<PropertyDelegate?>
     public Expression StronglyTypedExpression =>
         _stronglyTypedExpression ??= (Expression)CreateStronglyTypedExpressionMethod
                                                 .MakeGenericMethod(RootType, PropertyType)
-                                                .Invoke(this, Array.Empty<object>())!;
+                                                .Invoke(this, [])!;
 
-    private Expression CreateStronglyTypedExpression<TType, TProperty>()
-    {
-        return Expression.Lambda<Func<TType, TProperty>>(_bodyExpression, _parameterExpression);
-    }
+    private Expression CreateStronglyTypedExpression<TType, TProperty>() => Expression.Lambda<Func<TType, TProperty>>(_bodyExpression, _parameterExpression);
 
     /// <summary>
     ///     Determines whether the specified <see cref="System.Object" />, is equal to this instance.
@@ -93,24 +111,7 @@ public class PropertyDelegate : IEquatable<PropertyDelegate?>
     /// <returns>
     ///     <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as PropertyDelegate);
-    }
-
-    /// <summary>
-    ///     Indicates whether the current object is equal to another object of the same type.
-    /// </summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>
-    ///     true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
-    /// </returns>
-    public bool Equals(PropertyDelegate? other)
-    {
-        return other != null &&
-               EqualityComparer<Type>.Default.Equals(RootType, other.RootType) &&
-               Path == other.Path;
-    }
+    public override bool Equals(object? obj) => Equals(obj as PropertyDelegate);
 
     /// <summary>
     ///     Returns a hash code for this instance.
@@ -127,28 +128,12 @@ public class PropertyDelegate : IEquatable<PropertyDelegate?>
     }
 
     /// <summary>
-    ///     Implements the operator ==.
+    ///     Indicates whether the current object is equal to another object of the same type.
     /// </summary>
-    /// <param name="delegate1">The delegate1.</param>
-    /// <param name="delegate2">The delegate2.</param>
+    /// <param name="other">An object to compare with this object.</param>
     /// <returns>
-    ///     The result of the operator.
+    ///     true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.
     /// </returns>
-    public static bool operator ==(PropertyDelegate? delegate1, PropertyDelegate? delegate2)
-    {
-        return EqualityComparer<PropertyDelegate>.Default.Equals(delegate1!, delegate2!);
-    }
-
-    /// <summary>
-    ///     Implements the operator !=.
-    /// </summary>
-    /// <param name="delegate1">The delegate1.</param>
-    /// <param name="delegate2">The delegate2.</param>
-    /// <returns>
-    ///     The result of the operator.
-    /// </returns>
-    public static bool operator !=(PropertyDelegate? delegate1, PropertyDelegate? delegate2)
-    {
-        return !( delegate1 == delegate2 );
-    }
+    public bool Equals(PropertyDelegate? other) =>
+        other != null && EqualityComparer<Type>.Default.Equals(RootType, other.RootType) && Path == other.Path;
 }

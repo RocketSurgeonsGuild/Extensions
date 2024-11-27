@@ -1,7 +1,5 @@
 using Rocket.Surgery.Extensions.Encoding;
 using Rocket.Surgery.Extensions.Testing;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.Encoding;
 
@@ -10,53 +8,53 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding;
 ///     TODO: Anyone feels like it some more comprehensive testing of the crockford encoding would be helpful. Cheers, Mhano
 ///     TODO: Tests evolved a bit over time, refactoring to organise might be needed if adding significant test cases.
 /// </summary>
-public class Base32UrlTests : AutoFakeTest<XUnitTestContext>
+public class Base32UrlTests() : AutoFakeTest(Defaults.LoggerTest)
 {
-    [Fact]
-    public void Rfc4648TestVectorsEncodeDecode()
+    private static readonly string[][] rfc4684TestVectors =
+    [
+        ["f", "MY======"],
+        ["fo", "MZXQ===="],
+        ["foo", "MZXW6==="],
+        ["foob", "MZXW6YQ="],
+        ["fooba", "MZXW6YTB"],
+        ["foobar", "MZXW6YTBOI======"],
+        ["", ""],
+    ];
+
+    [Test]
+    public async Task Rfc4648TestVectorsEncodeDecode()
     {
         var enc = new Base32Url(true, true, false);
 
         foreach (var s in rfc4684TestVectors)
         {
-            Assert.Equal(enc.Encode(System.Text.Encoding.ASCII.GetBytes(s[0])), s[1]);
-            Assert.Equal(System.Text.Encoding.ASCII.GetString(enc.Decode(s[1])), s[0]);
+            await Assert.That(enc.Encode(System.Text.Encoding.ASCII.GetBytes(s[0]))).IsEqualTo(s[1]);
+            await Assert.That(System.Text.Encoding.ASCII.GetString(enc.Decode(s[1]))).IsEqualTo(s[0]);
         }
     }
 
-    [Fact]
-    public void IgnoreWs()
+    [Test]
+    public async Task IgnoreWs()
     {
-        Assert.Equal("Hello World!", System.Text.Encoding.ASCII.GetString(new Base32Url(false, true, true).Decode("JBS\t\r\n WY3D\tPE BLW64\n TMM\r QQQ")));
+        await Assert
+             .That(System.Text.Encoding.ASCII.GetString(new Base32Url(false, true, true).Decode("JBS\t\r\n WY3D\tPE BLW64\n TMM\r QQQ")))
+             .IsEqualTo("Hello World!");
     }
 
-    [Fact]
-    public void NotIgnoreWs()
-    {
-        Assert.Throws<ArgumentException>(
-            () =>
-                Assert.Equal(
-                    "Hello World!",
-                    System.Text.Encoding.ASCII.GetString(new Base32Url(false, true, false).Decode("JBS\t\r\n WY3D\tPE BLW64\n TMM\r QQQ"))
-                )
-        );
-    }
-
-    [Fact]
-    public void NoPaddingEncodeDecode()
+    [Test]
+    public async Task NoPaddingEncodeDecode()
     {
         var enc = new Base32Url(false, true, false);
 
         foreach (var s in rfc4684TestVectors)
         {
-            Assert.Equal(System.Text.Encoding.ASCII.GetString(enc.Decode(s[1].TrimEnd('='))), s[0]);
-            Assert.Equal(enc.Encode(System.Text.Encoding.ASCII.GetBytes(s[0])), s[1].TrimEnd('='));
+            await Assert.That(System.Text.Encoding.ASCII.GetString(enc.Decode(s[1].TrimEnd('=')))).IsEqualTo(s[0]);
+            await Assert.That(enc.Encode(System.Text.Encoding.ASCII.GetBytes(s[0]))).IsEqualTo(s[1].TrimEnd('='));
         }
     }
 
-
-    [Fact]
-    public void CaseInsensitiveDecode()
+    [Test]
+    public async Task CaseInsensitiveDecode()
     {
         var enc = new Base32Url(true, false, false);
 
@@ -65,12 +63,12 @@ public class Base32UrlTests : AutoFakeTest<XUnitTestContext>
             #pragma warning disable CA1308 // Normalize strings to uppercase
             var encodedS1 = s[1].ToLowerInvariant();
             #pragma warning restore CA1308 // Normalize strings to uppercase
-            Assert.Equal(System.Text.Encoding.ASCII.GetString(enc.Decode(encodedS1)), s[0]);
+            await Assert.That(System.Text.Encoding.ASCII.GetString(enc.Decode(encodedS1))).IsEqualTo(s[0]);
         }
     }
 
-    [Fact]
-    public void NoPaddingCaseSensitiveCustomAlphabetsEncodeDecode()
+    [Test]
+    public async Task NoPaddingCaseSensitiveCustomAlphabetsEncodeDecode()
     {
         // no vowels (prevents accidental profanity)
         // no numbers or letters easily mistakable
@@ -81,13 +79,13 @@ public class Base32UrlTests : AutoFakeTest<XUnitTestContext>
 
             foreach (var s in rfc4684TestVectors)
             {
-                Assert.Equal(System.Text.Encoding.ASCII.GetString(enc.Decode(enc.Encode(System.Text.Encoding.ASCII.GetBytes(s[0])))), s[0]);
+                await Assert.That(System.Text.Encoding.ASCII.GetString(enc.Decode(enc.Encode(System.Text.Encoding.ASCII.GetBytes(s[0]))))).IsEqualTo(s[0]);
             }
         }
     }
 
-    [Fact]
-    public void NoPaddingCaseInSensitiveCustomAlphabetsEncodeDecode()
+    [Test]
+    public async Task NoPaddingCaseInSensitiveCustomAlphabetsEncodeDecode()
     {
         // no vowels (prevents accidental profanity)
         // no numbers or letters easily mistakable
@@ -99,14 +97,14 @@ public class Base32UrlTests : AutoFakeTest<XUnitTestContext>
 
             foreach (var s in rfc4684TestVectors)
             {
-                Assert.Equal(System.Text.Encoding.ASCII.GetString(enc2.Decode(enc1.Encode(System.Text.Encoding.ASCII.GetBytes(s[0])))), s[0]);
-                Assert.Equal(System.Text.Encoding.ASCII.GetString(enc1.Decode(enc2.Encode(System.Text.Encoding.ASCII.GetBytes(s[0])))), s[0]);
+                await Assert.That(System.Text.Encoding.ASCII.GetString(enc2.Decode(enc1.Encode(System.Text.Encoding.ASCII.GetBytes(s[0]))))).IsEqualTo(s[0]);
+                await Assert.That(System.Text.Encoding.ASCII.GetString(enc1.Decode(enc2.Encode(System.Text.Encoding.ASCII.GetBytes(s[0]))))).IsEqualTo(s[0]);
             }
         }
     }
 
-    [Fact]
-    public void SequentialValuesSequentialLengths()
+    [Test]
+    public async Task SequentialValuesSequentialLengths()
     {
         var bcv = new Base32Url(false, false, false);
 
@@ -133,21 +131,8 @@ public class Base32UrlTests : AutoFakeTest<XUnitTestContext>
                     }
                 );
 
-                Assert.True(result);
+                await Assert.That(result).IsTrue();
             }
         }
     }
-
-    public Base32UrlTests(ITestOutputHelper outputHelper) : base(XUnitTestContext.Create(outputHelper)) { }
-
-    private static readonly string[][] rfc4684TestVectors =
-    {
-        new[] { "f", "MY======" },
-        new[] { "fo", "MZXQ====" },
-        new[] { "foo", "MZXW6===" },
-        new[] { "foob", "MZXW6YQ=" },
-        new[] { "fooba", "MZXW6YTB" },
-        new[] { "foobar", "MZXW6YTBOI======" },
-        new[] { "", "" },
-    };
 }

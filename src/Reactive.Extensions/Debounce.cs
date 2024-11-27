@@ -5,20 +5,23 @@ namespace System.Reactive.Linq;
 
 internal class Debounce<T> : ObserverBase<T>, IObserver<Debounce<T>>
 {
-    private readonly object _gate = new object();
-    private T _value;
-    private bool _hasValue;
+    private readonly object _gate = new();
     private readonly bool _leading;
     private readonly bool _trailing;
     private readonly IScheduler _scheduler;
-    private IDisposable? _serialCancelable;
-    private ulong _id;
     private readonly IObservable<Debounce<T>> _notifier;
     private readonly IObserver<T> _destination;
+    private T _value;
+    private bool _hasValue;
+    private IDisposable? _serialCancelable;
+    private ulong _id;
 
     public Debounce(
-        IObserver<T> destination, IObservable<Unit> notifier, bool leading,
-        bool trailing, IScheduler scheduler
+        IObserver<T> destination,
+        IObservable<Unit> notifier,
+        bool leading,
+        bool trailing,
+        IScheduler scheduler
     )
     {
         _leading = leading;

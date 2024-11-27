@@ -18,7 +18,6 @@
         <GlobalPackageReference Include="Roslynator.Refactorings" Version="4.12.9" />
         <GlobalPackageReference Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1" />
         <GlobalPackageReference Include="FluentAssertions.Analyzers" Version="0.34.1" />
-        <GlobalPackageReference Include="xunit.analyzers" Version="1.17.0" />
         <GlobalPackageReference Include="JetBrains.ExternalAnnotations" Version="10.2.154" />
     </ItemGroup>
     <ItemGroup>
@@ -44,6 +43,7 @@
         <PackageVersion Include="FastExpressionCompiler" Version="5.0.0" />
         <PackageVersion Include="NetEscapades.Configuration.Yaml" Version="3.1.0" />
         <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
         <PackageVersion Include="System.Collections.Immutable" Version="9.0.0" />
         <PackageVersion Include="System.Interactive" Version="6.0.1" />
         <PackageVersion Include="System.Interactive.Async" Version="6.0.1" />
@@ -54,17 +54,17 @@
         <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.0.1" />
         <PackageVersion Include="Scrutor" Version="5.0.2" />
         <PackageVersion Include="Bogus" Version="35.6.1" />
-        <PackageVersion Include="coverlet.collector" Version="6.0.2" />
+        <PackageVersion Include="Microsoft.CodeCoverage" Version="17.12.0" />
         <PackageVersion Include="FakeItEasy" Version="8.3.0" />
         <PackageVersion Include="FluentAssertions" Version="6.12.2" />
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageVersion Include="Rocket.Surgery.Extensions.Testing" Version="9.0.0" />
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="9.0.0" />
-        <PackageVersion Include="Rocket.Surgery.Extensions.Testing.XUnit" Version="9.0.0" />
+        <PackageVersion Include="Rocket.Surgery.Extensions.Testing.TUnit" Version="9.0.0" />
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.SourceGenerators" Version="9.0.0" />
-        <PackageVersion Include="Verify.Xunit" Version="28.3.2" />
+        <PackageVersion Include="TUnit" Version="0.3.31" />
+        <PackageVersion Include="Verify.TUnit" Version="28.3.2" />
         <PackageVersion Include="Verify.SourceGenerators" Version="2.5.0" />
-        <PackageVersion Include="xunit" Version="2.9.2" />
-        <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+        <PackageVersion Include="Serilog.Sinks.Spectre" Version="0.5.0" />
     </ItemGroup>
     <Import
         Project="$(MSBuildThisFileDirectory)/Directory.Packages.support.props"

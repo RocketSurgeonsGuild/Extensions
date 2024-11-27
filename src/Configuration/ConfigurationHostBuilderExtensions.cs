@@ -38,7 +38,8 @@ public static class ConfigHostBuilderExtensions
     public static IConfigurationBuilder UseLocalConfiguration(this IConfigurationBuilder configurationBuilder, Action<ConfigOptions> configOptionsAction)
     {
         return UseLocalConfiguration(
-            configurationBuilder, x =>
+            configurationBuilder,
+            x =>
             {
                 configOptionsAction(x);
                 return x;
@@ -52,56 +53,64 @@ public static class ConfigHostBuilderExtensions
     /// <param name="configurationBuilder">The host builder.</param>
     /// <param name="configOptionsAction"></param>
     public static IConfigurationBuilder UseLocalConfiguration(
-        this IConfigurationBuilder configurationBuilder, Func<ConfigOptions, ConfigOptions> configOptionsAction
+        this IConfigurationBuilder configurationBuilder,
+        Func<ConfigOptions, ConfigOptions> configOptionsAction
     )
     {
-        var options = configOptionsAction(new ConfigOptions());
+        var options = configOptionsAction(new());
         InsertConfigurationSourceAfter(
             configurationBuilder.Sources,
-            sources => sources
-                      .OfType<FileConfigurationSource>()
-                      .FirstOrDefault(
-                           x => string.Equals(x.Path, $"appsettings.{options.EnvironmentName ?? string.Empty}.json", StringComparison.OrdinalIgnoreCase)
-                       ),
-            new IConfigurationSource[]
-            {
+            sources => Enumerable.FirstOrDefault(
+                sources
+                   .OfType<FileConfigurationSource>(),
+                x => string.Equals(x.Path, $"appsettings.{options.EnvironmentName ?? string.Empty}.json", StringComparison.OrdinalIgnoreCase)
+            ),
+            [
                 new JsonConfigurationSource
                 {
                     FileProvider = configurationBuilder.GetFileProvider(),
                     Path = "appsettings.local.json",
                     Optional = true,
-                    ReloadOnChange = true
-                }
-            }
+                    ReloadOnChange = true,
+                },
+            ]
         );
 
         ReplaceConfigurationSourceAt(
             configurationBuilder.Sources,
-            sources => sources.OfType<FileConfigurationSource>().FirstOrDefault(
+            sources => Enumerable.FirstOrDefault(
+                sources
+                   .OfType<FileConfigurationSource>(),
                 x => string.Equals(x.Path, "appsettings.json", StringComparison.OrdinalIgnoreCase)
             ),
-            new ProxyConfigurationBuilder(configurationBuilder).Apply(options.ApplicationConfiguration)
-                                                               .GetAdditionalSources()
+            new ProxyConfigurationBuilder(configurationBuilder)
+               .Apply(options.ApplicationConfiguration)
+               .GetAdditionalSources()
         );
 
         if (!string.IsNullOrEmpty(options.EnvironmentName))
         {
             ReplaceConfigurationSourceAt(
                 configurationBuilder.Sources,
-                sources => sources
-                          .OfType<FileConfigurationSource>()
-                          .FirstOrDefault(x => string.Equals(x.Path, $"appsettings.{options.EnvironmentName}.json", StringComparison.OrdinalIgnoreCase)),
+                sources => Enumerable.FirstOrDefault(
+                    sources
+                       .OfType<FileConfigurationSource>(),
+                    x => string.Equals(x.Path, $"appsettings.{options.EnvironmentName}.json", StringComparison.OrdinalIgnoreCase)
+                ),
                 new ProxyConfigurationBuilder(configurationBuilder).Apply(options.EnvironmentConfiguration, options.EnvironmentName!).GetAdditionalSources()
             );
         }
 
         ReplaceConfigurationSourceAt(
             configurationBuilder.Sources,
-            sources => sources
-                      .OfType<FileConfigurationSource>()
-                      .FirstOrDefault(x => string.Equals(x.Path, "appsettings.local.json", StringComparison.OrdinalIgnoreCase)),
+            sources => Enumerable.FirstOrDefault(
+                sources
+                   .OfType<FileConfigurationSource>(),
+                x => string.Equals(x.Path, "appsettings.local.json", StringComparison.OrdinalIgnoreCase)
+            ),
             new ProxyConfigurationBuilder(configurationBuilder)
-               .Apply(options.EnvironmentConfiguration, "local").GetAdditionalSources()
+               .Apply(options.EnvironmentConfiguration, "local")
+               .GetAdditionalSources()
         );
 
         return configurationBuilder;

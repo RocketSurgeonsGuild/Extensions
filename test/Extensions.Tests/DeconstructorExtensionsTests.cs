@@ -1,13 +1,11 @@
 using FluentAssertions;
 using Rocket.Surgery.Extensions.Testing;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests;
 
-public class DeconstructorExtensionsTests(ITestOutputHelper outputHelper) : AutoFakeTest<XUnitTestContext>(XUnitTestContext.Create(outputHelper))
+public class DeconstructorExtensionsTests() : AutoFakeTest(Defaults.LoggerTest)
 {
-    [Fact]
+    [Test]
     public void Deconstructs_TheTarget_KeyValuePair()
     {
         var kvp = new KeyValuePair<string, object>("abc", 123);

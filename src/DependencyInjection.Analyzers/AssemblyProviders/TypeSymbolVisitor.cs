@@ -14,7 +14,7 @@ internal class TypeSymbolVisitor
     )
     {
         var visitor = new TypeSymbolVisitor(compilation, assemblyFilter, typeFilter);
-        foreach (var symbol in compilation.References.Select(compilation.GetAssemblyOrModuleSymbol).Concat([compilation.Assembly,]))
+        foreach (var symbol in compilation.References.Select(compilation.GetAssemblyOrModuleSymbol).Concat([compilation.Assembly]))
         {
             switch (symbol)
             {
@@ -38,8 +38,5 @@ internal class TypeSymbolVisitor
         return false;
     }
 
-    public ImmutableArray<INamedTypeSymbol> GetTypes()
-    {
-        return _types.ToImmutableArray();
-    }
+    public ImmutableArray<INamedTypeSymbol> GetTypes() => _types.ToImmutableArray();
 }

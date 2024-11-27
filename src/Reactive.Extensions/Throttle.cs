@@ -5,16 +5,16 @@ namespace System.Reactive.Linq;
 
 internal class Throttle<T> : ObserverBase<T>, IObserver<Throttle<T>>
 {
-    private readonly object _gate = new object();
-    private T _value;
-    private bool _hasValue;
+    private readonly object _gate = new();
     private readonly bool _leading;
     private readonly bool _trailing;
     private readonly IScheduler _scheduler;
-    private IDisposable? _serialCancelable;
-    private ulong _id;
     private readonly IObservable<Throttle<T>> _notifier;
     private readonly IObserver<T> _destination;
+    private T _value;
+    private bool _hasValue;
+    private IDisposable? _serialCancelable;
+    private ulong _id;
 
     public Throttle(
         IObserver<T> destination,

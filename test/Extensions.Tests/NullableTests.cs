@@ -1,16 +1,14 @@
 using FluentAssertions;
 using Rocket.Surgery.Extensions.Testing;
-using Xunit;
-using Xunit.Abstractions;
 
 #pragma warning disable CS0649
 #pragma warning disable CA1822
 #pragma warning disable CS8618
 namespace Rocket.Surgery.Extensions.Tests;
 
-public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTestContext>(XUnitTestContext.Create(outputHelper))
+public class NullableTests() : LoggerTest(Defaults.LoggerTest)
 {
-    [Fact]
+    [Test]
     public void Checks_Nullable_Property()
     {
         typeof(NullableTest)
@@ -20,7 +18,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.Nullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_Nullable_Field()
     {
         typeof(NullableTest)
@@ -30,7 +28,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.Nullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_Nullable_Method()
     {
         typeof(NullableTest)
@@ -40,7 +38,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.Nullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_Nullable_Parameter()
     {
         typeof(NullableTest).GetMethod(nameof(NullableTest.Method))!.GetParameters()[0]
@@ -49,7 +47,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
                             .Be(Nullability.Nullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_NonNullable_Property()
     {
         typeof(NonNullableTest)
@@ -59,7 +57,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NonNullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_NonNullable_Field()
     {
         typeof(NonNullableTest)
@@ -69,7 +67,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NonNullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_NonNullable_Method()
     {
         typeof(NonNullableTest)
@@ -79,7 +77,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NonNullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_NonNullable_Parameter()
     {
         typeof(NonNullableTest).GetMethod(nameof(NonNullableTest.Method))!.GetParameters()[0]
@@ -88,7 +86,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
                                .Be(Nullability.NonNullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_DisabledNullable_Property()
     {
         typeof(DisabledNullableTest)
@@ -98,7 +96,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NotDefined);
     }
 
-    [Fact]
+    [Test]
     public void Checks_DisabledNullable_Field()
     {
         typeof(DisabledNullableTest)
@@ -108,7 +106,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NotDefined);
     }
 
-    [Fact]
+    [Test]
     public void Checks_DisabledNullable_Method()
     {
         typeof(DisabledNullableTest)
@@ -118,7 +116,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NotDefined);
     }
 
-    [Fact]
+    [Test]
     public void Checks_DisabledNullable_Parameter()
     {
         typeof(DisabledNullableTest).GetMethod(nameof(DisabledNullableTest.Method))!.GetParameters()[0]
@@ -127,7 +125,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
                                     .Be(Nullability.NotDefined);
     }
 
-    [Fact]
+    [Test]
     public void Checks_ValueNullable_Property()
     {
         typeof(ValueNullableTest)
@@ -137,7 +135,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.Nullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_ValueNullable_Field()
     {
         typeof(ValueNullableTest)
@@ -147,7 +145,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.Nullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_ValueNullable_Method()
     {
         typeof(ValueNullableTest)
@@ -157,7 +155,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.Nullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_ValueNullable_Parameter()
     {
         typeof(ValueNullableTest).GetMethod(nameof(ValueNullableTest.Method))!.GetParameters()[0]
@@ -166,7 +164,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
                                  .Be(Nullability.Nullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_ValueNonNullable_Property()
     {
         typeof(ValueNonNullableTest)
@@ -176,7 +174,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NonNullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_ValueNonNullable_Field()
     {
         typeof(ValueNonNullableTest)
@@ -186,7 +184,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NonNullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_ValueNonNullable_Method()
     {
         typeof(ValueNonNullableTest)
@@ -196,7 +194,7 @@ public class NullableTests(ITestOutputHelper outputHelper) : LoggerTest<XUnitTes
            .Be(Nullability.NonNullable);
     }
 
-    [Fact]
+    [Test]
     public void Checks_ValueNonNullable_Parameter()
     {
         typeof(ValueNonNullableTest).GetMethod(nameof(ValueNonNullableTest.Method))!.GetParameters()[0]

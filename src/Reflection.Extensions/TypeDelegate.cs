@@ -8,10 +8,13 @@ namespace Rocket.Surgery.Reflection;
 
 internal class TypeDelegate : IEquatable<TypeDelegate?>
 {
+    public static bool operator ==(TypeDelegate? delegate1, TypeDelegate? delegate2) => EqualityComparer<TypeDelegate>.Default.Equals(delegate1!, delegate2!);
+
+    public static bool operator !=(TypeDelegate? delegate1, TypeDelegate? delegate2) => !( delegate1 == delegate2 );
     private readonly string? _separator;
     private readonly StringComparison _comparison;
     private readonly bool _shouldThrow;
-    private readonly ConcurrentDictionary<string, PropertyDelegate> _propertyGetters = new ConcurrentDictionary<string, PropertyDelegate>();
+    private readonly ConcurrentDictionary<string, PropertyDelegate> _propertyGetters = new();
 
     public TypeDelegate(Type type, string? separator, StringComparison comparison, bool shouldThrow = false)
     {
@@ -36,7 +39,7 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
                 if (c == '.' || c == '[' || c == ']')
                 {
                     parts.Add(current.ToString());
-                    current = new StringBuilder();
+                    current = new();
                 }
                 else
                 {
@@ -48,7 +51,7 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
             return parts.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
         }
 
-        return path.Split(new[] { _separator }, StringSplitOptions.RemoveEmptyEntries);
+        return path.Split([_separator], StringSplitOptions.RemoveEmptyEntries);
     }
 
     public bool TryGetPropertyDelegate(string path, out PropertyDelegate propertyDelegate)
@@ -65,7 +68,7 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
             {
                 if (!int.TryParse(part, out var intValue))
                 {
-                    if (_shouldThrow) throw new Exception($"Could not parse integer value for indexer from '{part}'.");
+                    if (_shouldThrow) throw new($"Could not parse integer value for indexer from '{part}'.");
                     propertyDelegate = null!;
                     return false;
                 }
@@ -79,25 +82,27 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
             {
                 if (!int.TryParse(part, out var intValue))
                 {
-                    if (_shouldThrow) throw new Exception($"Could not parse integer value for indexer from '{part}'.");
+                    if (_shouldThrow) throw new($"Could not parse integer value for indexer from '{part}'.");
                     propertyDelegate = null!;
                     return false;
                 }
 
-                var paremeter = innerType.GetRuntimeProperties()
-                                         .First(x => x.GetIndexParameters().Any(z => z.ParameterType == typeof(int)));
+                var paremeter = innerType
+                               .GetRuntimeProperties()
+                               .First(x => x.GetIndexParameters().Any(z => z.ParameterType == typeof(int)));
 
-                expression = Expression.MakeIndex(expression, paremeter, new[] { Expression.Constant(intValue, typeof(int)) });
+                expression = Expression.MakeIndex(expression, paremeter, [Expression.Constant(intValue, typeof(int))]);
                 innerType = innerType.GetGenericListInterfaceType()!.GenericTypeArguments[0];
                 continue;
             }
 
             if (innerType.IsClosedTypeOf(typeof(IDictionary<,>)) || innerType.IsClosedTypeOf(typeof(IReadOnlyDictionary<,>)))
             {
-                var paremeter = innerType.GetRuntimeProperties()
-                                         .First(x => x.GetIndexParameters().Any(z => z.ParameterType == typeof(string)));
+                var paremeter = innerType
+                               .GetRuntimeProperties()
+                               .First(x => x.GetIndexParameters().Any(z => z.ParameterType == typeof(string)));
 
-                expression = Expression.MakeIndex(expression, paremeter, new[] { Expression.Constant(part, typeof(string)) });
+                expression = Expression.MakeIndex(expression, paremeter, [Expression.Constant(part, typeof(string))]);
                 innerType = ( innerType.GetClosedTypeOf(typeof(IDictionary<,>)) ?? innerType.GetClosedTypeOf(typeof(IReadOnlyDictionary<,>)) )
                   ?.GenericTypeArguments[1];
                 continue;
@@ -106,26 +111,33 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
             if (innerType.IsGenericEnumerableInterfaceType())
             {
                 innerType = innerType.GetGenericEnumerableInterfaceType()!.GenericTypeArguments[0];
-                var firstMethod = typeof(Enumerable).GetRuntimeMethods().First(
-                                                         x =>
-                                                             x.Name == nameof(Enumerable.FirstOrDefault) && x.GetParameters().Length == 1
-                                                     )
-                                                    .MakeGenericMethod(innerType);
-                var skipMethod = typeof(Enumerable).GetRuntimeMethods().First(
-                                                        x =>
-                                                            x.Name == nameof(Enumerable.Skip)
-                                                    )
-                                                   .MakeGenericMethod(innerType);
+                var firstMethod = typeof(Enumerable)
+                                 .GetRuntimeMethods()
+                                 .First(
+                                      x =>
+                                          x.Name == nameof(Enumerable.FirstOrDefault) && x.GetParameters().Length == 1
+                                  )
+                                 .MakeGenericMethod(innerType);
+                var skipMethod = typeof(Enumerable)
+                                .GetRuntimeMethods()
+                                .First(
+                                     x =>
+                                         x.Name == nameof(Enumerable.Skip)
+                                 )
+                                .MakeGenericMethod(innerType);
 
                 if (!int.TryParse(part, out var intValue))
                 {
-                    if (_shouldThrow) throw new Exception($"Could not parse integer value for indexer from '{part}'.");
+                    if (_shouldThrow) throw new($"Could not parse integer value for indexer from '{part}'.");
                     propertyDelegate = null!;
                     return false;
                 }
 
                 expression = Expression.Call(
-                    null, skipMethod, expression, Expression.Constant(intValue, typeof(int))
+                    null,
+                    skipMethod,
+                    expression,
+                    Expression.Constant(intValue, typeof(int))
                 );
                 expression = Expression.Call(null, firstMethod, expression);
                 continue;
@@ -133,7 +145,7 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
 
             if (!Info.TryGetInfo(innerType, part, _comparison, out var info))
             {
-                if (_shouldThrow) throw new Exception($"Could not find property or field '{part}'.");
+                if (_shouldThrow) throw new($"Could not find property or field '{part}'.");
                 propertyDelegate = null!;
                 return false;
             }
@@ -142,28 +154,37 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
             expression = Expression.PropertyOrField(expression, info.Name);
         }
 
-        propertyDelegate = new PropertyDelegate(this, path, innerType!, expression, root);
+        propertyDelegate = new(this, path, innerType!, expression, root);
         _propertyGetters.TryAdd(path, propertyDelegate);
         return true;
     }
+
+    public override bool Equals(object? obj) => Equals(obj as TypeDelegate);
+
+    public override int GetHashCode() => 2049151605 + EqualityComparer<Type>.Default.GetHashCode(Type);
+
+    public bool Equals(TypeDelegate? other) =>
+        other != null && EqualityComparer<Type>.Default.Equals(Type, other.Type);
 
     private class Info
     {
         public static bool TryGetInfo(Type type, string name, StringComparison comparison, out Info info)
         {
-            var propertyInfo = type.GetRuntimeProperties()
-                                   .FirstOrDefault(x => x.Name.Equals(name, comparison));
+            var propertyInfo = type
+                              .GetRuntimeProperties()
+                              .FirstOrDefault(x => x.Name.Equals(name, comparison));
             if (propertyInfo != null)
             {
-                info = new Info(propertyInfo.PropertyType, propertyInfo.Name);
+                info = new(propertyInfo.PropertyType, propertyInfo.Name);
                 return true;
             }
 
-            var fieldInfo = type.GetRuntimeFields()
-                                .FirstOrDefault(x => x.Name.Equals(name, comparison));
+            var fieldInfo = type
+                           .GetRuntimeFields()
+                           .FirstOrDefault(x => x.Name.Equals(name, comparison));
             if (fieldInfo != null)
             {
-                info = new Info(fieldInfo.FieldType, fieldInfo.Name);
+                info = new(fieldInfo.FieldType, fieldInfo.Name);
                 return true;
             }
 
@@ -179,31 +200,5 @@ internal class TypeDelegate : IEquatable<TypeDelegate?>
 
         public string Name { get; }
         public Type Type { get; }
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as TypeDelegate);
-    }
-
-    public bool Equals(TypeDelegate? other)
-    {
-        return other != null &&
-               EqualityComparer<Type>.Default.Equals(Type, other.Type);
-    }
-
-    public override int GetHashCode()
-    {
-        return 2049151605 + EqualityComparer<Type>.Default.GetHashCode(Type);
-    }
-
-    public static bool operator ==(TypeDelegate? delegate1, TypeDelegate? delegate2)
-    {
-        return EqualityComparer<TypeDelegate>.Default.Equals(delegate1!, delegate2!);
-    }
-
-    public static bool operator !=(TypeDelegate? delegate1, TypeDelegate? delegate2)
-    {
-        return !( delegate1 == delegate2 );
     }
 }

@@ -32,8 +32,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.Extensions.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.Extensions.Binding", "src\Binding.Extensions\Rocket.Surgery.Extensions.Binding.csproj", "{F2D33B47-46FC-48C0-8819-7E733A068330}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.Extensions.Unions", "src\Unions.Extensions\Rocket.Surgery.Extensions.Unions.csproj", "{13A1B128-7082-4594-AE4C-1104713859C3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.Reflection.Extensions", "src\Reflection.Extensions\Rocket.Surgery.Reflection.Extensions.csproj", "{EB4ECE84-AD36-4443-9AD6-FC41C862BA18}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.System", "src\System\Rocket.Surgery.System.csproj", "{6A3C0DBA-F498-43F8-B256-5CC545D7B8EF}"
@@ -111,6 +109,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{6ADA
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8", "src\DependencyInjection.Analyzers.roslyn4.8\Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8.csproj", "{F5F65F73-DF54-4536-B9EC-1DBB08BF2876}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DependencyInjection.Analyzers", "DependencyInjection.Analyzers", "{3DDEE436-1558-4B39-A68D-941C00B4FEAF}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = src\DependencyInjection.Analyzers\.editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DependencyInjection.Analyzers.roslyn4.8", "DependencyInjection.Analyzers.roslyn4.8", "{5B4F9552-1A81-48EF-B441-8189923987EC}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = src\DependencyInjection.Analyzers.roslyn4.8\.editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -212,18 +220,6 @@ Global
 		{F2D33B47-46FC-48C0-8819-7E733A068330}.Release|x64.Build.0 = Release|Any CPU
 		{F2D33B47-46FC-48C0-8819-7E733A068330}.Release|x86.ActiveCfg = Release|Any CPU
 		{F2D33B47-46FC-48C0-8819-7E733A068330}.Release|x86.Build.0 = Release|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Debug|x64.Build.0 = Debug|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Debug|x86.Build.0 = Debug|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Release|x64.ActiveCfg = Release|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Release|x64.Build.0 = Release|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Release|x86.ActiveCfg = Release|Any CPU
-		{13A1B128-7082-4594-AE4C-1104713859C3}.Release|x86.Build.0 = Release|Any CPU
 		{EB4ECE84-AD36-4443-9AD6-FC41C862BA18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB4ECE84-AD36-4443-9AD6-FC41C862BA18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB4ECE84-AD36-4443-9AD6-FC41C862BA18}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -369,7 +365,6 @@ Global
 		{A84D04D2-36F6-472F-B9EF-C663FF842E2A} = {DF33E0FB-9790-4654-B60F-8AB22E0CC3D1}
 		{32C7CD4C-0480-4228-9302-A7CCA8933D1D} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{F2D33B47-46FC-48C0-8819-7E733A068330} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
-		{13A1B128-7082-4594-AE4C-1104713859C3} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{EB4ECE84-AD36-4443-9AD6-FC41C862BA18} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{6A3C0DBA-F498-43F8-B256-5CC545D7B8EF} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 		{1EA431B1-B8BF-4743-93FF-7592C60C5640} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
@@ -385,6 +380,8 @@ Global
 		{660E562C-E0E1-41D5-98A1-C816140566C8} = {545CF2DB-935E-4852-A509-1BEE3C3E99B1}
 		{6ADAB0E3-4082-4180-8D29-CDBC9A3E9784} = {545CF2DB-935E-4852-A509-1BEE3C3E99B1}
 		{F5F65F73-DF54-4536-B9EC-1DBB08BF2876} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
+		{3DDEE436-1558-4B39-A68D-941C00B4FEAF} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
+		{5B4F9552-1A81-48EF-B441-8189923987EC} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {439897C2-CCBD-44FE-B2DC-A3E4670ADA59}

@@ -18,42 +18,9 @@ internal static class Helpers
         return scheduler.CreateHotObservable(marbleList);
     }
 
-    public static string GetMarbles(this ITestableObserver<char> observer)
-    {
-        return ToMarbles(observer.Messages);
-    }
+    public static string GetMarbles(this ITestableObserver<char> observer) => ToMarbles(observer.Messages);
 
-    public static IObserver<Unit> CreateUnitObserver(this IObserver<char> observer)
-    {
-        return new UnitObserver(observer);
-    }
-
-    private class UnitObserver : IObserver<Unit>
-    {
-        private readonly IObserver<char> _observer;
-        private char _next;
-
-        public UnitObserver(IObserver<char> observer)
-        {
-            _observer = observer;
-            _next = 'a';
-        }
-
-        public void OnCompleted()
-        {
-            _observer.OnCompleted();
-        }
-
-        public void OnError(Exception error)
-        {
-            _observer.OnError(error);
-        }
-
-        public void OnNext(Unit value)
-        {
-            _observer.OnNext(_next++);
-        }
-    }
+    public static IObserver<Unit> CreateUnitObserver(this IObserver<char> observer) => new UnitObserver(observer);
 
     private static IEnumerable<Recorded<Notification<char>>> FromMarbles(string marbles)
     {
@@ -79,12 +46,12 @@ internal static class Helpers
             }
 
             var marbleEvents = character switch
-            {
-                '#' => EnumerableEx.Return(ReactiveTest.OnError<char>(time, new Exception("end"))),
-                '|' => EnumerableEx.Return(ReactiveTest.OnCompleted(time, character)),
-                '-' => Enumerable.Empty<Recorded<Notification<char>>>(),
-                _   => EnumerableEx.Return(ReactiveTest.OnNext(time, character)),
-            };
+                               {
+                                   '#' => EnumerableEx.Return(ReactiveTest.OnError<char>(time, new Exception("end"))),
+                                   '|' => EnumerableEx.Return(ReactiveTest.OnCompleted(time, character)),
+                                   '-' => [],
+                                   _   => EnumerableEx.Return(ReactiveTest.OnNext(time, character)),
+                               };
 
             foreach (var marble in marbleEvents)
                 yield return marble;
@@ -124,5 +91,32 @@ internal static class Helpers
         }
 
         return sb.ToString();
+    }
+
+    private class UnitObserver : IObserver<Unit>
+    {
+        private readonly IObserver<char> _observer;
+        private char _next;
+
+        public UnitObserver(IObserver<char> observer)
+        {
+            _observer = observer;
+            _next = 'a';
+        }
+
+        public void OnCompleted()
+        {
+            _observer.OnCompleted();
+        }
+
+        public void OnError(Exception error)
+        {
+            _observer.OnError(error);
+        }
+
+        public void OnNext(Unit value)
+        {
+            _observer.OnNext(_next++);
+        }
     }
 }

@@ -1,7 +1,5 @@
 using Rocket.Surgery.Extensions.Encoding;
 using Rocket.Surgery.Extensions.Testing;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.Encoding;
 
@@ -10,34 +8,34 @@ namespace Rocket.Surgery.Extensions.Tests.Encoding;
 ///     TODO: Anyone feels like it some more comprehensive testing of the crockford encoding would be helpful. Cheers, Mhano
 ///     TODO: Tests evolved a bit over time, refactoring to organise might be needed if adding significant test cases.
 /// </summary>
-public class Base3264EncodingTests : AutoFakeTest<XUnitTestContext>
+public class Base3264EncodingTests() : AutoFakeTest(Defaults.LoggerTest)
 {
-    [Fact]
-    public void TestEncodeDecode()
+    private const string Chars =
+        @"!""#$%&'()*+,-./:;<=>?@[\]^_`{|}~€‚ƒ„…†‡ˆ‰Š‹Œ¼½¾¿ÀÁÂÃÄÅÆÇÈÏÐÑÕ×ØÛÜÝÞßåæçéíðñõö÷øüýþÿabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ electricity 電	电	電 red 紅	红	紅";
+
+    [Test]
+    public async Task TestEncodeDecode()
     {
         var bytes = System.Text.Encoding.UTF8.GetBytes(Chars);
 
-        foreach (var encType in Enum.GetValues(typeof(EncodingType)).OfType<EncodingType>())
+        foreach (var encType in Enum.GetValues<EncodingType>())
         {
             var enc = Base3264Encoding.Encode(encType, bytes);
             var dec = Base3264Encoding.Decode(encType, enc);
 
-            Assert.NotEqual(Chars, enc);
-            Assert.Equal(bytes, dec);
-            // Console.WriteLine("Passed Binary: " + encType);
+            await Assert.That(enc).IsNotEquivalentTo(Chars);
+            await Assert.That(bytes).IsEquivalentTo(dec);
 
             var enc2 = Base3264Encoding.EncodeString(encType, Chars);
             var dec2 = Base3264Encoding.DecodeToString(encType, enc2);
 
-            Assert.NotEqual(Chars, enc2);
-
-            Assert.Equal(Chars, dec2);
-            // Console.WriteLine("Passed Text: " + encType);
+            await Assert.That(enc2).IsNotEquivalentTo(Chars);
+            await Assert.That(dec2).IsEquivalentTo(Chars);
         }
     }
 
-    [Fact]
-    public void TestAssymetricAlphabet()
+    [Test]
+    public async Task TestAssymetricAlphabet()
     {
         var b32 = new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet);
 
@@ -45,76 +43,76 @@ public class Base3264EncodingTests : AutoFakeTest<XUnitTestContext>
         var b = System.Text.Encoding.UTF8.GetBytes(s);
         var enc = b32.Encode(b);
 
-        Assert.Equal("91JPRV3F41BPYWKCCGGG", enc);
-        Assert.Equal(s, System.Text.Encoding.UTF8.GetString(b32.Decode(enc)));
+        await Assert.That(enc).IsEquivalentTo("91JPRV3F41BPYWKCCGGG");
+        await Assert.That(s).IsEquivalentTo(System.Text.Encoding.UTF8.GetString(b32.Decode(enc)));
 
         // test decode replacing second character which is a 1 above with an I here
-        Assert.Equal(s, System.Text.Encoding.UTF8.GetString(b32.Decode("9IJPRV3F41BPYWKCCGGG")));
+        await Assert.That(s).IsEquivalentTo(System.Text.Encoding.UTF8.GetString(b32.Decode("9IJPRV3F41BPYWKCCGGG")));
     }
 
-    [Fact]
-    public void TestBadAlphabetCI()
+    [Test]
+    public async Task TestBadAlphabetCI()
     {
         var ex = Assert.Throws<ArgumentException>(
             () => new Base32Url(false, true, true, "AACDEFGHIJKLMNOPQRSTUVWXYZ123456").Encode(Guid.NewGuid().ToByteArray())
         );
-        Assert.Equal("Case sensitive alphabet contains duplicate encoding characters: A", ex.Message);
+        await Assert.That(ex.Message).IsEqualTo("Case sensitive alphabet contains duplicate encoding characters: A");
     }
 
-    [Fact]
-    public void TestBadAlphabetCI2()
+    [Test]
+    public async Task TestBadAlphabetCI2()
     {
         var ex = Assert.Throws<ArgumentException>(
             () => new Base32Url(false, false, true, "AaCDEFGHIJKLMNOPQRSTUVWXYZ123456").Encode(Guid.NewGuid().ToByteArray())
         );
-        Assert.Equal("Case insensitive alphabet contains duplicate encoding characters: A", ex.Message);
+        await Assert.That(ex.Message).IsEqualTo("Case insensitive alphabet contains duplicate encoding characters: A");
     }
 
-    [Fact]
-    public void TestBadAlphabetAllowedIfCS()
+    [Test]
+    public async Task TestBadAlphabetAllowedIfCS()
     {
         var g = Guid.NewGuid();
         var enc = new Base32Url(false, true, true, "AaCDEFGHIJKLMNOPQRSTUVWXYZ123456");
         var o = enc.Encode(g.ToByteArray());
-        Assert.Equal(g, new(enc.Decode(o)));
+        await Assert.That(g).IsEqualTo(new(enc.Decode(o)));
     }
 
-    [Fact]
-    public void TestMethods()
+    [Test]
+    public async Task TestMethods()
     {
         var enc = System.Text.Encoding.UTF8;
         var stringIn = "Hello World!";
         var bytes = enc.GetBytes(stringIn);
 
-        Assert.Equal("SGVsbG8gV29ybGQh", Base3264Encoding.ToBase64(bytes));
-        Assert.Equal("SGVsbG8gV29ybGQh", Base3264Encoding.ToBase64Url(bytes));
-        Assert.Equal("JBSWY3DPEBLW64TMMQQQ", Base3264Encoding.ToBase32Url(bytes));
-        Assert.Equal("jb1sa5dxrbms6huccooo", Base3264Encoding.ToZBase32(bytes));
-        Assert.Equal("jbPsT5d2rbms6hRGGHHH", Base3264Encoding.ToBase32LowProfanity(bytes));
-        Assert.Equal("SGVsbG8gV29ybGQh", Base3264Encoding.ToBase64(stringIn));
-        Assert.Equal("SGVsbG8gV29ybGQh", Base3264Encoding.ToBase64Url(stringIn));
-        Assert.Equal("JBSWY3DPEBLW64TMMQQQ", Base3264Encoding.ToBase32Url(stringIn));
-        Assert.Equal("jb1sa5dxrbms6huccooo", Base3264Encoding.ToZBase32(stringIn));
-        Assert.Equal("jbPsT5d2rbms6hRGGHHH", Base3264Encoding.ToBase32LowProfanity(stringIn));
-        Assert.Equal("91JPRV3F41BPYWKCCGGG", Base3264Encoding.ToBase32Crockford(stringIn));
+        await Assert.That(Base3264Encoding.ToBase64(bytes)).IsEqualTo("SGVsbG8gV29ybGQh");
+        await Assert.That(Base3264Encoding.ToBase64Url(bytes)).IsEqualTo("SGVsbG8gV29ybGQh");
+        await Assert.That(Base3264Encoding.ToBase32Url(bytes)).IsEqualTo("JBSWY3DPEBLW64TMMQQQ");
+        await Assert.That(Base3264Encoding.ToZBase32(bytes)).IsEqualTo("jb1sa5dxrbms6huccooo");
+        await Assert.That(Base3264Encoding.ToBase32LowProfanity(bytes)).IsEqualTo("jbPsT5d2rbms6hRGGHHH");
+        await Assert.That(Base3264Encoding.ToBase64(stringIn)).IsEqualTo("SGVsbG8gV29ybGQh");
+        await Assert.That(Base3264Encoding.ToBase64Url(stringIn)).IsEqualTo("SGVsbG8gV29ybGQh");
+        await Assert.That(Base3264Encoding.ToBase32Url(stringIn)).IsEqualTo("JBSWY3DPEBLW64TMMQQQ");
+        await Assert.That(Base3264Encoding.ToZBase32(stringIn)).IsEqualTo("jb1sa5dxrbms6huccooo");
+        await Assert.That(Base3264Encoding.ToBase32LowProfanity(stringIn)).IsEqualTo("jbPsT5d2rbms6hRGGHHH");
+        await Assert.That(Base3264Encoding.ToBase32Crockford(stringIn)).IsEqualTo("91JPRV3F41BPYWKCCGGG");
 
-        Assert.Equal(stringIn, enc.GetString(Base3264Encoding.FromBase64(Base3264Encoding.ToBase64(stringIn))));
-        Assert.Equal(stringIn, enc.GetString(Base3264Encoding.FromBase64Url(Base3264Encoding.ToBase64Url(stringIn))));
-        Assert.Equal(stringIn, enc.GetString(Base3264Encoding.FromBase32Url(Base3264Encoding.ToBase32Url(stringIn))));
-        Assert.Equal(stringIn, enc.GetString(Base3264Encoding.FromZBase32(Base3264Encoding.ToZBase32(stringIn))));
-        Assert.Equal(stringIn, enc.GetString(Base3264Encoding.FromBase32LowProfanity(Base3264Encoding.ToBase32LowProfanity(stringIn))));
-        Assert.Equal(stringIn, enc.GetString(Base3264Encoding.FromBase32Crockford(Base3264Encoding.ToBase32Crockford(stringIn))));
-        Assert.Equal(stringIn, Base3264Encoding.FromBase64ToString(Base3264Encoding.ToBase64(stringIn)));
+        await Assert.That(stringIn).IsEqualTo(enc.GetString(Base3264Encoding.FromBase64(Base3264Encoding.ToBase64(stringIn))));
+        await Assert.That(stringIn).IsEqualTo(enc.GetString(Base3264Encoding.FromBase64Url(Base3264Encoding.ToBase64Url(stringIn))));
+        await Assert.That(stringIn).IsEqualTo(enc.GetString(Base3264Encoding.FromBase32Url(Base3264Encoding.ToBase32Url(stringIn))));
+        await Assert.That(stringIn).IsEqualTo(enc.GetString(Base3264Encoding.FromZBase32(Base3264Encoding.ToZBase32(stringIn))));
+        await Assert.That(stringIn).IsEqualTo(enc.GetString(Base3264Encoding.FromBase32LowProfanity(Base3264Encoding.ToBase32LowProfanity(stringIn))));
+        await Assert.That(stringIn).IsEqualTo(enc.GetString(Base3264Encoding.FromBase32Crockford(Base3264Encoding.ToBase32Crockford(stringIn))));
+        await Assert.That(stringIn).IsEqualTo(Base3264Encoding.FromBase64ToString(Base3264Encoding.ToBase64(stringIn)));
 
-        Assert.Equal(stringIn, Base3264Encoding.FromBase64UrlToString(Base3264Encoding.ToBase64Url(stringIn)));
-        Assert.Equal(stringIn, Base3264Encoding.FromBase32UrlToString(Base3264Encoding.ToBase32Url(stringIn)));
-        Assert.Equal(stringIn, Base3264Encoding.FromZBase32ToString(Base3264Encoding.ToZBase32(stringIn)));
-        Assert.Equal(stringIn, Base3264Encoding.FromBase32LowProfanityToString(Base3264Encoding.ToBase32LowProfanity(stringIn)));
-        Assert.Equal(stringIn, Base3264Encoding.FromBase32CrockfordToString(Base3264Encoding.ToBase32Crockford(stringIn)));
+        await Assert.That(stringIn).IsEqualTo(Base3264Encoding.FromBase64UrlToString(Base3264Encoding.ToBase64Url(stringIn)));
+        await Assert.That(stringIn).IsEqualTo(Base3264Encoding.FromBase32UrlToString(Base3264Encoding.ToBase32Url(stringIn)));
+        await Assert.That(stringIn).IsEqualTo(Base3264Encoding.FromZBase32ToString(Base3264Encoding.ToZBase32(stringIn)));
+        await Assert.That(stringIn).IsEqualTo(Base3264Encoding.FromBase32LowProfanityToString(Base3264Encoding.ToBase32LowProfanity(stringIn)));
+        await Assert.That(stringIn).IsEqualTo(Base3264Encoding.FromBase32CrockfordToString(Base3264Encoding.ToBase32Crockford(stringIn)));
     }
 
-    [Fact]
-    public void TestKnownValues()
+    [Test]
+    public async Task TestKnownValues()
     {
         // it is important to lock in fixed values, and not just test round trip encoding/decoding,
         // this protects us from future breaking encoding changes.
@@ -505,8 +503,8 @@ public class Base3264EncodingTests : AutoFakeTest<XUnitTestContext>
                 // Console.WriteLine("Testing Text: {0}: {1}", di.Key, de.Key.Length > 20 ? (de.Key.Substring(0, 20) + "... Len=" + de.Key.Length) : de.Key);
                 var enc2 = Base3264Encoding.EncodeString(di.Key, de.Key);
                 var dec2 = Base3264Encoding.DecodeToString(di.Key, enc2);
-                Assert.Equal(di.Value, enc2);
-                Assert.Equal(de.Key, dec2);
+                await Assert.That(di.Value).IsEqualTo(enc2);
+                await Assert.That(de.Key).IsEqualTo(dec2);
             }
         }
 
@@ -534,9 +532,4 @@ public class Base3264EncodingTests : AutoFakeTest<XUnitTestContext>
              Console.WriteLine("}},");
          }*/
     }
-
-    public Base3264EncodingTests(ITestOutputHelper outputHelper) : base(XUnitTestContext.Create(outputHelper)) { }
-
-    private const string Chars =
-        @"!""#$%&'()*+,-./:;<=>?@[\]^_`{|}~€‚ƒ„…†‡ˆ‰Š‹Œ¼½¾¿ÀÁÂÃÄÅÆÇÈÏÐÑÕ×ØÛÜÝÞßåæçéíðñõö÷øüýþÿabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ electricity 電	电	電 red 紅	红	紅";
 }

@@ -14,9 +14,7 @@ public class BackingFieldHelper
     /// <summary>
     ///     A default instance
     /// </summary>
-    public static BackingFieldHelper Instance { get; } = new BackingFieldHelper();
-
-    private readonly ConcurrentDictionary<(Type, string), FieldInfo> _backingFields = new ConcurrentDictionary<(Type, string), FieldInfo>();
+    public static BackingFieldHelper Instance { get; } = new();
 
     private static FieldInfo? GetBackingField(PropertyInfo? pi)
     {
@@ -33,16 +31,22 @@ public class BackingFieldHelper
         return backingField;
     }
 
+    private readonly ConcurrentDictionary<(Type, string), FieldInfo> _backingFields = new();
+
     private FieldInfo GetBackingField(Type objectType, Type interfaceType, string name)
     {
-        if (!_backingFields.TryGetValue((objectType, name), out var backingField))
+        if (!_backingFields.TryGetValue(( objectType, name ), out var backingField))
         {
-            var property = objectType.GetTypeInfo().GetProperty(
-                $"{interfaceType.FullName?.Replace("+", ".")}.{name}", BindingFlags.NonPublic | BindingFlags.Instance
-            ) ?? objectType.GetTypeInfo().GetProperty(name);
+            var property = objectType
+                          .GetTypeInfo()
+                          .GetProperty(
+                               $"{interfaceType.FullName?.Replace("+", ".")}.{name}",
+                               BindingFlags.NonPublic | BindingFlags.Instance
+                           )
+             ?? objectType.GetTypeInfo().GetProperty(name);
 
             backingField = GetBackingField(property)!;
-            _backingFields.TryAdd((objectType, name), backingField);
+            _backingFields.TryAdd(( objectType, name ), backingField);
         }
 
         if (backingField is null)

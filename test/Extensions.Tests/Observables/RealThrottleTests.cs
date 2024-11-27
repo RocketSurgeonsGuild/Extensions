@@ -2,14 +2,14 @@
 using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using Rocket.Surgery.Extensions.Testing;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace Rocket.Surgery.Extensions.Tests.Observables;
 
-public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<XUnitTestContext>(XUnitTestContext.Create(testOutputHelper))
+public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
 {
-    [Fact]
+    private readonly TestScheduler _scheduler = new();
+
+    [Test]
     public void Should_Throttle_On_Leading_Edge()
     {
         var input = " a-b-c-d-|";
@@ -23,7 +23,7 @@ public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<
         receiver.GetMarbles().Should().Be(output);
     }
 
-    [Fact]
+    [Test]
     public void Should_Throttle_With_Unit()
     {
         var input = " a-b-c-d-|";
@@ -37,7 +37,7 @@ public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<
         receiver.GetMarbles().Should().Be(output);
     }
 
-    [Fact]
+    [Test]
     public void Should_Throttle_On_Trailing_Edge()
     {
         var input = " a-b-c-d-|";
@@ -53,7 +53,7 @@ public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<
         receiver.GetMarbles().Should().Be(output);
     }
 
-    [Fact]
+    [Test]
     public void Should_Ignore_Overlap()
     {
         var input = " a-b-c-d-|";
@@ -69,7 +69,7 @@ public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<
         receiver.GetMarbles().Should().Be(output);
     }
 
-    [Fact]
+    [Test]
     public void Should_Throttle_On_Both_Edges()
     {
         var input = " a-b-c-d-|";
@@ -84,6 +84,4 @@ public class RealThrottleTests(ITestOutputHelper testOutputHelper) : LoggerTest<
 
         receiver.GetMarbles().Should().Be(output);
     }
-
-    private readonly TestScheduler _scheduler = new();
 }

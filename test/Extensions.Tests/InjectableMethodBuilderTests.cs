@@ -2,13 +2,12 @@ using FakeItEasy;
 using FluentAssertions;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
 using Rocket.Surgery.Reflection;
-using Xunit;
 
 namespace Rocket.Surgery.Extensions.Tests;
 
 public class InjectableMethodBuilderTests
 {
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithZeroParameters()
     {
         var method = InjectableMethodBuilder
@@ -27,7 +26,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithZeroParameters_UsingTypeForMethod()
     {
         var method = InjectableMethodBuilder
@@ -46,7 +45,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithOneParameters()
     {
         var method = InjectableMethodBuilder
@@ -67,7 +66,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithOneParameters_Enumerable()
     {
         var method = InjectableMethodBuilder
@@ -92,7 +91,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected3))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithTwoParameters()
     {
         var method = InjectableMethodBuilder
@@ -120,7 +119,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithThreeParameters()
     {
         var method = InjectableMethodBuilder
@@ -151,7 +150,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithFourParameters()
     {
         var method = InjectableMethodBuilder
@@ -185,7 +184,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithFiveParameters()
     {
         var method = InjectableMethodBuilder
@@ -222,7 +221,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithSixParameters()
     {
         var method = InjectableMethodBuilder
@@ -262,7 +261,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithSevenParameters()
     {
         var method = InjectableMethodBuilder
@@ -305,7 +304,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_WithEightParameters()
     {
         var method = InjectableMethodBuilder
@@ -351,7 +350,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_With9Parameters()
     {
         var method = InjectableMethodBuilder
@@ -400,7 +399,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_With10Parameters()
     {
         var method = InjectableMethodBuilder
@@ -452,7 +451,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_With11Parameters()
     {
         var method = InjectableMethodBuilder
@@ -507,7 +506,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void CreatesAMethod_With12Parameters()
     {
         var method = InjectableMethodBuilder
@@ -567,7 +566,7 @@ public class InjectableMethodBuilderTests
 
     // #######
 
-    [Fact]
+    [Test]
     public void MapsActionAndExecutes()
     {
         var methodFuncTestMock = A.Fake<MethodFuncTest>();
@@ -581,7 +580,7 @@ public class InjectableMethodBuilderTests
         A.CallTo(() => methodFuncTestMock.Execute()).MustHaveHappenedOnceExactly();
     }
 
-    [Fact]
+    [Test]
     public void MapsConfiguredParameterToAction()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
@@ -599,7 +598,8 @@ public class InjectableMethodBuilderTests
                     .Compile();
 
         action(methodFuncTestMock, serviceProvider, A.Fake<IConfigured1>());
-        A.CallTo(() => methodFuncTestMock.Execute1(A<IConfigured1>.Ignored, A<IInjected1>.Ignored, A<IInjected2>.Ignored, A<IInjected3>.Ignored))
-         .MustHaveHappenedOnceExactly();
+        A
+           .CallTo(() => methodFuncTestMock.Execute1(A<IConfigured1>.Ignored, A<IInjected1>.Ignored, A<IInjected2>.Ignored, A<IInjected3>.Ignored))
+           .MustHaveHappenedOnceExactly();
     }
 }

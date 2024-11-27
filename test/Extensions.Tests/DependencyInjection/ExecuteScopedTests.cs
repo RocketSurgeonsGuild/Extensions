@@ -2,16 +2,73 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
-using Xunit;
-using Xunit.Abstractions;
 
 #pragma warning disable IDE0058, RCS1021, IDE0053, CS1998
 
 namespace Rocket.Surgery.Extensions.Tests.DependencyInjection;
 
-public class ExecuteScopedTests : LoggerTest<XUnitTestContext>
+public class ExecuteScopedTests : LoggerTest
 {
-    [Fact]
+    public static IEnumerable<Func<(Type serviceType, Type implementationType)>> ExecuteScopedTypes()
+    {
+        var interfaces = typeof(IExecuteScopedOptional<>)
+                        .Assembly.GetExportedTypes()
+                        .Where(
+                             z => z is
+                             {
+                                 IsGenericTypeDefinition: true,
+                                 Name: ['I', 'E', 'x', 'e', 'c', 'u', 't', 'e', 'S', 'c', 'o', 'p', 'e', 'd', ..],
+                             }
+                         );
+        var implementations = typeof(IExecuteScopedOptional<>)
+                             .Assembly.GetExportedTypes()
+                             .Where(
+                                  z => z is
+                                  {
+                                      IsGenericTypeDefinition: true,
+                                      Name: ['E', 'x', 'e', 'c', 'u', 't', 'e', 'S', 'c', 'o', 'p', 'e', 'd', ..],
+                                  }
+                              );
+
+        List<Type> services = [typeof(Service1), typeof(Service2), typeof(Service3), typeof(Service4), typeof(Service5), typeof(Service6)];
+
+        foreach (( var serviceType, var implementationType ) in interfaces.Join(
+                     implementations,
+                     z => z.Name.Substring(1),
+                     z => z.Name,
+                     (serviceType, implementationType) => ( serviceType, implementationType )
+                 ))
+        {
+            yield return () => (
+                             serviceType.MakeGenericType(services.Take(serviceType.GetGenericArguments().Length).ToArray()),
+                             implementationType.MakeGenericType(services.Take(implementationType.GetGenericArguments().Length).ToArray())
+                         );
+        }
+
+        yield return () => (
+                         typeof(IExecuteScoped<Service1>),
+                         typeof(ExecuteScoped<Service1>)
+                     );
+    }
+
+    private readonly IServiceProvider _serviceProvider;
+
+    public ExecuteScopedTests() : base(Defaults.LoggerTest)
+    {
+        var value = 0;
+        _serviceProvider = new ServiceCollection()
+                          .AddExecuteScopedServices()
+                          .AddScoped(_ => new ScopedValue(value++))
+                          .AddScoped<Service1>()
+                          .AddScoped<Service2>()
+                          .AddScoped<Service3>()
+                          .AddScoped<Service4>()
+                          .AddScoped<Service5>()
+                          .AddScoped<Service6>()
+                          .BuildServiceProvider();
+    }
+
+    [Test]
     public async Task Work_With_One_Service()
     {
         var executor = _serviceProvider.WithScoped<Service1>();
@@ -21,7 +78,7 @@ public class ExecuteScopedTests : LoggerTest<XUnitTestContext>
         await executor.Invoke(async s => { s.ScopedValue.Value.Should().Be(3); }).ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Two_Services()
     {
         var executor = _serviceProvider.WithScoped<Service1, Service2>();
@@ -64,7 +121,7 @@ public class ExecuteScopedTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Three_Services()
     {
         var executor = _serviceProvider.WithScoped<Service1, Service2, Service3>();
@@ -111,7 +168,7 @@ public class ExecuteScopedTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Four_Services()
     {
         var executor = _serviceProvider.WithScoped<Service1, Service2, Service3, Service4>();
@@ -162,7 +219,7 @@ public class ExecuteScopedTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Five_Services()
     {
         var executor = _serviceProvider.WithScoped<Service1, Service2, Service3, Service4, Service5>();
@@ -217,7 +274,7 @@ public class ExecuteScopedTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    [Fact]
+    [Test]
     public async Task Work_With_Six_Services()
     {
         var executor = _serviceProvider.WithScoped<Service1, Service2, Service3, Service4, Service5, Service6>();
@@ -276,36 +333,8 @@ public class ExecuteScopedTests : LoggerTest<XUnitTestContext>
              .ConfigureAwait(false);
     }
 
-    public ExecuteScopedTests(ITestOutputHelper outputHelper) : base(XUnitTestContext.Create(outputHelper))
-    {
-        var value = 0;
-        _serviceProvider = new ServiceCollection()
-                          .AddExecuteScopedServices()
-                          .AddScoped(_ => new ScopedValue(value++))
-                          .AddScoped<Service1>()
-                          .AddScoped<Service2>()
-                          .AddScoped<Service3>()
-                          .AddScoped<Service4>()
-                          .AddScoped<Service5>()
-                          .AddScoped<Service6>()
-                          .BuildServiceProvider();
-    }
-
-    private readonly IServiceProvider _serviceProvider;
-
-    [Theory]
-    [InlineData(typeof(IExecuteScoped<Service1>), typeof(ExecuteScoped<Service1>))]
-    [InlineData(typeof(IExecuteScoped<Service1, Service2>), typeof(ExecuteScoped<Service1, Service2>))]
-    [InlineData(typeof(IExecuteScoped<Service1, Service2, Service3>), typeof(ExecuteScoped<Service1, Service2, Service3>))]
-    [InlineData(typeof(IExecuteScoped<Service1, Service2, Service3, Service4>), typeof(ExecuteScoped<Service1, Service2, Service3, Service4>))]
-    [InlineData(
-        typeof(IExecuteScoped<Service1, Service2, Service3, Service4, Service5>),
-        typeof(ExecuteScoped<Service1, Service2, Service3, Service4, Service5>)
-    )]
-    [InlineData(
-        typeof(IExecuteScoped<Service1, Service2, Service3, Service4, Service5, Service6>),
-        typeof(ExecuteScoped<Service1, Service2, Service3, Service4, Service5, Service6>)
-    )]
+    [Test]
+    [MethodDataSource(nameof(ExecuteScopedTypes))]
     public async Task Should_Resolve_ExecuteScoped(Type serviceType, Type implementationType) =>
         _serviceProvider.GetService(serviceType).Should().BeOfType(implementationType);
 

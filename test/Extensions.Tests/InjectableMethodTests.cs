@@ -2,7 +2,6 @@ using FakeItEasy;
 using FluentAssertions;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
 using Rocket.Surgery.Reflection;
-using Xunit;
 
 // ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable CA1040 // Avoid empty interfaces
@@ -13,39 +12,18 @@ namespace Rocket.Surgery.Extensions.Tests;
 
 public class InjectableMethodTests
 {
-    public interface IConfigured1Sub : IConfigured1
+    public static class MethodFuncTestStatic
     {
-    }
-
-    private class Configured1 : IConfigured1
-    {
-    }
-
-    private class Configured1Sub : IConfigured1Sub
-    {
-    }
-
-    public abstract class AbstractBase
-    {
-    }
-
-    public class DerivedA : AbstractBase
-    {
-    }
-
-    public class DerivedB : AbstractBase
-    {
-    }
-
-    [UsedImplicitly]
-    public abstract class MethodFuncTest
-    {
-        public virtual void Execute(IConfigured1 configured1)
+        public static void Execute(IConfigured1 configured1)
         {
+            if (configured1 is null)
+            {
+                throw new ArgumentNullException(nameof(configured1));
+            }
         }
     }
 
-    [Fact]
+    [Test]
     public void HandlesInheritedValues()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
@@ -58,51 +36,33 @@ public class InjectableMethodTests
 
         action(methodFuncTest, serviceProviderMock, new Configured1());
 
-        A.CallTo(
-            () => methodFuncTest.Execute(
-                A<IConfigured1>.That.Matches(x => x.GetType() == typeof(Configured1))
+        A
+           .CallTo(
+                () => methodFuncTest.Execute(
+                    A<IConfigured1>.That.Matches(x => x.GetType() == typeof(Configured1))
+                )
             )
-        ).MustHaveHappened();
+           .MustHaveHappened();
         A.CallTo(() => serviceProviderMock.GetService(A<Type>.Ignored)).MustNotHaveHappened();
     }
 
-    [UsedImplicitly]
-    public abstract class MethodFuncTest2
-    {
-        public virtual void Execute(IConfigured1Sub configured1)
-        {
-        }
-    }
-
-    [Fact]
+    [Test]
     public void HandlesInheritedTypes()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
         A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
         A.Fake<MethodFuncTest2>();
-        Action a = () =>
-        {
-            InjectableMethodBuilder
-               .Create<MethodFuncTest2>(nameof(MethodFuncTest2.Execute))
-               .WithParameter<IConfigured1>()
-               .Compile();
-        };
+        var a = () =>
+                {
+                    InjectableMethodBuilder
+                       .Create<MethodFuncTest2>(nameof(MethodFuncTest2.Execute))
+                       .WithParameter<IConfigured1>()
+                       .Compile();
+                };
         a.Should().Throw<ArgumentException>();
     }
 
-    [UsedImplicitly]
-    public abstract class MethodFuncTest3
-    {
-        public virtual void Execute(IConfigured1 configured1)
-        {
-        }
-
-        public virtual void Execute2(AbstractBase configured1)
-        {
-        }
-    }
-
-    [Fact]
+    [Test]
     public void HandlesOutheritedTypes()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
@@ -119,7 +79,7 @@ public class InjectableMethodTests
     }
 
 
-    [Fact]
+    [Test]
     public void HandlesOutheritedTypes2()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
@@ -130,23 +90,12 @@ public class InjectableMethodTests
                     .WithParameter<DerivedA>()
                     .Compile();
 
-        action(methodFuncTest, serviceProviderMock, new DerivedA());
+        action(methodFuncTest, serviceProviderMock, new());
 
         A.CallTo(() => serviceProviderMock.GetService(A<Type>.Ignored)).MustNotHaveHappened();
     }
 
-    public static class MethodFuncTestStatic
-    {
-        public static void Execute(IConfigured1 configured1)
-        {
-            if (configured1 is null)
-            {
-                throw new ArgumentNullException(nameof(configured1));
-            }
-        }
-    }
-
-    [Fact]
+    [Test]
     public void HandlesStaticFunctions()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
@@ -158,5 +107,37 @@ public class InjectableMethodTests
         action(serviceProviderMock);
 
         A.CallTo(() => serviceProviderMock.GetService(typeof(IConfigured1))).MustHaveHappened();
+    }
+
+    public interface IConfigured1Sub : IConfigured1 { }
+
+    private class Configured1 : IConfigured1 { }
+
+    private class Configured1Sub : IConfigured1Sub { }
+
+    public abstract class AbstractBase { }
+
+    public class DerivedA : AbstractBase { }
+
+    public class DerivedB : AbstractBase { }
+
+    [UsedImplicitly]
+    public abstract class MethodFuncTest
+    {
+        public virtual void Execute(IConfigured1 configured1) { }
+    }
+
+    [UsedImplicitly]
+    public abstract class MethodFuncTest2
+    {
+        public virtual void Execute(IConfigured1Sub configured1) { }
+    }
+
+    [UsedImplicitly]
+    public abstract class MethodFuncTest3
+    {
+        public virtual void Execute(IConfigured1 configured1) { }
+
+        public virtual void Execute2(AbstractBase configured1) { }
     }
 }
