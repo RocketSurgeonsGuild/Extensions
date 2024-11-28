@@ -17,13 +17,8 @@
   Services: [
     {
       Lifetime: Scoped,
-      ServiceType: Service,
-      ImplementationType: Service
-    },
-    {
-      Lifetime: Scoped,
-      ServiceType: IService`1[[System.Int32, System.Private.CoreLib, Version=version, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]],
-      ImplementationFactory: System.Func`2[System.IServiceProvider,IService`1[System.Int32]]
+      ServiceType: Nested+ServiceA,
+      ImplementationType: Nested+ServiceA
     },
     {
       Lifetime: Scoped,
@@ -32,8 +27,13 @@
     },
     {
       Lifetime: Scoped,
-      ServiceType: ServiceA,
-      ImplementationType: ServiceA
+      ServiceType: Service,
+      ImplementationType: Service
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: IService`1[[System.Int32, System.Private.CoreLib, Version=version, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]],
+      ImplementationFactory: System.Func`2[System.IServiceProvider,IService`1[System.Int32]]
     },
     {
       Lifetime: Scoped,

@@ -17,6 +17,11 @@
   Services: [
     {
       Lifetime: Scoped,
+      ServiceType: Nested+ServiceA,
+      ImplementationType: Nested+ServiceA
+    },
+    {
+      Lifetime: Scoped,
       ServiceType: Service,
       ImplementationType: Service
     },
@@ -24,11 +29,6 @@
       Lifetime: Scoped,
       ServiceType: IServiceB,
       ImplementationFactory: System.Func`2[System.IServiceProvider,IServiceB]
-    },
-    {
-      Lifetime: Scoped,
-      ServiceType: ServiceA,
-      ImplementationType: ServiceA
     },
     {
       Lifetime: Scoped,

@@ -18,12 +18,12 @@
     {
       Lifetime: Scoped,
       ServiceType: IService,
-      ImplementationType: Service
+      ImplementationType: Nested+ServiceA
     },
     {
       Lifetime: Scoped,
       ServiceType: IService,
-      ImplementationType: ServiceA
+      ImplementationType: Service
     }
   ]
 }

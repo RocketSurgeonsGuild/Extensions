@@ -591,7 +591,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService { }
 public interface IServiceB { }
 public class Service : IService, IServiceB { }
-public class ServiceA : IService { }
+public static class Nested
+{
+    public class ServiceA : IService { }
+}
 
 public static class Program {
     static void Main() { }
@@ -632,7 +635,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService { }
 public interface IServiceB { }
 public class Service : IService, IServiceB { }
-public class ServiceA : IService { }
+public static class Nested
+{
+    public class ServiceA : IService { }
+}
 public class ServiceB : IService { }
 
 public static class Program {
@@ -676,7 +682,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService { }
 public interface IServiceB { }
 public class Service : IService, IServiceB { }
-public class ServiceA : IService { }
+public static class Nested
+{
+    public class ServiceA : IService { }
+}
 public class ServiceB : IService { }
 
 public static class Program {
@@ -720,7 +729,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService { }
 public interface IServiceB { }
 public class Service : IService, IServiceB { }
-public class ServiceA : IService { }
+public static class Nested
+{
+    public class ServiceA : IService { }
+}
 public class ServiceB : IService { }
 
 public static class Program {
@@ -764,7 +776,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService<T> { }
 public interface IOther { }
 public class Service : IService<int>, IService<string>, IOther { }
-public class ServiceA : IService<string>, IOther { }
+public static class Nested
+{
+    public class ServiceA : IService<string>, IOther { }
+}
 public class ServiceB : IService<decimal>, IOther { }
 
 public static class Program {
@@ -809,7 +824,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService<T> { }
 public interface IOther { }
 public class Service : IService<int>, IService<string>, IOther { }
-public class ServiceA : IService<string>, IOther { }
+public static class Nested
+{
+    public class ServiceA : IService<string>, IOther { }
+}
 public class ServiceB : IService<decimal>, IOther { }
 
 public static class Program {
@@ -853,7 +871,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService { }
 public interface IServiceB { }
 public class Service : IService, IServiceB { }
-public class ServiceA : IService { }
+public static class Nested
+{
+    public class ServiceA : IService { }
+}
 public class ServiceB : IServiceB { }
 
 public static class Program {
@@ -897,7 +918,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService<T> { }
 public interface IOther { }
 public class Service : IService<int>, IService<string>, IOther { }
-public class ServiceA : IService<string>, IOther { }
+public static class Nested
+{
+    public class ServiceA : IService<string>, IOther { }
+}
 public class ServiceB : IService<decimal> { }
 
 public static class Program {
@@ -941,7 +965,10 @@ using Microsoft.Extensions.DependencyInjection;
 public interface IService<T> { }
 public interface IOther { }
 public class Service : IService<int>, IService<string>, IOther { }
-public class ServiceA : IService<string>, IOther { }
+public static class Nested
+{
+    public class ServiceA : IService<string>, IOther { }
+}
 public class ServiceB : IService<decimal> { }
 
 public static class Program {
@@ -987,8 +1014,11 @@ public interface IService { }
 public interface IServiceB { }
 [ServiceRegistration(ServiceLifetime.Scoped, typeof(IServiceB))]
 public class Service : IService, IServiceB { }
-[ServiceRegistration(ServiceLifetime.Transient)]
-public class ServiceA : IService { }
+public static class Nested
+{
+    [ServiceRegistration(ServiceLifetime.Transient)]
+    public class ServiceA : IService { }
+}
 [ServiceRegistration]
 public class ServiceB : IService, IServiceB { }
 "
@@ -1148,7 +1178,10 @@ public class Service : IService { }
                                public interface IService { }
                                public interface IServiceB { }
                                public class ServiceFactory : IService, IServiceB { }
-                               public class ServiceA : IService { }
+                               public static class Nested
+                               {
+                                   public class ServiceA : IService { }
+                               }
 
                                public static class Program {
                                    static void Main() { }
@@ -1193,7 +1226,10 @@ public class Service : IService { }
                                public interface IService { }
                                public interface IServiceB { }
                                public class ServiceFactory : IService, IServiceB { }
-                               public class ServiceA : IService { }
+                               public static class Nested
+                               {
+                                   public class ServiceA : IService { }
+                               }
 
                                public static class Program {
                                    static void Main() { }
@@ -1238,7 +1274,10 @@ public class Service : IService { }
                                public interface IService { }
                                public interface IServiceB { }
                                public class FactoryService : IService, IServiceB { }
-                               public class ServiceA : IService { }
+                               public static class Nested
+                               {
+                                   public class ServiceA : IService { }
+                               }
 
                                public static class Program {
                                    static void Main() { }
@@ -1283,7 +1322,10 @@ public class Service : IService { }
                                public interface IService { }
                                public interface IServiceB { }
                                public class FactoryService : IService, IServiceB { }
-                               public class ServiceA : IService { }
+                               public static class Nested
+                               {
+                                   public class ServiceA : IService { }
+                               }
 
                                public static class Program {
                                    static void Main() { }
@@ -1328,7 +1370,10 @@ public class Service : IService { }
                                public interface IService { }
                                public interface IServiceB { }
                                public class ServFactoryice : IService, IServiceB { }
-                               public class ServiceA : IService { }
+                               public static class Nested
+                               {
+                                   public class ServiceA : IService { }
+                               }
 
                                public static class Program {
                                    static void Main() { }
@@ -1373,7 +1418,10 @@ public class Service : IService { }
                                public interface IService { }
                                public interface IServiceB { }
                                public class ServFactoryice : IService, IServiceB { }
-                               public class ServiceA : IService { }
+                               public static class Nested
+                               {
+                                   public class ServiceA : IService { }
+                               }
 
                                public static class Program {
                                    static void Main() { }
@@ -1626,7 +1674,7 @@ namespace TestProject
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-                               
+
                                	        provider.Scan(
                                            services,
                                            z => z
@@ -1664,8 +1712,11 @@ namespace TestProject
                                public interface IService { }
                                public interface IServiceB { }
                                public class Service : IService, IServiceB { }
-                               [MyAttribute]
-                               public class ServiceA : IService { }
+                               public static class Nested
+                               {
+                                   [MyAttribute]
+                                   public class ServiceA : IService { }
+                               }
                                public class ServiceB : IService { }
 
                                public static class Program {
@@ -1712,8 +1763,11 @@ namespace TestProject
                                public interface IService { }
                                public interface IServiceB { }
                                public class Service : IService, IServiceB { }
-                               [MyAttribute]
-                               public class ServiceA : IService { }
+                               public static class Nested
+                               {
+                                   [MyAttribute]
+                                   public class ServiceA : IService { }
+                               }
                                public class ServiceB : IService { }
 
                                public static class Program {
@@ -1768,7 +1822,10 @@ namespace TestProject
                                {
                                    public interface IService { }
                                    public class Service : IService, TestProject.B.IServiceB { }
-                                   public class ServiceA : IService { }
+                                   public static class Nested
+                                   {
+                                       public class ServiceA : IService { }
+                                   }
                                }
 
                                namespace TestProject.A.C
@@ -1827,9 +1884,9 @@ namespace TestProject
 
     [Test]
     [Arguments(NamespaceFilter.Exact, "TestProject.A", "TestProject.B", false)]
-    [Arguments(NamespaceFilter.Exact, "TestProject.A.ServiceA", "TestProject.B.ServiceB", true)]
+    [Arguments(NamespaceFilter.Exact, "TestProject.A.Nested.ServiceA", "TestProject.B.ServiceB", true)]
     [Arguments(NamespaceFilter.In, "TestProject.A", "TestProject.B", false)]
-    [Arguments(NamespaceFilter.In, "TestProject.A.ServiceA", "TestProject.B.ServiceB", true)]
+    [Arguments(NamespaceFilter.In, "TestProject.A.Nested.ServiceA", "TestProject.B.ServiceB", true)]
     [Arguments(NamespaceFilter.NotIn, "TestProject.A.C", "TestProject.B", false)]
     [Arguments(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", "TestProject.B.ServiceB", true)]
     public async Task Should_Filter_Multiple_Namespaces(NamespaceFilter filter, string namespaceFilterValue, string namespaceFilterValueSecond, bool usingClass)
@@ -1845,7 +1902,10 @@ namespace TestProject
                                {
                                    public interface IService { }
                                    public class Service : IService, TestProject.B.IServiceB { }
-                                   public class ServiceA : IService { }
+                                   public static class Nested
+                                   {
+                                       public class ServiceA : IService { }
+                                   }
                                }
 
                                namespace TestProject.A.C
@@ -1992,7 +2052,7 @@ namespace TestProject
 
     [Test]
     public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyDependenciesOf(
-        [Matrix("ServiceA", "ServiceB", "ServiceC")]
+        [Matrix("Nested.ServiceA", "ServiceB", "ServiceC")]
         string className,
         [Matrix(true, false)]
         bool useTypeof

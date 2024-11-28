@@ -77,7 +77,7 @@ internal static class ServiceDescriptorCollection
                 List<ITypeFilterDescriptor> typeFilters =
                 [
                     new TypeKindFilterDescriptor(true, ImmutableHashSet.Create(TypeKind.Class)),
-                    new TypeInfoFilterDescriptor(false, ImmutableHashSet.Create(TypeInfoFilter.Abstract)),
+                    new TypeInfoFilterDescriptor(false, ImmutableHashSet.Create(TypeInfoFilter.Abstract, TypeInfoFilter.Static)),
                 ];
                 List<IServiceTypeDescriptor> serviceDescriptors = new();
                 var classFilter = ClassFilter.All;

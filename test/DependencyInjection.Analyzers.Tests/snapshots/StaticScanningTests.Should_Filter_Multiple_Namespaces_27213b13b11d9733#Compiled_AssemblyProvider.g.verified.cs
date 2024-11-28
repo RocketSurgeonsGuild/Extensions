@@ -27,12 +27,17 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     {
         switch (lineNumber)
         {
-            // FilePath: Input0.cs Expression: 3ndm9Cm5APZA6UEXJECnFg==
-            case 20:
-                services.Add(ServiceDescriptor.Scoped<global::Nested.ServiceA, global::Nested.ServiceA>());
-                services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());
-                services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::Service>()));
-                services.Add(ServiceDescriptor.Scoped<global::ServiceB, global::ServiceB>());
+            // FilePath: Input0.cs Expression: y+XRcwPhG2RS+lovr2INGw==
+            case 32:
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.C.ServiceC, global::TestProject.A.C.ServiceC>());
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.A.C.ServiceC>()));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.Nested.ServiceA, global::TestProject.A.Nested.ServiceA>());
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.A.Nested.ServiceA>()));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.Service, global::TestProject.A.Service>());
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.A.Service>()));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.B.IServiceB>(a => a.GetRequiredService<global::TestProject.A.Service>()));
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.B.ServiceB, global::TestProject.B.ServiceB>());
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.B.ServiceB>()));
                 break;
         }
 

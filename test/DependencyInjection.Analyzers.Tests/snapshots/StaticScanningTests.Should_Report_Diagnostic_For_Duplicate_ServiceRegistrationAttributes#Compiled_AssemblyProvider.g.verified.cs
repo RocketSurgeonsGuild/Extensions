@@ -27,7 +27,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         switch (lineNumber)
         {
             // FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
-            case 20:
+            case 21:
                 break;
         }
 

@@ -5,6 +5,8 @@
   },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     mscorlib.dll,
     netstandard.dll,
     Rocket.Surgery.DependencyInjection.Extensions.dll,
@@ -12,18 +14,8 @@
     System.Core.dll,
     System.dll,
     System.Private.CoreLib.dll,
+    System.Private.CoreLib.dll,
+    System.Private.CoreLib.dll,
     System.Runtime.dll
-  ],
-  Services: [
-    {
-      Lifetime: Scoped,
-      ServiceType: IService`1[[System.String, System.Private.CoreLib, Version=version, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]],
-      ImplementationType: Nested+ServiceA
-    },
-    {
-      Lifetime: Scoped,
-      ServiceType: IService`1[[System.Int32, System.Private.CoreLib, Version=version, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]],
-      ImplementationType: Service
-    }
   ]
 }

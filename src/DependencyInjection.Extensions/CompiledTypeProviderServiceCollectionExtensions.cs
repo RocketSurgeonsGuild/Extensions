@@ -17,6 +17,7 @@ public static class CompiledTypeProviderServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddCompiledServiceRegistrations(this IServiceCollection services, ICompiledTypeProvider provider)
     {
+        // This is implied to ignore abstract and static classes.
         return provider.Scan(
             services,
             z => z

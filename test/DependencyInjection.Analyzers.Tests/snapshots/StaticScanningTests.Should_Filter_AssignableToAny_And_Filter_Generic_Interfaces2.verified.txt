@@ -17,6 +17,11 @@
   Services: [
     {
       Lifetime: Scoped,
+      ServiceType: IService`1[[System.String, System.Private.CoreLib, Version=version, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]],
+      ImplementationType: Nested+ServiceA
+    },
+    {
+      Lifetime: Scoped,
       ServiceType: IService`1[[System.Int32, System.Private.CoreLib, Version=version, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]],
       ImplementationType: Service
     },
@@ -24,11 +29,6 @@
       Lifetime: Scoped,
       ServiceType: IService`1[[System.String, System.Private.CoreLib, Version=version, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]],
       ImplementationType: Service
-    },
-    {
-      Lifetime: Scoped,
-      ServiceType: IService`1[[System.String, System.Private.CoreLib, Version=version, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]],
-      ImplementationType: ServiceA
     },
     {
       Lifetime: Scoped,
