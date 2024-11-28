@@ -196,7 +196,13 @@ internal static class StatementGeneration
         if (type.IsGenericType && type.IsOpenGenericType()) return getPrivateType(compilation, type);
 
         return !compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) && type.IsGenericType && !type.IsOpenGenericType()
-            ? InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, getPrivateType(compilation, type.ConstructUnboundGenericType()), IdentifierName("MakeGenericType")))
+            ? InvocationExpression(
+                    MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        getPrivateType(compilation, type.ConstructUnboundGenericType()),
+                        IdentifierName("MakeGenericType")
+                    )
+                )
                .WithArgumentList(
                     // ReSharper disable once NullableWarningSuppressionIsUsed
                     ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(getPrivateType(compilation, ( t as INamedTypeSymbol )!)))))
@@ -205,14 +211,16 @@ internal static class StatementGeneration
 
         static ExpressionSyntax getPrivateType(Compilation compilation, INamedTypeSymbol type)
         {
-            return compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type))) : InvocationExpression(
-                    MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetPrivateAssembly(type.ContainingAssembly), IdentifierName("GetType"))
-                )
-               .WithArgumentList(
-                    ArgumentList(
-                        SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(Helpers.GetFullMetadataName(type)))))
+            return compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)
+                ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)))
+                : InvocationExpression(
+                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetPrivateAssembly(type.ContainingAssembly), IdentifierName("GetType"))
                     )
-                );
+                   .WithArgumentList(
+                        ArgumentList(
+                            SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(Helpers.GetFullMetadataName(type)))))
+                        )
+                    );
         }
     }
 
