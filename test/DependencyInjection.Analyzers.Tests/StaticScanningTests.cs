@@ -1721,7 +1721,7 @@ namespace TestProject
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-
+                               
                                	        provider.Scan(
                                            services,
                                            z => z
