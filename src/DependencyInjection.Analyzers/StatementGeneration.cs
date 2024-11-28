@@ -30,7 +30,7 @@ internal static class StatementGeneration
                             GenericName("GetRequiredService")
                                .WithTypeArgumentList(
                                     TypeArgumentList(
-                                        SingletonSeparatedList<TypeSyntax>(IdentifierName(Helpers.GetGenericDisplayName(implementationType).Replace("+", ".")))
+                                        SingletonSeparatedList<TypeSyntax>(IdentifierName(Helpers.GetTypeOfName(implementationType)))
                                     )
                                 )
                         )
@@ -228,15 +228,6 @@ internal static class StatementGeneration
             }
         }
 
-
-        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-        Before:
-                return GetPrivateType(compilation, type);
-        After:
-                return ( compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) )
-                    ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)))
-                    : GetPrivateType(compilation, type);
-        */
         return compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)
             ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)))
             : GetPrivateType(compilation, type);
@@ -253,15 +244,6 @@ internal static class StatementGeneration
         INamedTypeSymbol relatedType
     )
     {
-        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-        Before:
-                if (!type.IsUnboundGenericType) return GetTypeOfExpression(compilation, type);
-        After:
-                if (!type.IsUnboundGenericType)
-                {
-                    return GetTypeOfExpression(compilation, type);
-                }
-        */
         if (!type.IsUnboundGenericType)
         {
             return GetTypeOfExpression(compilation, type);
@@ -299,25 +281,6 @@ internal static class StatementGeneration
                 )
             );
 
-        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-        Before:
-                if (type.IsGenericType && !type.IsOpenGenericType())
-                    return InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
-                       .WithArgumentList(
-                            // ReSharper disable once NullableWarningSuppressionIsUsed
-                            ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(GetTypeOfExpression(compilation, ( t as INamedTypeSymbol )!)))))
-                        );
-
-                return expression;
-        After:
-                return ( type.IsGenericType && !type.IsOpenGenericType() )
-                    ? InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
-                       .WithArgumentList(
-                            // ReSharper disable once NullableWarningSuppressionIsUsed
-                            ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(GetTypeOfExpression(compilation, ( t as INamedTypeSymbol )!)))))
-                        )
-                    : expression;
-        */
         return type.IsGenericType && !type.IsOpenGenericType()
             ? InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
                .WithArgumentList(

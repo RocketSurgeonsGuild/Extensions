@@ -1,0 +1,24 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  References: [
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  Services: [
+    {
+      Lifetime: Scoped,
+      ServiceType: IValidator`1[[Nested+MyRecord, TestProject, Version=version, Culture=neutral, PublicKeyToken=null]],
+      ImplementationType: Nested+Validator
+    }
+  ]
+}
