@@ -28,12 +28,12 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         switch (lineNumber)
         {
             // FilePath: Input0.cs Expression: bsq6GWYMPMWlifj3sBAVHg==
-            case 29:
+            case 32:
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.Nested.ServiceA, global::TestProject.A.Nested.ServiceA>());
+                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.A.Nested.ServiceA>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestProject.A.Service, global::TestProject.A.Service>());
                 services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.A.Service>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestProject.B.IServiceB>(a => a.GetRequiredService<global::TestProject.A.Service>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.ServiceA, global::TestProject.A.ServiceA>());
-                services.Add(ServiceDescriptor.Scoped<global::TestProject.A.IService>(a => a.GetRequiredService<global::TestProject.A.ServiceA>()));
                 break;
         }
 

@@ -102,6 +102,30 @@ public static class GetTypesTestsData
                 .GetTypes(
                      x => x
                          .NotAssignableTo<ICompiledTypeProvider>()
+                         .InfoOf(TypeInfoFilter.Static)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
+        );
+        yield return TestMethod(
+            z => z
+                .FromAssemblies()
+                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
+                         .NotInfoOf(TypeInfoFilter.Static)
+                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+                         .NotStartsWith("Polyfill")
+                 )
+        );
+        yield return TestMethod(
+            z => z
+                .FromAssemblies()
+                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+                .GetTypes(
+                     x => x
+                         .NotAssignableTo<ICompiledTypeProvider>()
                          .InfoOf(TypeInfoFilter.GenericType)
                          .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
                          .NotStartsWith("Polyfill")

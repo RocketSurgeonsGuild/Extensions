@@ -27,6 +27,16 @@
     },
     {
       Lifetime: Scoped,
+      ServiceType: TestProject.A.Nested+ServiceA,
+      ImplementationType: TestProject.A.Nested+ServiceA
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.A.IService]
+    },
+    {
+      Lifetime: Scoped,
       ServiceType: TestProject.A.Service,
       ImplementationType: TestProject.A.Service
     },
@@ -39,16 +49,6 @@
       Lifetime: Scoped,
       ServiceType: TestProject.B.IServiceB,
       ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.B.IServiceB]
-    },
-    {
-      Lifetime: Scoped,
-      ServiceType: TestProject.A.ServiceA,
-      ImplementationType: TestProject.A.ServiceA
-    },
-    {
-      Lifetime: Scoped,
-      ServiceType: TestProject.A.IService,
-      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.A.IService]
     }
   ]
 }

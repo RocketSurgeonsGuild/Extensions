@@ -17,8 +17,8 @@
   Services: [
     {
       Lifetime: Scoped,
-      ServiceType: ServiceA,
-      ImplementationType: ServiceA
+      ServiceType: Nested+ServiceA,
+      ImplementationType: Nested+ServiceA
     },
     {
       Lifetime: Scoped,

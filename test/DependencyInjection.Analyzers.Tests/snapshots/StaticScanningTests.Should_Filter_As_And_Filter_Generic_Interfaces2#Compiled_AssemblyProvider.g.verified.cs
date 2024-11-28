@@ -28,9 +28,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         switch (lineNumber)
         {
             // FilePath: Input0.cs Expression: MHmJpCvxfZKHt+oNzCqwEQ==
-            case 17:
+            case 20:
+                services.Add(ServiceDescriptor.Scoped<global::IService<global::System.String>, global::Nested.ServiceA>());
                 services.Add(ServiceDescriptor.Scoped<global::IService<global::System.Int32>, global::Service>());
-                services.Add(ServiceDescriptor.Scoped<global::IService<global::System.String>, global::ServiceA>());
                 break;
         }
 

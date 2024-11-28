@@ -28,11 +28,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         switch (lineNumber)
         {
             // FilePath: Input0.cs Expression: qs0Vsc+7Yz/rY9rkdiqbLw==
-            case 17:
+            case 20:
+                services.Add(ServiceDescriptor.Scoped<global::Nested.ServiceA, global::Nested.ServiceA>());
+                services.Add(ServiceDescriptor.Scoped<global::IService<global::System.String>>(a => a.GetRequiredService<global::Nested.ServiceA>()));
                 services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());
                 services.Add(ServiceDescriptor.Scoped<global::IService<global::System.Int32>>(a => a.GetRequiredService<global::Service>()));
-                services.Add(ServiceDescriptor.Scoped<global::ServiceA, global::ServiceA>());
-                services.Add(ServiceDescriptor.Scoped<global::IService<global::System.String>>(a => a.GetRequiredService<global::ServiceA>()));
                 break;
         }
 

@@ -44,4 +44,9 @@ public enum TypeInfoFilter
 //    ///   The type is a generic type definition.
 //    /// </summary>
 //    GenericTypeDefinition = 7,
+
+    /// <summary>
+    ///     The type is static.
+    /// </summary>
+    Static = -2,
 }
