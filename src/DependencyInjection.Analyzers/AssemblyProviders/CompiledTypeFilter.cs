@@ -122,7 +122,7 @@ internal record CompiledTypeFilter
                        TypeInfoFilter.Sealed    => type.IsSealed,
                        TypeInfoFilter.Visible   => type.DeclaredAccessibility == Accessibility.Public,
                        TypeInfoFilter.ValueType => type.IsValueType,
-                       TypeInfoFilter.Static => type.IsStatic,
+                       TypeInfoFilter.Static    => type.IsStatic,
 //                TypeInfoFilter.Nested                => type.ContainingType is {},
                        TypeInfoFilter.Unknown => throw new NotSupportedException(typeFilter.ToString()),
                        _                      => throw new NotSupportedException(typeFilter.ToString()),

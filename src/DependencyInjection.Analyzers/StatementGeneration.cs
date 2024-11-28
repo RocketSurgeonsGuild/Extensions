@@ -29,7 +29,9 @@ internal static class StatementGeneration
                             IdentifierName("a"),
                             GenericName("GetRequiredService")
                                .WithTypeArgumentList(
-                                    TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName(Helpers.GetGenericDisplayName(implementationType).Replace("+", "."))))
+                                    TypeArgumentList(
+                                        SingletonSeparatedList<TypeSyntax>(IdentifierName(Helpers.GetGenericDisplayName(implementationType).Replace("+", ".")))
+                                    )
                                 )
                         )
                     )
