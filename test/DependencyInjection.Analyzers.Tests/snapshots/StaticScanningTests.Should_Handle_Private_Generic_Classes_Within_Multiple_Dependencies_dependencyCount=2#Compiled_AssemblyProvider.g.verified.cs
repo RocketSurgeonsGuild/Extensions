@@ -31,7 +31,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: i/Q9YfbrangthmO+cbE3ag==
             case 15:
                 services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IRequestHandler<global::Dependency1Project.Request0, global::Dependency1Project.Response0>, global::Dependency1Project.RequestHandler0>());
-                services.Add(ServiceDescriptor.Singleton(RootDependencyProject.GetType("RootDependencyProject.IRequestHandler`2").MakeGenericType(Dependency1Project.GetType("Dependency1Project.Request1"), Dependency1Project.GetType("Dependency1Project.Response1")), Dependency1Project.GetType("Dependency1Project.RequestHandler1")));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IRequestHandler<, >).MakeGenericType(Dependency1Project.GetType("Dependency1Project.Request1"), Dependency1Project.GetType("Dependency1Project.Response1")), Dependency1Project.GetType("Dependency1Project.RequestHandler1")));
                 break;
         }
 
