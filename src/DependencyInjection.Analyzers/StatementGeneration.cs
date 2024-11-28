@@ -102,16 +102,16 @@ internal static class StatementGeneration
     {
         var isServiceTypeAccessible = compilation.IsSymbolAccessibleWithin(serviceType, compilation.Assembly);
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-        return ( isServiceTypeAccessible, serviceTypeExpression, implementationTypeExpression ) switch
-               {
-                   (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, TypeOfExpressionSyntax { Type: { } implementationTypeSyntax })
-After:
-        return ( isServiceTypeAccessible, serviceTypeExpression, implementationTypeExpression) switch
-        {
-            (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, TypeOfExpressionSyntax { Type: { } implementationTypeSyntax })
-*/
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                return ( isServiceTypeAccessible, serviceTypeExpression, implementationTypeExpression ) switch
+                       {
+                           (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, TypeOfExpressionSyntax { Type: { } implementationTypeSyntax })
+        After:
+                return ( isServiceTypeAccessible, serviceTypeExpression, implementationTypeExpression) switch
+                {
+                    (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, TypeOfExpressionSyntax { Type: { } implementationTypeSyntax })
+        */
         return ( isServiceTypeAccessible, serviceTypeExpression, implementationTypeExpression ) switch
                {
                    (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, TypeOfExpressionSyntax { Type: { } implementationTypeSyntax })
@@ -119,43 +119,43 @@ After:
                     && !IsOpenGenericType(implementationType)
                     && compilation.IsSymbolAccessibleWithin(implementationType, compilation.Assembly)
                        => InvocationExpression(
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-                           MemberAccessExpression(
-                               SyntaxKind.SimpleMemberAccessExpression,
-After:
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-*/
+                           /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+                           Before:
+                                                      MemberAccessExpression(
+                                                          SyntaxKind.SimpleMemberAccessExpression,
+                           After:
+                                               MemberAccessExpression(
+                                                   SyntaxKind.SimpleMemberAccessExpression,
+                           */
                            MemberAccessExpression(
                                SyntaxKind.SimpleMemberAccessExpression,
                                IdentifierName("ServiceDescriptor"),
                                GenericName(lifetime)
                                   .WithTypeArgumentList(TypeArgumentList(SeparatedList([serviceTypeSyntax, implementationTypeSyntax])))
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-                           )
-                       ),
-                   (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, SimpleLambdaExpressionSyntax { ExpressionBody: {} })
-After:
-                    )
-                ),
-            (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, SimpleLambdaExpressionSyntax { ExpressionBody: {} })
-*/
+                               /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+                               Before:
+                                                          )
+                                                      ),
+                                                  (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, SimpleLambdaExpressionSyntax { ExpressionBody: {} })
+                               After:
+                                                   )
+                                               ),
+                                           (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, SimpleLambdaExpressionSyntax { ExpressionBody: {} })
+                               */
                            )
                        ),
                    (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, SimpleLambdaExpressionSyntax { ExpressionBody: { } })
                        when !IsOpenGenericType(serviceType) =>
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-                       InvocationExpression(
-                               MemberAccessExpression(
-                                   SyntaxKind.SimpleMemberAccessExpression,
-After:
-                InvocationExpression(
-                        MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-*/
+                       /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+                       Before:
+                                              InvocationExpression(
+                                                      MemberAccessExpression(
+                                                          SyntaxKind.SimpleMemberAccessExpression,
+                       After:
+                                       InvocationExpression(
+                                               MemberAccessExpression(
+                                                   SyntaxKind.SimpleMemberAccessExpression,
+                       */
                        InvocationExpression(
                                MemberAccessExpression(
                                    SyntaxKind.SimpleMemberAccessExpression,
@@ -266,14 +266,14 @@ After:
         }
 
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-        return GetPrivateType(compilation, type);
-After:
-        return ( compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) )
-            ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)))
-            : GetPrivateType(compilation, type);
-*/
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                return GetPrivateType(compilation, type);
+        After:
+                return ( compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) )
+                    ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)))
+                    : GetPrivateType(compilation, type);
+        */
         return compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)
             ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)))
             : GetPrivateType(compilation, type);
@@ -290,15 +290,15 @@ After:
         INamedTypeSymbol relatedType
     )
     {
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-        if (!type.IsUnboundGenericType) return GetTypeOfExpression(compilation, type);
-After:
-        if (!type.IsUnboundGenericType)
-        {
-            return GetTypeOfExpression(compilation, type);
-        }
-*/
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                if (!type.IsUnboundGenericType) return GetTypeOfExpression(compilation, type);
+        After:
+                if (!type.IsUnboundGenericType)
+                {
+                    return GetTypeOfExpression(compilation, type);
+                }
+        */
         if (!type.IsUnboundGenericType)
         {
             return GetTypeOfExpression(compilation, type);
@@ -336,25 +336,25 @@ After:
                 )
             );
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-        if (type.IsGenericType && !type.IsOpenGenericType())
-            return InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
-               .WithArgumentList(
-                    // ReSharper disable once NullableWarningSuppressionIsUsed
-                    ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(GetTypeOfExpression(compilation, ( t as INamedTypeSymbol )!)))))
-                );
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                if (type.IsGenericType && !type.IsOpenGenericType())
+                    return InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
+                       .WithArgumentList(
+                            // ReSharper disable once NullableWarningSuppressionIsUsed
+                            ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(GetTypeOfExpression(compilation, ( t as INamedTypeSymbol )!)))))
+                        );
 
-        return expression;
-After:
-        return ( type.IsGenericType && !type.IsOpenGenericType() )
-            ? InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
-               .WithArgumentList(
-                    // ReSharper disable once NullableWarningSuppressionIsUsed
-                    ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(GetTypeOfExpression(compilation, ( t as INamedTypeSymbol )!)))))
-                )
-            : expression;
-*/
+                return expression;
+        After:
+                return ( type.IsGenericType && !type.IsOpenGenericType() )
+                    ? InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
+                       .WithArgumentList(
+                            // ReSharper disable once NullableWarningSuppressionIsUsed
+                            ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(GetTypeOfExpression(compilation, ( t as INamedTypeSymbol )!)))))
+                        )
+                    : expression;
+        */
         return type.IsGenericType && !type.IsOpenGenericType()
             ? InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, expression, IdentifierName("MakeGenericType")))
                .WithArgumentList(
