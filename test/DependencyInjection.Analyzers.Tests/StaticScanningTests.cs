@@ -858,6 +858,53 @@ public static class Program {
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
+    [Test]
+    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces3()
+    {
+        var result = await Builder
+                          .AddSources(
+                               // ReSharper disable once HeapView.ObjectAllocation
+                               """
+                               using Rocket.Surgery.DependencyInjection.Compiled;
+                               using Microsoft.Extensions.DependencyInjection;
+
+                               public interface IValidator { }
+                               public interface IValidator<T> : IValidator { }
+
+                               public static class Nested
+                               {
+                                   public record MyRecord();
+                                   public class Validator : IValidator<MyRecord> { }
+                               }
+
+                               public static class Program {
+                                   static void Main() { }
+                                   static IServiceCollection LoadServices()
+                                   {
+                                       var services = new ServiceCollection();
+                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                               	       provider.Scan(
+                                           services,
+                                           z => z
+                               			    .FromAssemblies()
+                               			    .AddClasses(x => x.AssignableToAny(typeof(IValidator)))
+                                               .AsImplementedInterfaces(z => z.AssignableTo(typeof(IValidator<>)))
+                                               .WithScopedLifetime()
+                                       );
+                                       return services;
+                                   }
+                               }
+                               """
+                           )
+                          .Build()
+                          .GenerateAsync();
+
+
+//        await Verify(result);
+        var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
+        await Verify(new GeneratorTestResultsWithServices(result, services));
+    }
+
 
     [Test]
     public async Task Should_Filter_As_And_Filter_Interfaces()

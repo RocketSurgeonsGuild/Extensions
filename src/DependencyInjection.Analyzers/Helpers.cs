@@ -62,7 +62,7 @@ internal static class Helpers
                 for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
                 {
                     var argument = namedTypeSymbol.TypeArguments[index];
-                    sb.Append(GetGenericDisplayName(argument));
+                    sb.Append(GetTypeOfName(argument));
                     if (index < namedTypeSymbol.TypeArguments.Length - 1)
                         sb.Append(',');
                 }
