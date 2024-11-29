@@ -48,20 +48,20 @@ internal static class StatementGeneration
         }
         else
         {
+            var isServiceAccessible = compilation.IsSymbolAccessibleWithin(serviceType, compilation.Assembly);
+            var baseInvocation = InvocationExpression(
+                    MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("a"), IdentifierName("GetRequiredService"))
+                )
+               .WithArgumentList(
+                    ArgumentList(
+                        SingletonSeparatedList(Argument(GetTypeOfExpression(compilation, implementationType, serviceType)))
+                    )
+                );
             var implementationTypeExpression = SimpleLambdaExpression(Parameter(Identifier("a")))
                .WithExpressionBody(
-                    BinaryExpression(
-                        SyntaxKind.AsExpression,
-                        InvocationExpression(
-                                MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("a"), IdentifierName("GetRequiredService"))
-                            )
-                           .WithArgumentList(
-                                ArgumentList(
-                                    SingletonSeparatedList(Argument(GetTypeOfExpression(compilation, implementationType, serviceType)))
-                                )
-                            ),
-                        IdentifierName(Helpers.GetGenericDisplayName(serviceType))
-                    )
+                    isServiceAccessible
+                        ? BinaryExpression(SyntaxKind.AsExpression, baseInvocation, IdentifierName(Helpers.GetTypeOfName(serviceType)))
+                        : baseInvocation
                 );
             return GenerateServiceType(
                 compilation,

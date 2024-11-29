@@ -28,9 +28,10 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     {
         switch (lineNumber)
         {
-            // FilePath: Input0.cs Expression: Ibe4iuU0MFY/Rf8IGp5VWg==
+            // FilePath: Input0.cs Expression: 44B794K0WP4CpbGnZy+t4A==
             case 19:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IValidator<>).MakeGenericType(TestProject.GetType("Nested+MyRecord")), TestProject.GetType("Nested+Validator")));
+                services.Add(ServiceDescriptor.Scoped(TestProject.GetType("Nested+Validator"), TestProject.GetType("Nested+Validator")));
+                services.Add(ServiceDescriptor.Scoped(typeof(global::IValidator<>).MakeGenericType(TestProject.GetType("Nested+MyRecord")), a => a.GetRequiredService(TestProject.GetType("Nested+Validator"))));
                 break;
         }
 
