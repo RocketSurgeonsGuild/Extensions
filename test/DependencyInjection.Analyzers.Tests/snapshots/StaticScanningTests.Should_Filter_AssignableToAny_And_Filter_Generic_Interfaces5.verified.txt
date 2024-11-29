@@ -17,8 +17,13 @@
   Services: [
     {
       Lifetime: Scoped,
-      ServiceType: IValidator`1[[Nested+MyRecord, TestProject, Version=version, Culture=neutral, PublicKeyToken=null]],
+      ServiceType: Nested+Validator,
       ImplementationType: Nested+Validator
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: IValidator`1[[Nested+MyRecord, TestProject, Version=version, Culture=neutral, PublicKeyToken=null]],
+      ImplementationFactory: System.Func`2[System.IServiceProvider,System.Object]
     }
   ]
 }

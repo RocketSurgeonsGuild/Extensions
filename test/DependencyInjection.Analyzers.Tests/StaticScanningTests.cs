@@ -982,8 +982,9 @@ public static class Program {
                                            z => z
                                			    .FromAssemblies()
                                			    .AddClasses(x => x.AssignableToAny(typeof(IValidator)))
-                                               .AsImplementedInterfaces(z => z.AssignableTo(typeof(IValidator<>)))
-                                               .WithScopedLifetime()
+                               			    .AsSelf()
+                                            .AsImplementedInterfaces(z => z.AssignableTo(typeof(IValidator<>)))
+                                            .WithScopedLifetime()
                                        );
                                        return services;
                                    }
