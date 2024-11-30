@@ -63,7 +63,7 @@
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="9.0.1" />
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.TUnit" Version="9.0.1" />
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.SourceGenerators" Version="9.0.1" />
-        <PackageVersion Include="TUnit" Version="0.4.26" />
+        <PackageVersion Include="TUnit" Version="0.4.31" />
         <PackageVersion Include="Verify.TUnit" Version="28.4.0" />
         <PackageVersion Include="Verify.SourceGenerators" Version="2.5.0" />
         <PackageVersion Include="Serilog.Sinks.Spectre" Version="0.5.0" />
