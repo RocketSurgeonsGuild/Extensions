@@ -376,8 +376,10 @@ internal static class Helpers
         "CA1822",
         "CS0105",
         "CS1573",
+        "CS8601",
         "CS8602",
         "CS8603",
+        "CS8604",
         "CS8618",
         "CS8669",
     ];
