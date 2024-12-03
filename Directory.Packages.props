@@ -31,9 +31,9 @@
         <PackageVersion Include="Polyfill" Version="7.5.0" />
         <PackageVersion Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4" />
         <PackageVersion Include="GitVersion.Tool" Version="6.0.5" />
-        <PackageVersion Include="Nuke.Common" Version="9.0.1" />
+        <PackageVersion Include="Nuke.Common" Version="9.0.2" />
         <PackageVersion Include="ReportGenerator" Version="5.4.1" />
-        <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.9.1" />
+        <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.9.2" />
         <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.11.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
