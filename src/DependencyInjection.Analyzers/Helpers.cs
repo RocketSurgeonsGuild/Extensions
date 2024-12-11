@@ -274,8 +274,8 @@ internal static class Helpers
     )
     {
         return ( name is GenericNameSyntax { TypeArgumentList.Arguments.Count: 1 } genericNameSyntax )
-            ?  genericNameSyntax.TypeArgumentList.Arguments[0] 
-            :  ( name is not SimpleNameSyntax )
+            ? genericNameSyntax.TypeArgumentList.Arguments[0]
+            : ( name is not SimpleNameSyntax )
             ? null
             : ( expression.ArgumentList.Arguments is [{ Expression: TypeOfExpressionSyntax typeOfExpression }] ) ? typeOfExpression.Type : null;
     }
