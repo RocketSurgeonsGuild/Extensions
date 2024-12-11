@@ -31,10 +31,11 @@ internal static class Helpers
             );
 
     public static INamedTypeSymbol? GetUnboundGenericType(INamedTypeSymbol symbol) => symbol switch
-    {
-        { IsGenericType: true, IsUnboundGenericType: true } => symbol, { IsGenericType: true } => symbol.ConstructUnboundGenericType(),
-        _ => default,
-    };
+                                                                                      {
+                                                                                          { IsGenericType: true, IsUnboundGenericType: true } => symbol,
+                                                                                          { IsGenericType: true } => symbol.ConstructUnboundGenericType(),
+                                                                                          _ => default,
+                                                                                      };
 
     public static string GetTypeOfName(ISymbol? symbol)
     {
@@ -49,28 +50,28 @@ internal static class Helpers
             sb = new(symbol.Name);
             if (namedTypeSymbol.IsOpenGenericType())
             {
-                _ = sb.Append('<');
+                sb.Append('<');
                 for (var i = 1; i < namedTypeSymbol.Arity; i++)
                 {
-                    _ = sb.Append(',');
+                    sb.Append(',');
                 }
 
-                _ = sb.Append('>');
+                sb.Append('>');
             }
             else
             {
-                _ = sb.Append('<');
+                sb.Append('<');
                 for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
                 {
                     var argument = namedTypeSymbol.TypeArguments[index];
-                    _ = sb.Append(GetTypeOfName(argument));
+                    sb.Append(GetTypeOfName(argument));
                     if (index < namedTypeSymbol.TypeArguments.Length - 1)
                     {
-                        _ = sb.Append(',');
+                        sb.Append(',');
                     }
                 }
 
-                _ = sb.Append('>');
+                sb.Append('>');
             }
         }
 
@@ -80,35 +81,14 @@ internal static class Helpers
 
         while (!IsRootNamespace(workingSymbol))
         {
-
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
-            {
-                _ = sb.Insert(0, '.');
-            }
-            else
-            {
-                _ = sb.Insert(0, '.');
-            }
-After:
-            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '.') : sb.Insert(0, '.');
-*/
-            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ?  sb.Insert(0, '.')  :  sb.Insert(0, '.');
-
-            _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            sb.Insert(0, '.');
+            sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
         }
 
-        _ = sb.Insert(0, "global::");
+        sb.Insert(0, "global::");
         return sb.ToString();
-
-        static bool IsRootNamespace(ISymbol symbol)
-        {
-            INamespaceSymbol? s;
-            return ( s = symbol as INamespaceSymbol ) is not null && s.IsGlobalNamespace;
-        }
     }
 
     public static string GetGenericDisplayName(ISymbol? symbol)
@@ -124,28 +104,28 @@ After:
             sb = new(symbol.Name);
             if (namedTypeSymbol.IsOpenGenericType())
             {
-                _ = sb.Append('<');
+                sb.Append('<');
                 for (var i = 1; i < namedTypeSymbol.Arity; i++)
                 {
-                    _ = sb.Append(',');
+                    sb.Append(',');
                 }
 
-                _ = sb.Append('>');
+                sb.Append('>');
             }
             else
             {
-                _ = sb.Append('<');
+                sb.Append('<');
                 for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
                 {
                     var argument = namedTypeSymbol.TypeArguments[index];
-                    _ = sb.Append(GetGenericDisplayName(argument));
+                    sb.Append(GetGenericDisplayName(argument));
                     if (index < namedTypeSymbol.TypeArguments.Length - 1)
                     {
-                        _ = sb.Append(',');
+                        sb.Append(',');
                     }
                 }
 
-                _ = sb.Append('>');
+                sb.Append('>');
             }
         }
 
@@ -155,35 +135,14 @@ After:
 
         while (!IsRootNamespace(workingSymbol))
         {
-
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
-            {
-                _ = sb.Insert(0, '+');
-            }
-            else
-            {
-                _ = sb.Insert(0, '.');
-            }
-After:
-            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '+') : sb.Insert(0, '.');
-*/
-            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ?  sb.Insert(0, '+')  :  sb.Insert(0, '.');
-
-            _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            sb = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ? sb.Insert(0, '+') : sb.Insert(0, '.') )
+               .Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
         }
 
-        _ = sb.Insert(0, "global::");
+        sb.Insert(0, "global::");
         return sb.ToString();
-
-        static bool IsRootNamespace(ISymbol symbol)
-        {
-            INamespaceSymbol? s;
-            return ( s = symbol as INamespaceSymbol ) is not null && s.IsGlobalNamespace;
-        }
     }
 
 
@@ -279,34 +238,19 @@ After:
 
         while (!IsRootNamespace(workingSymbol))
         {
-
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
-            {
-                _ = sb.Insert(0, '+');
-            }
-            else
-            {
-                _ = sb.Insert(0, '.');
-            }
-After:
-            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '+') : sb.Insert(0, '.');
-*/
-            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ?  sb.Insert(0, '+')  :  sb.Insert(0, '.');
-
-            _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            sb = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ? sb.Insert(0, '+') : sb.Insert(0, '.') )
+               .Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
         }
 
         return sb.ToString();
+    }
 
-        static bool IsRootNamespace(ISymbol symbol)
-        {
-            INamespaceSymbol? s;
-            return ( s = symbol as INamespaceSymbol ) is not null && s.IsGlobalNamespace;
-        }
+    static bool IsRootNamespace(ISymbol symbol)
+    {
+        INamespaceSymbol? s;
+        return ( s = symbol as INamespaceSymbol ) is { } && s.IsGlobalNamespace;
     }
 
 
@@ -314,7 +258,7 @@ After:
 
     public static IEnumerable<INamedTypeSymbol> GetBaseTypes(Compilation compilation, INamedTypeSymbol namedTypeSymbol)
     {
-        while (namedTypeSymbol.BaseType is not null)
+        while (namedTypeSymbol.BaseType is { })
         {
             if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol.BaseType, compilation.ObjectType))
             {
@@ -354,8 +298,8 @@ After:
             : null;
 */
         return ( expression.ArgumentList.Arguments.Count == 1 && expression.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpression )
-            ?  typeOfExpression.Type
-            :   null;
+            ? typeOfExpression.Type
+            : null;
     }
 
     internal static AttributeListSyntax CompilerGeneratedAttributes =
@@ -415,7 +359,7 @@ After:
     {
         if (methodCallSyntax is { Expression: MemberAccessExpressionSyntax memberAccess, ArgumentList.Arguments: [{ Expression: { } argumentExpression }] }) { }
         else if (methodCallSyntax is
-        { Expression: MemberAccessExpressionSyntax memberAccess2, ArgumentList.Arguments: [_, { Expression: { } argumentExpression2 }] })
+                 { Expression: MemberAccessExpressionSyntax memberAccess2, ArgumentList.Arguments: [_, { Expression: { } argumentExpression2 }] })
         {
             memberAccess = memberAccess2;
             argumentExpression = argumentExpression2;

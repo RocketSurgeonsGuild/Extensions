@@ -22,7 +22,7 @@ internal static class GeneratorBuilderConstants
                                                                  );
 }
 
-internal abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
+public abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
 {
     protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
     protected AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
