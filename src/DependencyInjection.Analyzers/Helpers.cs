@@ -75,8 +75,6 @@ internal static class Helpers
             }
         }
 
-        var last = symbol;
-
         var workingSymbol = symbol.ContainingSymbol;
 
         while (!IsRootNamespace(workingSymbol))
@@ -135,7 +133,7 @@ internal static class Helpers
 
         while (!IsRootNamespace(workingSymbol))
         {
-            sb = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ? sb.Insert(0, '+') : sb.Insert(0, '.') )
+            sb = ( ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '+') : sb.Insert(0, '.') )
                .Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
@@ -238,7 +236,7 @@ internal static class Helpers
 
         while (!IsRootNamespace(workingSymbol))
         {
-            sb = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ? sb.Insert(0, '+') : sb.Insert(0, '.') )
+            sb = ( ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '+') : sb.Insert(0, '.') )
                .Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
@@ -285,12 +283,7 @@ internal static class Helpers
             return null;
         }
 
-        if (expression.ArgumentList.Arguments is [{ Expression: TypeOfExpressionSyntax typeOfExpression }])
-        {
-            return typeOfExpression.Type;
-        }
-
-        return null;
+        return ( expression.ArgumentList.Arguments is [{ Expression: TypeOfExpressionSyntax typeOfExpression }] ) ?  typeOfExpression.Type  :   null;
     }
 
     internal static AttributeListSyntax CompilerGeneratedAttributes =
