@@ -30,17 +30,18 @@ internal static class Helpers
                 CarriageReturnLineFeed
             );
 
-    public static INamedTypeSymbol? GetUnboundGenericType(INamedTypeSymbol symbol)
+    public static INamedTypeSymbol? GetUnboundGenericType(INamedTypeSymbol symbol) => symbol switch
     {
-        return symbol switch
-               {
-                   { IsGenericType: true, IsUnboundGenericType: true } => symbol, { IsGenericType: true } => symbol.ConstructUnboundGenericType(), _ => default,
-               };
-    }
+        { IsGenericType: true, IsUnboundGenericType: true } => symbol, { IsGenericType: true } => symbol.ConstructUnboundGenericType(),
+        _ => default,
+    };
 
     public static string GetTypeOfName(ISymbol? symbol)
     {
-        if (symbol == null || IsRootNamespace(symbol)) return string.Empty;
+        if (symbol is null || IsRootNamespace(symbol))
+        {
+            return "";
+        }
 
         var sb = new StringBuilder(symbol.MetadataName);
         if (symbol is INamedTypeSymbol namedTypeSymbol && ( namedTypeSymbol.IsOpenGenericType() || namedTypeSymbol.IsGenericType ))
@@ -48,26 +49,28 @@ internal static class Helpers
             sb = new(symbol.Name);
             if (namedTypeSymbol.IsOpenGenericType())
             {
-                sb.Append('<');
+                _ = sb.Append('<');
                 for (var i = 1; i < namedTypeSymbol.Arity; i++)
                 {
-                    sb.Append(',');
+                    _ = sb.Append(',');
                 }
 
-                sb.Append('>');
+                _ = sb.Append('>');
             }
             else
             {
-                sb.Append('<');
+                _ = sb.Append('<');
                 for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
                 {
                     var argument = namedTypeSymbol.TypeArguments[index];
-                    sb.Append(GetTypeOfName(argument));
+                    _ = sb.Append(GetTypeOfName(argument));
                     if (index < namedTypeSymbol.TypeArguments.Length - 1)
-                        sb.Append(',');
+                    {
+                        _ = sb.Append(',');
+                    }
                 }
 
-                sb.Append('>');
+                _ = sb.Append('>');
             }
         }
 
@@ -78,28 +81,35 @@ internal static class Helpers
         while (!IsRootNamespace(workingSymbol))
         {
             if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
-                sb.Insert(0, '.');
+            {
+                _ = sb.Insert(0, '.');
+            }
             else
-                sb.Insert(0, '.');
+            {
+                _ = sb.Insert(0, '.');
+            }
 
-            sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
         }
 
-        sb.Insert(0, "global::");
+        _ = sb.Insert(0, "global::");
         return sb.ToString();
 
         static bool IsRootNamespace(ISymbol symbol)
         {
             INamespaceSymbol? s;
-            return ( s = symbol as INamespaceSymbol ) != null && s.IsGlobalNamespace;
+            return ( s = symbol as INamespaceSymbol ) is not null && s.IsGlobalNamespace;
         }
     }
 
     public static string GetGenericDisplayName(ISymbol? symbol)
     {
-        if (symbol == null || IsRootNamespace(symbol)) return string.Empty;
+        if (symbol is null || IsRootNamespace(symbol))
+        {
+            return "";
+        }
 
         var sb = new StringBuilder(symbol.MetadataName);
         if (symbol is INamedTypeSymbol namedTypeSymbol && ( namedTypeSymbol.IsOpenGenericType() || namedTypeSymbol.IsGenericType ))
@@ -107,26 +117,28 @@ internal static class Helpers
             sb = new(symbol.Name);
             if (namedTypeSymbol.IsOpenGenericType())
             {
-                sb.Append('<');
+                _ = sb.Append('<');
                 for (var i = 1; i < namedTypeSymbol.Arity; i++)
                 {
-                    sb.Append(',');
+                    _ = sb.Append(',');
                 }
 
-                sb.Append('>');
+                _ = sb.Append('>');
             }
             else
             {
-                sb.Append('<');
+                _ = sb.Append('<');
                 for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
                 {
                     var argument = namedTypeSymbol.TypeArguments[index];
-                    sb.Append(GetGenericDisplayName(argument));
+                    _ = sb.Append(GetGenericDisplayName(argument));
                     if (index < namedTypeSymbol.TypeArguments.Length - 1)
-                        sb.Append(',');
+                    {
+                        _ = sb.Append(',');
+                    }
                 }
 
-                sb.Append('>');
+                _ = sb.Append('>');
             }
         }
 
@@ -137,22 +149,26 @@ internal static class Helpers
         while (!IsRootNamespace(workingSymbol))
         {
             if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
-                sb.Insert(0, '+');
+            {
+                _ = sb.Insert(0, '+');
+            }
             else
-                sb.Insert(0, '.');
+            {
+                _ = sb.Insert(0, '.');
+            }
 
-            sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
         }
 
-        sb.Insert(0, "global::");
+        _ = sb.Insert(0, "global::");
         return sb.ToString();
 
         static bool IsRootNamespace(ISymbol symbol)
         {
             INamespaceSymbol? s;
-            return ( s = symbol as INamespaceSymbol ) != null && s.IsGlobalNamespace;
+            return ( s = symbol as INamespaceSymbol ) is not null && s.IsGlobalNamespace;
         }
     }
 
@@ -164,13 +180,15 @@ internal static class Helpers
     )
     {
         if (assignableToType is not { IsUnboundGenericType: true, Arity: > 0 })
+        {
             return assignableToType;
+        }
 
         if (GetUnboundGenericType(assignableFromType) is { } unboundFromType && compilation.HasImplicitConversion(assignableToType, unboundFromType))
         {
             // TODO:
             return assignableToType;
-//            return assignableToType.Construct(assignableFromType.TypeArguments.ToArray());
+            //            return assignableToType.Construct(assignableFromType.TypeArguments.ToArray());
         }
 
         var matchingInterfaces = assignableFromType
@@ -186,20 +204,44 @@ internal static class Helpers
         INamedTypeSymbol assignableFromType
     )
     {
-        if (SymbolEqualityComparer.Default.Equals(compilation.ObjectType, assignableToType)) return false;
-        if (SymbolEqualityComparer.Default.Equals(compilation.ObjectType, assignableFromType)) return false;
+        if (SymbolEqualityComparer.Default.Equals(compilation.ObjectType, assignableToType))
+        {
+            return false;
+        }
+
+        if (SymbolEqualityComparer.Default.Equals(compilation.ObjectType, assignableFromType))
+        {
+            return false;
+        }
+
         if (SymbolEqualityComparer.Default.Equals(assignableToType, assignableFromType))
+        {
             return true;
-        if (compilation.HasImplicitConversion(assignableFromType, assignableToType)) return true;
-        if (assignableToType is not { Arity: > 0, IsUnboundGenericType: true }) return false;
+        }
+
+        if (compilation.HasImplicitConversion(assignableFromType, assignableToType))
+        {
+            return true;
+        }
+
+        if (assignableToType is not { Arity: > 0, IsUnboundGenericType: true })
+        {
+            return false;
+        }
+
         if (GetUnboundGenericType(assignableFromType) is { } unboundAssignableFromType
          && compilation.HasImplicitConversion(assignableToType, unboundAssignableFromType))
+        {
             return true;
+        }
 
         var matchingBaseTypes = GetBaseTypes(compilation, assignableFromType)
                                .Select(GetUnboundGenericType)
                                .Where(symbol => symbol is { } && compilation.HasImplicitConversion(symbol, assignableToType));
-        if (matchingBaseTypes.Any()) return true;
+        if (matchingBaseTypes.Any())
+        {
+            return true;
+        }
 
         var matchingInterfaces = assignableFromType
                                 .AllInterfaces
@@ -210,9 +252,9 @@ internal static class Helpers
 
     public static string GetFullMetadataName(ISymbol? symbol)
     {
-        if (symbol == null || IsRootNamespace(symbol))
+        if (symbol is null || IsRootNamespace(symbol))
         {
-            return string.Empty;
+            return "";
         }
 
         var sb = new StringBuilder(symbol.MetadataName);
@@ -225,14 +267,14 @@ internal static class Helpers
         {
             if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
             {
-                sb.Insert(0, '+');
+                _ = sb.Insert(0, '+');
             }
             else
             {
-                sb.Insert(0, '.');
+                _ = sb.Insert(0, '.');
             }
 
-            sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
         }
@@ -242,7 +284,7 @@ internal static class Helpers
         static bool IsRootNamespace(ISymbol symbol)
         {
             INamespaceSymbol? s;
-            return ( s = symbol as INamespaceSymbol ) != null && s.IsGlobalNamespace;
+            return ( s = symbol as INamespaceSymbol ) is not null && s.IsGlobalNamespace;
         }
     }
 
@@ -251,9 +293,13 @@ internal static class Helpers
 
     public static IEnumerable<INamedTypeSymbol> GetBaseTypes(Compilation compilation, INamedTypeSymbol namedTypeSymbol)
     {
-        while (namedTypeSymbol.BaseType != null)
+        while (namedTypeSymbol.BaseType is not null)
         {
-            if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol.BaseType, compilation.ObjectType)) yield break;
+            if (SymbolEqualityComparer.Default.Equals(namedTypeSymbol.BaseType, compilation.ObjectType))
+            {
+                yield break;
+            }
+
             yield return namedTypeSymbol.BaseType;
             namedTypeSymbol = namedTypeSymbol.BaseType;
         }
@@ -272,12 +318,14 @@ internal static class Helpers
             }
         }
 
-        if (name is SimpleNameSyntax)
+        if (name is not SimpleNameSyntax)
         {
-            if (expression.ArgumentList.Arguments.Count == 1 && expression.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpression)
-            {
-                return typeOfExpression.Type;
-            }
+            return null;
+        }
+
+        if (expression.ArgumentList.Arguments.Count == 1 && expression.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpression)
+        {
+            return typeOfExpression.Type;
         }
 
         return null;
@@ -324,7 +372,7 @@ internal static class Helpers
                                     [
                                         AttributeArgument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(key))),
                                         AttributeArgument(
-                                            value is null
+                                            ( value is null )
                                                 ? LiteralExpression(SyntaxKind.NullLiteralExpression)
                                                 : LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(value))
                                         ),
@@ -340,7 +388,7 @@ internal static class Helpers
     {
         if (methodCallSyntax is { Expression: MemberAccessExpressionSyntax memberAccess, ArgumentList.Arguments: [{ Expression: { } argumentExpression }] }) { }
         else if (methodCallSyntax is
-                 { Expression: MemberAccessExpressionSyntax memberAccess2, ArgumentList.Arguments: [_, { Expression: { } argumentExpression2 }] })
+        { Expression: MemberAccessExpressionSyntax memberAccess2, ArgumentList.Arguments: [_, { Expression: { } argumentExpression2 }] })
         {
             memberAccess = memberAccess2;
             argumentExpression = argumentExpression2;
@@ -352,7 +400,7 @@ internal static class Helpers
 
         var hasher = MD5.Create();
         var expression = argumentExpression.ToFullString().Replace("\r", "");
-        expression = string.Join("", expression.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()));
+        expression = string.Concat(expression.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()));
         var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(expression));
 
         var source = new SourceLocation(
@@ -376,10 +424,6 @@ internal static class Helpers
         "CA1822",
         "CS0105",
         "CS1573",
-        "CS8601",
-        "CS8602",
-        "CS8603",
-        "CS8604",
         "CS8618",
         "CS8669",
     ];

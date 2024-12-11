@@ -103,35 +103,35 @@ internal static class StatementGeneration
     )
     {
         var isServiceTypeAccessible = compilation.IsSymbolAccessibleWithin(serviceType, compilation.Assembly);
-        return ( isServiceTypeAccessible, serviceTypeExpression, implementationTypeExpression ) switch
-               {
-                   (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, TypeOfExpressionSyntax { Type: { } implementationTypeSyntax })
-                       when !IsOpenGenericType(serviceType)
-                    && !IsOpenGenericType(implementationType)
-                    && compilation.IsSymbolAccessibleWithin(implementationType, compilation.Assembly)
-                       => InvocationExpression(
-                           MemberAccessExpression(
-                               SyntaxKind.SimpleMemberAccessExpression,
-                               IdentifierName("ServiceDescriptor"),
-                               GenericName(lifetime)
-                                  .WithTypeArgumentList(TypeArgumentList(SeparatedList([serviceTypeSyntax, implementationTypeSyntax])))
-                           )
-                       ),
-                   (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, SimpleLambdaExpressionSyntax { ExpressionBody: { } })
-                       when !IsOpenGenericType(serviceType) =>
-                       InvocationExpression(
-                               MemberAccessExpression(
-                                   SyntaxKind.SimpleMemberAccessExpression,
-                                   IdentifierName("ServiceDescriptor"),
-                                   GenericName(lifetime).WithTypeArgumentList(TypeArgumentList(SeparatedList([serviceTypeSyntax])))
-                               )
-                           )
-                          .WithArgumentList(ArgumentList(SeparatedList([Argument(implementationTypeExpression)]))),
-                   _ => InvocationExpression(
-                           MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ServiceDescriptor"), IdentifierName(lifetime))
-                       )
-                      .WithArgumentList(ArgumentList(SeparatedList([Argument(serviceTypeExpression), Argument(implementationTypeExpression!)]))),
-               };
+        return (isServiceTypeAccessible, serviceTypeExpression, implementationTypeExpression) switch
+        {
+            (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, TypeOfExpressionSyntax { Type: { } implementationTypeSyntax })
+                when !IsOpenGenericType(serviceType)
+             && !IsOpenGenericType(implementationType)
+             && compilation.IsSymbolAccessibleWithin(implementationType, compilation.Assembly)
+                => InvocationExpression(
+                    MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        IdentifierName("ServiceDescriptor"),
+                        GenericName(lifetime)
+                           .WithTypeArgumentList(TypeArgumentList(SeparatedList([serviceTypeSyntax, implementationTypeSyntax])))
+                    )
+                ),
+            (true, TypeOfExpressionSyntax { Type: { } serviceTypeSyntax }, SimpleLambdaExpressionSyntax { ExpressionBody: { } })
+                when !IsOpenGenericType(serviceType) =>
+                InvocationExpression(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName("ServiceDescriptor"),
+                            GenericName(lifetime).WithTypeArgumentList(TypeArgumentList(SeparatedList([serviceTypeSyntax])))
+                        )
+                    )
+                   .WithArgumentList(ArgumentList(SeparatedList([Argument(implementationTypeExpression)]))),
+            _ => InvocationExpression(
+                    MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("ServiceDescriptor"), IdentifierName(lifetime))
+                )
+               .WithArgumentList(ArgumentList(SeparatedList([Argument(serviceTypeExpression), Argument(implementationTypeExpression!)]))),
+        };
     }
 
     public static bool IsOpenGenericType(this INamedTypeSymbol type) =>
@@ -144,11 +144,7 @@ internal static class StatementGeneration
 
         yield return FieldDeclaration(
                 VariableDeclaration(IdentifierName("Assembly"))
-                   .WithVariables(
-                        SingletonSeparatedList(
-                            VariableDeclarator(Identifier($"_{name}"))
-                        )
-                    )
+                   .WithVariables(SingletonSeparatedList(VariableDeclarator(Identifier($"_{name}"))))
             )
            .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword)));
         yield return PropertyDeclaration(IdentifierName("Assembly"), Identifier(name))
@@ -183,7 +179,7 @@ internal static class StatementGeneration
 
 
     public static ExpressionSyntax? GetAssemblyExpression(Compilation compilation, IAssemblySymbol assembly) =>
-        FindTypeInAssembly.FindType(compilation, assembly) is { } keyholdType
+        ( FindTypeInAssembly.FindType(compilation, assembly) is { } keyholdType )
             ? MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
                 GetTypeOfExpression(compilation, keyholdType),
@@ -193,35 +189,44 @@ internal static class StatementGeneration
 
     public static ExpressionSyntax GetTypeOfExpression(Compilation compilation, INamedTypeSymbol type)
     {
-        if (type.IsGenericType && type.IsOpenGenericType()) return getPrivateType(compilation, type);
-
-        return !compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) && type.IsGenericType && !type.IsOpenGenericType()
-            ? InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        getPrivateType(compilation, type.ConstructUnboundGenericType()),
-                        IdentifierName("MakeGenericType")
-                    )
-                )
-               .WithArgumentList(
-                    // ReSharper disable once NullableWarningSuppressionIsUsed
-                    ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(getPrivateType(compilation, ( t as INamedTypeSymbol )!)))))
-                )
-            : getPrivateType(compilation, type);
-
-        static ExpressionSyntax getPrivateType(Compilation compilation, INamedTypeSymbol type)
-        {
-            return compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)
-                ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)))
-                : InvocationExpression(
-                        MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, GetPrivateAssembly(type.ContainingAssembly), IdentifierName("GetType"))
+        return ( type.IsGenericType && type.IsOpenGenericType() )
+            ?  getPrivateType(compilation, type) 
+            : ( !compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) && type.IsGenericType && !type.IsOpenGenericType() )
+            ? PostfixUnaryExpression(
+                SyntaxKind.SuppressNullableWarningExpression,
+                InvocationExpression(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            getPrivateType(compilation, type.ConstructUnboundGenericType()),
+                            IdentifierName("MakeGenericType")
+                        )
                     )
                    .WithArgumentList(
-                        ArgumentList(
-                            SingletonSeparatedList(Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(Helpers.GetFullMetadataName(type)))))
+                        // ReSharper disable once NullableWarningSuppressionIsUsed
+                        ArgumentList(SeparatedList(type.TypeArguments.Select(t => Argument(getPrivateType(compilation, ( t as INamedTypeSymbol )!)))))
+                    )
+            )
+            : getPrivateType(compilation, type);
+
+        static ExpressionSyntax getPrivateType(Compilation compilation, INamedTypeSymbol type) => ( compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) )
+                ? TypeOfExpression(ParseTypeName(Helpers.GetTypeOfName(type)))
+                : PostfixUnaryExpression(
+                    SyntaxKind.SuppressNullableWarningExpression,
+                    InvocationExpression(
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                GetPrivateAssembly(type.ContainingAssembly),
+                                IdentifierName("GetType")
+                            )
                         )
-                    );
-        }
+                       .WithArgumentList(
+                            ArgumentList(
+                                SingletonSeparatedList(
+                                    Argument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(Helpers.GetFullMetadataName(type))))
+                                )
+                            )
+                        )
+                );
     }
 
 

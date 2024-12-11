@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
@@ -19,11 +19,10 @@ internal static class GeneratorBuilderConstants
                                                                      typeof(ServiceRegistrationAttribute).Assembly,
                                                                      typeof(EditorBrowsableAttribute).Assembly,
                                                                      typeof(Attribute).Assembly
-                                                                 )
-                                                                .IgnoreOutputFile("CompiledServiceScanningExtensions.cs");
+                                                                 );
 }
 
-public abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
+internal abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
 {
     protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
     protected AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
@@ -32,6 +31,11 @@ public abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
     public void InitializeAsync()
     {
         Builder = GeneratorBuilderConstants.Builder.WithAssemblyLoadContext(AssemblyLoadContext);
-        if (AssemblyLoadContext is IDisposable disposable) Disposables.Add(disposable);
+        if (AssemblyLoadContext is not IDisposable disposable)
+        {
+            return;
+        }
+
+        Disposables.Add(disposable);
     }
 }
