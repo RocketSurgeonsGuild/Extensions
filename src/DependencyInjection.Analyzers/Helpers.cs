@@ -75,8 +75,6 @@ internal static class Helpers
             }
         }
 
-        var last = symbol;
-
         var workingSymbol = symbol.ContainingSymbol;
 
         while (!IsRootNamespace(workingSymbol))
