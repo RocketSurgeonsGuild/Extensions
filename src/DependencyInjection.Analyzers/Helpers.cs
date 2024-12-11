@@ -80,6 +80,9 @@ internal static class Helpers
 
         while (!IsRootNamespace(workingSymbol))
         {
+
+/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+Before:
             if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
             {
                 _ = sb.Insert(0, '.');
@@ -88,6 +91,10 @@ internal static class Helpers
             {
                 _ = sb.Insert(0, '.');
             }
+After:
+            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '.') : sb.Insert(0, '.');
+*/
+            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ?  sb.Insert(0, '.')  :  sb.Insert(0, '.');
 
             _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
@@ -148,6 +155,9 @@ internal static class Helpers
 
         while (!IsRootNamespace(workingSymbol))
         {
+
+/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+Before:
             if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
             {
                 _ = sb.Insert(0, '+');
@@ -156,6 +166,10 @@ internal static class Helpers
             {
                 _ = sb.Insert(0, '.');
             }
+After:
+            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '+') : sb.Insert(0, '.');
+*/
+            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ?  sb.Insert(0, '+')  :  sb.Insert(0, '.');
 
             _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
@@ -265,6 +279,9 @@ internal static class Helpers
 
         while (!IsRootNamespace(workingSymbol))
         {
+
+/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+Before:
             if (workingSymbol is ITypeSymbol && last is ITypeSymbol)
             {
                 _ = sb.Insert(0, '+');
@@ -273,6 +290,10 @@ internal static class Helpers
             {
                 _ = sb.Insert(0, '.');
             }
+After:
+            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '+') : sb.Insert(0, '.');
+*/
+            _ = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ?  sb.Insert(0, '+')  :  sb.Insert(0, '.');
 
             _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
@@ -323,12 +344,18 @@ internal static class Helpers
             return null;
         }
 
-        if (expression.ArgumentList.Arguments.Count == 1 && expression.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpression)
-        {
-            return typeOfExpression.Type;
-        }
 
+/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+Before:
         return null;
+After:
+        return ( expression.ArgumentList.Arguments.Count == 1 && expression.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpression )
+            ? typeOfExpression.Type
+            : null;
+*/
+        return ( expression.ArgumentList.Arguments.Count == 1 && expression.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpression )
+            ?  typeOfExpression.Type
+            :   null;
     }
 
     internal static AttributeListSyntax CompilerGeneratedAttributes =

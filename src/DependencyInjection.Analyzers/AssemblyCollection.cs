@@ -165,8 +165,8 @@ internal static class AssemblyCollection
          {
              TypeArguments: [{ Name: IReflectionAssemblySelector }, ..],
          } )
-            ? ((InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel))default  
-            :  (method, selector, semanticModel: context.SemanticModel);
+            ? ((InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel))default
+            : (method, selector, semanticModel: context.SemanticModel);
     }
 
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetMethod(SyntaxNode node) =>

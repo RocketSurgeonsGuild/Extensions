@@ -190,7 +190,7 @@ internal static class StatementGeneration
     public static ExpressionSyntax GetTypeOfExpression(Compilation compilation, INamedTypeSymbol type)
     {
         return ( type.IsGenericType && type.IsOpenGenericType() )
-            ?  getPrivateType(compilation, type) 
+            ? getPrivateType(compilation, type)
             : ( !compilation.IsSymbolAccessibleWithin(type, compilation.Assembly) && type.IsGenericType && !type.IsOpenGenericType() )
             ? PostfixUnaryExpression(
                 SyntaxKind.SuppressNullableWarningExpression,
