@@ -1,6 +1,6 @@
 ﻿//HintName: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs
 #nullable enable
-#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8601, CS8602, CS8603, CS8604, CS8618, CS8669
+#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -30,17 +30,17 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: 44B794K0WP4CpbGnZy+t4A==
             case 19:
-                services.Add(ServiceDescriptor.Scoped(TestProject.GetType("Nested+Validator"), TestProject.GetType("Nested+Validator")));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IValidator<>).MakeGenericType(TestProject.GetType("Nested+MyRecord")), a => a.GetRequiredService(TestProject.GetType("Nested+Validator"))));
+                services.Add(ServiceDescriptor.Scoped(TestProject.GetType("Nested+Validator")!, TestProject.GetType("Nested+Validator")!));
+                services.Add(ServiceDescriptor.Scoped(typeof(global::IValidator<>).MakeGenericType(TestProject.GetType("Nested+MyRecord")!)!, a => a.GetRequiredService(TestProject.GetType("Nested+Validator")!)));
                 break;
         }
 
         return services;
     }
 
-    private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly);
+    private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly)!;
     private Assembly _TestProject;
     private Assembly TestProject => _TestProject ??= _context.LoadFromAssemblyName(new AssemblyName("TestProject, Version=version, Culture=neutral, PublicKeyToken=null"));
 }
-#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8601, CS8602, CS8603, CS8604, CS8618, CS8669
+#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669
 #nullable restore

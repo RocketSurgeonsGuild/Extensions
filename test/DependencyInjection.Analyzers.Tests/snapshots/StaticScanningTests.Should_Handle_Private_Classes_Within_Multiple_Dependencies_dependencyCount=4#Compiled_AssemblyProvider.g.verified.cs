@@ -1,6 +1,6 @@
 ﻿//HintName: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs
 #nullable enable
-#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8601, CS8602, CS8603, CS8604, CS8618, CS8669
+#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -30,17 +30,17 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: MpVnQwuMrx82b7Q/xd6OBQ==
             case 15:
-                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency0Project.GetType("Dependency1Project.Service0")));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency1Project.GetType("Dependency1Project.Service1")));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency2Project.GetType("Dependency1Project.Service2")));
-                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency3Project.GetType("Dependency1Project.Service3")));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency0Project.GetType("Dependency1Project.Service0")!));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency1Project.GetType("Dependency1Project.Service1")!));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency2Project.GetType("Dependency1Project.Service2")!));
+                services.Add(ServiceDescriptor.Singleton(typeof(global::RootDependencyProject.IService), Dependency3Project.GetType("Dependency1Project.Service3")!));
                 break;
         }
 
         return services;
     }
 
-    private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly);
+    private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly)!;
     private Assembly _Dependency0Project;
     private Assembly Dependency0Project => _Dependency0Project ??= _context.LoadFromAssemblyName(new AssemblyName("Dependency0Project, Version=version, Culture=neutral, PublicKeyToken=null"));
 
@@ -53,5 +53,5 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     private Assembly _Dependency3Project;
     private Assembly Dependency3Project => _Dependency3Project ??= _context.LoadFromAssemblyName(new AssemblyName("Dependency3Project, Version=version, Culture=neutral, PublicKeyToken=null"));
 }
-#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8601, CS8602, CS8603, CS8604, CS8618, CS8669
+#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669
 #nullable restore

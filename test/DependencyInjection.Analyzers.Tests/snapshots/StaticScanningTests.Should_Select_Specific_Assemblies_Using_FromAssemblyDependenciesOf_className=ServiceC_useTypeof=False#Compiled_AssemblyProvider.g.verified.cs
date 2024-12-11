@@ -1,6 +1,6 @@
 ﻿//HintName: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs
 #nullable enable
-#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8601, CS8602, CS8603, CS8604, CS8618, CS8669
+#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -30,10 +30,10 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: VBh0IPudZlCIRapHmG9V3g==
             case 20:
-                services.Add(ServiceDescriptor.Singleton(DependencyProjectD.GetType("DependencyProjectD.HardReferenceA"), DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")));
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService(DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")) as global::RootDependencyProject.IService));
-                services.Add(ServiceDescriptor.Singleton(DependencyProjectD.GetType("DependencyProjectD.HardReferenceC"), DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")));
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService(DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")) as global::RootDependencyProject.IService));
+                services.Add(ServiceDescriptor.Singleton(DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")!, DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")!));
+                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService(DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")!) as global::RootDependencyProject.IService));
+                services.Add(ServiceDescriptor.Singleton(DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")!, DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")!));
+                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService(DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")!) as global::RootDependencyProject.IService));
                 services.Add(ServiceDescriptor.Singleton<global::DependencyProjectD.ServiceD, global::DependencyProjectD.ServiceD>());
                 services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService<global::DependencyProjectD.ServiceD>()));
                 break;
@@ -42,9 +42,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         return services;
     }
 
-    private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly);
+    private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly)!;
     private Assembly _DependencyProjectD;
     private Assembly DependencyProjectD => _DependencyProjectD ??= _context.LoadFromAssemblyName(new AssemblyName("DependencyProjectD, Version=version, Culture=neutral, PublicKeyToken=null"));
 }
-#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8601, CS8602, CS8603, CS8604, CS8618, CS8669
+#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669
 #nullable restore
