@@ -50,42 +50,44 @@ internal static class Helpers
             sb = new(symbol.Name);
             if (namedTypeSymbol.IsOpenGenericType())
             {
-                _ = sb.Append('<');
+                sb.Append('<');
                 for (var i = 1; i < namedTypeSymbol.Arity; i++)
                 {
-                    _ = sb.Append(',');
+                    sb.Append(',');
                 }
 
-                _ = sb.Append('>');
+                sb.Append('>');
             }
             else
             {
-                _ = sb.Append('<');
+                sb.Append('<');
                 for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
                 {
                     var argument = namedTypeSymbol.TypeArguments[index];
-                    _ = sb.Append(GetTypeOfName(argument));
+                    sb.Append(GetTypeOfName(argument));
                     if (index < namedTypeSymbol.TypeArguments.Length - 1)
                     {
-                        _ = sb.Append(',');
+                        sb.Append(',');
                     }
                 }
 
-                _ = sb.Append('>');
+                sb.Append('>');
             }
         }
+
+        var last = symbol;
 
         var workingSymbol = symbol.ContainingSymbol;
 
         while (!IsRootNamespace(workingSymbol))
         {
-            _ = sb.Insert(0, '.');
-            _ = sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
+            sb.Insert(0, '.');
+            sb.Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
         }
 
-        _ = sb.Insert(0, "global::");
+        sb.Insert(0, "global::");
         return sb.ToString();
     }
 
@@ -102,28 +104,28 @@ internal static class Helpers
             sb = new(symbol.Name);
             if (namedTypeSymbol.IsOpenGenericType())
             {
-                _ = sb.Append('<');
+                sb.Append('<');
                 for (var i = 1; i < namedTypeSymbol.Arity; i++)
                 {
-                    _ = sb.Append(',');
+                    sb.Append(',');
                 }
 
-                _ = sb.Append('>');
+                sb.Append('>');
             }
             else
             {
-                _ = sb.Append('<');
+                sb.Append('<');
                 for (var index = 0; index < namedTypeSymbol.TypeArguments.Length; index++)
                 {
                     var argument = namedTypeSymbol.TypeArguments[index];
-                    _ = sb.Append(GetGenericDisplayName(argument));
+                    sb.Append(GetGenericDisplayName(argument));
                     if (index < namedTypeSymbol.TypeArguments.Length - 1)
                     {
-                        _ = sb.Append(',');
+                        sb.Append(',');
                     }
                 }
 
-                _ = sb.Append('>');
+                sb.Append('>');
             }
         }
 
@@ -133,13 +135,13 @@ internal static class Helpers
 
         while (!IsRootNamespace(workingSymbol))
         {
-            sb = ( ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '+') : sb.Insert(0, '.') )
+            sb = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ? sb.Insert(0, '+') : sb.Insert(0, '.') )
                .Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
         }
 
-        _ = sb.Insert(0, "global::");
+        sb.Insert(0, "global::");
         return sb.ToString();
     }
 
@@ -236,7 +238,7 @@ internal static class Helpers
 
         while (!IsRootNamespace(workingSymbol))
         {
-            sb = ( ( workingSymbol is ITypeSymbol && last is ITypeSymbol ) ? sb.Insert(0, '+') : sb.Insert(0, '.') )
+            sb = ( workingSymbol is ITypeSymbol && last is ITypeSymbol ? sb.Insert(0, '+') : sb.Insert(0, '.') )
                .Insert(0, workingSymbol.OriginalDefinition.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat).Trim());
             //sb.Insert(0, symbol.MetadataName);
             workingSymbol = workingSymbol.ContainingSymbol;
@@ -273,12 +275,9 @@ internal static class Helpers
         NameSyntax name
     )
     {
-        if (name is GenericNameSyntax genericNameSyntax)
+        if (name is GenericNameSyntax { TypeArgumentList.Arguments.Count: 1 } genericNameSyntax)
         {
-            if (genericNameSyntax.TypeArgumentList.Arguments.Count == 1)
-            {
-                return genericNameSyntax.TypeArgumentList.Arguments[0];
-            }
+            return genericNameSyntax.TypeArgumentList.Arguments[0];
         }
 
         if (name is not SimpleNameSyntax)
@@ -286,18 +285,12 @@ internal static class Helpers
             return null;
         }
 
+        if (expression.ArgumentList.Arguments is [{ Expression: TypeOfExpressionSyntax typeOfExpression }])
+        {
+            return typeOfExpression.Type;
+        }
 
-        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-        Before:
-                return null;
-        After:
-                return ( expression.ArgumentList.Arguments.Count == 1 && expression.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpression )
-                    ? typeOfExpression.Type
-                    : null;
-        */
-        return ( expression.ArgumentList.Arguments.Count == 1 && expression.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOfExpression )
-            ? typeOfExpression.Type
-            : null;
+        return null;
     }
 
     internal static AttributeListSyntax CompilerGeneratedAttributes =
