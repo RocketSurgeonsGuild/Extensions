@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 
@@ -7,14 +8,29 @@ internal class TypeSymbolVisitor
     (Compilation compilation, ICompiledTypeFilter<IAssemblySymbol> assemblyFilter, ICompiledTypeFilter<INamedTypeSymbol> typeFilter)
     : TypeSymbolVisitorBase(compilation, assemblyFilter, typeFilter)
 {
-    public static ImmutableArray<INamedTypeSymbol> GetTypes(
-        Compilation compilation,
-        ICompiledTypeFilter<IAssemblySymbol> assemblyFilter,
-        ICompiledTypeFilter<INamedTypeSymbol> typeFilter
-    )
+    private readonly HashSet<INamedTypeSymbol> _types = new(SymbolEqualityComparer.Default);
+
+    protected override bool FoundNamedType(INamedTypeSymbol symbol)
     {
-        var visitor = new TypeSymbolVisitor(compilation, assemblyFilter, typeFilter);
-        foreach (var symbol in compilation.References.Select(compilation.GetAssemblyOrModuleSymbol).Concat([compilation.Assembly]))
+        _types.Add(symbol);
+        return false;
+    }
+
+    public ImmutableList<INamedTypeSymbol> GetTypes() => _types.ToImmutableList();
+}
+
+internal static class TypeSymbolVisitorExtensions
+{
+    public static ImmutableList<INamedTypeSymbol> GetTypes(this TypeSymbolVisitor visitor, Compilation compilation)
+    {
+        GetReferencedTypes(visitor, compilation);
+        GetCompilationTypes(visitor, compilation);
+        return visitor.GetTypes(compilation);
+    }
+
+    public static TypeSymbolVisitor GetReferencedTypes(this TypeSymbolVisitor visitor, Compilation compilation)
+    {
+        foreach (var symbol in compilation.References.Select(compilation.GetAssemblyOrModuleSymbol))
         {
             switch (symbol)
             {
@@ -27,16 +43,12 @@ internal class TypeSymbolVisitor
             }
         }
 
-        return visitor.GetTypes();
+        return visitor;
     }
 
-    private readonly HashSet<INamedTypeSymbol> _types = new(SymbolEqualityComparer.Default);
-
-    protected override bool FoundNamedType(INamedTypeSymbol symbol)
+    public static TypeSymbolVisitor GetCompilationTypes(this TypeSymbolVisitor visitor, Compilation compilation)
     {
-        _types.Add(symbol);
-        return false;
+        compilation.Assembly.Accept(visitor);
+        return visitor;
     }
-
-    public ImmutableArray<INamedTypeSymbol> GetTypes() => _types.ToImmutableArray();
 }

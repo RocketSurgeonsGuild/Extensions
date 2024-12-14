@@ -33,11 +33,11 @@ internal static partial class ModuleInitializer
                 return new(path, typeName, method.Name);
             }
         );
-        VerifierSettings.ScrubLinesWithReplace(
-            s => ( s.Contains("AssemblyMetadata(\"AssemblyProvider.", StringComparison.OrdinalIgnoreCase) )
-                ? s[..( s.IndexOf('"', s.IndexOf('"') + 1) + 2 )] + "\"{scrubbed}\")]"
-                : s
-        );
+//        VerifierSettings.ScrubLinesWithReplace(
+//            s => ( s.Contains("AssemblyMetadata(\"AssemblyProvider.", StringComparison.OrdinalIgnoreCase) )
+//                ? s[..( s.IndexOf('"', s.IndexOf('"') + 1) + 2 )] + "\"{scrubbed}\")]"
+//                : s
+//        );
         VerifierSettings.ScrubLinesWithReplace(
             s => ( s.Contains("<Compiled_AssemblyProvider_g>", StringComparison.OrdinalIgnoreCase) )
                 ? s[..( s.IndexOf('"') + 1 )] + "{CompiledTypeProvider}" + s[s.LastIndexOf('"')..]

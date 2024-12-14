@@ -9,7 +9,7 @@ using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 using System.Runtime.Loader;
 
-[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes","{scrubbed}")]
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes", "eyJsIjp7ImwiOjE0LCJhIjoibE14WUlCQnBoQk5pVHNmMXFMWXhEZz09IiwiZiI6IklucHV0MC5jcyJ9LCJhIjp7ImEiOnRydWUsImkiOmZhbHNlLCJtIjpbXSwibmEiOlsiUm9ja2V0LlN1cmdlcnkuRGVwZW5kZW5jeUluamVjdGlvbi5FeHRlbnNpb25zIl0sImQiOltdfSwidCI6eyJiIjoxLCJjIjpbeyJmIjozLCJuIjpbIkpldEJyYWlucy5Bbm5vdGF0aW9ucyIsIlBvbHlmaWxscyIsIlN5c3RlbSJdfV0sImQiOlt7ImkiOmZhbHNlLCJmIjowLCJuIjpbIlBvbHlmaWxsIl19XSwiZSI6W10sImYiOlt7ImYiOmZhbHNlLCJ0IjpbNl19XSwiZyI6W10sImgiOltdLCJpIjpbXSwiaiI6W10sImsiOlt7ImkiOmZhbHNlLCJhIjoiUm9ja2V0LlN1cmdlcnkuRGVwZW5kZW5jeUluamVjdGlvbi5FeHRlbnNpb25zIiwidCI6IlJvY2tldC5TdXJnZXJ5LkRlcGVuZGVuY3lJbmplY3Rpb24uQ29tcGlsZWQuSUNvbXBpbGVkVHlwZVByb3ZpZGVyIiwidSI6ZmFsc2V9LHsiaSI6ZmFsc2UsImEiOiJTeXN0ZW0uUHJpdmF0ZS5Db3JlTGliIiwidCI6IlN5c3RlbS5BdHRyaWJ1dGUiLCJ1IjpmYWxzZX1dLCJsIjpbXX19")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -25,6 +25,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: lMxYIBBphBNiTsf1qLYxDg==
             case 14:
+                yield return typeof(global::Program);
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("FxResources.Microsoft.Extensions.DependencyInjection.Abstractions.SR")!;
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities);
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ActivatorUtilitiesUpdateHandler")!;
@@ -54,7 +55,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions);
                 yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.Internal.ParameterDefaultValue")!;
-                yield return typeof(global::Program);
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions);
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector);
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector);

@@ -9,7 +9,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 internal static class DataHelpers
 {
     public static void HandleInvocationExpressionSyntax(
-        SourceProductionContext context,
+        HashSet<Diagnostic> diagnostics,
         SemanticModel semanticModel,
         ExpressionSyntax selectorExpression,
         List<IAssemblyDescriptor> assemblies,
@@ -27,7 +27,7 @@ internal static class DataHelpers
              || simpleLambdaExpressionSyntax is { ExpressionBody: null }
              || simpleLambdaExpressionSyntax.ExpressionBody is not InvocationExpressionSyntax body)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, selectorExpression.GetLocation()));
+                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, selectorExpression.GetLocation()));
                 return;
             }
 
@@ -42,7 +42,7 @@ internal static class DataHelpers
         {
             if (cancellationToken.IsCancellationRequested) return;
             HandleInvocationExpressionSyntax(
-                context,
+                diagnostics,
                 semanticModel,
                 childExpression,
                 assemblies,
@@ -79,7 +79,7 @@ internal static class DataHelpers
         if (typeName == "Rocket.Surgery.DependencyInjection.Compiled.ITypeFilter")
         {
             if (cancellationToken.IsCancellationRequested) return;
-            if (HandleCompiledTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name) is { } filter)
+            if (HandleCompiledTypeFilter(diagnostics, semanticModel, expression, memberAccessExpressionSyntax.Name) is { } filter)
                 typeFilters.Add(filter);
         }
 
@@ -87,7 +87,7 @@ internal static class DataHelpers
                      or "Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector")
         {
             if (cancellationToken.IsCancellationRequested) return;
-            serviceTypeFilters.AddRange(HandleCompiledServiceTypeFilter(context, semanticModel, expression, memberAccessExpressionSyntax.Name));
+            serviceTypeFilters.AddRange(HandleCompiledServiceTypeFilter(diagnostics, semanticModel, expression, memberAccessExpressionSyntax.Name, cancellationToken));
         }
 
         if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector")
@@ -102,7 +102,7 @@ internal static class DataHelpers
         {
             if (cancellationToken.IsCancellationRequested) return;
             HandleInvocationExpressionSyntax(
-                context,
+                diagnostics,
                 semanticModel,
                 argument.Expression,
                 assemblies,
@@ -197,7 +197,7 @@ internal static class DataHelpers
     }
 
     private static ITypeFilterDescriptor? HandleCompiledTypeFilter(
-        SourceProductionContext context,
+        HashSet<Diagnostic> diagnostics,
         SemanticModel semanticModel,
         InvocationExpressionSyntax expression,
         SimpleNameSyntax name
@@ -212,21 +212,21 @@ internal static class DataHelpers
                    ({ Identifier.Text: "WithAttribute" or "WithoutAttribute" }, { } namedType) =>
                        createWithAttributeFilterDescriptor(name, namedType),
                    ({ Identifier.Text: "WithAttribute" or "WithoutAttribute" }, _) =>
-                       createWithAttributeStringFilterDescriptor(context, name, expression, semanticModel),
+                       createWithAttributeStringFilterDescriptor(diagnostics, name, expression, semanticModel),
                    ({ Identifier.Text: "WithAnyAttribute" }, { } namedType) =>
                        createWithAnyAttributeFilterDescriptor(name, expression, semanticModel),
                    ({ Identifier.Text: "WithAnyAttribute" }, _) =>
                        createWithAnyAttributeStringFilterDescriptor(name, expression, semanticModel),
                    ({ Identifier.Text: "InExactNamespaceOf" or "InNamespaceOf" or "NotInNamespaceOf" }, _) =>
-                       createNamespaceTypeFilterDescriptor(context, name, expression, semanticModel),
+                       createNamespaceTypeFilterDescriptor(diagnostics, name, expression, semanticModel),
                    ({ Identifier.Text: "InExactNamespaces" or "InNamespaces" or "NotInNamespaces" }, _) =>
-                       createNamespaceStringFilterDescriptor(context, name, expression, semanticModel),
+                       createNamespaceStringFilterDescriptor(diagnostics, name, expression, semanticModel),
                    ({ Identifier.Text: "EndsWith" or "StartsWith" or "Contains" or "NotEndsWith" or "NotStartsWith" or "NotContains" }, _) =>
-                       createNameFilterDescriptor(context, name, expression),
+                       createNameFilterDescriptor(diagnostics, name, expression),
                    ({ Identifier.Text: "KindOf" or "NotKindOf" }, _) =>
-                       createTypeKindFilterDescriptor(context, name, expression),
+                       createTypeKindFilterDescriptor(diagnostics, name, expression),
                    ({ Identifier.Text: "InfoOf" or "NotInfoOf" }, _) =>
-                       createTypeInfoFilterDescriptor(context, name, expression),
+                       createTypeInfoFilterDescriptor(diagnostics, name, expression),
                    _ => null,
 //                   _ => throw new NotSupportedException($"Not supported type filter. Method: {name.ToFullString()}  {expression.ToFullString()} method."),
                };
@@ -274,7 +274,7 @@ internal static class DataHelpers
         }
 
         static ITypeFilterDescriptor createNameFilterDescriptor(
-            SourceProductionContext context,
+            HashSet<Diagnostic> diagnostics,
             SimpleNameSyntax name,
             InvocationExpressionSyntax expression
         )
@@ -293,7 +293,7 @@ internal static class DataHelpers
             {
                 if (getStringValue(argument) is not { Length: > 0 } item)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
                     continue;
                 }
 
@@ -304,7 +304,7 @@ internal static class DataHelpers
         }
 
         static NamespaceFilterDescriptor createNamespaceTypeFilterDescriptor(
-            SourceProductionContext context,
+            HashSet<Diagnostic> diagnostics,
             SimpleNameSyntax name,
             InvocationExpressionSyntax expression,
             SemanticModel semanticModel
@@ -326,7 +326,7 @@ internal static class DataHelpers
                 if (argument.Expression is not TypeOfExpressionSyntax typeOfExpressionSyntax
                  || ModelExtensions.GetTypeInfo(semanticModel, typeOfExpressionSyntax.Type).Type is not { } type)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, argument.GetLocation()));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, argument.GetLocation()));
                     continue;
                 }
 
@@ -341,7 +341,7 @@ internal static class DataHelpers
         }
 
         static NamespaceFilterDescriptor createNamespaceStringFilterDescriptor(
-            SourceProductionContext context,
+            HashSet<Diagnostic> diagnostics,
             SimpleNameSyntax name,
             InvocationExpressionSyntax expression,
             SemanticModel semanticModel
@@ -376,14 +376,14 @@ internal static class DataHelpers
                     continue;
                 }
 
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
+                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
             }
 
             return new(filter, namespaces.ToImmutable());
         }
 
         static ITypeFilterDescriptor? createWithAttributeStringFilterDescriptor(
-            SourceProductionContext context,
+            HashSet<Diagnostic> diagnostics,
             SimpleNameSyntax name,
             InvocationExpressionSyntax expression,
             SemanticModel semanticModel
@@ -404,7 +404,7 @@ internal static class DataHelpers
                     ? new WithoutAttributeStringFilterDescriptor(item)
                     : new WithAttributeStringFilterDescriptor(item);
 
-            context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
+            diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
             return null;
         }
 
@@ -436,7 +436,7 @@ internal static class DataHelpers
         }
 
         static TypeKindFilterDescriptor createTypeKindFilterDescriptor(
-            SourceProductionContext context,
+            HashSet<Diagnostic> diagnostics,
             SimpleNameSyntax name,
             InvocationExpressionSyntax expression
         )
@@ -448,7 +448,7 @@ internal static class DataHelpers
             {
                 if (getStringValue(argument) is not { Length: > 0 } item)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
                     continue;
                 }
 
@@ -459,7 +459,7 @@ internal static class DataHelpers
         }
 
         static TypeInfoFilterDescriptor createTypeInfoFilterDescriptor(
-            SourceProductionContext context,
+            HashSet<Diagnostic> diagnostics,
             SimpleNameSyntax name,
             InvocationExpressionSyntax expression
         )
@@ -471,7 +471,7 @@ internal static class DataHelpers
             {
                 if (getStringValue(argument) is not { Length: > 0 } item)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAString, argument.GetLocation()));
                     continue;
                 }
 
@@ -498,10 +498,11 @@ internal static class DataHelpers
     }
 
     private static IEnumerable<IServiceTypeDescriptor> HandleCompiledServiceTypeFilter(
-        SourceProductionContext context,
+        HashSet<Diagnostic> diagnostics,
         SemanticModel semanticModel,
         InvocationExpressionSyntax expression,
-        SimpleNameSyntax name
+        SimpleNameSyntax name,
+        CancellationToken cancellationToken
     )
     {
         if (name.ToFullString() == "AsSelf")
@@ -527,7 +528,7 @@ internal static class DataHelpers
                 var classFilter = ClassFilter.All;
                 var lifetime = 0;
                 HandleInvocationExpressionSyntax(
-                    context,
+                    diagnostics,
                     semanticModel,
                     expressionBody,
                     [],
@@ -535,10 +536,10 @@ internal static class DataHelpers
                     [],
                     ref lifetime,
                     ref classFilter,
-                    context.CancellationToken
+                    cancellationToken
                 );
                 // ReSharper disable once UseCollectionExpression
-                interfaceFilter = new(classFilter, interfaceFilters.ToImmutableArray());
+                interfaceFilter = new(classFilter, interfaceFilters.ToImmutableList());
             }
 
             yield return new ImplementedInterfacesServiceTypeDescriptor(interfaceFilter);
@@ -563,7 +564,7 @@ internal static class DataHelpers
                     yield return new CompiledServiceTypeDescriptor(nts);
                     yield break;
                 default:
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                     yield break;
             }
         }
@@ -580,7 +581,7 @@ internal static class DataHelpers
                     yield return new CompiledServiceTypeDescriptor(nts);
                     yield break;
                 default:
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.UnhandledSymbol, name.GetLocation()));
                     yield break;
             }
         }

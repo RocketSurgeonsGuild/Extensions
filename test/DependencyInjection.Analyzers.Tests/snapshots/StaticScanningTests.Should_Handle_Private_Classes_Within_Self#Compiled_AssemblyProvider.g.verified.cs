@@ -9,7 +9,7 @@ using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 using System.Runtime.Loader;
 
-[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ServiceDescriptorTypes","{scrubbed}")]
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ServiceDescriptorTypes", "eyJsIjp7ImwiOjE2LCJhIjoiTmEvT2ZYMmEyRngwXHUwMDJCSW9QbmxEV3hRPT0iLCJmIjoiSW5wdXQwLmNzIn0sImEiOnsiYSI6dHJ1ZSwiaSI6ZmFsc2UsIm0iOltdLCJuYSI6W10sImQiOltdfSwidCI6eyJiIjoxLCJjIjpbXSwiZCI6W10sImUiOlt7ImYiOnRydWUsInQiOlsyXX1dLCJmIjpbeyJmIjpmYWxzZSwidCI6Wy0yLDFdfV0sImciOltdLCJoIjpbXSwiaSI6W10sImoiOltdLCJrIjpbeyJpIjp0cnVlLCJhIjoiRGVwZW5kZW5jeVByb2plY3QiLCJ0IjoiRGVwZW5kZW5jeVByb2plY3QuSVNlcnZpY2UiLCJ1IjpmYWxzZX1dLCJsIjpbXX0sInMiOnsiU2VydmljZVR5cGVEZXNjcmlwdG9ycyI6W3siSWRlbnRpZmllciI6InMiLCJUeXBlRGF0YSI6bnVsbCwiVHlwZUZpbHRlciI6bnVsbH0seyJJZGVudGlmaWVyIjoiaSIsIlR5cGVEYXRhIjpudWxsLCJUeXBlRmlsdGVyIjpudWxsfV0sIkxpZmV0aW1lIjoxfSwieiI6MX0=")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -30,10 +30,10 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: Na/OfX2a2Fx0+IoPnlDWxQ==
             case 16:
-                services.Add(ServiceDescriptor.Scoped(DependencyProject.GetType("DependencyProject.Service")!, DependencyProject.GetType("DependencyProject.Service")!));
-                services.Add(ServiceDescriptor.Scoped<global::DependencyProject.IService>(a => a.GetRequiredService(DependencyProject.GetType("DependencyProject.Service")!) as global::DependencyProject.IService));
                 services.Add(ServiceDescriptor.Scoped<global::TestProject.Service, global::TestProject.Service>());
                 services.Add(ServiceDescriptor.Scoped<global::DependencyProject.IService>(a => a.GetRequiredService<global::TestProject.Service>()));
+                services.Add(ServiceDescriptor.Scoped(DependencyProject.GetType("DependencyProject.Service")!, DependencyProject.GetType("DependencyProject.Service")!));
+                services.Add(ServiceDescriptor.Scoped<global::DependencyProject.IService>(a => a.GetRequiredService(DependencyProject.GetType("DependencyProject.Service")!) as global::DependencyProject.IService));
                 break;
         }
 

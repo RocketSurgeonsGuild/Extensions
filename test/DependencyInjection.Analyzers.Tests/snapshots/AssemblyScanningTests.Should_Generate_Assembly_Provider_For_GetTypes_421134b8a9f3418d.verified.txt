@@ -3,6 +3,9 @@
   GeneratorDiagnostics: {
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
+  GlobalOptions: {
+    build_property.IntermediateOutputPath: {TempPath}Guid_1/Guid_2
+  },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

@@ -18,55 +18,75 @@ internal static class ServiceDescriptorCollection
     )
     {
         return valueProvider
-              .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetTypesMethod(syntaxContext))
+              .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetServiceDescriptorMethod(syntaxContext))
               .Combine(hasAssemblyLoadContext)
               .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
               .Select((tuple, _) => tuple.Left)
               .Collect();
     }
 
-    public static MethodDeclarationSyntax Execute(Request request)
+    public static ResolvedSourceLocation? ResolveSource(
+        Compilation compilation,
+        HashSet<Diagnostic> diagnostics,
+        Item item,
+        HashSet<IAssemblySymbol> privateAssemblies,
+        Func<Compilation, TypeSymbolVisitor, TypeSymbolVisitor> visitorFactory)
     {
-        if (!request.Items.Any()) return ScanMethod;
-
-        var results = new List<(SourceLocation location, BlockSyntax block)>();
-        foreach (var item in request.Items)
+        try
         {
-            try
-            {
-                var reducedTypes = AssemblyProviders.TypeSymbolVisitor.GetTypes(request.Compilation, item.AssemblyFilter, item.TypeFilter);
-                if (reducedTypes.Length == 0) continue;
-                var localBlock = GenerateDescriptors(request.Context, request.Compilation, reducedTypes, item.ServicesTypeFilter, request.PrivateAssemblies);
-                results.Add(( item.Location, localBlock ));
-            }
-            catch (Exception e)
-            {
-                request.Context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        Diagnostics.UnhandledException,
-                        null,
-                        e.Message,
-                        e.StackTrace.Replace("\r", "").Replace("\n", ""),
-                        e.GetType().Name,
-                        e.ToString()
-                    )
-                );
-            }
-        }
+            var pa = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+            var visitor = visitorFactory(compilation, new(compilation, item.AssemblyFilter, item.TypeFilter));
+            var reducedTypes = visitor.GetTypes();
+            if (reducedTypes.Count == 0) return null;
+            var localBlock = GenerateDescriptors(compilation, diagnostics, reducedTypes, item.ServicesTypeFilter, pa)
+                            .NormalizeWhitespace()
+                            .ToFullString();
 
-        return results.Count == 0
-            ? ScanMethod
-            : ScanMethod
-               .WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results), ReturnStatement(IdentifierName("services"))));
+            privateAssemblies.UnionWith(pa);
+            return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
+        }
+        catch (Exception e)
+        {
+            diagnostics.Add(
+                Diagnostic.Create(
+                    Diagnostics.UnhandledException,
+                    null,
+                    e.Message,
+                    e.StackTrace.Replace("\r", "").Replace("\n", ""),
+                    e.GetType().Name,
+                    e.ToString()
+                )
+            );
+            return null;
+        }
     }
 
-    internal static ImmutableArray<Item> GetTypeDetails(
-        SourceProductionContext context,
+    public static ImmutableList<ResolvedSourceLocation> ResolveSources(
         Compilation compilation,
-        ImmutableArray<(InvocationExpressionSyntax expression, ExpressionSyntax selector, SemanticModel semanticModel)> results
+        HashSet<Diagnostic> diagnostics,
+        IReadOnlyList<Item> items,
+        HashSet<IAssemblySymbol> privateAssemblies,
+        Func<Compilation, TypeSymbolVisitor, TypeSymbolVisitor> visitorFactory)
+    {
+        if (!items.Any()) return [];
+        var results = new List<ResolvedSourceLocation>();
+        foreach (var item in items)
+        {
+            var resolved = ResolveSource(compilation, diagnostics, item, privateAssemblies, visitorFactory);
+            if (resolved is { }) results.Add(resolved);
+        }
+
+        return results.ToImmutableList();
+    }
+
+    internal static ImmutableList<Item> GetServiceDescriptorItems(
+        Compilation compilation,
+        HashSet<Diagnostic> diagnostics,
+        IReadOnlyList<(InvocationExpressionSyntax expression, ExpressionSyntax selector, SemanticModel semanticModel)> results,
+        CancellationToken cancellationToken
     )
     {
-        var items = ImmutableArray.CreateBuilder<Item>();
+        var items = ImmutableList.CreateBuilder<Item>();
         foreach (var tuple in results)
         {
             try
@@ -84,7 +104,7 @@ internal static class ServiceDescriptorCollection
                 var lifetime = 2;
 
                 DataHelpers.HandleInvocationExpressionSyntax(
-                    context,
+                    diagnostics,
                     compilation.GetSemanticModel(tuple.expression.SyntaxTree),
                     selector,
                     assemblies,
@@ -92,25 +112,25 @@ internal static class ServiceDescriptorCollection
                     serviceDescriptors,
                     ref lifetime,
                     ref classFilter,
-                    context.CancellationToken
+                    cancellationToken
                 );
 
-                var assemblyFilter = new CompiledAssemblyFilter(assemblies.ToImmutableArray());
-                var typeFilter = new CompiledTypeFilter(classFilter, typeFilters.ToImmutableArray());
+                var source = Helpers.CreateSourceLocation(methodCallSyntax, cancellationToken);
+                var assemblyFilter = new CompiledAssemblyFilter(assemblies.ToImmutableList(), source);
+                var typeFilter = new CompiledTypeFilter(classFilter, typeFilters.ToImmutableList(), source);
                 var serviceDescriptorFilter = new CompiledServiceTypeDescriptors(serviceDescriptors.ToImmutableArray(), lifetime);
 
-                var source = Helpers.CreateSourceLocation(methodCallSyntax, context.CancellationToken);
 
                 var i = new Item(source, assemblyFilter, typeFilter, serviceDescriptorFilter, lifetime);
                 items.Add(i);
             }
             catch (MustBeAnExpressionException e)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
+                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
             }
             catch (Exception e)
             {
-                context.ReportDiagnostic(
+                diagnostics.Add(
                     Diagnostic.Create(
                         Diagnostics.UnhandledException,
                         null,
@@ -126,7 +146,7 @@ internal static class ServiceDescriptorCollection
         return items.ToImmutable();
     }
 
-    private static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel ) GetTypesMethod(GeneratorSyntaxContext context)
+    private static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel ) GetServiceDescriptorMethod(GeneratorSyntaxContext context)
     {
         var baseData = GetMethod(context.Node);
         if (baseData.method is null
@@ -155,8 +175,8 @@ internal static class ServiceDescriptorCollection
             : default;
 
     private static BlockSyntax GenerateDescriptors(
-        SourceProductionContext context,
         Compilation compilation,
+        HashSet<Diagnostic> diagnostics,
         IEnumerable<INamedTypeSymbol> types,
         CompiledServiceTypeDescriptors serviceTypes,
         HashSet<IAssemblySymbol> privateAssemblies
@@ -249,7 +269,7 @@ internal static class ServiceDescriptorCollection
                 foreach (var item in registration)
                 {
                     if (!item.Type.DeclaringSyntaxReferences.Any()) continue;
-                    context.ReportDiagnostic(Diagnostic.Create(Diagnostics.DuplicateServiceDescriptorAttribute, item.Type.Locations.FirstOrDefault()));
+                    diagnostics.Add(Diagnostic.Create(Diagnostics.DuplicateServiceDescriptorAttribute, item.Type.Locations.FirstOrDefault()));
                     abort = true;
                 }
             }
@@ -425,19 +445,6 @@ internal static class ServiceDescriptorCollection
         return block;
     }
 
-    private static readonly MethodDeclarationSyntax ScanMethod =
-        MethodDeclaration(ParseName("Microsoft.Extensions.DependencyInjection.IServiceCollection"), Identifier("Scan"))
-           .WithExplicitInterfaceSpecifier(ExplicitInterfaceSpecifier(IdentifierName("ICompiledTypeProvider")))
-           .AddParameterListParameters(
-                Parameter(Identifier("services")).WithType(ParseName("Microsoft.Extensions.DependencyInjection.IServiceCollection")),
-                Parameter(Identifier("selector"))
-                   .WithType(GenericName(Identifier("Action")).AddTypeArgumentListArguments(IdentifierName(IServiceDescriptorAssemblySelector))),
-                Parameter(Identifier("lineNumber")).WithType(PredefinedType(Token(SyntaxKind.IntKeyword))),
-                Parameter(Identifier("filePath")).WithType(PredefinedType(Token(SyntaxKind.StringKeyword))),
-                Parameter(Identifier("argumentExpression")).WithType(PredefinedType(Token(SyntaxKind.StringKeyword)))
-            )
-           .WithBody(Block(ReturnStatement(IdentifierName("services"))));
-
     private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
 
     private static string? GetLifetimeValue(AttributeData? attribute)
@@ -464,8 +471,6 @@ internal static class ServiceDescriptorCollection
 
         return null;
     }
-
-    public record Request(SourceProductionContext Context, Compilation Compilation, ImmutableArray<Item> Items, HashSet<IAssemblySymbol> PrivateAssemblies);
 
     public record Item
     (

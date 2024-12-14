@@ -24,13 +24,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (lineNumber)
-        {
-            // FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
-            case 21:
-                break;
-        }
-
         return services;
     }
 }

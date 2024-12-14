@@ -7,14 +7,14 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 internal class FindTypeInAssembly(Compilation compilation, ICompiledTypeFilter<IAssemblySymbol> assemblyFilter) : TypeSymbolVisitorBase(
     compilation,
     assemblyFilter,
-    new CompiledTypeFilter(ClassFilter.PublicOnly, ImmutableArray<ITypeFilterDescriptor>.Empty)
+    new CompiledTypeFilter(ClassFilter.PublicOnly, ImmutableList<ITypeFilterDescriptor>.Empty)
 )
 {
     public static INamedTypeSymbol? FindType(Compilation compilation, IAssemblySymbol assemblySymbol)
     {
         var visitor = new FindTypeInAssembly(
             compilation,
-            new CompiledAssemblyFilter(ImmutableArray.Create<IAssemblyDescriptor>(new AssemblyDescriptor(assemblySymbol)))
+            new CompiledAssemblyFilter(ImmutableList.Create<IAssemblyDescriptor>(new AssemblyDescriptor(assemblySymbol)))
         );
         visitor.Visit(assemblySymbol);
         return visitor._type;

@@ -62,12 +62,14 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -88,6 +90,7 @@ namespace RootDependencyProject
 }
 "
                                   )
+                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -124,12 +127,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -170,12 +175,14 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -196,6 +203,7 @@ namespace RootDependencyProject
 }
 "
                                   )
+                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -229,12 +237,14 @@ public static class Program {
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -258,6 +268,7 @@ namespace RootDependencyProject
 }
 "
                                   )
+                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -293,12 +304,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -322,6 +335,7 @@ namespace RootDependencyProject
 }
 "
                                   )
+                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -357,12 +371,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -398,12 +414,14 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -438,12 +456,14 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -462,6 +482,7 @@ namespace DependencyProject
 }
 "
                                )
+                              .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                               .Build()
                               .GenerateAsync();
 
@@ -498,12 +519,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependency)
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -569,6 +592,7 @@ public static class Program2 {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -576,7 +600,8 @@ public static class Program2 {
         var services1 = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "Method");
         var services2 = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program2", "Method");
 
-        await Verify(new GeneratorTestResultsWithServices(result, services1.Concat(services2)));
+        await Verify(new GeneratorTestResultsWithServices(result, services1.Concat(services2)))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -616,11 +641,13 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -661,13 +688,14 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -708,13 +736,13 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -754,13 +782,13 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
 
@@ -802,13 +830,13 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
 
@@ -849,13 +877,14 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -896,13 +925,13 @@ public static class Program {
                                }
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -943,13 +972,13 @@ public static class Program {
                                }
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -991,13 +1020,13 @@ public static class Program {
                                }
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
 
@@ -1038,13 +1067,13 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
 
@@ -1086,13 +1115,13 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1132,19 +1161,61 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
-//        await Verify(result);
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
     public async Task Should_Support_ServiceRegistrationAttributes()
     {
         var result = await Builder
+                          .AddSource("CompiledTypeProviderServiceCollectionExtensions.cs", """
+                          using Rocket.Surgery.DependencyInjection;
+                          using Rocket.Surgery.DependencyInjection.Compiled;
+
+                          // ReSharper disable once CheckNamespace
+                          namespace Microsoft.Extensions.DependencyInjection;
+
+                          /// <summary>
+                          ///     Extension methods for the service collection using the compiled type provider
+                          /// </summary>
+                          public static class CompiledTypeProviderServiceCollectionExtensions
+                          {
+                              /// <summary>
+                              ///     Adds all the services with the <see cref="ServiceRegistrationAttribute" /> to the service collection
+                              /// </summary>
+                              /// <param name="services"></param>
+                              /// <param name="provider"></param>
+                              /// <returns></returns>
+                              public static IServiceCollection AddCompiledServiceRegistrations(this IServiceCollection services, ICompiledTypeProvider provider)
+                              {
+                                  // This is implied to ignore abstract and static classes.
+                                  return provider.Scan(
+                                      services,
+                                      z => z
+                                          .FromAssemblies()
+                                          .AddClasses(
+                                               f => f
+                                                  .WithAnyAttribute(
+                                                       typeof(ServiceRegistrationAttribute),
+                                                       typeof(ServiceRegistrationAttribute<,>),
+                                                       typeof(ServiceRegistrationAttribute<,,>),
+                                                       typeof(ServiceRegistrationAttribute<,,>),
+                                                       typeof(ServiceRegistrationAttribute<,,,>)
+                                                   )
+                                           )
+                                          .AsSelf()
+                                          .WithSingletonLifetime()
+                                  );
+                              }
+                          }
+                          """
+                          )
                           .AddSources(
                                @"
 using System;
@@ -1165,10 +1236,12 @@ public static class Nested
 public class ServiceB : IService, IServiceB { }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result);
+        await Verify(result)
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1203,10 +1276,12 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result);
+        await Verify(result)
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1240,10 +1315,12 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result);
+        await Verify(result)
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1277,10 +1354,12 @@ public static class Program {
 }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result);
+        await Verify(result)
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1300,10 +1379,12 @@ public interface IService { }
 public class Service : IService { }
 "
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result);
+        await Verify(result)
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1346,12 +1427,14 @@ public class Service : IService { }
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1394,12 +1477,14 @@ public class Service : IService { }
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1442,12 +1527,14 @@ public class Service : IService { }
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1490,12 +1577,14 @@ public class Service : IService { }
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1538,12 +1627,13 @@ public class Service : IService { }
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1586,12 +1676,13 @@ public class Service : IService { }
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services));
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+           .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1621,6 +1712,7 @@ namespace RootDependencyProject
 }
 "
                                   )
+                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -1646,6 +1738,7 @@ namespace RootDependencyProject
 
                                        """
                                    )
+                                  .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                                   .Build()
                                   .GenerateAsync();
             dependencies.Add(dependency);
@@ -1683,12 +1776,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+             .UseParameters(dependencyCount)
+             .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1717,6 +1812,7 @@ namespace RootDependencyProject
 }
 "
                                   )
+                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -1738,6 +1834,7 @@ namespace RootDependencyProject
 
                                        """
                                    )
+                                  .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                                   .Build()
                                   .GenerateAsync();
             dependencies.Add(dependency);
@@ -1775,12 +1872,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(dependencyCount);
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+             .UseParameters(dependencyCount)
+             .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1816,7 +1915,7 @@ namespace TestProject
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-                               
+
                                	        provider.Scan(
                                            services,
                                            z => z
@@ -1831,12 +1930,15 @@ namespace TestProject
                                }
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(serviceLifetime);
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+             .UseParameters(serviceLifetime)
+             .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1882,12 +1984,15 @@ namespace TestProject
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+             .UseParameters(useTypeof)
+             .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1933,12 +2038,15 @@ namespace TestProject
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+             .UseParameters(useTypeof)
+             .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -2014,6 +2122,7 @@ namespace TestProject
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2021,7 +2130,8 @@ namespace TestProject
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .HashParameters()
-             .UseParameters(filter, namespaceFilterValue, usingClass, usingTypeof);
+             .UseParameters(filter, namespaceFilterValue, usingClass, usingTypeof)
+             .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -2092,6 +2202,7 @@ namespace TestProject
 
                                """
                            )
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2099,7 +2210,8 @@ namespace TestProject
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .HashParameters()
-             .UseParameters(filter, namespaceFilterValue, namespaceFilterValueSecond, usingClass);
+             .UseParameters(filter, namespaceFilterValue, namespaceFilterValueSecond, usingClass)
+             .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -2110,6 +2222,7 @@ namespace TestProject
         static async Task<GeneratorTestResults> CreateServiceDependency(
             AssemblyLoadContext context,
             ILogger logger,
+            string tempPath,
             string suffix,
             params GeneratorTestResults[] dependencies
         )
@@ -2131,6 +2244,7 @@ namespace TestProject
 
                                       """
                                   )
+                                 .AddGlobalOption("build_property.IntermediateOutputPath", tempPath)
                                  .Build()
                                  .GenerateAsync();
             generator.AssertCompilationWasSuccessful();
@@ -2138,10 +2252,10 @@ namespace TestProject
             return generator;
         }
 
-        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, "A");
-        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, "B");
-        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, "C", dependencyA);
-        var dependencyD = await CreateServiceDependency(AssemblyLoadContext, Logger, "D", dependencyC);
+        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "A");
+        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "B");
+        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "C", dependencyA);
+        var dependencyD = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "D", dependencyC);
         dependencies.Add(dependencyA);
         dependencies.Add(dependencyB);
         dependencies.Add(dependencyC);
@@ -2184,12 +2298,15 @@ namespace TestProject
                                """
                            )
                           .AddCompilationReferences(dependencies.ToArray())
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(useTypeof);
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+             .UseParameters(useTypeof)
+             .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -2205,6 +2322,7 @@ namespace TestProject
         static async Task<GeneratorTestResults> CreateRoot(
             AssemblyLoadContext context,
             ILogger logger,
+            string tempPath,
             params GeneratorTestResults[] dependencies
         )
         {
@@ -2222,6 +2340,7 @@ namespace RootDependencyProject
 }
 "
                                   )
+                                 .AddGlobalOption("build_property.IntermediateOutputPath", tempPath)
                                  .Build()
                                  .GenerateAsync();
             generator.AssertCompilationWasSuccessful();
@@ -2232,6 +2351,7 @@ namespace RootDependencyProject
         static async Task<GeneratorTestResults> CreateServiceDependency(
             AssemblyLoadContext context,
             ILogger logger,
+            string tempPath,
             string suffix,
             params GeneratorTestResults[] dependencies
         )
@@ -2259,18 +2379,20 @@ namespace RootDependencyProject
 
                                 """
                             )
+                           .AddGlobalOption("build_property.IntermediateOutputPath", tempPath)
                            .Build()
                            .GenerateAsync();
             return dep;
         }
 
-        var root = await CreateRoot(AssemblyLoadContext, Logger);
-        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, "A", root);
-        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, "B", root);
-        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, "C", dependencyA, root);
+        var root = await CreateRoot(AssemblyLoadContext, Logger, GetTempPath());
+        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "A", root);
+        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "B", root);
+        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "C", dependencyA, root);
         var dependencyD = await CreateServiceDependency(
             AssemblyLoadContext,
             Logger,
+            GetTempPath(),
             "D",
             dependencyA,
             dependencyC,
@@ -2321,11 +2443,13 @@ namespace RootDependencyProject
                                """
                            )
                           .AddCompilationReferences(dependencies.ToArray())
+                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services)).UseParameters(className, useTypeof);
+        await Verify(new GeneratorTestResultsWithServices(result, services))
+             .UseParameters(className, useTypeof)
+             .AddCacheFiles(TempPath);
     }
 }

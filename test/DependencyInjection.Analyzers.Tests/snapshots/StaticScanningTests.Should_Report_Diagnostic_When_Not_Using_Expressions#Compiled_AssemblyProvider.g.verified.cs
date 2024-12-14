@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
-[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ServiceDescriptorTypes","{scrubbed}")]
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ServiceDescriptorTypes", "eyJsIjp7ImwiOjE0LCJhIjoieVNLTWs5M1RFbmtDS0RtQ3FndllhZz09IiwiZiI6IklucHV0MC5jcyJ9LCJhIjp7ImEiOmZhbHNlLCJpIjpmYWxzZSwibSI6W10sIm5hIjpbXSwiZCI6W119LCJ0Ijp7ImIiOjEsImMiOltdLCJkIjpbXSwiZSI6W3siZiI6dHJ1ZSwidCI6WzJdfV0sImYiOlt7ImYiOmZhbHNlLCJ0IjpbLTIsMV19XSwiZyI6W10sImgiOltdLCJpIjpbXSwiaiI6W10sImsiOltdLCJsIjpbXX0sInMiOnsiU2VydmljZVR5cGVEZXNjcmlwdG9ycyI6W10sIkxpZmV0aW1lIjoyfSwieiI6Mn0=")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider

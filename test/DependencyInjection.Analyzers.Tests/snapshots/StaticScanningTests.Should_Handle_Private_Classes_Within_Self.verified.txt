@@ -3,6 +3,9 @@
   GeneratorDiagnostics: {
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
+  GlobalOptions: {
+    build_property.IntermediateOutputPath: {TempPath}Guid_1/Guid_2
+  },
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
@@ -18,8 +21,8 @@
   Services: [
     {
       Lifetime: Scoped,
-      ServiceType: DependencyProject.Service,
-      ImplementationType: DependencyProject.Service
+      ServiceType: TestProject.Service,
+      ImplementationType: TestProject.Service
     },
     {
       Lifetime: Scoped,
@@ -28,8 +31,8 @@
     },
     {
       Lifetime: Scoped,
-      ServiceType: TestProject.Service,
-      ImplementationType: TestProject.Service
+      ServiceType: DependencyProject.Service,
+      ImplementationType: DependencyProject.Service
     },
     {
       Lifetime: Scoped,

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
-[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes","{scrubbed}")]
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes", "eyJsIjp7ImwiOjE0LCJhIjoic21ITVBZODJcdTAwMkIwNkh3RzBpdGlhTUp3PT0iLCJmIjoiSW5wdXQwLmNzIn0sImEiOnsiYSI6dHJ1ZSwiaSI6ZmFsc2UsIm0iOltdLCJuYSI6WyJSb2NrZXQuU3VyZ2VyeS5EZXBlbmRlbmN5SW5qZWN0aW9uLkV4dGVuc2lvbnMiXSwiZCI6W119LCJ0Ijp7ImIiOjEsImMiOlt7ImYiOjMsIm4iOlsiSmV0QnJhaW5zLkFubm90YXRpb25zIiwiUG9seWZpbGxzIiwiU3lzdGVtIl19XSwiZCI6W3siaSI6ZmFsc2UsImYiOjAsIm4iOlsiUG9seWZpbGwiXX1dLCJlIjpbXSwiZiI6W3siZiI6dHJ1ZSwidCI6WzJdfV0sImciOltdLCJoIjpbXSwiaSI6W10sImoiOltdLCJrIjpbeyJpIjpmYWxzZSwiYSI6IlJvY2tldC5TdXJnZXJ5LkRlcGVuZGVuY3lJbmplY3Rpb24uRXh0ZW5zaW9ucyIsInQiOiJSb2NrZXQuU3VyZ2VyeS5EZXBlbmRlbmN5SW5qZWN0aW9uLkNvbXBpbGVkLklDb21waWxlZFR5cGVQcm92aWRlciIsInUiOmZhbHNlfV0sImwiOltdfX0=")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -24,6 +24,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: smHMPY82+06HwG0itiaMJw==
             case 14:
+                yield return typeof(global::Program);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructorAttribute);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope);
@@ -49,7 +50,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions);
                 yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions);
-                yield return typeof(global::Program);
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute);
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions);
                 yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector);

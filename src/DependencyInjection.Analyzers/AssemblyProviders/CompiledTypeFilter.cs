@@ -4,19 +4,19 @@ using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 
-internal record CompiledTypeFilter
-    (ClassFilter ClassFilter, ImmutableArray<ITypeFilterDescriptor> TypeFilterDescriptors) : ICompiledTypeFilter<INamedTypeSymbol>
+internal class CompiledTypeFilter    (ClassFilter classFilter, ImmutableList<ITypeFilterDescriptor> typeFilterDescriptors, SourceLocation? sourceLocation = null) : ICompiledTypeFilter<INamedTypeSymbol>
 {
-    public bool Aborted { get; } = TypeFilterDescriptors.OfType<CompiledAbortTypeFilterDescriptor>().Any();
+    public ImmutableList<ITypeFilterDescriptor> TypeFilterDescriptors { get; } = typeFilterDescriptors;
+    public ClassFilter ClassFilter { get; } = classFilter;
+    public bool Aborted { get; } = typeFilterDescriptors.OfType<CompiledAbortTypeFilterDescriptor>().Any();
+    public string Hash { get; } = sourceLocation?.ExpressionHash ?? Guid.NewGuid().ToString("N");
 
     public bool IsMatch(Compilation compilation, INamedTypeSymbol targetType)
     {
         if (Aborted || ( ClassFilter == ClassFilter.PublicOnly && targetType.DeclaredAccessibility != Accessibility.Public ))
             return false;
 
-        if (TypeFilterDescriptors.Length == 0) return true;
-
-        return TypeFilterDescriptors.All(GetFilterDescriptor);
+        return TypeFilterDescriptors.Count == 0 || TypeFilterDescriptors.All(GetFilterDescriptor);
 
         bool GetFilterDescriptor(ITypeFilterDescriptor filterDescriptor)
         {
