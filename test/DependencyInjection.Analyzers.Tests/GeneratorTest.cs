@@ -24,18 +24,53 @@ internal static class GeneratorBuilderConstants
 
 public abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
 {
+    protected string TempPath { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
     protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
     protected AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
 
     [Before(Test)]
     public void InitializeAsync()
     {
-        Builder = GeneratorBuilderConstants.Builder.WithAssemblyLoadContext(AssemblyLoadContext);
+        Directory.CreateDirectory(TempPath);
+        Builder = GeneratorBuilderConstants
+                 .Builder
+                 .WithAssemblyLoadContext(AssemblyLoadContext);
         if (AssemblyLoadContext is not IDisposable disposable)
         {
             return;
         }
 
         Disposables.Add(disposable);
+    }
+
+    protected string GetTempPath()
+    {
+        var path = Path.Combine(TempPath, Guid.NewGuid().ToString());
+        Directory.CreateDirectory(path);
+        return path;
+    }
+}
+
+internal static class VerifyExtensions
+{
+    public static SettingsTask AddCacheFiles(this SettingsTask task, string tempDirectory)
+    {
+        task.ScrubInlineGuids();
+//        Directory.EnumerateFiles(tempDirectory, "*", SearchOption.AllDirectories)
+//                 .ForEach(z =>
+//                          {
+//                              var content = File.ReadAllText(z);
+//                              if (content.Length == 0) return;
+//                              task.AppendFile(z);
+//                          }
+//                  );
+        return task;
+    }
+
+    public static GeneratorTestContextBuilder AddOptions(this GeneratorTestContextBuilder builder, string tempPath)
+    {
+        return builder
+              .AddGlobalOption("build_property.BaseIntermediateOutputPath", "obj")
+              .AddGlobalOption("build_property.ProjectDir", tempPath);
     }
 }

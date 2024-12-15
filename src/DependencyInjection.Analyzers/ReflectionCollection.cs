@@ -25,37 +25,59 @@ internal static class ReflectionCollection
               .Collect();
     }
 
-    public static MethodDeclarationSyntax Execute(Request request)
+    public static ResolvedSourceLocation? ResolveSource(
+        Compilation compilation,
+        HashSet<Diagnostic> diagnostics,
+        Item item,
+        HashSet<IAssemblySymbol> privateAssemblies,
+        Func<Compilation, TypeSymbolVisitor, TypeSymbolVisitor> visitorFactory
+    )
     {
-        if (!request.Items.Any()) return TypesMethod;
-        var compilation = request.Compilation;
-
-        var results = new List<(SourceLocation location, BlockSyntax block)>();
-        foreach (var item in request.Items)
+        try
         {
-            try
-            {
-                var reducedTypes = AssemblyProviders.TypeSymbolVisitor.GetTypes(compilation, item.AssemblyFilter, item.TypeFilter);
-                if (reducedTypes.Length == 0) continue;
-                var localBlock = GenerateDescriptors(compilation, reducedTypes, request.PrivateAssemblies);
-                results.Add(( item.Location, localBlock ));
-            }
-            catch (Exception e)
-            {
-                request.Context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        Diagnostics.UnhandledException,
-                        null,
-                        e.Message,
-                        e.StackTrace.Replace("\r", "").Replace("\n", ""),
-                        e.GetType().Name,
-                        e.ToString()
-                    )
-                );
-            }
+            var pa = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+            var visitor = visitorFactory(compilation, new(compilation, item.AssemblyFilter, item.TypeFilter));
+            var reducedTypes = visitor.GetTypes();
+            if (reducedTypes.Count == 0) return null;
+            var localBlock = GenerateDescriptors(compilation, reducedTypes, pa)
+                            .NormalizeWhitespace()
+                            .ToFullString();
+            privateAssemblies.UnionWith(pa);
+            return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
+        }
+        catch (Exception e)
+        {
+            diagnostics.Add(
+                Diagnostic.Create(
+                    Diagnostics.UnhandledException,
+                    null,
+                    e.Message,
+                    e.StackTrace.Replace("\r", "").Replace("\n", ""),
+                    e.GetType().Name,
+                    e.ToString()
+                )
+            );
+            return null;
+        }
+    }
+
+    public static ImmutableList<ResolvedSourceLocation> ResolveSources(
+        Compilation compilation,
+        HashSet<Diagnostic> diagnostics,
+        IReadOnlyList<Item> items,
+        HashSet<IAssemblySymbol> privateAssemblies,
+        Func<Compilation, TypeSymbolVisitor, TypeSymbolVisitor> visitorFactory
+    )
+    {
+        if (!items.Any()) return [];
+        var results = new List<ResolvedSourceLocation>();
+        foreach (var item in items)
+        {
+            var resolved = ResolveSource(compilation, diagnostics, item, privateAssemblies, visitorFactory);
+            if (resolved is { }) results.Add(resolved);
         }
 
-        return results.Count == 0 ? TypesMethod : TypesMethod.WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results)));
+        return results.ToImmutableList();
     }
 
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel ) GetTypesMethod(GeneratorSyntaxContext context)
@@ -75,22 +97,20 @@ internal static class ReflectionCollection
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector ) GetTypesMethod(SyntaxNode node) =>
         node is InvocationExpressionSyntax
         {
-            Expression: MemberAccessExpressionSyntax
-            {
-                Name.Identifier.Text: "GetTypes",
-            },
+            Expression: MemberAccessExpressionSyntax { Name.Identifier.Text: "GetTypes" },
             ArgumentList.Arguments: [.., { Expression: { } expression }],
         } invocationExpressionSyntax
             ? ( invocationExpressionSyntax, expression )
             : default;
 
-    internal static ImmutableArray<Item> GetTypeDetails(
-        SourceProductionContext context,
+    internal static ImmutableList<Item> GetReflectionItems(
         Compilation compilation,
-        ImmutableArray<(InvocationExpressionSyntax expression, ExpressionSyntax selector, SemanticModel semanticModel)> results
+        HashSet<Diagnostic> diagnostics,
+        IReadOnlyList<(InvocationExpressionSyntax expression, ExpressionSyntax selector, SemanticModel semanticModel)> results,
+        CancellationToken cancellationToken
     )
     {
-        var items = ImmutableArray.CreateBuilder<Item>();
+        var items = ImmutableList.CreateBuilder<Item>();
         foreach (var tuple in results)
         {
             try
@@ -103,7 +123,7 @@ internal static class ReflectionCollection
                 var lifetime = 2;
 
                 DataHelpers.HandleInvocationExpressionSyntax(
-                    context,
+                    diagnostics,
                     compilation.GetSemanticModel(tuple.expression.SyntaxTree),
                     selector,
                     assemblies,
@@ -111,24 +131,24 @@ internal static class ReflectionCollection
                     new(),
                     ref lifetime,
                     ref classFilter,
-                    context.CancellationToken
+                    cancellationToken
                 );
 
-                var assemblyFilter = new CompiledAssemblyFilter(assemblies.ToImmutableArray());
-                var typeFilter = new CompiledTypeFilter(classFilter, typeFilters.ToImmutableArray());
+                var source = Helpers.CreateSourceLocation(methodCallSyntax, cancellationToken);
+                var assemblyFilter = new CompiledAssemblyFilter(assemblies.ToImmutableList(), source);
+                var typeFilter = new CompiledTypeFilter(classFilter, typeFilters.ToImmutableList(), source);
 
-                var source = Helpers.CreateSourceLocation(methodCallSyntax, context.CancellationToken);
 
                 var i = new Item(source, assemblyFilter, typeFilter);
                 items.Add(i);
             }
             catch (MustBeAnExpressionException e)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
+                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
             }
             catch (Exception e)
             {
-                context.ReportDiagnostic(
+                diagnostics.Add(
                     Diagnostic.Create(
                         Diagnostics.UnhandledException,
                         null,
@@ -162,44 +182,7 @@ internal static class ReflectionCollection
     }
 
 
-    private static readonly MethodDeclarationSyntax TypesMethod = MethodDeclaration(
-                                                                      GenericName(Identifier("IEnumerable"))
-                                                                         .WithTypeArgumentList(
-                                                                              TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName("Type")))
-                                                                          ),
-                                                                      Identifier("GetTypes")
-                                                                  )
-                                                                 .WithExplicitInterfaceSpecifier(
-                                                                      ExplicitInterfaceSpecifier(IdentifierName("ICompiledTypeProvider"))
-                                                                  )
-                                                                 .AddParameterListParameters(
-                                                                      Parameter(Identifier("selector"))
-                                                                         .WithType(
-                                                                              GenericName(Identifier("Func"))
-                                                                                 .AddTypeArgumentListArguments(
-                                                                                      IdentifierName(IReflectionTypeSelector),
-                                                                                      GenericName(Identifier("IEnumerable"))
-                                                                                         .WithTypeArgumentList(
-                                                                                              TypeArgumentList(
-                                                                                                  SingletonSeparatedList<TypeSyntax>(IdentifierName("Type"))
-                                                                                              )
-                                                                                          )
-                                                                                  )
-                                                                          ),
-                                                                      Parameter(Identifier("lineNumber"))
-                                                                         .WithType(PredefinedType(Token(SyntaxKind.IntKeyword))),
-                                                                      Parameter(Identifier("filePath"))
-                                                                         .WithType(PredefinedType(Token(SyntaxKind.StringKeyword))),
-                                                                      Parameter(Identifier("argumentExpression"))
-                                                                         .WithType(PredefinedType(Token(SyntaxKind.StringKeyword)))
-                                                                  )
-                                                                 .WithBody(
-                                                                      Block(SingletonList<StatementSyntax>(YieldStatement(SyntaxKind.YieldBreakStatement)))
-                                                                  );
-
     private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
-
-    public record Request(SourceProductionContext Context, Compilation Compilation, ImmutableArray<Item> Items, HashSet<IAssemblySymbol> PrivateAssemblies);
 
     public record Item(SourceLocation Location, CompiledAssemblyFilter AssemblyFilter, CompiledTypeFilter TypeFilter);
 }

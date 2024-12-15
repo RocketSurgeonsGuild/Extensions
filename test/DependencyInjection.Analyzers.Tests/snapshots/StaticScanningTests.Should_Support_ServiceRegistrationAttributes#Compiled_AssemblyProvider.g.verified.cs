@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ServiceDescriptorTypes","{scrubbed}")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -26,15 +27,22 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     {
         switch (lineNumber)
         {
-            // FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
+            // FilePath: CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
             case 21:
-                services.Add(ServiceDescriptor.Transient<global::Nested.ServiceA, global::Nested.ServiceA>());
-                services.Add(ServiceDescriptor.Transient<global::IService>(a => a.GetRequiredService<global::Nested.ServiceA>()));
-                services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());
-                services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::Service>()));
-                services.Add(ServiceDescriptor.Singleton<global::ServiceB, global::ServiceB>());
-                services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::ServiceB>()));
-                services.Add(ServiceDescriptor.Singleton<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
+                switch (System.IO.Path.GetFileName(filePath))
+                {
+                    // FilePath: CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
+                    case "CompiledTypeProviderServiceCollectionExtensions.cs":
+                        services.Add(ServiceDescriptor.Transient<global::Nested.ServiceA, global::Nested.ServiceA>());
+                        services.Add(ServiceDescriptor.Transient<global::IService>(a => a.GetRequiredService<global::Nested.ServiceA>()));
+                        services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());
+                        services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::Service>()));
+                        services.Add(ServiceDescriptor.Singleton<global::ServiceB, global::ServiceB>());
+                        services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::ServiceB>()));
+                        services.Add(ServiceDescriptor.Singleton<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
+                        break;
+                }
+
                 break;
         }
 

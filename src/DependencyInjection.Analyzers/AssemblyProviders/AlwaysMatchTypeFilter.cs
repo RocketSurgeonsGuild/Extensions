@@ -8,4 +8,6 @@ internal class AlwaysMatchTypeFilter<TSymbol> : ICompiledTypeFilter<TSymbol>
     {
         return true;
     }
+
+    public string Hash => "AlwaysMatch";
 }

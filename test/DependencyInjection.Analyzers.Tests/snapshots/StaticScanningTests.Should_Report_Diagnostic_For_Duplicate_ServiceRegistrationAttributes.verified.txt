@@ -15,26 +15,6 @@
       Title: Duplicate service descriptor attribute,
       Severity: Warning,
       WarningLevel: 1,
-      Location: Input0.cs: (6,17)-(6,25),
-      MessageFormat: Cannot have more than one service descriptor attribute for a given type,
-      Message: Cannot have more than one service descriptor attribute for a given type,
-      Category: Dependency Injection
-    },
-    {
-      Id: RSGD0005,
-      Title: Duplicate service descriptor attribute,
-      Severity: Warning,
-      WarningLevel: 1,
-      Location: Input0.cs: (9,13)-(9,20),
-      MessageFormat: Cannot have more than one service descriptor attribute for a given type,
-      Message: Cannot have more than one service descriptor attribute for a given type,
-      Category: Dependency Injection
-    },
-    {
-      Id: RSGD0005,
-      Title: Duplicate service descriptor attribute,
-      Severity: Warning,
-      WarningLevel: 1,
       Location: Input0.cs: (9,13)-(9,20),
       MessageFormat: Cannot have more than one service descriptor attribute for a given type,
       Message: Cannot have more than one service descriptor attribute for a given type,
@@ -58,32 +38,16 @@
         Title: Duplicate service descriptor attribute,
         Severity: Warning,
         WarningLevel: 1,
-        Location: Input0.cs: (6,17)-(6,25),
-        MessageFormat: Cannot have more than one service descriptor attribute for a given type,
-        Message: Cannot have more than one service descriptor attribute for a given type,
-        Category: Dependency Injection
-      },
-      {
-        Id: RSGD0005,
-        Title: Duplicate service descriptor attribute,
-        Severity: Warning,
-        WarningLevel: 1,
-        Location: Input0.cs: (9,13)-(9,20),
-        MessageFormat: Cannot have more than one service descriptor attribute for a given type,
-        Message: Cannot have more than one service descriptor attribute for a given type,
-        Category: Dependency Injection
-      },
-      {
-        Id: RSGD0005,
-        Title: Duplicate service descriptor attribute,
-        Severity: Warning,
-        WarningLevel: 1,
         Location: Input0.cs: (9,13)-(9,20),
         MessageFormat: Cannot have more than one service descriptor attribute for a given type,
         Message: Cannot have more than one service descriptor attribute for a given type,
         Category: Dependency Injection
       }
     ]
+  },
+  GlobalOptions: {
+    build_property.BaseIntermediateOutputPath: obj,
+    build_property.ProjectDir: {TempPath}Guid_1/Guid_2
   },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

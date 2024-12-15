@@ -29,8 +29,18 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: moR0aszucgKYmnqmVn/i6g==
             case 21:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::Service<>), typeof(global::Service<>)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IService<>), typeof(global::Service<>)));
+                switch (System.IO.Path.GetFileName(filePath))
+                {
+                    // FilePath: Input0.cs Expression: moR0aszucgKYmnqmVn/i6g==
+                    case "Input0.cs":
+                        services.Add(ServiceDescriptor.Scoped(typeof(global::Service<>), typeof(global::Service<>)));
+                        services.Add(ServiceDescriptor.Scoped(typeof(global::IService<>), typeof(global::Service<>)));
+                        break;
+                    // FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
+                    case "CompiledTypeProviderServiceCollectionExtensions.cs":
+                        break;
+                }
+
                 break;
         }
 

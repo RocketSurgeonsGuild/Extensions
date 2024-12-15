@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -6,21 +7,21 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 internal static class SwitchGenerator
 {
-    public static SwitchStatementSyntax GenerateSwitchStatement(List<(SourceLocation location, BlockSyntax block)> items)
+    public static SwitchStatementSyntax GenerateSwitchStatement(IReadOnlyList<ResolvedSourceLocation> items)
     {
         var lineNumberIdentifier = IdentifierName("lineNumber");
         var switchStatement = SwitchStatement(lineNumberIdentifier);
-        foreach (var lineGrouping in items.GroupBy(x => x.location.LineNumber))
+        foreach (var lineGrouping in items.GroupBy(x => x.Location.LineNumber))
         {
             // disallow list?
-            var location = lineGrouping.First().location;
+            var location = lineGrouping.First().Location;
             var lineSwitchSection = createNestedSwitchSections(
                     lineGrouping.ToArray(),
                     InvocationExpression(
                             MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, ParseName("System.IO.Path"), IdentifierName("GetFileName"))
                         )
                        .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("filePath"))))),
-                    x => x.location.FileName,
+                    x => x.Location.FileName,
                     generateFilePathSwitchStatement,
                     value => LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(value))
                 )
@@ -42,22 +43,24 @@ internal static class SwitchGenerator
     }
 
     private static SwitchSectionSyntax createNestedSwitchSections<T>(
-        IReadOnlyList<(SourceLocation location, BlockSyntax block)> blocks,
+        IReadOnlyList<ResolvedSourceLocation> blocks,
         ExpressionSyntax identifier,
-        Func<(SourceLocation location, BlockSyntax block), T> regroup,
-        Func<IGrouping<T, (SourceLocation location, BlockSyntax block)>, SwitchSectionSyntax> next,
+        Func<ResolvedSourceLocation, T> regroup,
+        Func<IGrouping<T, ResolvedSourceLocation>, SwitchSectionSyntax> next,
         Func<T, LiteralExpressionSyntax> literalFactory
     )
     {
         if (blocks is [var localBlock])
+        {
             return SwitchSection()
-                  .AddStatements(localBlock.block.Statements.ToArray())
+                  .AddStatements([..ParseStatements(localBlock.Expression)])
                   .AddStatements(BreakStatement());
+        }
 
         var section = SwitchStatement(identifier);
         foreach (var item in blocks.GroupBy(regroup))
         {
-            var location = item.First().location;
+            var location = item.First().Location;
             var newSection = next(item)
                .AddLabels(
                     CaseSwitchLabel(literalFactory(item.Key))
@@ -77,10 +80,10 @@ internal static class SwitchGenerator
         return SwitchSection().AddStatements(section, BreakStatement());
     }
 
-    private static SwitchSectionSyntax generateFilePathSwitchStatement(IGrouping<string, (SourceLocation location, BlockSyntax block)> innerGroup)
+    private static SwitchSectionSyntax generateFilePathSwitchStatement(IGrouping<string, ResolvedSourceLocation> innerGroup)
     {
         return createNestedSwitchSections(
-            innerGroup.GroupBy(z => z.location.ExpressionHash).Select(z => z.First()).ToArray(),
+            innerGroup.GroupBy(z => z.Location.ExpressionHash).Select(z => z.First()).ToArray(),
             InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
@@ -89,7 +92,7 @@ internal static class SwitchGenerator
                     )
                 )
                .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("argumentExpression"))))),
-            x => x.location.ExpressionHash,
+            x => x.Location.ExpressionHash,
             generateExpressionHashSwitchStatement,
             value =>
                 LiteralExpression(
@@ -99,8 +102,20 @@ internal static class SwitchGenerator
         );
     }
 
-    private static SwitchSectionSyntax generateExpressionHashSwitchStatement(IGrouping<string, (SourceLocation location, BlockSyntax block)> innerGroup) =>
-        SwitchSection()
-           .AddStatements(innerGroup.FirstOrDefault().block?.Statements.ToArray() ?? Array.Empty<StatementSyntax>())
-           .AddStatements(BreakStatement());
+    private static SwitchSectionSyntax generateExpressionHashSwitchStatement(IGrouping<string, ResolvedSourceLocation> innerGroup)
+    {
+        return SwitchSection()
+              .AddStatements([..ParseStatements(innerGroup.FirstOrDefault()?.Expression ?? "")])
+              .AddStatements(BreakStatement());
+    }
+
+    private static IEnumerable<StatementSyntax> ParseStatements(string expression)
+    {
+        var tree = ParseSyntaxTree(expression, new CSharpParseOptions(kind: SourceCodeKind.Script));
+        return tree
+              .GetRoot()
+              .DescendantNodes()
+              .OfType<BlockSyntax>()
+              .SelectMany(z => z.Statements);
+    }
 }

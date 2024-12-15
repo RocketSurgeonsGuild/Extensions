@@ -17,94 +17,20 @@ internal static class AssemblyCollection
     )
     {
         return valueProvider
-            .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetMethod(syntaxContext))
-            .Combine(hasAssemblyLoadContext)
-            .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
-            .Select((tuple, _) => tuple.Left)
-            .Collect();
+              .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetMethod(syntaxContext))
+              .Combine(hasAssemblyLoadContext)
+              .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
+              .Select((tuple, _) => tuple.Left)
+              .Collect();
     }
 
-    public static void Collect(
-        SourceProductionContext context,
-        CollectRequest request
+    public static ImmutableList<ResolvedSourceLocation> ResolveSources(
+        Compilation compilation,
+        HashSet<Diagnostic> diagnostics,
+        IReadOnlyList<Item> items,
+        HashSet<IAssemblySymbol> privateAssemblies
     )
     {
-        var (discoveredAssemblyRequests, discoveredReflectionRequests, discoveredServiceDescriptorRequests) =
-            AssemblyProviderConfiguration.FromAssemblyAttributes(request.Compilation);
-
-        var assemblyRequests = GetAssemblyDetails(context, request.Compilation, request.GetAssemblies);
-        var reflectionRequests = ReflectionCollection.GetTypeDetails(context, request.Compilation, request.GetTypes);
-        var serviceDescriptorRequests = ServiceDescriptorCollection.GetTypeDetails(context, request.Compilation, request.ScanResults);
-        var attributes = AssemblyProviderConfiguration.ToAssemblyAttributes(assemblyRequests, reflectionRequests, serviceDescriptorRequests).ToArray();
-
-        var cu = CompilationUnit()
-                .WithUsings(
-                     List(
-                         [
-                             UsingDirective(ParseName("System")),
-                             UsingDirective(ParseName("System.Collections.Generic")),
-                             UsingDirective(ParseName("System.Reflection")),
-                             UsingDirective(ParseName("Microsoft.Extensions.DependencyInjection")),
-                             UsingDirective(ParseName("Rocket.Surgery.DependencyInjection")),
-                             UsingDirective(ParseName("Rocket.Surgery.DependencyInjection.Compiled")),
-                         ]
-                     )
-                 )
-                .AddAttributeLists(attributes);
-
-        var privateAssemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
-        var assemblyProvider = GetAssemblyProvider(
-            context,
-            request.Compilation,
-            assemblyRequests.AddRange(discoveredAssemblyRequests),
-            reflectionRequests.AddRange(discoveredReflectionRequests),
-            serviceDescriptorRequests.AddRange(discoveredServiceDescriptorRequests),
-            privateAssemblies
-        );
-        if (privateAssemblies.Any())
-        {
-            cu = cu.AddUsings(UsingDirective(ParseName("System.Runtime.Loader")));
-        }
-
-        MemberDeclarationSyntax[] members = [assemblyProvider];
-
-        cu = cu
-            .AddSharedTrivia()
-            .AddAttributeLists(
-                 AttributeList(
-                         SingletonSeparatedList(
-                             Attribute(
-                                 ParseName("Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute"),
-                                 AttributeArgumentList(
-                                     SingletonSeparatedList(
-                                         AttributeArgument(TypeOfExpression(ParseName(assemblyProvider.Identifier.Text)))
-                                     )
-                                 )
-                             )
-                         )
-                     )
-                    .WithTarget(AttributeTargetSpecifier(Token(SyntaxKind.AssemblyKeyword)))
-             )
-            .AddMembers(members);
-
-
-        context.AddSource(
-            "Compiled_AssemblyProvider.g.cs",
-            cu.NormalizeWhitespace().SyntaxTree.GetRoot().GetText(Encoding.UTF8)
-        );
-    }
-
-    public static MethodDeclarationSyntax Execute(
-        Request request
-    )
-    {
-        if (!request.Items.Any())
-        {
-            return AssembliesMethod;
-        }
-
-        var compilation = request.Compilation;
-
         var assemblySymbols = compilation
                              .References.Select(compilation.GetAssemblyOrModuleSymbol)
                              .Concat([compilation.Assembly])
@@ -112,17 +38,17 @@ internal static class AssemblyCollection
                                   symbol => symbol switch
                                             {
                                                 IAssemblySymbol assemblySymbol => assemblySymbol,
-                                                IModuleSymbol moduleSymbol => moduleSymbol.ContainingAssembly,
-                                                _ => null!,
+                                                IModuleSymbol moduleSymbol     => moduleSymbol.ContainingAssembly,
+                                                _                              => null!,
                                             }
                               )
                              .Where(z => z is { })
                              .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
 
-        var results = new List<(SourceLocation location, BlockSyntax block)>();
-
-        foreach (var item in request.Items)
+        var results = new List<ResolvedSourceLocation>();
+        foreach (var item in items)
         {
+            var pa = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
             try
             {
                 var filterAssemblies = assemblySymbols
@@ -134,11 +60,18 @@ internal static class AssemblyCollection
                     continue;
                 }
 
-                results.Add((item.Location, GenerateDescriptors(compilation, filterAssemblies, request.PrivateAssemblies)));
+                results.Add(
+                    new(
+                        item.Location,
+                        GenerateDescriptors(compilation, filterAssemblies, pa).NormalizeWhitespace().ToFullString(),
+                        pa.Select(z => z.MetadataName).ToImmutableHashSet()
+                    )
+                );
+                privateAssemblies.UnionWith(pa);
             }
             catch (Exception e)
             {
-                request.Context.ReportDiagnostic(
+                diagnostics.Add(
                     Diagnostic.Create(
                         Diagnostics.UnhandledException,
                         null,
@@ -151,7 +84,8 @@ internal static class AssemblyCollection
             }
         }
 
-        return ( results.Count == 0 ) ? AssembliesMethod : AssembliesMethod.WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results)));
+        return results.ToImmutableList();
+//        .WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results)));
     }
 
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetMethod(
@@ -159,26 +93,22 @@ internal static class AssemblyCollection
     )
     {
         var (method, selector) = GetMethod(context.Node);
-        return ( method is null
-         || selector is null
-         || context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
-         {
-             TypeArguments: [{ Name: IReflectionAssemblySelector }, ..],
-         } )
-            ? ((InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel))default
-            : (method, selector, semanticModel: context.SemanticModel);
+        if (method is null) return default;
+        if (selector is null) return default;
+
+        var convertType = context.SemanticModel.GetTypeInfo(selector).ConvertedType;
+        return convertType is not INamedTypeSymbol { TypeArguments: [{ Name: IReflectionAssemblySelector }, ..] }
+            ? default
+            : ( method, selector, semanticModel: context.SemanticModel );
     }
 
-    public static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetMethod(SyntaxNode node) =>
-        ( node is InvocationExpressionSyntax
+    public static (InvocationExpressionSyntax? method, ExpressionSyntax? selector) GetMethod(SyntaxNode node) =>
+        node is InvocationExpressionSyntax
         {
-            Expression: MemberAccessExpressionSyntax
-            {
-                Name.Identifier.Text: "GetAssemblies",
-            },
+            Expression: MemberAccessExpressionSyntax { Name.Identifier.Text: "GetAssemblies" },
             ArgumentList.Arguments: [{ Expression: { } expression }],
-        } invocationExpressionSyntax )
-            ? (invocationExpressionSyntax, expression)
+        } invocationExpressionSyntax
+            ? ( invocationExpressionSyntax, expression )
             : default;
 
     private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
@@ -191,7 +121,7 @@ internal static class AssemblyCollection
             // TODO: Make this always use the load context?
             if (StatementGeneration.GetAssemblyExpression(compilation, assembly) is not { } assemblyExpression)
             {
-                _ = privateAssemblies.Add(assembly);
+                privateAssemblies.Add(assembly);
                 block = block.AddStatements(
                     YieldStatement(SyntaxKind.YieldReturnStatement, StatementGeneration.GetPrivateAssembly(assembly))
                 );
@@ -204,38 +134,14 @@ internal static class AssemblyCollection
         return block;
     }
 
-    private static readonly MethodDeclarationSyntax AssembliesMethod =
-        MethodDeclaration(
-                GenericName(Identifier("IEnumerable"))
-                   .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList<TypeSyntax>(IdentifierName("Assembly")))),
-                Identifier("GetAssemblies")
-            )
-           .WithExplicitInterfaceSpecifier(ExplicitInterfaceSpecifier(IdentifierName("ICompiledTypeProvider")))
-           .AddParameterListParameters(
-                Parameter(Identifier("action"))
-                   .WithType(
-                        GenericName(Identifier("Action"))
-                           .WithTypeArgumentList(
-                                TypeArgumentList(
-                                    SingletonSeparatedList<TypeSyntax>(
-                                        IdentifierName("IReflectionAssemblySelector")
-                                    )
-                                )
-                            )
-                    ),
-                Parameter(Identifier("lineNumber")).WithType(PredefinedType(Token(SyntaxKind.IntKeyword))),
-                Parameter(Identifier("filePath")).WithType(PredefinedType(Token(SyntaxKind.StringKeyword))),
-                Parameter(Identifier("argumentExpression")).WithType(PredefinedType(Token(SyntaxKind.StringKeyword)))
-            )
-           .WithBody(Block(SingletonList<StatementSyntax>(YieldStatement(SyntaxKind.YieldBreakStatement))));
-
-    private static ImmutableArray<Item> GetAssemblyDetails(
-        SourceProductionContext context,
+    public static ImmutableList<Item> GetAssemblyItems(
         Compilation compilation,
-        ImmutableArray<(InvocationExpressionSyntax expression, ExpressionSyntax selector, SemanticModel semanticModel)> results
+        HashSet<Diagnostic> diagnostics,
+        IReadOnlyList<(InvocationExpressionSyntax expression, ExpressionSyntax selector, SemanticModel semanticModel)> results,
+        CancellationToken cancellationToken
     )
     {
-        var items = ImmutableArray.CreateBuilder<Item>();
+        var items = ImmutableList.CreateBuilder<Item>();
         foreach (var tuple in results)
         {
             try
@@ -248,9 +154,8 @@ internal static class AssemblyCollection
                 var lifetime = 2;
                 var classFilter = ClassFilter.All;
 
-
                 DataHelpers.HandleInvocationExpressionSyntax(
-                    context,
+                    diagnostics,
                     compilation.GetSemanticModel(tuple.expression.SyntaxTree),
                     selector,
                     assemblies,
@@ -258,12 +163,12 @@ internal static class AssemblyCollection
                     serviceDescriptors,
                     ref lifetime,
                     ref classFilter,
-                    context.CancellationToken
+                    cancellationToken
                 );
 
                 var assemblyFilter = new CompiledAssemblyFilter([.. assemblies]);
 
-                var source = Helpers.CreateSourceLocation(methodCallSyntax, context.CancellationToken);
+                var source = Helpers.CreateSourceLocation(methodCallSyntax, cancellationToken);
                 // disallow list?
                 if (source.FileName == "ConventionContextHelpers.cs")
                 {
@@ -275,11 +180,11 @@ internal static class AssemblyCollection
             }
             catch (MustBeAnExpressionException e)
             {
-                context.ReportDiagnostic(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
+                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
             }
             catch (Exception e)
             {
-                context.ReportDiagnostic(
+                diagnostics.Add(
                     Diagnostic.Create(
                         Diagnostics.UnhandledException,
                         null,
@@ -295,84 +200,7 @@ internal static class AssemblyCollection
         return items.ToImmutable();
     }
 
-    private static TypeDeclarationSyntax GetAssemblyProvider(
-        SourceProductionContext context,
-        Compilation compilation,
-        ImmutableArray<Item> getAssemblies,
-        ImmutableArray<ReflectionCollection.Item> reflectionItems,
-        ImmutableArray<ServiceDescriptorCollection.Item> implementationItems,
-        HashSet<IAssemblySymbol> privateAssemblies
-    )
-    {
-        var getAssembliesMethod = Execute(new(context, compilation, getAssemblies, privateAssemblies));
-        var reflectionMethod = ReflectionCollection.Execute(new(context, compilation, reflectionItems, privateAssemblies));
-        var serviceDescriptorMethod = ServiceDescriptorCollection.Execute(new(context, compilation, implementationItems, privateAssemblies));
-        var privateMembers = privateAssemblies
-                            .OrderBy(z => z.ToDisplayString())
-                            .SelectMany(StatementGeneration.AssemblyDeclaration)
-                            .ToList();
-        if (privateAssemblies.Any())
-        {
-            privateMembers.Insert(
-                0,
-                FieldDeclaration(
-                        VariableDeclaration(IdentifierName("AssemblyLoadContext"))
-                           .WithVariables(
-                                SingletonSeparatedList(
-                                    VariableDeclarator(Identifier("_context"))
-                                       .WithInitializer(
-                                            EqualsValueClause(
-                                                PostfixUnaryExpression(
-                                                    SyntaxKind.SuppressNullableWarningExpression,
-                                                    InvocationExpression(
-                                                            MemberAccessExpression(
-                                                                SyntaxKind.SimpleMemberAccessExpression,
-                                                                IdentifierName("AssemblyLoadContext"),
-                                                                IdentifierName("GetLoadContext")
-                                                            )
-                                                        )
-                                                       .WithArgumentList(
-                                                            ArgumentList(
-                                                                SingletonSeparatedList(
-                                                                    Argument(
-                                                                        MemberAccessExpression(
-                                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                                            TypeOfExpression(IdentifierName("CompiledTypeProvider")),
-                                                                            IdentifierName("Assembly")
-                                                                        )
-                                                                    )
-                                                                )
-                                                            )
-                                                        )
-                                                )
-                                            )
-                                        )
-                                )
-                            )
-                    )
-                   .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword)))
-            );
-        }
-
-        return ClassDeclaration("CompiledTypeProvider")
-              .AddAttributeLists(Helpers.CompilerGeneratedAttributes)
-              .WithModifiers(TokenList(Token(SyntaxKind.FileKeyword)))
-              .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName("ICompiledTypeProvider")))))
-              .AddMembers(getAssembliesMethod, reflectionMethod, serviceDescriptorMethod)
-              .AddMembers([.. privateMembers]);
-    }
-
     private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
-
-    public record CollectRequest
-    (
-        Compilation Compilation,
-        ImmutableArray<(InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel)> GetAssemblies,
-        ImmutableArray<(InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel)> GetTypes,
-        ImmutableArray<(InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel)> ScanResults
-    );
-
-    public record Request(SourceProductionContext Context, Compilation Compilation, ImmutableArray<Item> Items, HashSet<IAssemblySymbol> PrivateAssemblies);
 
     public record Item(SourceLocation Location, CompiledAssemblyFilter AssemblyFilter);
 }

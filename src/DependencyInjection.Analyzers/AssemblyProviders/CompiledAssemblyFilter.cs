@@ -4,10 +4,11 @@ using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 
-internal record CompiledAssemblyFilter
-    (ImmutableArray<IAssemblyDescriptor> AssemblyDescriptors) : ICompiledTypeFilter<IAssemblySymbol>
+internal class CompiledAssemblyFilter(ImmutableList<IAssemblyDescriptor> assemblyDescriptors, SourceLocation? sourceLocation = null): ICompiledTypeFilter<IAssemblySymbol>
 {
-    internal static readonly HashSet<string> _coreAssemblies =
+    public ImmutableList<IAssemblyDescriptor> AssemblyDescriptors { get; } = assemblyDescriptors;
+
+    internal static readonly HashSet<string> coreAssemblies =
     [
         "mscorlib",
         "netstandard",
@@ -17,12 +18,14 @@ internal record CompiledAssemblyFilter
         "System.Private.CoreLib",
     ];
 
-    private readonly bool _includeSystemAssemblies = AssemblyDescriptors.OfType<IncludeSystemAssembliesDescriptor>().Any();
-    private readonly bool _allAssemblies = AssemblyDescriptors.OfType<AllAssemblyDescriptor>().Any();
+    private readonly bool _includeSystemAssemblies = assemblyDescriptors.OfType<IncludeSystemAssembliesDescriptor>().Any();
+    private readonly bool _allAssemblies = assemblyDescriptors.OfType<AllAssemblyDescriptor>().Any();
+
+    public string Hash => sourceLocation?.ExpressionHash ?? Guid.NewGuid().ToString("N");
 
     public bool IsMatch(Compilation compilation, IAssemblySymbol targetType)
     {
-        if (!_includeSystemAssemblies && _coreAssemblies.Contains(targetType.Name)) return false;
+        if (!_includeSystemAssemblies && coreAssemblies.Contains(targetType.Name)) return false;
         if (_allAssemblies) return true;
 
         return AssemblyDescriptors

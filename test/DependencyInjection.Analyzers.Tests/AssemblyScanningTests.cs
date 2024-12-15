@@ -29,10 +29,12 @@ public class AssemblyScanningTests : GeneratorTest
                                }
                                """"
                            )
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result).UseParameters(getTypesItem.Name).HashParameters();
+        await Verify(result).UseParameters(getTypesItem.Name).HashParameters()
+                            .AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -62,19 +64,23 @@ public class AssemblyScanningTests : GeneratorTest
                               }
                               """"
                           )
+                         .AddOptions(GetTempPath())
                          .Build()
                          .GenerateAsync();
 
         var diags = other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ToArray();
-        if (diags.Length > 0) await Verify(diags).UseParameters(getTypesItem.Name).HashParameters();
+        if (diags.Length > 0) await Verify(diags).UseParameters(getTypesItem.Name).HashParameters()
+                                                 .AddCacheFiles(TempPath);
 
         other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
 
         var result = await Builder
                           .AddCompilationReferences(other)
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result).UseParameters(getTypesItem.Name).HashParameters();
+        await Verify(result).UseParameters(getTypesItem.Name).HashParameters()
+                            .AddCacheFiles(TempPath);
     }
 }

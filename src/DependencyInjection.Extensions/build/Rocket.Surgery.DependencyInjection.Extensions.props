@@ -1,0 +1,7 @@
+﻿<Project>
+    <ItemGroup>
+        <CompilerVisibleProperty Include="BaseIntermediateOutputPath" />
+        <CompilerVisibleProperty Include="IntermediateOutputPath" />
+        <CompilerVisibleProperty Include="ProjectDir" />
+    </ItemGroup>
+</Project>
