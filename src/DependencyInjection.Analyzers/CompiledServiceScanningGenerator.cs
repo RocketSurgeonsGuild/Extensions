@@ -90,8 +90,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                      UsingDirective(ParseName("Rocket.Surgery.DependencyInjection.Compiled")),
                                  ]
                              )
-                         )
-                        .AddAttributeLists(attributes);
+                         );
 
                 var assemblyProvider = AssemblyProviderBuilder.GetAssemblyProvider(
                     context,
@@ -110,6 +109,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
 
                 cu = cu
                     .AddSharedTrivia()
+                    .AddAttributeLists(attributes)
                     .AddAttributeLists(
                          AttributeList(
                                  SingletonSeparatedList(
