@@ -19,9 +19,24 @@ internal partial class AssemblyProviderConfiguration
     Compilation compilation,
     AnalyzerConfigOptionsProvider options)
 {
-    private string? _cacheDirectory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
-        ? intermediateOutputPath
-        : null;
+    #pragma warning disable RS1035
+    private readonly Lazy<string?> _cacheDirectory = new (
+        () =>
+        {
+            var directory = options.GlobalOptions.TryGetValue("build_property.BaseIntermediateOutputPath", out var intermediateOutputPath)
+                ? intermediateOutputPath
+                : null;
+            if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
+            {
+                directory = Path.Combine(projectDirectory, directory);
+            }
+            if (directory is null) return null;
+            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+            var cacheDirectory = Path.Combine(directory, "GeneratedAssemblyProvider");
+            if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
+            return cacheDirectory;
+        });
+    #pragma warning restore RS1035
 
     static string GetCacheFileHash(SourceLocation location)
     {
@@ -36,15 +51,15 @@ internal partial class AssemblyProviderConfiguration
     ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, Func<ResolvedSourceLocation?> factory)
     {
         var cacheKey = $"compilation-{GetCacheFileHash(location)}.partial";
-        if (_cacheDirectory is { } && File.Exists(Path.Combine(_cacheDirectory, cacheKey)))
+        if (_cacheDirectory.Value is { } && File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
         {
-            return new(location, File.ReadAllText(Path.Combine(_cacheDirectory, cacheKey)), []);
+            return new(location, File.ReadAllText(Path.Combine(_cacheDirectory.Value, cacheKey)), []);
         }
 
         var source = factory();
-        if (_cacheDirectory is { } && !File.Exists(Path.Combine(_cacheDirectory, cacheKey)))
+        if (_cacheDirectory.Value is { } && !File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
         {
-            File.WriteAllText(Path.Combine(_cacheDirectory, cacheKey), source?.Expression ?? "");
+            File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), source?.Expression ?? "");
         }
 
         return source;
@@ -172,10 +187,10 @@ internal partial class AssemblyProviderConfiguration
         )
         {
             var diagnostics = new HashSet<Diagnostic>();
-            var cacheKey = assembly.MetadataName + ".partial";
-            if (_cacheDirectory is { } && File.Exists(Path.Combine(_cacheDirectory, cacheKey)))
+            var cacheKey = assembly.MetadataName + ".json";
+            if (_cacheDirectory.Value is { } && File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
             {
-                var data = JsonSerializer.Deserialize(File.ReadAllText(Path.Combine(_cacheDirectory, cacheKey)), SourceGenerationContext.Default.CompiledAssemblyProviderData);
+                var data = JsonSerializer.Deserialize(File.ReadAllText(Path.Combine(_cacheDirectory.Value, cacheKey)), SourceGenerationContext.Default.CompiledAssemblyProviderData);
                 assemblyAssemblySources = data.AssemblySources;
                 assemblyReflectionSources = data.ReflectionSources;
                 assemblyServiceDescriptorSources = data.ServiceDescriptorSources;
@@ -267,7 +282,7 @@ internal partial class AssemblyProviderConfiguration
             privateAssemblies = assemblies.ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
             assemblyDiagnostics = diagnostics.ToImmutableHashSet();
 
-            if (_cacheDirectory is { } && !File.Exists(Path.Combine(_cacheDirectory, cacheKey)))
+            if (_cacheDirectory.Value is { } && !File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
             {
                 var data = new CompiledAssemblyProviderData(
                     assemblyAssemblySources,
@@ -283,7 +298,7 @@ internal partial class AssemblyProviderConfiguration
                     assemblyDiagnostics
                 );
 
-                File.WriteAllText(Path.Combine(_cacheDirectory, cacheKey), JsonSerializer.Serialize(data, SourceGenerationContext.Default.CompiledAssemblyProviderData));
+                File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), JsonSerializer.Serialize(data, SourceGenerationContext.Default.CompiledAssemblyProviderData));
             }
         }
     }

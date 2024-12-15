@@ -62,7 +62,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -90,7 +90,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                                 .AddOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -127,7 +127,7 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -175,7 +175,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -203,7 +203,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                                 .AddOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -237,7 +237,7 @@ public static class Program {
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -268,7 +268,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                                 .AddOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -304,7 +304,7 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -335,7 +335,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                                 .AddOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -371,7 +371,7 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -414,7 +414,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -456,7 +456,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -482,7 +482,7 @@ namespace DependencyProject
 }
 "
                                )
-                              .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                              .AddOptions(GetTempPath())
                               .Build()
                               .GenerateAsync();
 
@@ -519,7 +519,7 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependency)
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -592,7 +592,7 @@ public static class Program2 {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -641,7 +641,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -688,7 +688,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -736,7 +736,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -782,7 +782,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -830,7 +830,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -877,7 +877,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -925,7 +925,7 @@ public static class Program {
                                }
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -972,7 +972,7 @@ public static class Program {
                                }
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1020,7 +1020,7 @@ public static class Program {
                                }
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1067,7 +1067,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1115,7 +1115,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1161,7 +1161,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1236,7 +1236,7 @@ public static class Nested
 public class ServiceB : IService, IServiceB { }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1276,7 +1276,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1315,7 +1315,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1354,7 +1354,7 @@ public static class Program {
 }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1379,7 +1379,7 @@ public interface IService { }
 public class Service : IService { }
 "
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1427,7 +1427,7 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1477,7 +1477,7 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1527,7 +1527,7 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1577,7 +1577,7 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1627,7 +1627,7 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1676,7 +1676,7 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1712,7 +1712,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                                 .AddOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -1738,7 +1738,7 @@ namespace RootDependencyProject
 
                                        """
                                    )
-                                  .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                                  .AddOptions(GetTempPath())
                                   .Build()
                                   .GenerateAsync();
             dependencies.Add(dependency);
@@ -1776,7 +1776,7 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1812,7 +1812,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                                 .AddOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -1834,7 +1834,7 @@ namespace RootDependencyProject
 
                                        """
                                    )
-                                  .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                                  .AddOptions(GetTempPath())
                                   .Build()
                                   .GenerateAsync();
             dependencies.Add(dependency);
@@ -1872,7 +1872,7 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependencies.ToArray())
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1930,7 +1930,7 @@ namespace TestProject
                                }
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -1984,7 +1984,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2038,7 +2038,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2122,7 +2122,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2202,7 +2202,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2298,7 +2298,7 @@ namespace TestProject
                                """
                            )
                           .AddCompilationReferences(dependencies.ToArray())
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2443,7 +2443,7 @@ namespace RootDependencyProject
                                """
                            )
                           .AddCompilationReferences(dependencies.ToArray())
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 

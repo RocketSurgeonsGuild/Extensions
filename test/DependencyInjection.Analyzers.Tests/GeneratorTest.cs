@@ -66,4 +66,11 @@ internal static class VerifyExtensions
 //                  );
         return task;
     }
+
+    public static GeneratorTestContextBuilder AddOptions(this GeneratorTestContextBuilder builder, string tempPath)
+    {
+        return builder
+              .AddGlobalOption("build_property.BaseIntermediateOutputPath", "obj")
+              .AddGlobalOption("build_property.ProjectDir", tempPath);
+    }
 }

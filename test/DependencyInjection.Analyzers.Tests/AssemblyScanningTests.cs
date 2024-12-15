@@ -29,7 +29,7 @@ public class AssemblyScanningTests : GeneratorTest
                                }
                                """"
                            )
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -64,7 +64,7 @@ public class AssemblyScanningTests : GeneratorTest
                               }
                               """"
                           )
-                         .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                         .AddOptions(GetTempPath())
                          .Build()
                          .GenerateAsync();
 
@@ -76,7 +76,7 @@ public class AssemblyScanningTests : GeneratorTest
 
         var result = await Builder
                           .AddCompilationReferences(other)
-                          .AddGlobalOption("build_property.IntermediateOutputPath", GetTempPath())
+                          .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
-[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ServiceDescriptorTypes", "eyJsIjp7ImwiOjIxLCJhIjoibW9SMGFzenVjZ0tZbW5xbVZuL2k2Zz09IiwiZiI6IklucHV0MC5jcyJ9LCJhIjp7ImEiOnRydWUsImkiOmZhbHNlLCJtIjpbXSwibmEiOltdLCJkIjpbXX0sInQiOnsiYiI6MSwiYyI6W10sImQiOltdLCJlIjpbeyJmIjp0cnVlLCJ0IjpbMl19XSwiZiI6W3siZiI6ZmFsc2UsInQiOlstMiwxXX1dLCJnIjpbXSwiaCI6W10sImkiOltdLCJqIjpbXSwiayI6W3siaSI6dHJ1ZSwiYSI6IlRlc3RQcm9qZWN0IiwidCI6IklTZXJ2aWNlXHUwMDYwMSIsInUiOnRydWV9XSwibCI6W119LCJzIjp7IlNlcnZpY2VUeXBlRGVzY3JpcHRvcnMiOlt7IklkZW50aWZpZXIiOiJzIiwiVHlwZURhdGEiOm51bGwsIlR5cGVGaWx0ZXIiOm51bGx9LHsiSWRlbnRpZmllciI6ImkiLCJUeXBlRGF0YSI6bnVsbCwiVHlwZUZpbHRlciI6bnVsbH1dLCJMaWZldGltZSI6MX0sInoiOjF9")]
+[assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ServiceDescriptorTypes","{scrubbed}")]
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
@@ -29,8 +29,18 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: moR0aszucgKYmnqmVn/i6g==
             case 21:
-                services.Add(ServiceDescriptor.Scoped(typeof(global::Service<>), typeof(global::Service<>)));
-                services.Add(ServiceDescriptor.Scoped(typeof(global::IService<>), typeof(global::Service<>)));
+                switch (System.IO.Path.GetFileName(filePath))
+                {
+                    // FilePath: Input0.cs Expression: moR0aszucgKYmnqmVn/i6g==
+                    case "Input0.cs":
+                        services.Add(ServiceDescriptor.Scoped(typeof(global::Service<>), typeof(global::Service<>)));
+                        services.Add(ServiceDescriptor.Scoped(typeof(global::IService<>), typeof(global::Service<>)));
+                        break;
+                    // FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
+                    case "CompiledTypeProviderServiceCollectionExtensions.cs":
+                        break;
+                }
+
                 break;
         }
 

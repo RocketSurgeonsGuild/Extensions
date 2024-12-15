@@ -33,11 +33,11 @@ internal static partial class ModuleInitializer
                 return new(path, typeName, method.Name);
             }
         );
-//        VerifierSettings.ScrubLinesWithReplace(
-//            s => ( s.Contains("AssemblyMetadata(\"AssemblyProvider.", StringComparison.OrdinalIgnoreCase) )
-//                ? s[..( s.IndexOf('"', s.IndexOf('"') + 1) + 2 )] + "\"{scrubbed}\")]"
-//                : s
-//        );
+        VerifierSettings.ScrubLinesWithReplace(
+            s => ( s.Contains("AssemblyMetadata(\"AssemblyProvider.", StringComparison.OrdinalIgnoreCase) )
+                ? s[..( s.IndexOf('"', s.IndexOf('"') + 1) + 2 )] + "\"{scrubbed}\")]"
+                : s
+        );
         VerifierSettings.ScrubLinesWithReplace(
             s => ( s.Contains("<Compiled_AssemblyProvider_g>", StringComparison.OrdinalIgnoreCase) )
                 ? s[..( s.IndexOf('"') + 1 )] + "{CompiledTypeProvider}" + s[s.LastIndexOf('"')..]
@@ -49,18 +49,18 @@ internal static partial class ModuleInitializer
                 if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>() is
                     { Version: { Length: > 0 } version })
                 {
-                    _ = builder.Replace(version, "version");
+                    builder.Replace(version, "version");
                 }
 
                 if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0 } version2 })
                 {
-                    _ = builder.Replace(version2, "version");
+                    builder.Replace(version2, "version");
                 }
                 // regex to replace the version number in this string Version=12.0.0.0,
                 var regex = MyRegex();
                 var result = regex.Replace(builder.ToString(), "Version=version,");
-                _ = builder.Clear();
-                _ = builder.Append(result);
+                builder.Clear();
+                builder.Append(result);
             }
         );
     }
