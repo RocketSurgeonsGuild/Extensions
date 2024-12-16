@@ -1488,6 +1488,98 @@ public class Service : IService { }
     }
 
     [Test]
+    public async Task Should_Work_With_this_Weird_Query()
+    {
+
+        var rootGenerator = await Builder
+                                 .WithProjectName("RootDependencyProject")
+                                 .AddSources(
+                                      """
+                                      using System;
+                                      using Rocket.Surgery.DependencyInjection.Compiled;
+                                      using Microsoft.Extensions.DependencyInjection;
+
+                                      [AttributeUsage(AttributeTargets.Class)]
+                                      public sealed class RegisterOptionsConfigurationAttribute(string configurationKey) : Attribute
+                                      {
+                                          /// <summary>
+                                          ///     The configuration key to use
+                                          /// </summary>
+                                          public string ConfigurationKey { get; } = configurationKey;
+
+                                          /// <summary>
+                                          ///     The optional options name
+                                          /// </summary>
+                                          public string? OptionsName { get; set; }
+                                      }
+
+                                      public static class Program {
+                                          static void Main() { }
+                                          static IServiceCollection LoadServices()
+                                          {
+                                              var services = new ServiceCollection();
+                                              var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                                              var classes = provider.GetTypes(
+                                                  s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
+                                              );
+
+                                              return services;
+                                          }
+                                      }
+
+                                      """
+                                  )
+                                 .AddOptions(GetTempPath())
+                                 .Build()
+                                 .GenerateAsync();
+
+        var result = await Builder
+                          .AddSources(
+                               """
+                               [RegisterOptionsConfiguration("OptionsA")]
+                               class OptionsA
+                               {
+                                   public required string A { get; set; }
+                               }
+
+                               [RegisterOptionsConfiguration("OptionsB")]
+                               class OptionsB
+                               {
+                                   public required string B { get; set; }
+                               }
+                               """
+                               )
+                                 .AddSources(
+                                      """
+                                      using System;
+                                      using Rocket.Surgery.DependencyInjection.Compiled;
+                                      using Microsoft.Extensions.DependencyInjection;
+
+                                      public static class Program2 {
+                                          static void Main() { }
+                                          static IServiceCollection LoadServices()
+                                          {
+                                              var services = new ServiceCollection();
+                                              var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                                              var classes = provider.GetTypes(
+                                                  s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
+                                              );
+
+                                              return services;
+                                          }
+                                      }
+
+                                      """
+                                  )
+                              .AddCompilationReferences(rootGenerator)
+                          .AddOptions(GetTempPath())
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result).AddCacheFiles(TempPath);
+    }
+
+    [Test]
     public async Task Should_Filter_With_StartsWith()
     {
         var result = await Builder

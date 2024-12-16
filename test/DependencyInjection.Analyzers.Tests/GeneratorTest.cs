@@ -71,6 +71,6 @@ internal static class VerifyExtensions
     {
         return builder
               .AddGlobalOption("build_property.BaseIntermediateOutputPath", "obj")
-              .AddGlobalOption("build_property.ProjectDir", tempPath);
+              .AddGlobalOption("build_property.ProjectDir", tempPath.Replace("\\", "/"));
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -20,7 +21,7 @@ internal partial class AssemblyProviderConfiguration
     AnalyzerConfigOptionsProvider options)
 {
     #pragma warning disable RS1035
-    private readonly Lazy<string?> _cacheDirectory = new (
+    private readonly Lazy<string?> _cacheDirectory = new(
         () =>
         {
             var directory = options.GlobalOptions.TryGetValue("build_property.BaseIntermediateOutputPath", out var intermediateOutputPath)
@@ -30,12 +31,14 @@ internal partial class AssemblyProviderConfiguration
             {
                 directory = Path.Combine(projectDirectory, directory);
             }
+
             if (directory is null) return null;
             if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
             var cacheDirectory = Path.Combine(directory, "GeneratedAssemblyProvider");
             if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
             return cacheDirectory;
-        });
+        }
+    );
     #pragma warning restore RS1035
 
     static string GetCacheFileHash(SourceLocation location)
@@ -89,7 +92,13 @@ internal partial class AssemblyProviderConfiguration
             {
                 var source = CacheSourceLocation(
                     request.Location,
-                    () => ReflectionCollection.ResolveSource(compilation, diagnostics, request, privateAssemblies, (c, visitor) => visitor.GetReferencedTypes(c))
+                    () => ReflectionCollection.ResolveSource(
+                        compilation,
+                        diagnostics,
+                        request,
+                        privateAssemblies,
+                        (c, visitor) => visitor.GetReferencedTypes(c)
+                    )
                 );
                 if (source is { }) reflectionSources.Add(source);
             }
@@ -115,7 +124,7 @@ internal partial class AssemblyProviderConfiguration
 
         var assemblySymbols = compilation
                              .References.Select(compilation.GetAssemblyOrModuleSymbol)
-                             //.Concat([compilation.Assembly])
+                              //.Concat([compilation.Assembly])
                              .Select(
                                   symbol =>
                                   {
@@ -190,15 +199,20 @@ internal partial class AssemblyProviderConfiguration
             var cacheKey = assembly.MetadataName + ".json";
             if (_cacheDirectory.Value is { } && File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
             {
-                var data = JsonSerializer.Deserialize(File.ReadAllText(Path.Combine(_cacheDirectory.Value, cacheKey)), SourceGenerationContext.Default.CompiledAssemblyProviderData);
+                var data = JsonSerializer.Deserialize(
+                    File.ReadAllText(Path.Combine(_cacheDirectory.Value, cacheKey)),
+                    SourceGenerationContext.Default.CompiledAssemblyProviderData
+                );
                 assemblyAssemblySources = data.AssemblySources;
                 assemblyReflectionSources = data.ReflectionSources;
                 assemblyServiceDescriptorSources = data.ServiceDescriptorSources;
                 reflection = data.InternalReflectionRequests.Select(z => GetReflectionFromString(compilation, assemblySymbols, z)).ToImmutableList();
-                serviceDescriptor = data.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromString(compilation, assemblySymbols, z)).ToImmutableList();
-                privateAssemblies = data.PrivateAssemblyNames
-                                        .Select(z => assemblySymbols[z])
-                                        .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+                serviceDescriptor =
+                    data.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromString(compilation, assemblySymbols, z)).ToImmutableList();
+                privateAssemblies = data
+                                   .PrivateAssemblyNames
+                                   .Select(z => assemblySymbols[z])
+                                   .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
                 assemblyDiagnostics = diagnostics.ToImmutableHashSet();
                 return;
 //                return new(location, File.ReadAllText(Path.Combine(_cacheDirectory, cacheKey)));
@@ -290,15 +304,19 @@ internal partial class AssemblyProviderConfiguration
                     assemblyServiceDescriptorSources,
                     reflection.Select(GetReflectionToString).ToImmutableList(),
                     serviceDescriptor.Select(GetServiceDescriptorToString).ToImmutableList(),
-                    assemblies.Select(z => z.MetadataName)
-                              .Concat(assemblyAssemblySources.SelectMany(z => z.PrivateAssemblies))
-                              .Concat(assemblyReflectionSources.SelectMany(z => z.PrivateAssemblies))
-                              .Concat(assemblyServiceDescriptorSources.SelectMany(z => z.PrivateAssemblies))
-                              .ToImmutableHashSet(),
+                    assemblies
+                       .Select(z => z.MetadataName)
+                       .Concat(assemblyAssemblySources.SelectMany(z => z.PrivateAssemblies))
+                       .Concat(assemblyReflectionSources.SelectMany(z => z.PrivateAssemblies))
+                       .Concat(assemblyServiceDescriptorSources.SelectMany(z => z.PrivateAssemblies))
+                       .ToImmutableHashSet(),
                     assemblyDiagnostics
                 );
 
-                File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), JsonSerializer.Serialize(data, SourceGenerationContext.Default.CompiledAssemblyProviderData));
+                File.WriteAllText(
+                    Path.Combine(_cacheDirectory.Value, cacheKey),
+                    JsonSerializer.Serialize(data, SourceGenerationContext.Default.CompiledAssemblyProviderData)
+                );
             }
         }
     }
@@ -343,7 +361,9 @@ internal partial class AssemblyProviderConfiguration
     {
         var result = DecompressString(value);
         // ReSharper disable once NullableWarningSuppressionIsUsed
-        var data = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.AssemblyCollectionData)!;
+        var config = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.GetAssemblyConfiguration)!;
+        Debug.Assert(config.Type == nameof(SourceGenerationContext.Default.GetAssemblyConfiguration));
+        var data = config.Assembly;
         var assemblyFilter = LoadAssemblyFilter(data.Assembly, data.Location, assemblySymbols);
         return new(data.Location, assemblyFilter);
     }
@@ -351,7 +371,7 @@ internal partial class AssemblyProviderConfiguration
     private static string GetAssembliesToString(AssemblyCollection.Item item)
     {
         var data = new AssemblyCollectionData(item.Location, LoadAssemblyFilterData(item.AssemblyFilter));
-        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.AssemblyCollectionData);
+        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.GetAssemblyConfiguration);
         return CompressString(result);
     }
 
@@ -363,20 +383,21 @@ internal partial class AssemblyProviderConfiguration
     {
         var result = DecompressString(value);
         // ReSharper disable once NullableWarningSuppressionIsUsed
-        var data = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.ReflectionCollectionData)!;
+        var config = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.GetReflectionCollectionData)!;
+        Debug.Assert(config.Type == nameof(SourceGenerationContext.Default.GetReflectionCollectionData));
+        var data = config.Assembly;
         var assemblyFilter = LoadAssemblyFilter(data.Assembly, data.Location, assemblySymbols);
-        var typeFilter = LoadTypeFilter(compilation, data.Type, data.Location, assemblySymbols);
+        var typeFilter = LoadTypeFilter(compilation, config.Reflection.Type, data.Location, assemblySymbols);
         return new(data.Location, assemblyFilter, typeFilter);
     }
 
     private static string GetReflectionToString(ReflectionCollection.Item item)
     {
-        var data = new ReflectionCollectionData(
-            item.Location,
-            LoadAssemblyFilterData(item.AssemblyFilter),
-            LoadTypeFilterData(item.TypeFilter)
+        var data = new GetReflectionCollectionData(
+            new(item.Location, LoadAssemblyFilterData(item.AssemblyFilter)),
+            new(LoadTypeFilterData(item.TypeFilter))
         );
-        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.ReflectionCollectionData);
+        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.GetReflectionCollectionData);
         return CompressString(result);
     }
 
@@ -388,24 +409,26 @@ internal partial class AssemblyProviderConfiguration
     {
         var result = DecompressString(value);
         // ReSharper disable once NullableWarningSuppressionIsUsed
-        var data = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.ServiceDescriptorCollectionData)!;
-        var assemblyFilter = LoadAssemblyFilter(data.Assembly, data.Location, assemblySymbols);
-        var typeFilter = LoadTypeFilter(compilation, data.Type, data.Location, assemblySymbols);
+        var config = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.GetServiceDescriptorCollectionData)!;
+        Debug.Assert(config.Type == nameof(SourceGenerationContext.Default.GetServiceDescriptorCollectionData));
+        var assemblyData = config.Assembly;
+        var reflectionData = config.Reflection;
+        var serviceDescriptorData = config.ServiceDescriptor;
+        var assemblyFilter = LoadAssemblyFilter(assemblyData.Assembly, assemblyData.Location, assemblySymbols);
+        var typeFilter = LoadTypeFilter(compilation, reflectionData.Type, assemblyData.Location, assemblySymbols);
         // next up is services, and lifetime.
-        var servicesFilter = LoadServiceDescriptorFilter(compilation, data.ServiceDescriptor, data.Location, assemblySymbols);
-        return new(data.Location, assemblyFilter, typeFilter, servicesFilter, data.Lifetime);
+        var servicesFilter = LoadServiceDescriptorFilter(compilation, serviceDescriptorData.ServiceDescriptor, assemblyData.Location, assemblySymbols);
+        return new(assemblyData.Location, assemblyFilter, typeFilter, servicesFilter, serviceDescriptorData.Lifetime);
     }
 
     private static string GetServiceDescriptorToString(ServiceDescriptorCollection.Item item)
     {
-        var data = new ServiceDescriptorCollectionData(
-            item.Location,
-            LoadAssemblyFilterData(item.AssemblyFilter),
-            LoadTypeFilterData(item.TypeFilter),
-            LoadServiceDescriptorsData(item.ServicesTypeFilter),
-            item.Lifetime
+        var data = new GetServiceDescriptorCollectionData(
+            new(item.Location, LoadAssemblyFilterData(item.AssemblyFilter)),
+            new(LoadTypeFilterData(item.TypeFilter)),
+            new(LoadServiceDescriptorsData(item.ServicesTypeFilter), item.Lifetime)
         );
-        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.ServiceDescriptorCollectionData);
+        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.GetServiceDescriptorCollectionData);
         return CompressString(result);
     }
 
@@ -798,7 +821,42 @@ internal partial class AssemblyProviderConfiguration
     [JsonSerializable(typeof(AssignableToTypeData))]
     [JsonSerializable(typeof(AssignableToAnyTypeData))]
     [JsonSerializable(typeof(CompiledAssemblyProviderData))]
+    [JsonSerializable(typeof(GetAssemblyConfiguration))]
+    [JsonSerializable(typeof(GetReflectionCollectionData))]
+    [JsonSerializable(typeof(GetServiceDescriptorCollectionData))]
     private partial class SourceGenerationContext : JsonSerializerContext;
+
+    private record GetAssemblyConfiguration
+    (
+        [property: JsonPropertyName("a")]
+        AssemblyCollectionData Assembly
+    )
+    {
+        public string Type => nameof(GetAssemblyConfiguration);
+    };
+
+    private record GetReflectionCollectionData
+    (
+        [property: JsonPropertyName("a")]
+        AssemblyCollectionData Assembly,
+        [property: JsonPropertyName("r")]
+        ReflectionCollectionData Reflection
+    )
+    {
+        public string Type => nameof(GetReflectionCollectionData);
+    }
+
+    private record GetServiceDescriptorCollectionData
+    (
+        [property: JsonPropertyName("a")]
+        AssemblyCollectionData Assembly,
+        [property: JsonPropertyName("r")]
+        ReflectionCollectionData Reflection,
+        [property: JsonPropertyName("s")]
+        ServiceDescriptorCollectionData ServiceDescriptor)
+    {
+        public string Type => nameof(GetServiceDescriptorCollectionData);
+    }
 
     private record AssemblyCollectionData
     (
@@ -810,22 +868,12 @@ internal partial class AssemblyProviderConfiguration
 
     private record ReflectionCollectionData
     (
-        [property: JsonPropertyName("l")]
-        SourceLocation Location,
-        [property: JsonPropertyName("a")]
-        AssemblyFilterData Assembly,
         [property: JsonPropertyName("t")]
         TypeFilterData Type
     );
 
     private record ServiceDescriptorCollectionData
     (
-        [property: JsonPropertyName("l")]
-        SourceLocation Location,
-        [property: JsonPropertyName("a")]
-        AssemblyFilterData Assembly,
-        [property: JsonPropertyName("t")]
-        TypeFilterData Type,
         [property: JsonPropertyName("s")]
         ServiceDescriptorFilterData ServiceDescriptor,
         [property: JsonPropertyName("z")]
