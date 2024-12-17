@@ -10,13 +10,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 public class StaticScanningTests : GeneratorTest
 {
     [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay
-    {
-        get
-        {
-            return ToString();
-        }
-    }
+    private string DebuggerDisplay => ToString();
 
     private static class StaticHelper
     {

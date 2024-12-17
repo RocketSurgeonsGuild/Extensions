@@ -655,13 +655,38 @@ internal partial class AssemblyProviderConfiguration
     {
         var descriptors = ImmutableList.CreateBuilder<IAssemblyDescriptor>();
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-        if (data.AllAssembly) descriptors.Add(new AllAssemblyDescriptor());
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                if (data.AllAssembly) descriptors.Add(new AllAssemblyDescriptor());
 
-        if (data.IncludeSystem) descriptors.Add(new IncludeSystemAssembliesDescriptor());
-After:
+                if (data.IncludeSystem) descriptors.Add(new IncludeSystemAssembliesDescriptor());
+        After:
+                if (data.AllAssembly)
+                {
+                    descriptors.Add(new AllAssemblyDescriptor());
+                }
+
+                if (data.IncludeSystem)
+                {
+                    descriptors.Add(new IncludeSystemAssembliesDescriptor());
+                }
+        */
         if (data.AllAssembly)
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                    if (assemblySymbols.TryGetValue(item, out var assembly)) descriptors.Add(new AssemblyDescriptor(assembly));
+                }
+
+                foreach (var item in data.NotAssembly)
+                {
+                    if (assemblySymbols.TryGetValue(item, out var assembly)) descriptors.Add(new NotAssemblyDescriptor(assembly));
+        After:
+                    if (assemblySymbols.TryGetValue(item, out var assembly))
+                    {
+                        descriptors.Add(new AssemblyDescriptor(assembly));
+                    }
+        */
+
         {
             descriptors.Add(new AllAssemblyDescriptor());
         }
@@ -670,64 +695,39 @@ After:
         {
             descriptors.Add(new IncludeSystemAssembliesDescriptor());
         }
-*/
-        if (data.AllAssembly)
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            if (assemblySymbols.TryGetValue(item, out var assembly)) descriptors.Add(new AssemblyDescriptor(assembly));
-        }
-
-        foreach (var item in data.NotAssembly)
-        {
-            if (assemblySymbols.TryGetValue(item, out var assembly)) descriptors.Add(new NotAssemblyDescriptor(assembly));
-After:
-            if (assemblySymbols.TryGetValue(item, out var assembly))
-            {
-                descriptors.Add(new AssemblyDescriptor(assembly));
-            }
-*/
-
-        {
-            descriptors.Add(new AllAssemblyDescriptor());
-        }
-
-        if (data.IncludeSystem)
-        {
-            descriptors.Add(new IncludeSystemAssembliesDescriptor());
-        }
 
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-        foreach (var item in data.AssemblyDependencies)
-After:
-        foreach (var item in data.NotAssembly)
-*/
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                foreach (var item in data.AssemblyDependencies)
+        After:
+                foreach (var item in data.NotAssembly)
+        */
         foreach (var item in data.Assembly)
         {
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            if (assemblySymbols.TryGetValue(item, out var assembly)) descriptors.Add(new AssemblyDependenciesDescriptor(assembly));
-After:
-            if (assemblySymbols.TryGetValue(item, out var assembly)) descriptors.Add(new NotAssemblyDescriptor(assembly));
-*/
+            /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+            Before:
+                        if (assemblySymbols.TryGetValue(item, out var assembly)) descriptors.Add(new AssemblyDependenciesDescriptor(assembly));
+            After:
+                        if (assemblySymbols.TryGetValue(item, out var assembly)) descriptors.Add(new NotAssemblyDescriptor(assembly));
+            */
             if (assemblySymbols.TryGetValue(item, out var assembly))
             {
                 descriptors.Add(new AssemblyDescriptor(assembly));
             }
         }
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Added:
-        foreach (var item in data.AssemblyDependencies)
-        {
-            if (assemblySymbols.TryGetValue(item, out var assembly))
-            {
-                descriptors.Add(new AssemblyDependenciesDescriptor(assembly));
-            }
-        }
-*/
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Added:
+                foreach (var item in data.AssemblyDependencies)
+                {
+                    if (assemblySymbols.TryGetValue(item, out var assembly))
+                    {
+                        descriptors.Add(new AssemblyDependenciesDescriptor(assembly));
+                    }
+                }
+        */
 
         foreach (var item in data.NotAssembly)
         {
@@ -779,19 +779,53 @@ Added:
         foreach (var item in data.WithAttributeFilters)
         {
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type) continue;
-            if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
-            descriptors.Add(item.Include ? new WithAttributeFilterDescriptor(type) : new WithoutAttributeFilterDescriptor(type));
-        }
+            /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+            Before:
+                        if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type) continue;
+                        if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
+                        descriptors.Add(item.Include ? new WithAttributeFilterDescriptor(type) : new WithoutAttributeFilterDescriptor(type));
+                    }
 
-        foreach (var item in data.WithAttributeStringFilters)
-        {
-            descriptors.Add(
-                item.Include ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
-After:
+                    foreach (var item in data.WithAttributeStringFilters)
+                    {
+                        descriptors.Add(
+                            item.Include ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
+            After:
+                        if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type)
+                        {
+                            continue;
+                        }
+
+                        if (item.UnboundGenericType)
+                        {
+                            type = type.ConstructUnboundGenericType();
+                        }
+
+                        descriptors.Add(( item.Include ) ? new WithAttributeFilterDescriptor(type) : new WithoutAttributeFilterDescriptor(type));
+                    }
+
+                    foreach (var item in data.WithAttributeStringFilters)
+                    {
+                        descriptors.Add(
+                            ( item.Include ) ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
+            */
             if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type)
+            /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+            Before:
+                        if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type) continue;
+                        if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
+            After:
+                        if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type)
+                        {
+                            continue;
+                        }
+
+                        if (item.UnboundGenericType)
+                        {
+                            type = type.ConstructUnboundGenericType();
+                        }
+            */
+
             {
                 continue;
             }
@@ -807,41 +841,7 @@ After:
         foreach (var item in data.WithAttributeStringFilters)
         {
             descriptors.Add(
-                ( item.Include ) ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
-*/
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type)
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type) continue;
-            if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
-After:
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type)
-            {
-                continue;
-            }
-
-            if (item.UnboundGenericType)
-            {
-                type = type.ConstructUnboundGenericType();
-            }
-*/
-
-            {
-                continue;
-            }
-
-            if (item.UnboundGenericType)
-            {
-                type = type.ConstructUnboundGenericType();
-            }
-
-            descriptors.Add(( item.Include ) ? new WithAttributeFilterDescriptor(type) : new WithoutAttributeFilterDescriptor(type));
-        }
-
-        foreach (var item in data.WithAttributeStringFilters)
-        {
-            descriptors.Add(
-                ( item.Include ) ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
+                 ( item.Include ) ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
             );
         }
 
@@ -864,12 +864,12 @@ After:
         if (withAnyAttributeFilter.Any())
         {
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            descriptors.Add(new WithAnyAttributeStringFilterDescriptor(withAnyAttributeStringFilter.ToImmutableHashSet()));
-After:
-            descriptors.Add(new WithAnyAttributeStringFilterDescriptor([.. withAnyAttributeStringFilter]));
-*/
+            /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+            Before:
+                        descriptors.Add(new WithAnyAttributeStringFilterDescriptor(withAnyAttributeStringFilter.ToImmutableHashSet()));
+            After:
+                        descriptors.Add(new WithAnyAttributeStringFilterDescriptor([.. withAnyAttributeStringFilter]));
+            */
             descriptors.Add(new WithAnyAttributeFilterDescriptor(withAnyAttributeFilter.ToImmutableHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default)));
         }
 
@@ -880,24 +880,24 @@ After:
         }
 
         if (withAnyAttributeStringFilter.Any())
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Type) is not { } type) continue;
-            if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
-            descriptors.Add(item.Include ? new AssignableToTypeFilterDescriptor(type) : new NotAssignableToTypeFilterDescriptor(type));
-After:
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Type) is not { } type)
-            {
-                continue;
-            }
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                    if (findType(assemblySymbols, compilation, item.Assembly, item.Type) is not { } type) continue;
+                    if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
+                    descriptors.Add(item.Include ? new AssignableToTypeFilterDescriptor(type) : new NotAssignableToTypeFilterDescriptor(type));
+        After:
+                    if (findType(assemblySymbols, compilation, item.Assembly, item.Type) is not { } type)
+                    {
+                        continue;
+                    }
 
-            if (item.UnboundGenericType)
-            {
-                type = type.ConstructUnboundGenericType();
-            }
+                    if (item.UnboundGenericType)
+                    {
+                        type = type.ConstructUnboundGenericType();
+                    }
 
-            descriptors.Add(( item.Include ) ? new AssignableToTypeFilterDescriptor(type) : new NotAssignableToTypeFilterDescriptor(type));
-*/
+                    descriptors.Add(( item.Include ) ? new AssignableToTypeFilterDescriptor(type) : new NotAssignableToTypeFilterDescriptor(type));
+        */
 
         {
             descriptors.Add(new WithAnyAttributeStringFilterDescriptor([.. withAnyAttributeStringFilter]));
@@ -937,7 +937,7 @@ After:
             }
 
             descriptors.Add(
-                ( item.Include )
+                 ( item.Include )
                     ? new AssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
                     : new NotAssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
             );
@@ -953,23 +953,24 @@ After:
         string typeName
     )
     {
+        return
 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-        if (CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName)) return compilation.GetTypeByMetadataName(typeName);
+        /* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+        Before:
+                if (CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName)) return compilation.GetTypeByMetadataName(typeName);
 
-        return !assemblySymbols.TryGetValue(assemblyName, out var assembly)
-         || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type
-After:
-        return ( CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName) )
+                return !assemblySymbols.TryGetValue(assemblyName, out var assembly)
+                 || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type
+        After:
+                return ( CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName) )
+                    ? compilation.GetTypeByMetadataName(typeName)
+                    : ( !assemblySymbols.TryGetValue(assemblyName, out var assembly)
+                 || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type )
+        */
+        ( CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName) )
             ? compilation.GetTypeByMetadataName(typeName)
             : ( !assemblySymbols.TryGetValue(assemblyName, out var assembly)
-         || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type )
-*/
-        return ( CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName) )
-            ?  compilation.GetTypeByMetadataName(typeName) 
-            : ( !assemblySymbols.TryGetValue(assemblyName, out var assembly)
-         || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type )
+            || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type )
                 ? compilation.GetTypeByMetadataName(typeName)
                 : type;
     }
