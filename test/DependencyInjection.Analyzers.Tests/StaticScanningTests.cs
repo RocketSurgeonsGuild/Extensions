@@ -6,13 +6,21 @@ using Serilog;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
+[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class StaticScanningTests : GeneratorTest
 {
+    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay => ToString();
+
     private static class StaticHelper
     {
         public static async Task<IServiceCollection> ExecuteStaticServiceCollectionMethod(Assembly? assembly, string className, string methodName)
         {
-            if (assembly == null) return new ServiceCollection();
+            if (assembly is null)
+            {
+                return new ServiceCollection();
+            }
+
             var @class = assembly.GetTypes().FirstOrDefault(z => z.IsClass && z.Name == className)!;
             await Assert.That(@class).IsNotNull();
 
@@ -126,7 +134,7 @@ namespace TestProject
 }
 "
                            )
-                          .AddCompilationReferences(dependencies.ToArray())
+                          .AddCompilationReferences([.. dependencies])
                           .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
@@ -236,7 +244,7 @@ public static class Program {
 }
 "
                            )
-                          .AddCompilationReferences(dependencies.ToArray())
+                          .AddCompilationReferences([.. dependencies])
                           .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
@@ -303,7 +311,7 @@ namespace TestProject
 }
 "
                            )
-                          .AddCompilationReferences(dependencies.ToArray())
+                          .AddCompilationReferences([.. dependencies])
                           .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
@@ -370,7 +378,7 @@ namespace TestProject
 }
 "
                            )
-                          .AddCompilationReferences(dependencies.ToArray())
+                          .AddCompilationReferences([.. dependencies])
                           .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
@@ -1328,7 +1336,8 @@ public static class Program {
     {
         var result = await Builder
                           .AddSources(
-                               @"
+                               """
+
 using Rocket.Surgery.DependencyInjection.Compiled;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -1339,7 +1348,7 @@ public static class Program {
     static void Main() { }
     static IServiceCollection LoadServices()
     {
-        var ns = ""MyNamespace"";
+        var ns = "MyNamespace";
         var services = new ServiceCollection();
         var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
 	    provider.Scan(
@@ -1352,7 +1361,8 @@ public static class Program {
         return services;
     }
 }
-"
+
+"""
                            )
                           .AddOptions(GetTempPath())
                           .Build()
@@ -1485,6 +1495,98 @@ public class Service : IService { }
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
            .AddCacheFiles(TempPath);
+    }
+
+    [Test]
+    public async Task Should_Work_With_this_Weird_Query()
+    {
+
+        var rootGenerator = await Builder
+                                 .WithProjectName("RootDependencyProject")
+                                 .AddSources(
+                                      """
+                                      using System;
+                                      using Rocket.Surgery.DependencyInjection.Compiled;
+                                      using Microsoft.Extensions.DependencyInjection;
+
+                                      [AttributeUsage(AttributeTargets.Class)]
+                                      public sealed class RegisterOptionsConfigurationAttribute(string configurationKey) : Attribute
+                                      {
+                                          /// <summary>
+                                          ///     The configuration key to use
+                                          /// </summary>
+                                          public string ConfigurationKey { get; } = configurationKey;
+
+                                          /// <summary>
+                                          ///     The optional options name
+                                          /// </summary>
+                                          public string? OptionsName { get; set; }
+                                      }
+
+                                      public static class Program {
+                                          static void Main() { }
+                                          static IServiceCollection LoadServices()
+                                          {
+                                              var services = new ServiceCollection();
+                                              var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                                              var classes = provider.GetTypes(
+                                                  s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
+                                              );
+
+                                              return services;
+                                          }
+                                      }
+
+                                      """
+                                  )
+                                 .AddOptions(GetTempPath())
+                                 .Build()
+                                 .GenerateAsync();
+
+        var result = await Builder
+                          .AddSources(
+                               """
+                               [RegisterOptionsConfiguration("OptionsA")]
+                               class OptionsA
+                               {
+                                   public required string A { get; set; }
+                               }
+
+                               [RegisterOptionsConfiguration("OptionsB")]
+                               class OptionsB
+                               {
+                                   public required string B { get; set; }
+                               }
+                               """
+                               )
+                                 .AddSources(
+                                      """
+                                      using System;
+                                      using Rocket.Surgery.DependencyInjection.Compiled;
+                                      using Microsoft.Extensions.DependencyInjection;
+
+                                      public static class Program2 {
+                                          static void Main() { }
+                                          static IServiceCollection LoadServices()
+                                          {
+                                              var services = new ServiceCollection();
+                                              var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
+                                              var classes = provider.GetTypes(
+                                                  s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
+                                              );
+
+                                              return services;
+                                          }
+                                      }
+
+                                      """
+                                  )
+                              .AddCompilationReferences(rootGenerator)
+                          .AddOptions(GetTempPath())
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result).AddCacheFiles(TempPath);
     }
 
     [Test]
@@ -1731,9 +1833,9 @@ namespace RootDependencyProject
 
                                        namespace Dependency{{1}}Project
                                        {
-                                           {{( i % 2 == 0 ? "public" : "" )}} class Request{{i}} : IRequest<Response{{i}}> { }
-                                           {{( i % 2 == 0 ? "public" : "" )}} class Response{{i}} { }
-                                           {{( i % 2 == 0 ? "public" : "" )}} class RequestHandler{{i}} : IRequestHandler<Request{{i}}, Response{{i}}>  { }
+                                           {{( ( i % 2 == 0 ) ? "public" : "" )}} class Request{{i}} : IRequest<Response{{i}}> { }
+                                           {{( ( i % 2 == 0 ) ? "public" : "" )}} class Response{{i}} { }
+                                           {{( ( i % 2 == 0 ) ? "public" : "" )}} class RequestHandler{{i}} : IRequestHandler<Request{{i}}, Response{{i}}>  { }
                                        }
 
                                        """
@@ -1775,7 +1877,7 @@ namespace TestProject
 }
 "
                            )
-                          .AddCompilationReferences(dependencies.ToArray())
+                          .AddCompilationReferences([.. dependencies])
                           .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
@@ -1871,7 +1973,7 @@ namespace TestProject
 }
 "
                            )
-                          .AddCompilationReferences(dependencies.ToArray())
+                          .AddCompilationReferences([.. dependencies])
                           .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
@@ -2099,19 +2201,19 @@ namespace TestProject
                                            services,
                                        z => z
                                			.FromAssemblies()
-                               			.AddClasses(x => x.{{( usingClass, usingTypeof, filter ) switch
-                                                                {
-                                                                    (false, false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\")",
-                                                                    (false, false, NamespaceFilter.In) => $"InNamespaces(\"{namespaceFilterValue}\")",
-                                                                    (false, false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\")",
-                                                                    (true, false, NamespaceFilter.Exact) => $"InExactNamespaceOf(typeof({namespaceFilterValue}))",
-                                                                    (true, false, NamespaceFilter.In) => $"InNamespaceOf(typeof({namespaceFilterValue}))",
-                                                                    (true, false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}))",
-                                                                    (true, true, NamespaceFilter.Exact) => $"InExactNamespaceOf<{namespaceFilterValue}>()",
-                                                                    (true, true, NamespaceFilter.In) => $"InNamespaceOf<{namespaceFilterValue}>()",
-                                                                    (true, true, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaceOf<{namespaceFilterValue}>()",
-                                                                    _ => "ERROR",
-                                                                }}})
+                               			.AddClasses(x => x.{{(usingClass, usingTypeof, filter) switch
+                               {
+                                   (false, false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\")",
+                                   (false, false, NamespaceFilter.In) => $"InNamespaces(\"{namespaceFilterValue}\")",
+                                   (false, false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\")",
+                                   (true, false, NamespaceFilter.Exact) => $"InExactNamespaceOf(typeof({namespaceFilterValue}))",
+                                   (true, false, NamespaceFilter.In) => $"InNamespaceOf(typeof({namespaceFilterValue}))",
+                                   (true, false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}))",
+                                   (true, true, NamespaceFilter.Exact) => $"InExactNamespaceOf<{namespaceFilterValue}>()",
+                                   (true, true, NamespaceFilter.In) => $"InNamespaceOf<{namespaceFilterValue}>()",
+                                   (true, true, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaceOf<{namespaceFilterValue}>()",
+                                   _ => "ERROR",
+                               }}})
                                            .AsSelf()
                                            .AsImplementedInterfaces()
                                            .WithScopedLifetime()
@@ -2181,17 +2283,17 @@ namespace TestProject
                                            services,
                                            z => z
                                			    .FromAssemblies()
-                               			    .AddClasses(x => x.{{( usingClass, filter ) switch
-                                                                    {
-                                                                        (false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
-                                                                        (false, NamespaceFilter.In) => $"InNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
-                                                                        (false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
-                                                                        (true, NamespaceFilter.Exact) => $"InExactNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
-                                                                        (true, NamespaceFilter.In) => $"InNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
-                                                                        (true, NamespaceFilter.NotIn) =>
-                                                                            $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
-                                                                        _ => "ERROR",
-                                                                    }}})
+                               			    .AddClasses(x => x.{{(usingClass, filter) switch
+                               {
+                                   (false, NamespaceFilter.Exact) => $"InExactNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
+                                   (false, NamespaceFilter.In) => $"InNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
+                                   (false, NamespaceFilter.NotIn) => $"InNamespaces(\"TestProject\").NotInNamespaces(\"{namespaceFilterValue}\", \"{namespaceFilterValueSecond}\")",
+                                   (true, NamespaceFilter.Exact) => $"InExactNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
+                                   (true, NamespaceFilter.In) => $"InNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
+                                   (true, NamespaceFilter.NotIn) =>
+                                       $"InNamespaces(\"TestProject\").NotInNamespaceOf(typeof({namespaceFilterValue}), typeof({namespaceFilterValueSecond}))",
+                                   _ => "ERROR",
+                               }}})
                                                .AsSelf()
                                                .AsImplementedInterfaces()
                                                .WithScopedLifetime()
@@ -2297,7 +2399,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddCompilationReferences(dependencies.ToArray())
+                          .AddCompilationReferences([.. dependencies])
                           .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
@@ -2360,7 +2462,7 @@ namespace RootDependencyProject
                                 .Where(z => z.FinalCompilation.AssemblyName?.StartsWith("DependencyProject") == true)
                                 .Select(
                                      z =>
-                                         $"class HardReference{z.FinalCompilation.AssemblyName?.Substring(z.FinalCompilation.AssemblyName.Length - 1)} : {z.FinalCompilation.AssemblyName + ".Service" + z.FinalCompilation.AssemblyName?.Substring(z.FinalCompilation.AssemblyName.Length - 1)} {{ }}"
+                                         $"class HardReference{z.FinalCompilation.AssemblyName?[^1..]} : {z.FinalCompilation.AssemblyName + ".Service" + z.FinalCompilation.AssemblyName?[^1..]} {{ }}"
                                  );
             var dep = await GeneratorTestContextBuilder
                            .Create()
@@ -2442,7 +2544,7 @@ namespace RootDependencyProject
 
                                """
                            )
-                          .AddCompilationReferences(dependencies.ToArray())
+                          .AddCompilationReferences([.. dependencies])
                           .AddOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();

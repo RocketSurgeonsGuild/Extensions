@@ -56,6 +56,7 @@ internal static partial class ModuleInitializer
                 {
                     builder.Replace(version2, "version");
                 }
+
                 // regex to replace the version number in this string Version=12.0.0.0,
                 var regex = MyRegex();
                 var result = regex.Replace(builder.ToString(), "Version=version,");
@@ -66,10 +67,10 @@ internal static partial class ModuleInitializer
     }
 
     internal static IEnumerable<Diagnostic> OrderDiagnosticResults(this IEnumerable<Diagnostic> diagnostics, DiagnosticSeverity severity) => diagnostics
-              .Where(s => s.Severity >= severity)
-              .OrderBy(static z => z.Location.GetMappedLineSpan().ToString())
-              .ThenBy(static z => z.Severity)
-              .ThenBy(static z => z.Id);
+       .Where(s => s.Severity >= severity)
+       .OrderBy(static z => z.Location.GetMappedLineSpan().ToString())
+       .ThenBy(static z => z.Severity)
+       .ThenBy(static z => z.Id);
 
 
     private static ConversionResult Convert(GeneratorTestResultsWithServices result, IReadOnlyDictionary<string, object> context)
@@ -96,9 +97,9 @@ internal static partial class ModuleInitializer
 
             ["FinalDiagnostics"] = target.FinalDiagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error),
             ["GeneratorDiagnostics"] = target.Results.ToDictionary(
-            z => z.Key.FullName!,
-            z => z.Value.Diagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error)
-        ),
+                z => z.Key.FullName!,
+                z => z.Value.Diagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error)
+            ),
             ["Services"] = services
         };
 
