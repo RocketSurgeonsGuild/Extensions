@@ -95,6 +95,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		lint.yml = .github\workflows\lint.yml
 		sync-labels.yml = .github\workflows\sync-labels.yml
 		update-milestone.yml = .github\workflows\update-milestone.yml
+		publish-nuget.yml = .github\workflows\publish-nuget.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".husky", ".husky", "{660E562C-E0E1-41D5-98A1-C816140566C8}"
@@ -109,6 +110,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{6ADA
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8", "src\DependencyInjection.Analyzers.roslyn4.8\Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8.csproj", "{F5F65F73-DF54-4536-B9EC-1DBB08BF2876}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DependencyInjection.Analyzers", "DependencyInjection.Analyzers", "{F1A11F3E-FA52-4502-8241-F71F0C6DF799}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = src\DependencyInjection.Analyzers\.editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DependencyInjection.Analyzers.roslyn4.8", "DependencyInjection.Analyzers.roslyn4.8", "{B7007E5D-3899-442C-8D3A-98907EB4BC41}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = src\DependencyInjection.Analyzers.roslyn4.8\.editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -370,6 +381,8 @@ Global
 		{660E562C-E0E1-41D5-98A1-C816140566C8} = {545CF2DB-935E-4852-A509-1BEE3C3E99B1}
 		{6ADAB0E3-4082-4180-8D29-CDBC9A3E9784} = {545CF2DB-935E-4852-A509-1BEE3C3E99B1}
 		{F5F65F73-DF54-4536-B9EC-1DBB08BF2876} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
+		{F1A11F3E-FA52-4502-8241-F71F0C6DF799} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
+		{B7007E5D-3899-442C-8D3A-98907EB4BC41} = {8FFDF555-DB50-45F9-9A2D-6410F39151C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {439897C2-CCBD-44FE-B2DC-A3E4670ADA59}
