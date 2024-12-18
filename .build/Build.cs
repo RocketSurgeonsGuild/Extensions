@@ -18,7 +18,7 @@ using Rocket.Surgery.Nuke.DotNetCore;
 [NuGetVerbosityMapping]
 [ShutdownDotNetAfterServerBuild]
 [LocalBuildConventions]
-public partial class Pipeline : NukeBuild,
+internal partial class Pipeline : NukeBuild,
     ICanRestoreWithDotNetCore,
     ICanBuildWithDotNetCore,
     ICanTestWithDotNetCore,
@@ -93,7 +93,7 @@ public partial class Pipeline : NukeBuild,
                                                              (runSettings, project) =>
                                                                  runSettings
                                                                     .SetProcessWorkingDirectory(RootDirectory)
-//                                                                    .SetDefaultLoggers(this.As<ICanTestWithDotNetCore>().LogsDirectory / $"{project.Name}.log")
+                                                                    //                                                                    .SetDefaultLoggers(this.As<ICanTestWithDotNetCore>().LogsDirectory / $"{project.Name}.log")
                                                                     .SetGitVersionEnvironment(GitVersion)
                                                                     .SetConfiguration(this.As<ICanTestWithDotNetCore>().TestBuildConfiguration)
                                                                     .EnableNoRestore()
@@ -125,33 +125,33 @@ public partial class Pipeline : NukeBuild,
                                                          )
                                              )
                                          )
-//                                        .Executes(
-//                                             () => DotNetTool.GetTool("dotnet-coverage")(
-//                                                 $"{new Arguments()
-//                                                   .Add("collect")
-//                                                   .Add("--settings {value}", this.As<ICanTestWithDotNetCore>().RunSettings)
-//                                                   .Add("--output {value}", this.As<ICanTestWithDotNetCore>().TestResultsDirectory / "test.cobertura.xml")
-//                                                   .Add("--output-format {value}", "cobertura")
-//                                                   .Add("--")
-//                                                   .Add("dotnet")
-//                                                   .Concatenate(
-//                                                        this.As<ICanTestWithDotNetCore>().CustomizeDotNetTestSettings(
-//                                                                 new DotNetTestSettings()
-//                                                                    .SetProcessWorkingDirectory(RootDirectory)
-//                                                                    .SetProjectFile(Solution)
-//                                                                    .SetDefaultLoggers(this.As<ICanTestWithDotNetCore>().LogsDirectory / "test.log")
-//                                                                    .SetGitVersionEnvironment(GitVersion)
-//                                                                    .SetConfiguration(this.As<ICanTestWithDotNetCore>().TestBuildConfiguration)
-//                                                                    .EnableNoRestore()
-//                                                                    .EnableNoBuild()
-//                                                                    .SetLoggers("trx")
-//                                                                    .SetResultsDirectory(this.As<ICanTestWithDotNetCore>().TestResultsDirectory)
-//                                                             )
-//                                                            .GetProcessArguments()
-//                                                    ).RenderForExecution()}",
-//                                                 RootDirectory
-//                                             )
-//                                         )
+    //                                        .Executes(
+    //                                             () => DotNetTool.GetTool("dotnet-coverage")(
+    //                                                 $"{new Arguments()
+    //                                                   .Add("collect")
+    //                                                   .Add("--settings {value}", this.As<ICanTestWithDotNetCore>().RunSettings)
+    //                                                   .Add("--output {value}", this.As<ICanTestWithDotNetCore>().TestResultsDirectory / "test.cobertura.xml")
+    //                                                   .Add("--output-format {value}", "cobertura")
+    //                                                   .Add("--")
+    //                                                   .Add("dotnet")
+    //                                                   .Concatenate(
+    //                                                        this.As<ICanTestWithDotNetCore>().CustomizeDotNetTestSettings(
+    //                                                                 new DotNetTestSettings()
+    //                                                                    .SetProcessWorkingDirectory(RootDirectory)
+    //                                                                    .SetProjectFile(Solution)
+    //                                                                    .SetDefaultLoggers(this.As<ICanTestWithDotNetCore>().LogsDirectory / "test.log")
+    //                                                                    .SetGitVersionEnvironment(GitVersion)
+    //                                                                    .SetConfiguration(this.As<ICanTestWithDotNetCore>().TestBuildConfiguration)
+    //                                                                    .EnableNoRestore()
+    //                                                                    .EnableNoBuild()
+    //                                                                    .SetLoggers("trx")
+    //                                                                    .SetResultsDirectory(this.As<ICanTestWithDotNetCore>().TestResultsDirectory)
+    //                                                             )
+    //                                                            .GetProcessArguments()
+    //                                                    ).RenderForExecution()}",
+    //                                                 RootDirectory
+    //                                             )
+    //                                         )
     ;
 
     public Target Lint => _ => _;
