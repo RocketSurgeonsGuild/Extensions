@@ -82,10 +82,6 @@ jobs:
         id: lintFiles
         run: |
           dotnet .build/bin/Debug/.build.dll --target LintFiles --skip Restore
-      - name: Regenerate Build Configurations
-        id: regenerateBuildConfigurations
-        run: |
-          dotnet .build/bin/Debug/.build.dll --target RegenerateBuildConfigurations
       - name: Prettier
         id: prettier
         run: |
@@ -98,6 +94,10 @@ jobs:
         id: jetBrainsCleanupCode
         run: |
           dotnet .build/bin/Debug/.build.dll --target JetBrainsCleanupCode
+      - name: Regenerate Build Configurations
+        id: regenerateBuildConfigurations
+        run: |
+          dotnet .build/bin/Debug/.build.dll --target RegenerateBuildConfigurations
       - name: Generate Solution Items
         id: generateSolutionItems
         run: |
