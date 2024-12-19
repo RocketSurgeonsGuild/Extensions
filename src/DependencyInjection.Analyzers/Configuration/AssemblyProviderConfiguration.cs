@@ -3,14 +3,11 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
-
-// ReSharper disable UseCollectionExpression
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
@@ -20,7 +17,7 @@ internal partial class AssemblyProviderConfiguration
     Compilation compilation,
     AnalyzerConfigOptionsProvider options)
 {
-#pragma warning disable RS1035
+    #pragma warning disable RS1035
     private readonly Lazy<string?> _cacheDirectory = new(
         () =>
         {
@@ -51,7 +48,7 @@ internal partial class AssemblyProviderConfiguration
             return cacheDirectory;
         }
     );
-#pragma warning restore RS1035
+    #pragma warning restore RS1035
 
     private static string GetCacheFileHash(SourceLocation location)
     {
@@ -62,7 +59,7 @@ internal partial class AssemblyProviderConfiguration
         return hasher.Hash.Aggregate("", (s, b) => s + b.ToString("x2"));
     }
 
-#pragma warning disable RS1035
+    #pragma warning disable RS1035
     private ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, Func<ResolvedSourceLocation?> factory)
     {
         var cacheKey = $"compilation-{GetCacheFileHash(location)}.partial";
@@ -79,7 +76,7 @@ internal partial class AssemblyProviderConfiguration
 
         return source;
     }
-#pragma warning restore RS1035
+    #pragma warning restore RS1035
 
     public (
         ImmutableList<ResolvedSourceLocation> AssemblySources,
@@ -142,7 +139,7 @@ internal partial class AssemblyProviderConfiguration
 
         var assemblySymbols = compilation
                              .References.Select(compilation.GetAssemblyOrModuleSymbol)
-                             //.Concat([compilation.Assembly])
+                              .Concat([compilation.Assembly])
                              .Select(
                                   symbol =>
                                   {
@@ -161,38 +158,54 @@ internal partial class AssemblyProviderConfiguration
                                   }
                               )
                              .Where(z => z is { })
-                             .GroupBy(z => z.MetadataName, z => z, (s, symbols) => (Key: s, Symbol: symbols.First()))
+                             .GroupBy(z => z.MetadataName, z => z, (s, symbols) => ( Key: s, Symbol: symbols.First() ))
                              .ToImmutableDictionary(z => z.Key, z => z.Symbol);
 
 
         var internalReflectionRequestsBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
         var internalServiceDescriptorRequestsBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
-        foreach (var assembly in assemblySymbols.Values)
+        foreach (var assembly in assemblySymbols.Values.Except(compilation.Assembly))
         {
-            GetAssemblyData(
-                assembly,
-                out var assemblyAssemblySources,
-                out var assemblyReflectionSources,
-                out var assemblyServiceDescriptorSources,
-                out var assemblyReflectionBuilder,
-                out var assemblyServiceDescriptorBuilder,
-                out var privateAssemblies,
-                out var assemblyDiagnostics
-            );
+            try
+            {
+                GetAssemblyData(
+                    assembly,
+                    out var assemblyAssemblySources,
+                    out var assemblyReflectionSources,
+                    out var assemblyServiceDescriptorSources,
+                    out var assemblyReflectionBuilder,
+                    out var assemblyServiceDescriptorBuilder,
+                    out var privateAssemblies,
+                    out var assemblyDiagnostics
+                );
 
-            internalReflectionRequestsBuilder.AddRange(assemblyReflectionBuilder);
-            internalServiceDescriptorRequestsBuilder.AddRange(assemblyServiceDescriptorBuilder);
+                internalReflectionRequestsBuilder.AddRange(assemblyReflectionBuilder);
+                internalServiceDescriptorRequestsBuilder.AddRange(assemblyServiceDescriptorBuilder);
 
-            assemblySources.AddRange(assemblyAssemblySources);
-            reflectionSources.AddRange(assemblyReflectionSources);
-            serviceDescriptorSources.AddRange(assemblyServiceDescriptorSources);
-            globalPrivateAssemblies.UnionWith(privateAssemblies);
-            globalDiagnostics.UnionWith(assemblyDiagnostics);
+                assemblySources.AddRange(assemblyAssemblySources);
+                reflectionSources.AddRange(assemblyReflectionSources);
+                serviceDescriptorSources.AddRange(assemblyServiceDescriptorSources);
+                globalPrivateAssemblies.UnionWith(privateAssemblies);
+                globalDiagnostics.UnionWith(assemblyDiagnostics);
 
-            // steps
-            // cache requests resulting from an assembly.
-            // cache results of assembly requests directly.
-            //
+                // steps
+                // cache requests resulting from an assembly.
+                // cache results of assembly requests directly.
+                //
+            }
+            catch (Exception e)
+            {
+                globalDiagnostics.Add(
+                    Diagnostic.Create(
+                        Diagnostics.UnhandledException,
+                        assembly.Locations.FirstOrDefault(),
+                        e.Message.Replace("\r", "").Replace("\n", ""),
+                        e.StackTrace.Replace("\r", "").Replace("\n", ""),
+                        e.GetType().Name,
+                        e.ToString()
+                    )
+                );
+            }
         }
 
         var internalReflectionRequests = internalReflectionRequestsBuilder.ToImmutable();
@@ -208,7 +221,7 @@ internal partial class AssemblyProviderConfiguration
 
         return result;
 
-#pragma warning disable RS1035
+        #pragma warning disable RS1035
         void GetAssemblyData(
             IAssemblySymbol assembly,
             out ImmutableList<ResolvedSourceLocation> assemblyAssemblySources,
@@ -226,7 +239,7 @@ internal partial class AssemblyProviderConfiguration
             {
                 var data = JsonSerializer.Deserialize(
                     File.ReadAllText(Path.Combine(_cacheDirectory.Value, cacheKey)),
-                    SourceGenerationContext.Default.CompiledAssemblyProviderData
+                    JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
                 );
                 assemblyAssemblySources = data.AssemblySources;
                 assemblyReflectionSources = data.ReflectionSources;
@@ -236,7 +249,7 @@ internal partial class AssemblyProviderConfiguration
                     data.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromString(compilation, assemblySymbols, z)).ToImmutableList();
                 privateAssemblies = data
                                    .PrivateAssemblyNames
-                                   .Select(z => assemblySymbols[z])
+                                   .Join(assemblySymbols, z => z, z => z.Key, (_, pair) => pair.Value)
                                    .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
                 assemblyDiagnostics = [.. diagnostics];
                 return;
@@ -324,9 +337,6 @@ internal partial class AssemblyProviderConfiguration
                                 }
                                 break;
                             }
-
-                        default:
-                            break;
                     }
                 }
                 catch (InvalidOperationException)
@@ -366,12 +376,12 @@ internal partial class AssemblyProviderConfiguration
 
                 File.WriteAllText(
                     Path.Combine(_cacheDirectory.Value, cacheKey),
-                    JsonSerializer.Serialize(data, SourceGenerationContext.Default.CompiledAssemblyProviderData)
+                    JsonSerializer.Serialize(data, JsonSourceGenerationContext.Default.CompiledAssemblyProviderData)
                 );
             }
         }
     }
-#pragma warning restore RS1035
+    #pragma warning restore RS1035
 
     public static IEnumerable<AttributeListSyntax> ToAssemblyAttributes(
         ImmutableList<AssemblyCollection.Item> assemblyRequests,
@@ -412,8 +422,8 @@ internal partial class AssemblyProviderConfiguration
     {
         var result = DecompressString(value);
         // ReSharper disable once NullableWarningSuppressionIsUsed
-        var config = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.GetAssemblyConfiguration)!;
-        Debug.Assert(config.Type == nameof(SourceGenerationContext.Default.GetAssemblyConfiguration));
+        var config = JsonSerializer.Deserialize(result, JsonSourceGenerationContext.Default.GetAssemblyConfiguration)!;
+        Debug.Assert(config.Type == nameof(JsonSourceGenerationContext.Default.GetAssemblyConfiguration));
         var assemblyFilter = LoadAssemblyFilter(config.Assembly.Assembly, config.Assembly.Location, assemblySymbols);
         return new(config.Assembly.Location, assemblyFilter);
     }
@@ -421,7 +431,7 @@ internal partial class AssemblyProviderConfiguration
     private static string GetAssembliesToString(AssemblyCollection.Item item)
     {
         var data = new GetAssemblyConfiguration(new(item.Location, LoadAssemblyFilterData(item.AssemblyFilter)));
-        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.GetAssemblyConfiguration);
+        var result = JsonSerializer.SerializeToUtf8Bytes(data, JsonSourceGenerationContext.Default.GetAssemblyConfiguration);
         return CompressString(result);
     }
 
@@ -433,8 +443,8 @@ internal partial class AssemblyProviderConfiguration
     {
         var result = DecompressString(value);
         // ReSharper disable once NullableWarningSuppressionIsUsed
-        var config = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.GetReflectionCollectionData)!;
-        Debug.Assert(config.Type == nameof(SourceGenerationContext.Default.GetReflectionCollectionData));
+        var config = JsonSerializer.Deserialize(result, JsonSourceGenerationContext.Default.GetReflectionCollectionData)!;
+        Debug.Assert(config.Type == nameof(JsonSourceGenerationContext.Default.GetReflectionCollectionData));
         var data = config.Assembly;
         var assemblyFilter = LoadAssemblyFilter(data.Assembly, data.Location, assemblySymbols);
         var typeFilter = LoadTypeFilter(compilation, config.Reflection.Type, data.Location, assemblySymbols);
@@ -447,7 +457,7 @@ internal partial class AssemblyProviderConfiguration
             new(item.Location, LoadAssemblyFilterData(item.AssemblyFilter)),
             new(LoadTypeFilterData(item.TypeFilter))
         );
-        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.GetReflectionCollectionData);
+        var result = JsonSerializer.SerializeToUtf8Bytes(data, JsonSourceGenerationContext.Default.GetReflectionCollectionData);
         return CompressString(result);
     }
 
@@ -459,8 +469,8 @@ internal partial class AssemblyProviderConfiguration
     {
         var result = DecompressString(value);
         // ReSharper disable once NullableWarningSuppressionIsUsed
-        var config = JsonSerializer.Deserialize(result, SourceGenerationContext.Default.GetServiceDescriptorCollectionData)!;
-        Debug.Assert(config.Type == nameof(SourceGenerationContext.Default.GetServiceDescriptorCollectionData));
+        var config = JsonSerializer.Deserialize(result, JsonSourceGenerationContext.Default.GetServiceDescriptorCollectionData)!;
+        Debug.Assert(config.Type == nameof(JsonSourceGenerationContext.Default.GetServiceDescriptorCollectionData));
         var assemblyData = config.Assembly;
         var reflectionData = config.Reflection;
         var serviceDescriptorData = config.ServiceDescriptor;
@@ -478,7 +488,7 @@ internal partial class AssemblyProviderConfiguration
             new(LoadTypeFilterData(item.TypeFilter)),
             new(LoadServiceDescriptorsData(item.ServicesTypeFilter), item.Lifetime)
         );
-        var result = JsonSerializer.SerializeToUtf8Bytes(data, SourceGenerationContext.Default.GetServiceDescriptorCollectionData);
+        var result = JsonSerializer.SerializeToUtf8Bytes(data, JsonSourceGenerationContext.Default.GetServiceDescriptorCollectionData);
         return CompressString(result);
     }
 
@@ -759,7 +769,7 @@ internal partial class AssemblyProviderConfiguration
         foreach (var item in data.WithAttributeStringFilters)
         {
             descriptors.Add(
-                  ( item.Include ) ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
+                ( item.Include ) ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
             );
         }
 
@@ -829,7 +839,7 @@ internal partial class AssemblyProviderConfiguration
             }
 
             descriptors.Add(
-                   ( item.Include )
+                ( item.Include )
                     ? new AssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
                     : new NotAssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
             );
@@ -865,8 +875,8 @@ internal partial class AssemblyProviderConfiguration
                          TypeFilter: ( i.InterfaceFilter is { } ) ? LoadTypeFilterData(i.InterfaceFilter) : null
                      ),
                      MatchingInterfaceServiceTypeDescriptor => new('m'),
-                     SelfServiceTypeDescriptor => new('s'),
-                     AsTypeFilterServiceTypeDescriptor => new('a'),
+                     SelfServiceTypeDescriptor              => new('s'),
+                     AsTypeFilterServiceTypeDescriptor      => new('a'),
                      CompiledServiceTypeDescriptor c => new ServiceTypeData(
                          'c',
                          new(c.Type.ContainingAssembly.MetadataName, c.Type.MetadataName, c.Type.IsUnboundGenericType)
@@ -898,220 +908,11 @@ internal partial class AssemblyProviderConfiguration
                     { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
                     { Identifier: 's' } => new SelfServiceTypeDescriptor(),
                     { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
-                    _ => throw new ArgumentOutOfRangeException(nameof(data)),
+                    _                   => throw new ArgumentOutOfRangeException(nameof(data)),
                 }
             );
         }
 
         return new(descriptors.ToImmutable(), data.Lifetime);
     }
-
-    private record ServiceTypeData(char Identifier, AnyTypeData? TypeData = null, TypeFilterData? TypeFilter = null);
-
-    [JsonSourceGenerationOptions]
-    [JsonSerializable(typeof(AssemblyCollectionData))]
-    [JsonSerializable(typeof(ReflectionCollectionData))]
-    [JsonSerializable(typeof(ServiceDescriptorCollectionData))]
-    [JsonSerializable(typeof(AssemblyFilterData))]
-    [JsonSerializable(typeof(TypeFilterData))]
-    [JsonSerializable(typeof(NamespaceFilterData))]
-    [JsonSerializable(typeof(NameFilterData))]
-    [JsonSerializable(typeof(TypeKindFilterData))]
-    [JsonSerializable(typeof(TypeInfoFilterData))]
-    [JsonSerializable(typeof(WithAttributeData))]
-    [JsonSerializable(typeof(WithAttributeStringData))]
-    [JsonSerializable(typeof(AssignableToTypeData))]
-    [JsonSerializable(typeof(AssignableToAnyTypeData))]
-    [JsonSerializable(typeof(CompiledAssemblyProviderData))]
-    [JsonSerializable(typeof(GetAssemblyConfiguration))]
-    [JsonSerializable(typeof(GetReflectionCollectionData))]
-    [JsonSerializable(typeof(GetServiceDescriptorCollectionData))]
-    private partial class SourceGenerationContext : JsonSerializerContext;
-
-    private record GetAssemblyConfiguration
-    (
-        [property: JsonPropertyName("a")]
-        AssemblyCollectionData Assembly
-    )
-    {
-        public string Type => nameof(GetAssemblyConfiguration);
-    };
-
-    private record GetReflectionCollectionData
-    (
-        [property: JsonPropertyName("a")]
-        AssemblyCollectionData Assembly,
-        [property: JsonPropertyName("r")]
-        ReflectionCollectionData Reflection
-    )
-    {
-        public string Type => nameof(GetReflectionCollectionData);
-    }
-
-    private record GetServiceDescriptorCollectionData
-    (
-        [property: JsonPropertyName("a")]
-        AssemblyCollectionData Assembly,
-        [property: JsonPropertyName("r")]
-        ReflectionCollectionData Reflection,
-        [property: JsonPropertyName("s")]
-        ServiceDescriptorCollectionData ServiceDescriptor)
-    {
-        public string Type => nameof(GetServiceDescriptorCollectionData);
-    }
-
-    private record AssemblyCollectionData
-    (
-        [property: JsonPropertyName("l")]
-        SourceLocation Location,
-        [property: JsonPropertyName("a")]
-        AssemblyFilterData Assembly
-    );
-
-    private record ReflectionCollectionData
-    (
-        [property: JsonPropertyName("t")]
-        TypeFilterData Type
-    );
-
-    private record ServiceDescriptorCollectionData
-    (
-        [property: JsonPropertyName("s")]
-        ServiceDescriptorFilterData ServiceDescriptor,
-        [property: JsonPropertyName("z")]
-        int Lifetime
-    );
-
-    private record AssemblyFilterData
-    (
-        [property: JsonPropertyName("a")]
-        bool AllAssembly,
-        [property: JsonPropertyName("i")]
-        bool IncludeSystem,
-        [property: JsonPropertyName("m")]
-        ImmutableArray<string> Assembly,
-        [property: JsonPropertyName("na")]
-        ImmutableArray<string> NotAssembly,
-        [property: JsonPropertyName("d")]
-        ImmutableArray<string> AssemblyDependencies
-    );
-
-    private record TypeFilterData
-    (
-        [property: JsonPropertyName("b")]
-        ClassFilter Filter,
-        [property: JsonPropertyName("c")]
-        ImmutableArray<NamespaceFilterData> NamespaceFilters,
-        [property: JsonPropertyName("d")]
-        ImmutableArray<NameFilterData> NameFilters,
-        [property: JsonPropertyName("e")]
-        ImmutableArray<TypeKindFilterData> TypeKindFilters,
-        [property: JsonPropertyName("f")]
-        ImmutableArray<TypeInfoFilterData> TypeInfoFilters,
-        [property: JsonPropertyName("g")]
-        ImmutableArray<WithAttributeData> WithAttributeFilters,
-        [property: JsonPropertyName("h")]
-        ImmutableArray<WithAttributeStringData> WithAttributeStringFilters,
-        [property: JsonPropertyName("i")]
-        ImmutableArray<WithAttributeData> WithAnyAttributeFilters,
-        [property: JsonPropertyName("j")]
-        ImmutableArray<WithAttributeStringData> WithAnyAttributeStringFilters,
-        [property: JsonPropertyName("k")]
-        ImmutableArray<AssignableToTypeData> AssignableToTypeFilters,
-        [property: JsonPropertyName("l")]
-        ImmutableArray<AssignableToAnyTypeData> AssignableToAnyTypeFilters
-    );
-
-    private record ServiceDescriptorFilterData
-    (
-        ImmutableArray<ServiceTypeData> ServiceTypeDescriptors,
-        int Lifetime
-    );
-
-    internal record WithAttributeData
-    (
-        [property: JsonPropertyName("i")]
-        bool Include,
-        [property: JsonPropertyName("a")]
-        string Assembly,
-        [property: JsonPropertyName("b")]
-        string Attribute,
-        [property: JsonPropertyName("u")]
-        bool UnboundGenericType);
-
-    internal record WithAttributeStringData
-    (
-        [property: JsonPropertyName("i")]
-        bool Include,
-        [property: JsonPropertyName("b")]
-        string Attribute);
-
-    internal record AssignableToTypeData
-    (
-        [property: JsonPropertyName("i")]
-        bool Include,
-        [property: JsonPropertyName("a")]
-        string Assembly,
-        [property: JsonPropertyName("t")]
-        string Type,
-        [property: JsonPropertyName("u")]
-        bool UnboundGenericType);
-
-    internal record AssignableToAnyTypeData
-    (
-        [property: JsonPropertyName("i")]
-        bool Include,
-        [property: JsonPropertyName("t")]
-        ImmutableArray<AnyTypeData> Types);
-
-    internal record AnyTypeData
-    (
-        [property: JsonPropertyName("a")]
-        string Assembly,
-        [property: JsonPropertyName("t")]
-        string Type,
-        [property: JsonPropertyName("u")]
-        bool UnboundGenericType);
-
-
-    internal record NamespaceFilterData
-    (
-        [property: JsonPropertyName("f")]
-        NamespaceFilter Filter,
-        [property: JsonPropertyName("n")]
-        ImmutableArray<string> Namespaces);
-
-    internal record NameFilterData
-    (
-        [property: JsonPropertyName("i")]
-        bool Include,
-        [property: JsonPropertyName("f")]
-        TextDirectionFilter Filter,
-        [property: JsonPropertyName("n")]
-        ImmutableArray<string> Names);
-
-    internal record TypeKindFilterData
-    (
-        [property: JsonPropertyName("f")]
-        bool Include,
-        [property: JsonPropertyName("t")]
-        ImmutableArray<TypeKind> TypeKinds);
-
-    internal record TypeInfoFilterData
-    (
-        [property: JsonPropertyName("f")]
-        bool Include,
-        [property: JsonPropertyName("t")]
-        ImmutableArray<TypeInfoFilter> TypeInfos);
 }
-
-internal record CompiledAssemblyProviderData
-(
-    ImmutableList<ResolvedSourceLocation> AssemblySources,
-    ImmutableList<ResolvedSourceLocation> ReflectionSources,
-    ImmutableList<ResolvedSourceLocation> ServiceDescriptorSources,
-    ImmutableList<string> InternalReflectionRequests,
-    ImmutableList<string> InternalServiceDescriptorRequests,
-    ImmutableHashSet<string> PrivateAssemblyNames,
-    ImmutableHashSet<Diagnostic> Diagnostics
-);
