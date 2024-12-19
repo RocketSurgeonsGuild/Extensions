@@ -82,7 +82,7 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-//        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.InfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
+        //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.InfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
         yield return TestMethod(
             z => z
                 .FromAssemblies()
@@ -131,7 +131,7 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-//        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.InfoOf(TypeInfoFilter.GenericTypeDefinition).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
+        //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.InfoOf(TypeInfoFilter.GenericTypeDefinition).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
         yield return TestMethod(
             z => z
                 .FromAssemblies()
@@ -176,7 +176,7 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-//        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.NotInfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
+        //        yield return TestMethod(z => z.FromAssemblies().GetTypes(x => x.NotInfoOf(TypeInfoFilter.Nested).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
         yield return TestMethod(
             z => z
                 .FromAssemblies()
@@ -203,7 +203,7 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-        #pragma warning disable CA2263
+#pragma warning disable CA2263
         yield return TestMethod(
             z => z
                 .FromAssemblies()
@@ -216,7 +216,7 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-        #pragma warning restore CA2263
+#pragma warning restore CA2263
         yield return TestMethod(
             z => z
                 .FromAssemblies()
@@ -229,19 +229,19 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-//        yield return TestMethod(
-//            z => z
-//                .FromAssemblies()
-//                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
-//                .GetTypes(
-//                     x => x
-//                         .NotAssignableTo<ICompiledTypeProvider>()
-//                         .WithAttribute(typeof(RequiresUnreferencedCodeAttribute).FullName)
-//                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
-//                         .NotStartsWith("Polyfill")
-//                 )
-//        );
-        #pragma warning disable CA2263
+        //        yield return TestMethod(
+        //            z => z
+        //                .FromAssemblies()
+        //                .NotFromAssemblyOf<ServiceRegistrationAttribute>()
+        //                .GetTypes(
+        //                     x => x
+        //                         .NotAssignableTo<ICompiledTypeProvider>()
+        //                         .WithAttribute(typeof(RequiresUnreferencedCodeAttribute).FullName)
+        //                         .NotInNamespaces("JetBrains.Annotations", "Polyfills", "System")
+        //                         .NotStartsWith("Polyfill")
+        //                 )
+        //        );
+#pragma warning disable CA2263
         yield return TestMethod(
             z => z
                 .FromAssemblies()
@@ -255,7 +255,7 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-        #pragma warning restore CA2263
+#pragma warning restore CA2263
         yield return TestMethod(
             z => z
                 .FromAssemblies()
@@ -269,7 +269,7 @@ public static class GetTypesTestsData
                          .NotStartsWith("Polyfill")
                  )
         );
-//        yield return TestMethod(z => z.FromAssemblies().FromAssemblyOf<ConventionContext>().GetTypes(x => x.WithoutAttribute(typeof(JetBrains.Annotations.PublicAPIAttribute).FullName).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
+        //        yield return TestMethod(z => z.FromAssemblies().FromAssemblyOf<ConventionContext>().GetTypes(x => x.WithoutAttribute(typeof(JetBrains.Annotations.PublicAPIAttribute).FullName).NotAssignableTo<Attribute>().NotInNamespaces("JetBrains.Annotations")));
         yield return TestMethod(
             z => z
                 .FromAssemblies()
@@ -336,8 +336,18 @@ public static class GetTypesTestsData
         }
     }
 
+    [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public record GetTypesItem(string Name, string Expression, Func<IReflectionTypeSelector, IEnumerable<Type>> Selector)
     {
+        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return ToString();
+            }
+        }
+
         public override string ToString() => Name;
     }
 }
@@ -351,7 +361,7 @@ public static class GetAssembliesTestsData
         yield return TestMethod(z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>());
         yield return TestMethod(z => z.FromAssembly());
         yield return TestMethod(z => z.FromAssemblyDependenciesOf<ServiceRegistrationAttribute>());
-        yield return TestMethod(z => z.FromAssemblyDependenciesOf(typeof(ServiceRegistrationAttribute)));
+        yield return TestMethod(z => z.FromAssemblyDependenciesOf<ServiceRegistrationAttribute>());
         yield return TestMethod(z => z.IncludeSystemAssemblies().FromAssemblies());
         static Func<GetAssembliesItem> TestMethod(
             Action<IReflectionTypeSelector> func,
@@ -370,8 +380,18 @@ public static class GetAssembliesTestsData
         }
     }
 
+    [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
     public record GetAssembliesItem(string Name, string Expression, Action<IReflectionTypeSelector> Selector)
     {
+        [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+        private string DebuggerDisplay
+        {
+            get
+            {
+                return ToString();
+            }
+        }
+
         public override string ToString() => Name;
     }
 }

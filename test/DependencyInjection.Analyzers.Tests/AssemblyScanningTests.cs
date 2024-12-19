@@ -1,9 +1,19 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
+[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class AssemblyScanningTests : GeneratorTest
 {
+    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay
+    {
+        get
+        {
+            return ToString();
+        }
+    }
+
     [Test]
     [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
     public async Task Should_Generate_Assembly_Provider_For_GetTypes(GetTypesTestsData.GetTypesItem getTypesItem)
@@ -69,8 +79,11 @@ public class AssemblyScanningTests : GeneratorTest
                          .GenerateAsync();
 
         var diags = other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ToArray();
-        if (diags.Length > 0) await Verify(diags).UseParameters(getTypesItem.Name).HashParameters()
+        if (diags.Length > 0)
+        {
+            await Verify(diags).UseParameters(getTypesItem.Name).HashParameters()
                                                  .AddCacheFiles(TempPath);
+        }
 
         other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
 
@@ -149,8 +162,11 @@ public class AssemblyScanningTests : GeneratorTest
                          .GenerateAsync();
 
         var diags = other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ToArray();
-        if (diags.Length > 0) await Verify(diags).UseParameters(getTypesItem.Name).HashParameters()
+        if (diags.Length > 0)
+        {
+            await Verify(diags).UseParameters(getTypesItem.Name).HashParameters()
                                                  .AddCacheFiles(TempPath);
+        }
 
         other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
 
