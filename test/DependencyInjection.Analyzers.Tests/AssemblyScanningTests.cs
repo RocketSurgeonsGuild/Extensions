@@ -6,13 +6,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 public class AssemblyScanningTests : GeneratorTest
 {
     [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay
-    {
-        get
-        {
-            return ToString();
-        }
-    }
+    private string DebuggerDisplay => ToString();
 
     [Test]
     [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]

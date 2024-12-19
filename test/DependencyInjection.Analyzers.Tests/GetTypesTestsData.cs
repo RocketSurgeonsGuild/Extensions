@@ -340,13 +340,7 @@ public static class GetTypesTestsData
     public record GetTypesItem(string Name, string Expression, Func<IReflectionTypeSelector, IEnumerable<Type>> Selector)
     {
         [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-        private string DebuggerDisplay
-        {
-            get
-            {
-                return ToString();
-            }
-        }
+        private string DebuggerDisplay => ToString();
 
         public override string ToString() => Name;
     }
@@ -384,13 +378,7 @@ public static class GetAssembliesTestsData
     public record GetAssembliesItem(string Name, string Expression, Action<IReflectionTypeSelector> Selector)
     {
         [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-        private string DebuggerDisplay
-        {
-            get
-            {
-                return ToString();
-            }
-        }
+        private string DebuggerDisplay => ToString();
 
         public override string ToString() => Name;
     }
