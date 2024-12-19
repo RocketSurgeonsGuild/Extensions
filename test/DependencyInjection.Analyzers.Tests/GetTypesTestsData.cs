@@ -341,3 +341,37 @@ public static class GetTypesTestsData
         public override string ToString() => Name;
     }
 }
+
+public static class GetAssembliesTestsData
+{
+    // IEnumerable<Func<BindDelegate>>
+    public static IEnumerable<Func<GetAssembliesItem>> GetAssembliesData()
+    {
+        yield return TestMethod(z => z.FromAssemblies());
+        yield return TestMethod(z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>());
+        yield return TestMethod(z => z.FromAssembly());
+        yield return TestMethod(z => z.FromAssemblyDependenciesOf<ServiceRegistrationAttribute>());
+        yield return TestMethod(z => z.FromAssemblyDependenciesOf(typeof(ServiceRegistrationAttribute)));
+        yield return TestMethod(z => z.IncludeSystemAssemblies().FromAssemblies());
+        static Func<GetAssembliesItem> TestMethod(
+            Action<IReflectionTypeSelector> func,
+            [CallerArgumentExpression(nameof(func))]
+            string argument = null!
+        )
+        {
+            // TODO: REmove this once tests pass
+            // .Replace("\r", "").Replace("\n", "")
+            var typeName = argument[( argument.LastIndexOf("=> x", StringComparison.Ordinal) + 5 )..^1]
+                          .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+                          .Select(z => z.Trim())
+                          .Aggregate("", (x, y) => x + y)
+                          .Trim();
+            return () => new(typeName, argument, func);
+        }
+    }
+
+    public record GetAssembliesItem(string Name, string Expression, Action<IReflectionTypeSelector> Selector)
+    {
+        public override string ToString() => Name;
+    }
+}
