@@ -759,7 +759,7 @@ internal partial class AssemblyProviderConfiguration
         foreach (var item in data.WithAttributeStringFilters)
         {
             descriptors.Add(
-                ( item.Include ) ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
+                 ( item.Include ) ? new WithAttributeStringFilterDescriptor(item.Attribute) : new WithoutAttributeStringFilterDescriptor(item.Attribute)
             );
         }
 
@@ -829,7 +829,7 @@ internal partial class AssemblyProviderConfiguration
             }
 
             descriptors.Add(
-                 ( item.Include )
+                  ( item.Include )
                     ? new AssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
                     : new NotAssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
             );
