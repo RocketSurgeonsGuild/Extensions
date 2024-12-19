@@ -355,7 +355,6 @@ public static class GetAssembliesTestsData
         yield return TestMethod(z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>());
         yield return TestMethod(z => z.FromAssembly());
         yield return TestMethod(z => z.FromAssemblyDependenciesOf<ServiceRegistrationAttribute>());
-        yield return TestMethod(z => z.FromAssemblyDependenciesOf<ServiceRegistrationAttribute>());
         yield return TestMethod(z => z.IncludeSystemAssemblies().FromAssemblies());
         static Func<GetAssembliesItem> TestMethod(
             Action<IReflectionTypeSelector> func,
