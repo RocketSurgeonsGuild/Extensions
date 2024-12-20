@@ -25,6 +25,8 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 yield return typeof(global::Program).Assembly;
                 break;
         }
+
+        yield break;
     }
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)

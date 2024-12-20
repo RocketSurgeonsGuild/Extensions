@@ -32,6 +32,8 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 yield return TestProject;
                 break;
         }
+
+        yield break;
     }
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)

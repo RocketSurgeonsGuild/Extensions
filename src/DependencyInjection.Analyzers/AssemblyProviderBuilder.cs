@@ -17,16 +17,16 @@ internal static class AssemblyProviderBuilder
         HashSet<IAssemblySymbol> privateAssemblies
     )
     {
-        var resolvedAssemblyDetails = assemblyRequests is { Count: > 0 }
+        var resolvedAssemblyDetails = ( assemblyRequests is { Count: > 0 } )
             ? GenerateMethodBody(AssembliesMethod, assemblyRequests)
             : AssembliesMethod;
 
-        var resolvedReflectionDetails = reflectionRequests is { Count: > 0 }
+        var resolvedReflectionDetails = ( reflectionRequests is { Count: > 0 } )
             ? GenerateMethodBody(TypesMethod, reflectionRequests)
             : TypesMethod;
 
-        var resolvedServiceDescriptorDetails = serviceDescriptorRequests is { Count: > 0 }
-            ? GenerateMethodBody(ScanMethod, serviceDescriptorRequests).AddBodyStatements([..ScanMethod.Body?.Statements ?? []])
+        var resolvedServiceDescriptorDetails = ( serviceDescriptorRequests is { Count: > 0 } )
+            ? GenerateMethodBody(ScanMethod, serviceDescriptorRequests)
             : ScanMethod;
 
         var privateMembers = privateAssemblies
@@ -81,12 +81,10 @@ internal static class AssemblyProviderBuilder
               .WithModifiers(TokenList(Token(SyntaxKind.FileKeyword)))
               .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName("ICompiledTypeProvider")))))
               .AddMembers(resolvedAssemblyDetails, resolvedReflectionDetails, resolvedServiceDescriptorDetails)
-              .AddMembers([..privateMembers]);
+              .AddMembers([.. privateMembers]);
     }
 
-    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations)
-    {
-        return baseMethod.WithBody(
+    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations) => baseMethod.WithBody(
             Block(
                 SwitchGenerator.GenerateSwitchStatement(
                     [
@@ -96,8 +94,8 @@ internal static class AssemblyProviderBuilder
                     ]
                 )
             )
-        );
-    }
+        )
+       .AddBodyStatements([.. baseMethod.Body?.Statements ?? []]);
 
 
     private static readonly MethodDeclarationSyntax TypesMethod =
