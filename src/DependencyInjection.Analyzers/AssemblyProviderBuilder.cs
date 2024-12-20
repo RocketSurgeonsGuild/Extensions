@@ -17,15 +17,15 @@ internal static class AssemblyProviderBuilder
         HashSet<IAssemblySymbol> privateAssemblies
     )
     {
-        var resolvedAssemblyDetails = ( assemblyRequests is { Count: > 0 } )
+        var resolvedAssemblyDetails = assemblyRequests is { Count: > 0 }
             ? GenerateMethodBody(AssembliesMethod, assemblyRequests)
             : AssembliesMethod;
 
-        var resolvedReflectionDetails = ( reflectionRequests is { Count: > 0 } )
+        var resolvedReflectionDetails = reflectionRequests is { Count: > 0 }
             ? GenerateMethodBody(TypesMethod, reflectionRequests)
             : TypesMethod;
 
-        var resolvedServiceDescriptorDetails = ( serviceDescriptorRequests is { Count: > 0 } )
+        var resolvedServiceDescriptorDetails = serviceDescriptorRequests is { Count: > 0 }
             ? GenerateMethodBody(ScanMethod, serviceDescriptorRequests)
             : ScanMethod;
 
@@ -84,13 +84,14 @@ internal static class AssemblyProviderBuilder
               .AddMembers([.. privateMembers]);
     }
 
-    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations) => baseMethod.WithBody(
+    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations) => baseMethod
+       .WithBody(
             Block(
                 SwitchGenerator.GenerateSwitchStatement(
                     [
                         ..locations
                          .GroupBy(z => z.Location)
-                         .Select(z => new ResolvedSourceLocation(z.Key, z.Aggregate("", (s, location) => s + "\n" + location.Expression), []))
+                         .Select(z => new ResolvedSourceLocation(z.Key, z.Aggregate("", (s, location) => s + "\n" + location.Expression), [])),
                     ]
                 )
             )
