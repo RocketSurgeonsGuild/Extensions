@@ -26,7 +26,7 @@ internal static class AssemblyProviderBuilder
             : TypesMethod;
 
         var resolvedServiceDescriptorDetails = serviceDescriptorRequests is { Count: > 0 }
-            ? GenerateMethodBody(ScanMethod, serviceDescriptorRequests).AddBodyStatements([..ScanMethod.Body?.Statements ?? []])
+            ? GenerateMethodBody(ScanMethod, serviceDescriptorRequests)
             : ScanMethod;
 
         var privateMembers = privateAssemblies
@@ -81,23 +81,22 @@ internal static class AssemblyProviderBuilder
               .WithModifiers(TokenList(Token(SyntaxKind.FileKeyword)))
               .WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName("ICompiledTypeProvider")))))
               .AddMembers(resolvedAssemblyDetails, resolvedReflectionDetails, resolvedServiceDescriptorDetails)
-              .AddMembers([..privateMembers]);
+              .AddMembers([.. privateMembers]);
     }
 
-    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations)
-    {
-        return baseMethod.WithBody(
+    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations) => baseMethod
+       .WithBody(
             Block(
                 SwitchGenerator.GenerateSwitchStatement(
                     [
                         ..locations
                          .GroupBy(z => z.Location)
-                         .Select(z => new ResolvedSourceLocation(z.Key, z.Aggregate("", (s, location) => s + "\n" + location.Expression), []))
+                         .Select(z => new ResolvedSourceLocation(z.Key, z.Aggregate("", (s, location) => s + "\n" + location.Expression), [])),
                     ]
                 )
             )
-        );
-    }
+        )
+       .AddBodyStatements([.. baseMethod.Body?.Statements ?? []]);
 
 
     private static readonly MethodDeclarationSyntax TypesMethod =
