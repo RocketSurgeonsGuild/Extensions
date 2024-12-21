@@ -10,5 +10,6 @@ internal record GetReflectionCollectionData
     ReflectionCollectionData Reflection
 )
 {
+    [JsonPropertyName("t")]
     public string Type => nameof(GetReflectionCollectionData);
 }

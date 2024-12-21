@@ -29,15 +29,16 @@ internal static class ReflectionCollection
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
         Item item,
-        HashSet<IAssemblySymbol> privateAssemblies,
-        Func<Compilation, TypeSymbolVisitor, TypeSymbolVisitor> visitorFactory
+        IAssemblySymbol targetAssembly,
+        HashSet<IAssemblySymbol> privateAssemblies
     )
     {
         try
         {
             var pa = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
-            var visitor = visitorFactory(compilation, new(compilation, item.AssemblyFilter, item.TypeFilter));
-            var reducedTypes = visitor.GetTypes();
+            var reducedTypes = new TypeSymbolVisitor(compilation, item.AssemblyFilter, item.TypeFilter)
+                              .GetReferencedTypes(targetAssembly)
+                              .GetTypes();
             if (reducedTypes.Count == 0) return null;
             var localBlock = GenerateDescriptors(compilation, reducedTypes, pa)
                             .NormalizeWhitespace()
@@ -65,16 +66,16 @@ internal static class ReflectionCollection
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
         IReadOnlyList<Item> items,
-        HashSet<IAssemblySymbol> privateAssemblies,
-        Func<Compilation, TypeSymbolVisitor, TypeSymbolVisitor> visitorFactory
+        IAssemblySymbol targetAssembly,
+        HashSet<IAssemblySymbol> privateAssemblies
     )
     {
         if (!items.Any()) return [];
         var results = new List<ResolvedSourceLocation>();
         foreach (var item in items)
         {
-            var resolved = ResolveSource(compilation, diagnostics, item, privateAssemblies, visitorFactory);
-            if (resolved is { }) results.Add(resolved);
+            if (ResolveSource(compilation, diagnostics, item, targetAssembly, privateAssemblies) is not { } location) continue;
+            results.Add(location);
         }
 
         return results.ToImmutableList();

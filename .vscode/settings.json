@@ -1,7 +1,12 @@
 {
     "coverage-gutters.customizable.status-bar-toggler-watchCoverageAndVisibleEditors-enabled": true,
-    "coverage-gutters.coverageFileNames": ["coverage/coverage.info"],
+    "coverage-gutters.coverageFileNames": [
+        "coverage/coverage.info"
+    ],
     "coverage-gutters.showGutterCoverage": true,
     "coverage-gutters.showRulerCoverage": true,
-    "languageServerExample.maxNumberOfProblems": 60
+    "languageServerExample.maxNumberOfProblems": 60,
+    "csharp.preview.improvedLaunchExperience": true,
+    "dotnet.automaticallySyncWithActiveItem": true,
+    "dotnet.testWindow.useTestingPlatformProtocol": true
 }

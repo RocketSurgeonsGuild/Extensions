@@ -21,13 +21,6 @@ internal class TypeSymbolVisitor
 
 internal static class TypeSymbolVisitorExtensions
 {
-    public static ImmutableList<INamedTypeSymbol> GetTypes(this TypeSymbolVisitor visitor, Compilation compilation)
-    {
-        GetReferencedTypes(visitor, compilation);
-        GetCompilationTypes(visitor, compilation);
-        return visitor.GetTypes(compilation);
-    }
-
     public static TypeSymbolVisitor GetReferencedTypes(this TypeSymbolVisitor visitor, Compilation compilation)
     {
         foreach (var symbol in compilation.References.Select(compilation.GetAssemblyOrModuleSymbol))
@@ -49,6 +42,12 @@ internal static class TypeSymbolVisitorExtensions
     public static TypeSymbolVisitor GetCompilationTypes(this TypeSymbolVisitor visitor, Compilation compilation)
     {
         compilation.Assembly.Accept(visitor);
+        return visitor;
+    }
+
+    public static TypeSymbolVisitor GetReferencedTypes(this TypeSymbolVisitor visitor, IAssemblySymbol assemblySymbol)
+    {
+        assemblySymbol.Accept(visitor);
         return visitor;
     }
 }
