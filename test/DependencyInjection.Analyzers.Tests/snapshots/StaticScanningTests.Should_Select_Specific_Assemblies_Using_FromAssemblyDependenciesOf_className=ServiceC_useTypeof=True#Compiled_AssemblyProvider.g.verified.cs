@@ -31,9 +31,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: oz0IknXhxSU6awUcexeAPQ==
             case 20:
                 services.Add(ServiceDescriptor.Singleton(DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")!, DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")!));
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService(DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")!) as global::RootDependencyProject.IService));
+                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => (global::RootDependencyProject.IService)a.GetRequiredService(DependencyProjectD.GetType("DependencyProjectD.HardReferenceA")!)));
                 services.Add(ServiceDescriptor.Singleton(DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")!, DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")!));
-                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService(DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")!) as global::RootDependencyProject.IService));
+                services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => (global::RootDependencyProject.IService)a.GetRequiredService(DependencyProjectD.GetType("DependencyProjectD.HardReferenceC")!)));
                 services.Add(ServiceDescriptor.Singleton<global::DependencyProjectD.ServiceD, global::DependencyProjectD.ServiceD>());
                 services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => a.GetRequiredService<global::DependencyProjectD.ServiceD>()));
                 break;
