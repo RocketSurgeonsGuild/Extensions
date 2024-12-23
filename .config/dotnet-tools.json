@@ -28,7 +28,7 @@
             "rollForward": false
         },
         "jetbrains.dotcover.commandlinetools": {
-            "version": "2024.3.2",
+            "version": "2024.3.3",
             "commands": ["dotnet-dotCover"],
             "rollForward": false
         },
