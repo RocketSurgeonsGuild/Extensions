@@ -11,5 +11,6 @@ internal record GetServiceDescriptorCollectionData
     [property: JsonPropertyName("s")]
     ServiceDescriptorCollectionData ServiceDescriptor)
 {
+    [JsonPropertyName("t")]
     public string Type => nameof(GetServiceDescriptorCollectionData);
 }

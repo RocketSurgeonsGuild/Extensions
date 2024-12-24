@@ -8,5 +8,6 @@ internal record GetAssemblyConfiguration
     AssemblyCollectionData Assembly
 )
 {
+    [JsonPropertyName("t")]
     public string Type => nameof(GetAssemblyConfiguration);
 };

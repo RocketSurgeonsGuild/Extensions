@@ -49,29 +49,34 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
 
                 var config = new AssemblyProviderConfiguration(context, request.compilation, request.options);
                 var resolvedData = config.FromAssemblyAttributes(
-                        reflectionRequests,
-                        serviceDescriptorRequests,
-                        privateAssemblies,
-                        diagnostics
-                    );
+                    reflectionRequests,
+                    serviceDescriptorRequests,
+                    privateAssemblies,
+                    diagnostics
+                );
 
                 reflectionRequests = reflectionRequests.AddRange(resolvedData.InternalReflectionRequests);
                 serviceDescriptorRequests = serviceDescriptorRequests.AddRange(resolvedData.InternalServiceDescriptorRequests);
 
-                var assemblySources = AssemblyCollection.ResolveSources(request.compilation, diagnostics, assemblyRequests, privateAssemblies);
+                var assemblySources = AssemblyCollection.ResolveSources(
+                    request.compilation,
+                    diagnostics,
+                    assemblyRequests,
+                    privateAssemblies
+                );
                 var reflectionSources = ReflectionCollection.ResolveSources(
                     request.compilation,
                     diagnostics,
                     reflectionRequests,
-                    privateAssemblies,
-                    (c, visitor) => visitor.GetCompilationTypes(c)
+                    request.compilation.Assembly,
+                    privateAssemblies
                 );
                 var serviceDescriptorSources = ServiceDescriptorCollection.ResolveSources(
                     request.compilation,
                     diagnostics,
                     serviceDescriptorRequests,
-                    privateAssemblies,
-                    (c, visitor) => visitor.GetCompilationTypes(c)
+                    request.compilation.Assembly,
+                    privateAssemblies
                 );
 
                 assemblySources = assemblySources.AddRange(resolvedData.AssemblySources);
@@ -79,18 +84,18 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 serviceDescriptorSources = serviceDescriptorSources.AddRange(resolvedData.ServiceDescriptorSources);
 
                 var cu = CompilationUnit()
-                        .WithUsings(
-                             List(
-                                 [
-                                     UsingDirective(ParseName("System")),
-                                     UsingDirective(ParseName("System.Collections.Generic")),
-                                     UsingDirective(ParseName("System.Reflection")),
-                                     UsingDirective(ParseName("Microsoft.Extensions.DependencyInjection")),
-                                     UsingDirective(ParseName("Rocket.Surgery.DependencyInjection")),
-                                     UsingDirective(ParseName("Rocket.Surgery.DependencyInjection.Compiled")),
-                                 ]
-                             )
-                         );
+                   .WithUsings(
+                        List(
+                            [
+                                UsingDirective(ParseName("System")),
+                                UsingDirective(ParseName("System.Collections.Generic")),
+                                UsingDirective(ParseName("System.Reflection")),
+                                UsingDirective(ParseName("Microsoft.Extensions.DependencyInjection")),
+                                UsingDirective(ParseName("Rocket.Surgery.DependencyInjection")),
+                                UsingDirective(ParseName("Rocket.Surgery.DependencyInjection.Compiled")),
+                            ]
+                        )
+                    );
 
                 var assemblyProvider = AssemblyProviderBuilder.GetAssemblyProvider(
                     context,

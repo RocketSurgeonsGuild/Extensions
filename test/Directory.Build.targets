@@ -7,7 +7,6 @@
         <PackageReference Include="FluentAssertions" />
 
         <PackageReference Include="Rocket.Surgery.Extensions.Testing.TUnit" />
-        <PackageReference Include="TUnit" />
         <PackageReference Include="Verify.TUnit" />
         <PackageReference Include="Serilog.Sinks.Console" />
     </ItemGroup>
