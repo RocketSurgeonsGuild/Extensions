@@ -1,6 +1,6 @@
 ﻿//HintName: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator/Compiled_AssemblyProvider.g.cs
 #nullable enable
-#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669
+#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669, IL2026, IL2072
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -42,5 +42,5 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     private Assembly _RootDependencyProject;
     private Assembly RootDependencyProject => _RootDependencyProject ??= _context.LoadFromAssemblyName(new AssemblyName("RootDependencyProject, Version=version, Culture=neutral, PublicKeyToken=null"));
 }
-#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669
+#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669, IL2026, IL2072
 #nullable restore

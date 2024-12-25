@@ -37,15 +37,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                             var source = text.GetText()?.ToString();
                                             if (source is not { Length: > 100 })
                                             {
-                                                return ( path: Path.GetFileName(text.Path), source: new(
-                                                             [],
-                                                             [],
-                                                             [],
-                                                             [],
-                                                             [],
-                                                             [],
-                                                             []
-                                                         ) );
+                                                return ( path: Path.GetFileName(text.Path), source: new([], [], [], []) );
                                             }
 
                                             return ( path: Path.GetFileName(text.Path),
@@ -117,20 +109,25 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 reflectionRequests = reflectionRequests.AddRange(resolvedData.InternalReflectionRequests);
                 serviceDescriptorRequests = serviceDescriptorRequests.AddRange(resolvedData.InternalServiceDescriptorRequests);
 
-                var assemblySources = AssemblyCollection.ResolveSources(request.compilation, diagnostics, assemblyRequests, privateAssemblies);
+                var assemblySources = AssemblyCollection.ResolveSources(
+                    request.compilation,
+                    diagnostics,
+                    assemblyRequests,
+                    privateAssemblies
+                );
                 var reflectionSources = ReflectionCollection.ResolveSources(
                     request.compilation,
                     diagnostics,
                     reflectionRequests,
-                    privateAssemblies,
-                    (c, visitor) => visitor.GetCompilationTypes(c)
+                    request.compilation.Assembly,
+                    privateAssemblies
                 );
                 var serviceDescriptorSources = ServiceDescriptorCollection.ResolveSources(
                     request.compilation,
                     diagnostics,
                     serviceDescriptorRequests,
-                    privateAssemblies,
-                    (c, visitor) => visitor.GetCompilationTypes(c)
+                    request.compilation.Assembly,
+                    privateAssemblies
                 );
 
                 assemblySources = assemblySources.AddRange(resolvedData.AssemblySources);

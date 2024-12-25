@@ -5,8 +5,18 @@ using Rocket.Surgery.Reflection;
 
 namespace Rocket.Surgery.Extensions.Tests;
 
+[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class InjectableMethodBuilderTests
 {
+    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay
+    {
+        get
+        {
+            return ToString();
+        }
+    }
+
     [Test]
     public void CreatesAMethod_WithZeroParameters()
     {
@@ -17,7 +27,7 @@ public class InjectableMethodBuilderTests
         var serviceProvider = A.Fake<IServiceProvider>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(new MethodFuncTest(), serviceProvider);
@@ -30,13 +40,13 @@ public class InjectableMethodBuilderTests
     public void CreatesAMethod_WithZeroParameters_UsingTypeForMethod()
     {
         var method = InjectableMethodBuilder
-                    .Create(typeof(MethodFuncTest), nameof(MethodFuncTest.ExecuteReturn0))
+                    .Create<MethodFuncTest>(nameof(MethodFuncTest.ExecuteReturn0))
                     .Compile<bool>();
         method.Should().NotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(new MethodFuncTest(), serviceProvider);
@@ -57,7 +67,7 @@ public class InjectableMethodBuilderTests
         var configured1 = A.Fake<IConfigured1>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(new MethodFuncTest(), serviceProvider, configured1);
@@ -79,7 +89,7 @@ public class InjectableMethodBuilderTests
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
         var injected3 = A.Fake<IInjected3>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected3))).Returns(injected3);
@@ -105,7 +115,7 @@ public class InjectableMethodBuilderTests
         var configured2 = A.Fake<IConfigured2>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -135,7 +145,7 @@ public class InjectableMethodBuilderTests
         var configured3 = A.Fake<IConfigured3>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -168,7 +178,7 @@ public class InjectableMethodBuilderTests
         var configured4 = A.Fake<IConfigured4>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -204,7 +214,7 @@ public class InjectableMethodBuilderTests
         var configured5 = A.Fake<IConfigured5>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -243,7 +253,7 @@ public class InjectableMethodBuilderTests
         var configured6 = A.Fake<IConfigured6>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -285,7 +295,7 @@ public class InjectableMethodBuilderTests
         var configured7 = A.Fake<IConfigured7>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -330,7 +340,7 @@ public class InjectableMethodBuilderTests
         var configured8 = A.Fake<IConfigured8>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -378,7 +388,7 @@ public class InjectableMethodBuilderTests
         var configured9 = A.Fake<IConfigured9>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -429,7 +439,7 @@ public class InjectableMethodBuilderTests
         var configured10 = A.Fake<IConfigured10>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -483,7 +493,7 @@ public class InjectableMethodBuilderTests
         var configured11 = A.Fake<IConfigured11>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -540,7 +550,7 @@ public class InjectableMethodBuilderTests
         var configured12 = A.Fake<IConfigured12>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
-        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProvider.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected1))).Returns(injected1);
         A.CallTo(() => serviceProvider.GetService(typeof(IInjected2))).Returns(injected2);
         method(
@@ -584,10 +594,10 @@ public class InjectableMethodBuilderTests
     public void MapsConfiguredParameterToAction()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
-        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
         A.CallTo(() => serviceProviderMock.GetService(typeof(IInjected1))).Returns(A.Fake<IInjected1>());
         A.CallTo(() => serviceProviderMock.GetService(typeof(IInjected2))).Returns(A.Fake<IInjected2>());
-        A.CallTo(() => serviceProviderMock.GetService(typeof(IInjected3))).Returns(null!);
+        A.CallTo(() => serviceProviderMock.GetService(typeof(IInjected3))).Returns(null);
 
         var serviceProvider = serviceProviderMock;
         var methodFuncTestMock = A.Fake<MethodFuncTest>();

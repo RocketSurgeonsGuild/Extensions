@@ -60,7 +60,7 @@ internal static class StatementGeneration
             var implementationTypeExpression = SimpleLambdaExpression(Parameter(Identifier("a")))
                .WithExpressionBody(
                     isServiceAccessible
-                        ? BinaryExpression(SyntaxKind.AsExpression, baseInvocation, IdentifierName(Helpers.GetTypeOfName(serviceType)))
+                        ? CastExpression(IdentifierName(Helpers.GetTypeOfName(serviceType)), baseInvocation)
                         : baseInvocation
                 );
             return GenerateServiceType(

@@ -5,7 +5,7 @@
   },
   GlobalOptions: {
     build_property.IntermediateOutputPath: obj/net9.0,
-    build_property.ProjectDir: {TempPath}Guid_1/Guid_2
+    build_property.ProjectDir: {TempPath}6mtyqotiupdc9blluztwkjhfk0uhbku7rr9tfwmkpkq
   },
   References: [
     <in-memory assembly>,

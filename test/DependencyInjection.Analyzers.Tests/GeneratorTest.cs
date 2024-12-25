@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Runtime.Loader;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
@@ -24,7 +25,7 @@ internal static class GeneratorBuilderConstants
                                                                  );
 }
 
-public abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
+public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
 {
     protected string TempPath { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
     protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
@@ -58,10 +59,15 @@ public abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
             Directory.Delete(tempPath, true);
     }
 
+    // regex that removes all special characters
+
+    [GeneratedRegex("[^a-zA-Z0-9]")]
+    private static partial Regex RemoveSpecialCharacters();
+
     protected static string GetTestCache()
     {
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(TUnit.Core.TestContext.Current?.TestDetails.TestId ?? throw new InvalidOperationException()));
-        return Path.Combine(Path.GetTempPath(), Convert.ToBase64String(hash));
+        return Path.Combine(Path.GetTempPath(), RemoveSpecialCharacters().Replace(Convert.ToBase64String(hash), "").ToLowerInvariant());
     }
 }
 

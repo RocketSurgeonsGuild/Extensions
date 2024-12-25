@@ -5,7 +5,7 @@
   },
   GlobalOptions: {
     build_property.IntermediateOutputPath: obj/net9.0,
-    build_property.ProjectDir: {TempPath}Guid_1/Guid_2
+    build_property.ProjectDir: {TempPath}lrhkwh8twfdf7asue4jnxf32r6q7zbqy9doric0q
   },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
