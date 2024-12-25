@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Security.Cryptography;
@@ -15,35 +16,26 @@ internal partial class AssemblyProviderConfiguration
 (
     SourceProductionContext context,
     Compilation compilation,
-    AnalyzerConfigOptionsProvider options)
+    AnalyzerConfigOptionsProvider options,
+    FrozenDictionary<string, CompiledAssemblyProviderData> generatedJson,
+    FrozenSet<string> skip,
+    FrozenDictionary<string, string> partial
+)
 {
     #pragma warning disable RS1035
     private readonly Lazy<string?> _cacheDirectory = new(
         () =>
         {
-            var directory = ( options.GlobalOptions.TryGetValue("build_property.BaseIntermediateOutputPath", out var intermediateOutputPath) )
+            var directory = ( options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath) )
                 ? intermediateOutputPath
                 : null;
             if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
-            {
                 directory = Path.Combine(projectDirectory, directory);
-            }
-
-            if (directory is null)
-            {
-                return null;
-            }
-
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
+            if (directory is null) return null;
+            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
 
             var cacheDirectory = Path.Combine(directory, "GeneratedAssemblyProvider");
-            if (!Directory.Exists(cacheDirectory))
-            {
-                Directory.CreateDirectory(cacheDirectory);
-            }
+            if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
 
             return cacheDirectory;
         }
@@ -63,17 +55,11 @@ internal partial class AssemblyProviderConfiguration
     private ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, Func<ResolvedSourceLocation?> factory)
     {
         var cacheKey = $"compilation-{GetCacheFileHash(location)}.partial";
-        if (_cacheDirectory.Value is { } && File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
-        {
-            return new(location, File.ReadAllText(Path.Combine(_cacheDirectory.Value, cacheKey)), []);
-        }
+        if (partial.TryGetValue(cacheKey, out var text)) return new (location, text, []);
 
         var source = factory();
         if (_cacheDirectory.Value is { } && !File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
-        {
             File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), source?.Expression ?? "");
-        }
-
         return source;
     }
     #pragma warning restore RS1035
@@ -139,7 +125,7 @@ internal partial class AssemblyProviderConfiguration
 
         var assemblySymbols = compilation
                              .References.Select(compilation.GetAssemblyOrModuleSymbol)
-                              .Concat([compilation.Assembly])
+                             .Concat([compilation.Assembly])
                              .Select(
                                   symbol =>
                                   {
@@ -234,13 +220,20 @@ internal partial class AssemblyProviderConfiguration
         )
         {
             var diagnostics = new HashSet<Diagnostic>();
-            var cacheKey = assembly.MetadataName + ".json";
-            if (_cacheDirectory.Value is { } && File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
+            var cacheKey = assembly.MetadataName + ".gadjson";
+            var skipKey = assembly.MetadataName + ".skip";
+            if (skip.Contains(skipKey))
             {
-                var data = JsonSerializer.Deserialize(
-                    File.ReadAllText(Path.Combine(_cacheDirectory.Value, cacheKey)),
-                    JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
-                );
+                assemblyAssemblySources = [];
+                assemblyReflectionSources = [];
+                assemblyServiceDescriptorSources = [];
+                reflection = [];
+                serviceDescriptor = [];
+                privateAssemblies = ImmutableHashSet<IAssemblySymbol>.Empty;
+                assemblyDiagnostics = [.. diagnostics];
+                return;
+            } else if (generatedJson.TryGetValue(cacheKey, out var data))
+            {
                 assemblyAssemblySources = data.AssemblySources;
                 assemblyReflectionSources = data.ReflectionSources;
                 assemblyServiceDescriptorSources = data.ServiceDescriptorSources;
@@ -253,7 +246,6 @@ internal partial class AssemblyProviderConfiguration
                                    .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
                 assemblyDiagnostics = [.. diagnostics];
                 return;
-                //                return new(location, File.ReadAllText(Path.Combine(_cacheDirectory, cacheKey)));
             }
 
             var assemblyAssemblySourcesBuilder = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
@@ -374,10 +366,13 @@ internal partial class AssemblyProviderConfiguration
                     assemblyDiagnostics
                 );
 
-                File.WriteAllText(
-                    Path.Combine(_cacheDirectory.Value, cacheKey),
-                    JsonSerializer.Serialize(data, JsonSourceGenerationContext.Default.CompiledAssemblyProviderData)
-                );
+                if (data.IsEmpty)
+                    File.WriteAllText(Path.Combine(_cacheDirectory.Value, skipKey), skipKey);
+                else
+                    File.WriteAllText(
+                        Path.Combine(_cacheDirectory.Value, cacheKey),
+                        JsonSerializer.Serialize(data, JsonSourceGenerationContext.Default.CompiledAssemblyProviderData)
+                    );
             }
         }
     }

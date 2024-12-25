@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.Loader;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
@@ -49,6 +51,18 @@ public abstract class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
         Directory.CreateDirectory(path);
         return path;
     }
+
+    protected static void ClearCache(string tempPath)
+    {
+        if (Directory.Exists(tempPath))
+            Directory.Delete(tempPath, true);
+    }
+
+    protected static string GetTestCache()
+    {
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(TUnit.Core.TestContext.Current?.TestDetails.TestId ?? throw new InvalidOperationException()));
+        return Path.Combine(Path.GetTempPath(), Convert.ToBase64String(hash));
+    }
 }
 
 internal static class VerifyExtensions
@@ -68,6 +82,6 @@ internal static class VerifyExtensions
     }
 
     public static GeneratorTestContextBuilder AddOptions(this GeneratorTestContextBuilder builder, string tempPath) => builder
-              .AddGlobalOption("build_property.BaseIntermediateOutputPath", "obj")
-              .AddGlobalOption("build_property.ProjectDir", tempPath.Replace("\\", "/"));
+       .AddGlobalOption("build_property.IntermediateOutputPath", "obj/net9.0")
+       .AddGlobalOption("build_property.ProjectDir", tempPath.Replace("\\", "/"));
 }
