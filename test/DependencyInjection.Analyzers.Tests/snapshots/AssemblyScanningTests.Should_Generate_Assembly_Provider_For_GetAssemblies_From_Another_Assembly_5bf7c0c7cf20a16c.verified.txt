@@ -4,8 +4,8 @@
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
   GlobalOptions: {
-    build_property.BaseIntermediateOutputPath: obj,
-    build_property.ProjectDir: {TempPath}Guid_1/Guid_2
+    build_property.IntermediateOutputPath: obj/net9.0,
+    build_property.ProjectDir: {TempPath}47t0ihfvl6xjydihh1rlyrsky15rbr5leremgmsqzi
   },
   References: [
     <in-memory assembly>,

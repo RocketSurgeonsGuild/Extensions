@@ -9,4 +9,11 @@ internal record CompiledAssemblyProviderData
     ImmutableList<string> InternalReflectionRequests,
     ImmutableList<string> InternalServiceDescriptorRequests,
     ImmutableHashSet<string> PrivateAssemblyNames
-);
+)
+{
+    public bool IsEmpty =>
+        AssemblySources.IsEmpty
+     && InternalReflectionRequests.IsEmpty
+     && InternalServiceDescriptorRequests.IsEmpty
+     && PrivateAssemblyNames.IsEmpty;
+}

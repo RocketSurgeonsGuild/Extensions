@@ -1,4 +1,10 @@
-﻿<Project>    
-    <PropertyGroup>
-    </PropertyGroup>
+﻿<Project>
+    <Target Name="CleanAssemblyCache" BeforeTargets="Clean">
+        <RemoveDir Directories="$(IntermediateOutputPath)\GeneratedAssemblyProvider\" />
+    </Target>
+    <ItemGroup>
+        <AdditionalFiles Include="$(IntermediateOutputPath)\GeneratedAssemblyProvider\**\*.partial" />
+        <AdditionalFiles Include="$(IntermediateOutputPath)\GeneratedAssemblyProvider\**\*.skip" />
+        <AdditionalFiles Include="$(IntermediateOutputPath)\GeneratedAssemblyProvider\**\*.gapjson" />
+    </ItemGroup>
 </Project>

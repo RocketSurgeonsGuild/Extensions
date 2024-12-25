@@ -20,7 +20,6 @@
         <ProjectReference Include="..\..\src\Task.Extensions\Rocket.Surgery.Task.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="TUnit" />
         <PackageReference Include="Microsoft.Extensions.Configuration" />
         <PackageReference Include="Microsoft.Reactive.Testing" />
     </ItemGroup>

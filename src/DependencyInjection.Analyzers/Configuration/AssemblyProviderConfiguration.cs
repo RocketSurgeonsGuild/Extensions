@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Security.Cryptography;
@@ -15,35 +16,26 @@ internal partial class AssemblyProviderConfiguration
 (
     SourceProductionContext context,
     Compilation compilation,
-    AnalyzerConfigOptionsProvider options)
+    AnalyzerConfigOptionsProvider options,
+    FrozenDictionary<string, CompiledAssemblyProviderData> generatedJson,
+    FrozenSet<string> skip,
+    FrozenDictionary<string, string> partial
+)
 {
     #pragma warning disable RS1035
     private readonly Lazy<string?> _cacheDirectory = new(
         () =>
         {
-            var directory = ( options.GlobalOptions.TryGetValue("build_property.BaseIntermediateOutputPath", out var intermediateOutputPath) )
+            var directory = ( options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath) )
                 ? intermediateOutputPath
                 : null;
             if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
-            {
                 directory = Path.Combine(projectDirectory, directory);
-            }
-
-            if (directory is null)
-            {
-                return null;
-            }
-
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
+            if (directory is null) return null;
+            if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
 
             var cacheDirectory = Path.Combine(directory, "GeneratedAssemblyProvider");
-            if (!Directory.Exists(cacheDirectory))
-            {
-                Directory.CreateDirectory(cacheDirectory);
-            }
+            if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
 
             return cacheDirectory;
         }
@@ -62,20 +54,12 @@ internal partial class AssemblyProviderConfiguration
     #pragma warning disable RS1035
     private ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
     {
-        if (_cacheDirectory.Value is not { }) return factory();
-
-        var hash = GetCacheFileHash(location);
-        var cacheKey = $"{assemblySymbol.ToDisplayString()}/compilation-{hash}.partial";
-        var filePath = Path.Combine(_cacheDirectory.Value, cacheKey);
-        if (File.Exists(filePath))
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
-            return new(location, File.ReadAllText(filePath), []);
-        }
+        var cacheKey = $"compilation-{GetCacheFileHash(location)}.partial";
+        if (partial.TryGetValue(cacheKey, out var text)) return new (location, text, []);
 
         var source = factory();
-        Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
-        File.WriteAllText(filePath, source?.Expression ?? "");
+        if (_cacheDirectory.Value is { } && !File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
+            File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), source?.Expression ?? "");
         return source;
     }
     #pragma warning restore RS1035
@@ -223,23 +207,28 @@ internal partial class AssemblyProviderConfiguration
             out ImmutableHashSet<IAssemblySymbol> inaccessibleAssemblies
         )
         {
-            var cacheKey = assembly.MetadataName + ".json";
-            if (_cacheDirectory.Value is { } && File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
+            var skipKey = assembly.MetadataName + ".skip";
+            if (skip.Contains(skipKey))
             {
-                var data = JsonSerializer.Deserialize(
-                    File.ReadAllText(Path.Combine(_cacheDirectory.Value, cacheKey)),
-                    JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
-                );
-                assemblyAssemblySources = data.AssemblySources;
-                reflection = data.InternalReflectionRequests.Select(z => GetReflectionFromString(compilation, assemblySymbols, z)).ToImmutableList();
-                serviceDescriptor =
-                    data.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromString(compilation, assemblySymbols, z)).ToImmutableList();
-                inaccessibleAssemblies = data
-                                   .PrivateAssemblyNames
-                                   .Join(assemblySymbols, z => z, z => z.Key, (_, pair) => pair.Value)
-                                   .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+                assemblyAssemblySources = [];
+                reflection = [];
+                serviceDescriptor = [];
+                inaccessibleAssemblies = [];
                 return;
-                //                return new(location, File.ReadAllText(Path.Combine(_cacheDirectory, cacheKey)));
+            }
+
+            var cacheKey = assembly.MetadataName + ".gadjson";
+            if (generatedJson.TryGetValue(cacheKey, out var generatedData))
+            {
+                assemblyAssemblySources = generatedData.AssemblySources;
+                reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromString(compilation, assemblySymbols, z)).ToImmutableList();
+                serviceDescriptor =
+                    generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromString(compilation, assemblySymbols, z)).ToImmutableList();
+                inaccessibleAssemblies = generatedData
+                                        .PrivateAssemblyNames
+                                        .Join(assemblySymbols, z => z, z => z.Key, (_, pair) => pair.Value)
+                                        .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+                return;
             }
 
             var assemblyAssemblySourcesBuilder = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
@@ -318,10 +307,13 @@ internal partial class AssemblyProviderConfiguration
                        .ToImmutableHashSet()
                 );
 
-                File.WriteAllText(
-                    Path.Combine(_cacheDirectory.Value, cacheKey),
-                    JsonSerializer.Serialize(data, JsonSourceGenerationContext.Default.CompiledAssemblyProviderData)
-                );
+                if (data.IsEmpty)
+                    File.WriteAllText(Path.Combine(_cacheDirectory.Value, skipKey), skipKey);
+                else
+                    File.WriteAllText(
+                        Path.Combine(_cacheDirectory.Value, cacheKey),
+                        JsonSerializer.Serialize(data, JsonSourceGenerationContext.Default.CompiledAssemblyProviderData)
+                    );
             }
         }
     }
