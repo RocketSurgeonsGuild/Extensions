@@ -349,7 +349,7 @@ internal static class Helpers
 
         var hasher = MD5.Create();
         var expression = argumentExpression.ToFullString().Replace("\r", "");
-        expression = string.Concat(expression.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()));
+        expression = string.Concat(expression.Split(['\n'], StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()));
         var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(expression));
 
         var source = new SourceLocation(

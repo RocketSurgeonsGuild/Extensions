@@ -2,7 +2,7 @@
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record GetAssemblyConfiguration
+public record GetAssemblyConfiguration
 (
     [property: JsonPropertyName("a")]
     AssemblyCollectionData Assembly

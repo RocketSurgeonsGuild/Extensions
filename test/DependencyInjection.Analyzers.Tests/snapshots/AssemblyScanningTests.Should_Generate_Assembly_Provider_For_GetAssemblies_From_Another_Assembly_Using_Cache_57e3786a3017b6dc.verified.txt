@@ -1,16 +1,128 @@
 ﻿{
   FinalDiagnostics: [],
+  GeneratedCache: {
+    OtherProject: {
+      AssemblySources: [
+        {
+          Location: {
+            LineNumber: 14,
+            ExpressionHash: jvHL1AHMsGW7Xy4O6Iiu7w==,
+            FileName: Input0.cs,
+            FilePath: Input0.cs
+          },
+          Expression:
+{
+    yield return typeof(global::Program).Assembly;
+}
+        }
+      ],
+      IsEmpty: false
+    },
+    Rocket.Surgery.DependencyInjection.Extensions: {
+      InternalServiceDescriptorRequests: [
+        {
+          Assembly: {
+            Location: {
+              LineNumber: 21,
+              ExpressionHash: 8JsIfWGtyxwbpwWfPrtcbQ==,
+              FileName: CompiledTypeProviderServiceCollectionExtensions.cs,
+              FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
+            },
+            Assembly: {
+              AllAssembly: true,
+              IncludeSystem: false,
+              Assembly: null,
+              NotAssembly: null,
+              AssemblyDependencies: null
+            }
+          },
+          Reflection: {
+            Type: {
+              Filter: All,
+              NamespaceFilters: null,
+              NameFilters: null,
+              TypeKindFilters: [
+                {
+                  Include: true,
+                  TypeKinds: [
+                    Class
+                  ]
+                }
+              ],
+              TypeInfoFilters: [
+                {
+                  Include: false,
+                  TypeInfos: [
+                    Static,
+                    Abstract
+                  ]
+                }
+              ],
+              WithAttributeFilters: null,
+              WithAttributeStringFilters: null,
+              WithAnyAttributeFilters: [
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute,
+                  UnboundGenericType: false
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`2,
+                  UnboundGenericType: true
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`3,
+                  UnboundGenericType: true
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`4,
+                  UnboundGenericType: true
+                }
+              ],
+              WithAnyAttributeStringFilters: null,
+              AssignableToTypeFilters: null,
+              AssignableToAnyTypeFilters: null
+            }
+          },
+          ServiceDescriptor: {
+            ServiceDescriptor: {
+              ServiceTypeDescriptors: [
+                {
+                  Identifier: "s"
+                }
+              ]
+            }
+          },
+          Type: GetServiceDescriptorCollectionData
+        }
+      ],
+      IsEmpty: false
+    }
+  },
   GeneratorDiagnostics: {
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
   GlobalOptions: {
     build_property.IntermediateOutputPath: obj/net9.0,
-    build_property.ProjectDir: {TempPath}gn91w4mbzbhvypbb3o4a3vevyjurfoli9dmmyby6i
+    build_property.ProjectDir: {TempDirectory}/e7gbipqdpfildy6hvmic6gksydw4hqr2gfdrtf5hbpc/test
+  },
+  PartialsCached: {
+    assembly-2ef5b612d24518b3f7bc8729a3bc0300: {
+      Expression:
+{
+    yield return typeof(global::Program).Assembly;
+}
+    }
   },
   References: [
     <in-memory assembly>,
-    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
-    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     mscorlib.dll,
     netstandard.dll,
@@ -19,8 +131,16 @@
     System.Core.dll,
     System.dll,
     System.Private.CoreLib.dll,
-    System.Private.CoreLib.dll,
-    System.Private.CoreLib.dll,
     System.Runtime.dll
+  ],
+  SkippedAssemblies: [
+    Microsoft.Extensions.DependencyInjection.Abstractions,
+    mscorlib,
+    netstandard,
+    System.ComponentModel,
+    System.Core,
+    System,
+    System.Private.CoreLib,
+    System.Runtime
   ]
 }

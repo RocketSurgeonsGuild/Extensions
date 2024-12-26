@@ -70,14 +70,14 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -98,7 +98,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddOptions(GetTempPath())
+                                 .AddCacheOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -135,14 +135,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences([.. dependencies])
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -183,14 +183,14 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -211,7 +211,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddOptions(GetTempPath())
+                                 .AddCacheOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -245,14 +245,14 @@ public static class Program {
 "
                            )
                           .AddCompilationReferences([.. dependencies])
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -276,7 +276,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddOptions(GetTempPath())
+                                 .AddCacheOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -312,14 +312,13 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences([.. dependencies])
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Test]
@@ -343,7 +342,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddOptions(GetTempPath())
+                                 .AddCacheOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -379,14 +378,13 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences([.. dependencies])
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Test]
@@ -422,14 +420,14 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -464,14 +462,14 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -490,7 +488,7 @@ namespace DependencyProject
 }
 "
                                )
-                              .AddOptions(GetTempPath())
+                              .AddCacheOptions(GetTempPath())
                               .Build()
                               .GenerateAsync();
 
@@ -527,14 +525,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences(dependency)
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -600,7 +598,7 @@ public static class Program2 {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -609,7 +607,7 @@ public static class Program2 {
         var services2 = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program2", "Method");
 
         await Verify(new GeneratorTestResultsWithServices(result, services1.Concat(services2)))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -649,13 +647,13 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -696,14 +694,14 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -744,13 +742,13 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -790,13 +788,13 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
 
@@ -838,13 +836,13 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
 
@@ -885,14 +883,14 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -933,13 +931,13 @@ public static class Program {
                                }
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -980,13 +978,13 @@ public static class Program {
                                }
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1028,13 +1026,13 @@ public static class Program {
                                }
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
 
@@ -1075,13 +1073,13 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
 
@@ -1123,13 +1121,13 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1169,13 +1167,13 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1244,12 +1242,12 @@ public static class Nested
 public class ServiceB : IService, IServiceB { }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         await Verify(result)
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1284,12 +1282,12 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         await Verify(result)
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1323,12 +1321,12 @@ public static class Program {
 }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         await Verify(result)
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1364,12 +1362,12 @@ public static class Program {
 
 """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         await Verify(result)
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1389,12 +1387,12 @@ public interface IService { }
 public class Service : IService { }
 "
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         await Verify(result)
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1437,14 +1435,14 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1487,14 +1485,14 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1539,7 +1537,7 @@ public class Service : IService { }
 
                                       """
                                   )
-                                 .AddOptions(GetTempPath())
+                                 .AddCacheOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
 
@@ -1582,11 +1580,11 @@ public class Service : IService { }
                                       """
                                   )
                               .AddCompilationReferences(rootGenerator)
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result).AddCacheFiles(TempPath);
+        await Verify(result);
     }
 
     [Test]
@@ -1629,14 +1627,14 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1679,14 +1677,14 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1729,13 +1727,13 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1778,13 +1776,13 @@ public class Service : IService { }
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-           .AddCacheFiles(TempPath);
+           ;
     }
 
     [Test]
@@ -1814,7 +1812,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddOptions(GetTempPath())
+                                 .AddCacheOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -1840,7 +1838,7 @@ namespace RootDependencyProject
 
                                        """
                                    )
-                                  .AddOptions(GetTempPath())
+                                  .AddCacheOptions(GetTempPath())
                                   .Build()
                                   .GenerateAsync();
             dependencies.Add(dependency);
@@ -1878,14 +1876,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences([.. dependencies])
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .UseParameters(dependencyCount)
-             .AddCacheFiles(TempPath);
+             ;
     }
 
     [Test]
@@ -1914,7 +1912,7 @@ namespace RootDependencyProject
 }
 "
                                   )
-                                 .AddOptions(GetTempPath())
+                                 .AddCacheOptions(GetTempPath())
                                  .Build()
                                  .GenerateAsync();
         dependencies.Add(rootGenerator);
@@ -1936,7 +1934,7 @@ namespace RootDependencyProject
 
                                        """
                                    )
-                                  .AddOptions(GetTempPath())
+                                  .AddCacheOptions(GetTempPath())
                                   .Build()
                                   .GenerateAsync();
             dependencies.Add(dependency);
@@ -1974,14 +1972,14 @@ namespace TestProject
 "
                            )
                           .AddCompilationReferences([.. dependencies])
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .UseParameters(dependencyCount)
-             .AddCacheFiles(TempPath);
+             ;
     }
 
     [Test]
@@ -2032,7 +2030,7 @@ namespace TestProject
                                }
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2040,7 +2038,7 @@ namespace TestProject
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .UseParameters(serviceLifetime)
-             .AddCacheFiles(TempPath);
+             ;
     }
 
     [Test]
@@ -2086,7 +2084,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2094,7 +2092,7 @@ namespace TestProject
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .UseParameters(useTypeof)
-             .AddCacheFiles(TempPath);
+             ;
     }
 
     [Test]
@@ -2140,7 +2138,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2148,7 +2146,7 @@ namespace TestProject
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .UseParameters(useTypeof)
-             .AddCacheFiles(TempPath);
+             ;
     }
 
     [Test]
@@ -2224,7 +2222,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2233,7 +2231,7 @@ namespace TestProject
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .HashParameters()
              .UseParameters(filter, namespaceFilterValue, usingClass, usingTypeof)
-             .AddCacheFiles(TempPath);
+             ;
     }
 
     [Test]
@@ -2304,7 +2302,7 @@ namespace TestProject
 
                                """
                            )
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2313,7 +2311,7 @@ namespace TestProject
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .HashParameters()
              .UseParameters(filter, namespaceFilterValue, namespaceFilterValueSecond, usingClass)
-             .AddCacheFiles(TempPath);
+             ;
     }
 
     [Test]
@@ -2400,7 +2398,7 @@ namespace TestProject
                                """
                            )
                           .AddCompilationReferences([.. dependencies])
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
@@ -2408,12 +2406,12 @@ namespace TestProject
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .UseParameters(useTypeof)
-             .AddCacheFiles(TempPath);
+             ;
     }
 
     [Test]
     public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyDependenciesOf(
-        [Matrix("Nested.ServiceA", "ServiceB", "ServiceC")]
+        [Matrix("ServiceA", "ServiceB", "ServiceC")]
         string className,
         [Matrix(true, false)]
         bool useTypeof
@@ -2545,13 +2543,13 @@ namespace RootDependencyProject
                                """
                            )
                           .AddCompilationReferences([.. dependencies])
-                          .AddOptions(GetTempPath())
+                          .AddCacheOptions(GetTempPath())
                           .Build()
                           .GenerateAsync();
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
              .UseParameters(className, useTypeof)
-             .AddCacheFiles(TempPath);
+             ;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record AssemblyCollectionData
+public record AssemblyCollectionData
 (
     [property: JsonPropertyName("l")]
     SourceLocation Location,

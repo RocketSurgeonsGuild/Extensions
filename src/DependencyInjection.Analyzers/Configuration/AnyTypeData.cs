@@ -2,7 +2,7 @@
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record AnyTypeData
+public record AnyTypeData
 (
     [property: JsonPropertyName("a")]
     string Assembly,

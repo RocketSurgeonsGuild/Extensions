@@ -2,7 +2,7 @@
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record ServiceDescriptorCollectionData
+public record ServiceDescriptorCollectionData
 (
     [property: JsonPropertyName("s")]
     ServiceDescriptorFilterData ServiceDescriptor,

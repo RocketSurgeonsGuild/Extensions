@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record AssignableToAnyTypeData
+public record AssignableToAnyTypeData
 (
     [property: JsonPropertyName("i")]
     bool Include,

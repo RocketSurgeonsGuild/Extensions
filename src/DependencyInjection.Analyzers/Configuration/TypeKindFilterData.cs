@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record TypeKindFilterData
+public record TypeKindFilterData
 (
     [property: JsonPropertyName("f")]
     bool Include,

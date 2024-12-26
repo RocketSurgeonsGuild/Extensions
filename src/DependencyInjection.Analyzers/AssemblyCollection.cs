@@ -27,8 +27,7 @@ internal static class AssemblyCollection
     public static ImmutableList<ResolvedSourceLocation> ResolveSources(
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
-        IReadOnlyList<Item> items,
-        HashSet<IAssemblySymbol> privateAssemblies
+        IReadOnlyList<Item> items
     )
     {
         var assemblySymbols = compilation
@@ -63,11 +62,10 @@ internal static class AssemblyCollection
                 results.Add(
                     new(
                         item.Location,
-                        GenerateDescriptors(compilation, filterAssemblies, pa).NormalizeWhitespace().ToFullString(),
+                        GenerateDescriptors(compilation, filterAssemblies, pa).NormalizeWhitespace().ToFullString().Replace("\r", ""),
                         pa.Select(z => z.MetadataName).ToImmutableHashSet()
                     )
                 );
-                privateAssemblies.UnionWith(pa);
             }
             catch (Exception e)
             {

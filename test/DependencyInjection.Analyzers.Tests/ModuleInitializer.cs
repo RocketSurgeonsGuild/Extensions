@@ -1,25 +1,41 @@
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Argon;
 using DiffEngine;
+using EmptyFiles;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 internal static partial class ModuleInitializer
 {
+    public static string TempDirectory { get; private set; }
+
     [ModuleInitializer]
     public static void Init()
     {
+        FileExtensions.AddTextExtension(Constants.SkipExtension.Trim('.'));
+        FileExtensions.AddTextExtension(Constants.PartialExtension.Trim('.'));
+        FileExtensions.AddTextExtension(Constants.AssemblyJsonExtension.Trim('.'));
+        TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
+        VerifierSettings.ScrubLinesWithReplace(s => s.Replace(TempDirectory, "{TempDirectory}").Replace(TempDirectory.Replace("\\", "/"), "{TempDirectory}"));
         VerifyGeneratorTextContext.Initialize(DiagnosticSeverity.Warning, Customizers.Default, Customizers.ExcludeParseOptions);
+
+        VerifyDiffPlex.Initialize();
+
+        VerifierSettings.ScrubInlineGuids();
 
         VerifierSettings.AddExtraSettings(
             settings => settings.Converters.Add(new ServiceDescriptorConverter())
         );
 
         VerifierSettings.RegisterFileConverter<GeneratorTestResultsWithServices>(Convert);
+        VerifierSettings.RegisterFileConverter<GeneratorTestResultsWithCacheFiles>(Convert);
 
         DiffRunner.Disabled = true;
         DerivePathInfo(
@@ -106,12 +122,83 @@ internal static partial class ModuleInitializer
         return new(data, targets);
     }
 
+    private static ConversionResult Convert(GeneratorTestResultsWithCacheFiles result, IReadOnlyDictionary<string, object> context)
+    {
+        var target = result.Results;
+        var targets = new List<Target>();
+        foreach (var item in target.Results)
+        {
+            targets.AddRange(item.Value.SyntaxTrees.Select(Selector));
+        }
+
+        var data = new Dictionary<string, object>
+        {
+            ["GlobalOptions"] = target.GlobalOptions,
+            ["FileOptions"] = target.FileOptions,
+            ["References"] = target
+                            .FinalCompilation
+                            .References
+                            .Select(x => x.Display ?? "")
+                            .Select(Path.GetFileName)
+                            .Distinct()
+                            .Order(),
+
+            ["FinalDiagnostics"] = target.FinalDiagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error),
+            ["GeneratorDiagnostics"] = target.Results.ToDictionary(
+                z => z.Key.FullName!,
+                z => z.Value.Diagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error)
+            ),
+            ["SkippedAssemblies"] = result
+                                   .CacheFiles
+                                   .Where(z => z.Extension == Constants.SkipExtension)
+                                   .OrderBy(z => z.Name)
+                                   .Select(z => Path.GetFileNameWithoutExtension(z.Name))
+                                   .ToHashSet(StringComparer.OrdinalIgnoreCase),
+            ["PartialsCached"] = result
+                                .CacheFiles
+                                .Where(z => z.Extension == Constants.PartialExtension)
+                                .OrderBy(z => z.Name)
+                                .ToDictionary(
+                                     z => Path.GetFileNameWithoutExtension(z.Name),
+                                     z =>
+                                     {
+                                         var value = JsonSerializer.Deserialize(
+                                             File.ReadAllText(z.FullName),
+                                             JsonSourceGenerationContext.Default.SavedSourceLocation
+                                         )!;
+                                         return value with { Expression = value.Expression.Replace("\r", "").Trim('\n') };
+                                     }
+                                 ),
+            ["GeneratedCache"] = result
+                                .CacheFiles.Where(z => z.Extension == Constants.AssemblyJsonExtension)
+                                .OrderBy(z => z.Name)
+                                .ToDictionary(
+                                     z => Path.GetFileNameWithoutExtension(z.Name),
+                                     z =>
+                                     {
+                                         var value = JsonSerializer.Deserialize(
+                                             File.ReadAllText(z.FullName),
+                                             JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
+                                         )!;
+                                         return value with { AssemblySources = [..value.AssemblySources.Select(x => x with { Expression = x.Expression.Replace("\r", "").Trim('\n') })], };
+                                     }
+                                 )
+        };
+
+        return new(data, targets);
+    }
+
     private static Target Selector(SyntaxTree source)
     {
         var hintPath = source.FilePath;
         var data = $@"//HintName: {hintPath.Replace("\\", "/")}
 {source.GetText()}";
         return new("cs", data.Replace("\r", "", StringComparison.OrdinalIgnoreCase), Path.GetFileNameWithoutExtension(hintPath));
+    }
+
+    private static Target Selector((FileInfo fileInfo, string text) item)
+    {
+        return new(item.fileInfo.Extension.Trim('.'), item.text, item.fileInfo.Name);
     }
 
     private class ServiceDescriptorConverter : WriteOnlyJsonConverter<ServiceDescriptor>

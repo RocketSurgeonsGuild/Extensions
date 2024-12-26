@@ -29,8 +29,7 @@ internal static class ServiceDescriptorCollection
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
         Item item,
-        IAssemblySymbol targetAssembly,
-        HashSet<IAssemblySymbol> privateAssemblies
+        IAssemblySymbol targetAssembly
     )
     {
         try
@@ -40,11 +39,7 @@ internal static class ServiceDescriptorCollection
                               .GetReferencedTypes(targetAssembly)
                               .GetTypes();
             if (reducedTypes.Count == 0) return null;
-            var localBlock = GenerateDescriptors(compilation, diagnostics, reducedTypes, item.ServicesTypeFilter, pa)
-                            .NormalizeWhitespace()
-                            .ToFullString();
-
-            privateAssemblies.UnionWith(pa);
+            var localBlock = GenerateDescriptors(compilation, diagnostics, reducedTypes, item.ServicesTypeFilter, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
             return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
         }
         catch (Exception e)
@@ -67,15 +62,14 @@ internal static class ServiceDescriptorCollection
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
         IReadOnlyList<Item> items,
-        IAssemblySymbol targetAssembly,
-        HashSet<IAssemblySymbol> privateAssemblies
+        IAssemblySymbol targetAssembly
     )
     {
         if (!items.Any()) return [];
         var results = new List<ResolvedSourceLocation>();
         foreach (var item in items)
         {
-            if (ResolveSource(compilation, diagnostics, item, targetAssembly, privateAssemblies) is not { } location) continue;
+            if (ResolveSource(compilation, diagnostics, item, targetAssembly) is not { } location) continue;
             results.Add(location);
         }
 

@@ -1,6 +1,6 @@
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
-internal enum TextDirectionFilter
+public enum TextDirectionFilter
 {
     StartsWith,
     EndsWith,

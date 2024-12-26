@@ -1,0 +1,236 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratedCache: {
+    OtherProject: {
+      InternalReflectionRequests: [
+        {
+          Assembly: {
+            Location: {
+              LineNumber: 14,
+              ExpressionHash: mOaZ3T23RKRVhescjSqGpw==,
+              FileName: Input0.cs,
+              FilePath: Input0.cs
+            },
+            Assembly: {
+              AllAssembly: true,
+              IncludeSystem: false,
+              Assembly: null,
+              NotAssembly: [
+                Rocket.Surgery.DependencyInjection.Extensions
+              ],
+              AssemblyDependencies: null
+            }
+          },
+          Reflection: {
+            Type: {
+              Filter: All,
+              NamespaceFilters: [
+                {
+                  Filter: NotIn,
+                  Namespaces: [
+                    JetBrains.Annotations,
+                    Polyfills,
+                    System
+                  ]
+                },
+                {
+                  Filter: In,
+                  Namespaces: [
+                    Microsoft.Extensions.DependencyInjection
+                  ]
+                }
+              ],
+              NameFilters: [
+                {
+                  Include: false,
+                  Names: [
+                    Polyfill
+                  ]
+                }
+              ],
+              TypeKindFilters: null,
+              TypeInfoFilters: null,
+              WithAttributeFilters: null,
+              WithAttributeStringFilters: null,
+              WithAnyAttributeFilters: null,
+              WithAnyAttributeStringFilters: null,
+              AssignableToTypeFilters: [
+                {
+                  Include: false,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Type: Rocket.Surgery.DependencyInjection.Compiled.ICompiledTypeProvider,
+                  UnboundGenericType: false
+                }
+              ],
+              AssignableToAnyTypeFilters: null
+            }
+          },
+          Type: GetReflectionCollectionData
+        }
+      ],
+      IsEmpty: false
+    },
+    Rocket.Surgery.DependencyInjection.Extensions: {
+      InternalServiceDescriptorRequests: [
+        {
+          Assembly: {
+            Location: {
+              LineNumber: 21,
+              ExpressionHash: 8JsIfWGtyxwbpwWfPrtcbQ==,
+              FileName: CompiledTypeProviderServiceCollectionExtensions.cs,
+              FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
+            },
+            Assembly: {
+              AllAssembly: true,
+              IncludeSystem: false,
+              Assembly: null,
+              NotAssembly: null,
+              AssemblyDependencies: null
+            }
+          },
+          Reflection: {
+            Type: {
+              Filter: All,
+              NamespaceFilters: null,
+              NameFilters: null,
+              TypeKindFilters: [
+                {
+                  Include: true,
+                  TypeKinds: [
+                    Class
+                  ]
+                }
+              ],
+              TypeInfoFilters: [
+                {
+                  Include: false,
+                  TypeInfos: [
+                    Static,
+                    Abstract
+                  ]
+                }
+              ],
+              WithAttributeFilters: null,
+              WithAttributeStringFilters: null,
+              WithAnyAttributeFilters: [
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute,
+                  UnboundGenericType: false
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`2,
+                  UnboundGenericType: true
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`3,
+                  UnboundGenericType: true
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`4,
+                  UnboundGenericType: true
+                }
+              ],
+              WithAnyAttributeStringFilters: null,
+              AssignableToTypeFilters: null,
+              AssignableToAnyTypeFilters: null
+            }
+          },
+          ServiceDescriptor: {
+            ServiceDescriptor: {
+              ServiceTypeDescriptors: [
+                {
+                  Identifier: "s"
+                }
+              ]
+            }
+          },
+          Type: GetServiceDescriptorCollectionData
+        }
+      ],
+      IsEmpty: false
+    }
+  },
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+  },
+  GlobalOptions: {
+    build_property.IntermediateOutputPath: obj/net9.0,
+    build_property.ProjectDir: {TempDirectory}/opod4azbu2fflsvpuhbpubxkdfd5mbddperhvcenfk/test
+  },
+  PartialsCached: {
+    reflection-38c29bdfac98ce8804acfe22506878cd: {
+      Expression:
+{
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities);
+    yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ActivatorUtilitiesUpdateHandler")!;
+    yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorInfoEx")!;
+    yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!;
+    yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!;
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructorAttribute);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.KeyedService);
+    yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.KeyedService+AnyKeyObj")!;
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection);
+    yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ServiceCollection+ServiceCollectionDebugView")!;
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceKeyAttribute);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions);
+},
+      PrivateAssemblies: [
+        Microsoft.Extensions.DependencyInjection.Abstractions
+      ]
+    },
+    reflection-f8286df541712f11fc17a6cd53b71e38: {
+      Expression:
+{
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions);
+    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions);
+}
+    }
+  },
+  References: [
+    <in-memory assembly>,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  SkippedAssemblies: [
+    Microsoft.Extensions.DependencyInjection.Abstractions,
+    mscorlib,
+    netstandard,
+    System.ComponentModel,
+    System.Core,
+    System,
+    System.Private.CoreLib,
+    System.Runtime
+  ]
+}

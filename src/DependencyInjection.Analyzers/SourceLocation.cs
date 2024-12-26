@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record SourceLocation
+public record SourceLocation
 (
     [property: JsonPropertyName("l")]
     int LineNumber,
     string FilePath,
-    [property: JsonPropertyName("a")]
+    [property: JsonPropertyName("e")]
     string ExpressionHash)
 {
     [JsonIgnore]
@@ -18,4 +18,10 @@ internal record SourceLocation
     public string FilePath { get; init; } = FilePath.Replace("\\", "/");
 }
 
-internal record ResolvedSourceLocation(SourceLocation Location, string Expression, [property: JsonIgnore] ImmutableHashSet<string> PrivateAssemblies);
+public record ResolvedSourceLocation(SourceLocation Location, string Expression, [property: JsonIgnore] ImmutableHashSet<string> PrivateAssemblies);
+
+public record SavedSourceLocation(
+    [property: JsonPropertyName("e")]
+    string Expression,
+    [property: JsonPropertyName("a")]
+    ImmutableHashSet<string> PrivateAssemblies);

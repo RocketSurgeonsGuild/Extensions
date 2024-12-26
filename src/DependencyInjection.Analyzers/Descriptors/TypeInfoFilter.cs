@@ -3,7 +3,7 @@
 /// <summary>
 ///     Enumeration for possible type information filters.
 /// </summary>
-internal enum TypeInfoFilter
+public enum TypeInfoFilter
 {
     /// <summary>
     ///     The type is unknown.
