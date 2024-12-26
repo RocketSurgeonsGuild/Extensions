@@ -16,20 +16,22 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 {
     IEnumerable<Assembly> ICompiledTypeProvider.GetAssemblies(Action<IReflectionAssemblySelector> action, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Assembly>();
+        return items;
     }
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Type>();
+        return items;
     }
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (lineNumber)
+        switch (System.IO.Path.GetFileName(filePath))
         {
             // FilePath: Input0.cs Expression: 3OfsQex7NYRaroSlneP6BQ==
-            case 15:
+            case "Input0.cs":
                 services.Add(ServiceDescriptor.Singleton(RootDependencyProject.GetType("RootDependencyProject.Service")!, RootDependencyProject.GetType("RootDependencyProject.Service")!));
                 services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IService>(a => (global::RootDependencyProject.IService)a.GetRequiredService(RootDependencyProject.GetType("RootDependencyProject.Service")!)));
                 break;

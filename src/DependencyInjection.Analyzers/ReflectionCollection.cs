@@ -168,7 +168,10 @@ internal static class ReflectionCollection
         foreach (var type in types.OrderBy(z => z.ToDisplayString()))
         {
             block = block.AddStatements(
-                YieldStatement(SyntaxKind.YieldReturnStatement, StatementGeneration.GetTypeOfExpression(compilation, type))
+                ExpressionStatement(
+                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                       .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetTypeOfExpression(compilation, type)))))
+                )
             );
             if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)) continue;
             privateAssemblies.Add(type.ContainingAssembly);

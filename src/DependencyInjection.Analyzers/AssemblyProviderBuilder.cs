@@ -84,20 +84,28 @@ internal static class AssemblyProviderBuilder
               .AddMembers([.. privateMembers]);
     }
 
-    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations) => baseMethod
-       .WithBody(
-            Block(
-                SwitchGenerator.GenerateSwitchStatement(
-                    [
-                        ..locations
-                         .GroupBy(z => z.Location)
-                         .Select(z => new ResolvedSourceLocation(z.Key, z.Aggregate("", (s, location) => s + "\n" + location.Expression), [])),
-                    ]
-                )
-            )
-        )
-       .AddBodyStatements([.. baseMethod.Body?.Statements ?? []]);
+    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations)
+    {
+        StatementSyntax[] item = [.. baseMethod.Body?.Statements ?? []];
+        var returnStatement = item.OfType<ReturnStatementSyntax>().Single();
 
+        return baseMethod
+           .WithBody(
+                Block(SyntaxList.Create(
+                    [
+                        ..item.Except([returnStatement]),
+                        SwitchGenerator.GenerateSwitchStatement(
+                            [
+                                ..locations
+                                 .GroupBy(z => z.Location)
+                                 .Select(z => new ResolvedSourceLocation(z.Key, z.Aggregate("", (s, location) => s + "\n" + location.Expression), [])),
+                            ]
+                        ),
+                        returnStatement
+                    ]
+                ))
+            );
+    }
 
     private static readonly MethodDeclarationSyntax TypesMethod =
         MethodDeclaration(
@@ -132,8 +140,32 @@ internal static class AssemblyProviderBuilder
                    .WithType(PredefinedType(Token(SyntaxKind.StringKeyword)))
             )
            .WithBody(
-                Block(SingletonList<StatementSyntax>(YieldStatement(SyntaxKind.YieldBreakStatement)))
+                Block(
+                    GetCollectionVariable(IdentifierName("Type")),
+                    ReturnStatement(IdentifierName("items"))
+                )
             );
+
+    private static StatementSyntax GetCollectionVariable(TypeSyntax type)
+    {
+        return LocalDeclarationStatement(
+            VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
+               .WithVariables(
+                    SingletonSeparatedList(
+                        VariableDeclarator(Identifier("items"))
+                           .WithInitializer(
+                                EqualsValueClause(
+                                    ObjectCreationExpression(
+                                            GenericName(Identifier("List"))
+                                               .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(type)))
+                                        )
+                                       .WithArgumentList(ArgumentList())
+                                )
+                            )
+                    )
+                )
+        );
+    }
 
     private static readonly MethodDeclarationSyntax ScanMethod =
         MethodDeclaration(ParseName("Microsoft.Extensions.DependencyInjection.IServiceCollection"), Identifier("Scan"))
@@ -175,5 +207,10 @@ internal static class AssemblyProviderBuilder
                 Parameter(Identifier("filePath")).WithType(PredefinedType(Token(SyntaxKind.StringKeyword))),
                 Parameter(Identifier("argumentExpression")).WithType(PredefinedType(Token(SyntaxKind.StringKeyword)))
             )
-           .WithBody(Block(SingletonList<StatementSyntax>(YieldStatement(SyntaxKind.YieldBreakStatement))));
+           .WithBody(
+                Block(
+                    GetCollectionVariable(IdentifierName("Assembly")),
+                    ReturnStatement(IdentifierName("items"))
+                )
+            );
 }

@@ -34,12 +34,7 @@ internal static class AssemblyCollection
                              .References.Select(compilation.GetAssemblyOrModuleSymbol)
                              .Concat([compilation.Assembly])
                              .Select(
-                                  symbol => symbol switch
-                                            {
-                                                IAssemblySymbol assemblySymbol => assemblySymbol,
-                                                IModuleSymbol moduleSymbol     => moduleSymbol.ContainingAssembly,
-                                                _                              => null!,
-                                            }
+                                  symbol => symbol switch { IAssemblySymbol assemblySymbol => assemblySymbol, IModuleSymbol moduleSymbol => moduleSymbol.ContainingAssembly, _ => null!, }
                               )
                              .Where(z => z is { })
                              .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
@@ -121,12 +116,20 @@ internal static class AssemblyCollection
             {
                 privateAssemblies.Add(assembly);
                 block = block.AddStatements(
-                    YieldStatement(SyntaxKind.YieldReturnStatement, StatementGeneration.GetPrivateAssembly(assembly))
+                    ExpressionStatement(
+                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                           .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetPrivateAssembly(assembly)))))
+                    )
                 );
                 continue;
             }
 
-            block = block.AddStatements(YieldStatement(SyntaxKind.YieldReturnStatement, assemblyExpression));
+            block = block.AddStatements(
+                ExpressionStatement(
+                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                       .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(assemblyExpression))))
+                )
+            );
         }
 
         return block;
