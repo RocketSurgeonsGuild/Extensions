@@ -30,7 +30,7 @@ internal static class AssemblyProviderBuilder
             : ScanMethod;
 
         var privateMembers = privateAssemblies
-                            .OrderBy(z => z.ToDisplayString())
+                            .OrderBy(z => z.MetadataName)
                             .SelectMany(StatementGeneration.AssemblyDeclaration)
                             .ToList();
         if (privateAssemblies.Any())

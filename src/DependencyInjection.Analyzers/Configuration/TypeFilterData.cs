@@ -4,7 +4,7 @@ using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record TypeFilterData
+public record TypeFilterData
 (
     [property: JsonPropertyName("b")]
     ClassFilter Filter,

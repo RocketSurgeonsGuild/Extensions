@@ -3,6 +3,9 @@ using System.Runtime.Loader;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
@@ -27,7 +30,7 @@ internal static class GeneratorBuilderConstants
 
 public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
 {
-    protected string TempPath { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+    protected string TempPath { get; } = Path.Combine(ModuleInitializer.TempDirectory, Guid.NewGuid().ToString());
     protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
     protected AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
 
@@ -58,36 +61,46 @@ public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
         if (Directory.Exists(tempPath))
             Directory.Delete(tempPath, true);
     }
-
-    // regex that removes all special characters
-
-    [GeneratedRegex("[^a-zA-Z0-9]")]
-    private static partial Regex RemoveSpecialCharacters();
-
-    protected static string GetTestCache()
-    {
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(TUnit.Core.TestContext.Current?.TestDetails.TestId ?? throw new InvalidOperationException()));
-        return Path.Combine(Path.GetTempPath(), RemoveSpecialCharacters().Replace(Convert.ToBase64String(hash), "").ToLowerInvariant());
-    }
 }
 
-internal static class VerifyExtensions
+internal static partial class VerifyExtensions
 {
-    public static SettingsTask AddCacheFiles(this SettingsTask task, string tempDirectory)
+    public static GeneratorTestResultsWithCacheFiles AddCacheFiles(this GeneratorTestResults results)
     {
-        task.ScrubInlineGuids();
-        //        Directory.EnumerateFiles(tempDirectory, "*", SearchOption.AllDirectories)
-        //                 .ForEach(z =>
-        //                          {
-        //                              var content = File.ReadAllText(z);
-        //                              if (content.Length == 0) return;
-        //                              task.AppendFile(z);
-        //                          }
-        //                  );
-        return task;
+        var projectPath = results.GlobalOptions["build_property.ProjectDir"];
+        var tempPath = Path.Combine(projectPath, results.GlobalOptions["build_property.IntermediateOutputPath"]);
+        return new(results, [..Directory.EnumerateFiles(tempPath, "*", SearchOption.AllDirectories).Select(z => new FileInfo(z))]);
     }
 
-    public static GeneratorTestContextBuilder AddOptions(this GeneratorTestContextBuilder builder, string tempPath) => builder
-       .AddGlobalOption("build_property.IntermediateOutputPath", "obj/net9.0")
-       .AddGlobalOption("build_property.ProjectDir", tempPath.Replace("\\", "/"));
+    public static GeneratorTestContextBuilder AddCacheOptions(this GeneratorTestContextBuilder builder, string tempPath)
+    {
+        if (!Path.IsPathRooted(tempPath)) tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
+        Directory.CreateDirectory(tempPath);
+        return builder
+              .AddGlobalOption("build_property.IntermediateOutputPath", "obj/net9.0")
+              .AddGlobalOption("build_property.ProjectDir", tempPath.Replace("\\", "/"));
+    }
+
+    public static GeneratorTestContextBuilder PopulateCache(this GeneratorTestContextBuilder builder, string tempPath)
+    {
+        if (!Path.IsPathRooted(tempPath)) tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
+        var files = Directory
+                   .EnumerateFiles(tempPath, "*", SearchOption.AllDirectories)
+                   .Select(z => new GeneratorAdditionalText(z.Replace("\\", "/"), SourceText.From(File.ReadAllText(z))))
+                   .OfType<AdditionalText>()
+                   .ToArray();
+        return builder
+              .AddCacheOptions(tempPath)
+              .AddAdditionalTexts(files);
+    }
+
+    internal class GeneratorAdditionalText(string path, SourceText sourceText) : AdditionalText
+    {
+        public override string Path { get; } = path;
+
+        public override SourceText? GetText(CancellationToken cancellationToken = new())
+        {
+            return sourceText;
+        }
+    }
 }

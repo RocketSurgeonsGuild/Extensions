@@ -2,7 +2,7 @@
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record ReflectionCollectionData
+public record ReflectionCollectionData
 (
     [property: JsonPropertyName("t")]
     TypeFilterData Type

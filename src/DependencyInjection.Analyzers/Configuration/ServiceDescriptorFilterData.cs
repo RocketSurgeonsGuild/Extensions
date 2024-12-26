@@ -2,7 +2,7 @@
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record ServiceDescriptorFilterData
+public record ServiceDescriptorFilterData
 (
     ImmutableArray<ServiceTypeData> ServiceTypeDescriptors,
     int Lifetime

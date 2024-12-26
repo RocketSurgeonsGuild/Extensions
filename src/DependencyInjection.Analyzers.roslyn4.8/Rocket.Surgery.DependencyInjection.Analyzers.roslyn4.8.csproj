@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <_Analyzer_Roslyn_Version_>$(MSBuildProjectName.Replace("Rocket.Surgery.DependencyInjection.Analyzers.",
@@ -10,15 +11,12 @@
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" VersionOverride="4.12.0" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Json" VersionOverride="8.0.0" PrivateAssets="all" />
-    <PackageReference Include="JetBrains.Annotations" PrivateAssets="all" />
-    <PackageReference Include="Polyfill" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" VersionOverride="4.12.0" PrivateAssets="all"/>
+    <PackageReference Include="PolySharp" PrivateAssets="all"/>
+    <PackageReference Include="System.Text.Json" VersionOverride="8.0.0" PrivateAssets="all"/>
+    <PackageReference Include="JetBrains.Annotations" PrivateAssets="all"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DependencyInjection.Analyzers\**\*.cs" Exclude="..\DependencyInjection.Analyzers\obj\**\*.cs" />
-    <Compile Update="..\DependencyInjection.Analyzers\AssemblyProviders\CompiledServiceTypeDescriptorFilter.cs">
-      <Link>AssemblyProviders\CompiledServiceDescriptorFilter.cs</Link>
-    </Compile>
+    <Compile Include="..\DependencyInjection.Analyzers\**\*.cs" Exclude="..\DependencyInjection.Analyzers\obj\**\*.cs"/>
   </ItemGroup>
 </Project>

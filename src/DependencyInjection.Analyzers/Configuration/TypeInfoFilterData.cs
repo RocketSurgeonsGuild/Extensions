@@ -4,7 +4,7 @@ using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record TypeInfoFilterData
+public record TypeInfoFilterData
 (
     [property: JsonPropertyName("f")]
     bool Include,

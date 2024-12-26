@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record AssemblyFilterData
+public record AssemblyFilterData
 (
     [property: JsonPropertyName("a")]
     bool AllAssembly,

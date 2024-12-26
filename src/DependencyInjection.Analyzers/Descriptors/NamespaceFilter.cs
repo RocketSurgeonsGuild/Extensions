@@ -1,6 +1,6 @@
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
-internal enum NamespaceFilter
+public enum NamespaceFilter
 {
     Exact = 1,
     In = 2,

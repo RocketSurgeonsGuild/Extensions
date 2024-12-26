@@ -1149,6 +1149,9 @@ dotnet_diagnostic.CA1513.severity = none
 # CA1514: Avoid redundant length argument
 dotnet_diagnostic.CA1514.severity = none
 
+# CA1515: Consider making public types internal
+dotnet_diagnostic.CA1515.severity = none
+
 # CA1700: Do not name enum values 'Reserved'
 dotnet_diagnostic.CA1700.severity = none
 # Options: api_surface
@@ -3099,6 +3102,8 @@ dotnet_diagnostic.rcs9010.severity = none
 # Specify ExportCodeFixProviderAttribute.Name
 dotnet_diagnostic.rcs9011.severity = none
 
+dotnet_diagnostic.RMG012.severity = error # Unmapped target member
+dotnet_diagnostic.RMG020.severity = error # Unmapped source member
 
 # Refactorings
 

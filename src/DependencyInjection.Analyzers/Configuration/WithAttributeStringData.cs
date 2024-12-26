@@ -2,7 +2,7 @@
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record WithAttributeStringData
+public record WithAttributeStringData
 (
     [property: JsonPropertyName("i")]
     bool Include,

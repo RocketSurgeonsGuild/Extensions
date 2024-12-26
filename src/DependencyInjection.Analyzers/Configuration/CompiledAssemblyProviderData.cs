@@ -3,11 +3,11 @@ using Microsoft.CodeAnalysis;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-internal record CompiledAssemblyProviderData
+public record CompiledAssemblyProviderData
 (
     ImmutableList<ResolvedSourceLocation> AssemblySources,
-    ImmutableList<string> InternalReflectionRequests,
-    ImmutableList<string> InternalServiceDescriptorRequests,
+    ImmutableList<GetReflectionCollectionData> InternalReflectionRequests,
+    ImmutableList<GetServiceDescriptorCollectionData> InternalServiceDescriptorRequests,
     ImmutableHashSet<string> PrivateAssemblyNames
 )
 {
