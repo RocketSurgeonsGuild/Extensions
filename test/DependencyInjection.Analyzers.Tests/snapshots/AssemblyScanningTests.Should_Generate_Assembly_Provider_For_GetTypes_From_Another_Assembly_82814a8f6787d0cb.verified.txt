@@ -170,10 +170,10 @@
     reflection-38c29bdfac98ce8804acfe22506878cd: {
       Expression:
 {
-    yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!;
-    yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!;
-    yield return typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope);
-    yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime);
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime));
 },
       PrivateAssemblies: [
         Microsoft.Extensions.DependencyInjection.Abstractions
@@ -182,8 +182,8 @@
     reflection-f8286df541712f11fc17a6cd53b71e38: {
       Expression:
 {
-    yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter);
-    yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter);
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
 }
     }
   },

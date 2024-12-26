@@ -15,26 +15,28 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 {
     IEnumerable<Assembly> ICompiledTypeProvider.GetAssemblies(Action<IReflectionAssemblySelector> action, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Assembly>();
+        return items;
     }
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (lineNumber)
+        var items = new List<Type>();
+        switch (System.IO.Path.GetFileName(filePath))
         {
             // FilePath: Input1.cs Expression: 79WDrmMI6zqNCHSOboZMpw==
-            case 11:
-                yield return typeof(global::OptionsA);
-                yield return typeof(global::OptionsB);
+            case "Input1.cs":
+                items.Add(typeof(global::OptionsA));
+                items.Add(typeof(global::OptionsB));
                 break;
             // FilePath: Input0.cs Expression: 79WDrmMI6zqNCHSOboZMpw==
-            case 25:
-                yield return typeof(global::OptionsA);
-                yield return typeof(global::OptionsB);
+            case "Input0.cs":
+                items.Add(typeof(global::OptionsA));
+                items.Add(typeof(global::OptionsB));
                 break;
         }
 
-        yield break;
+        return items;
     }
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)

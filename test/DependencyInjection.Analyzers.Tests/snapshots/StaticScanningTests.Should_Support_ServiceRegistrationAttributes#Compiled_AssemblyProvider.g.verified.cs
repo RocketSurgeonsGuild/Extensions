@@ -15,24 +15,26 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 {
     IEnumerable<Assembly> ICompiledTypeProvider.GetAssemblies(Action<IReflectionAssemblySelector> action, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Assembly>();
+        return items;
     }
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Type>();
+        return items;
     }
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (lineNumber)
+        switch (System.IO.Path.GetFileName(filePath))
         {
             // FilePath: CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
-            case 21:
-                switch (System.IO.Path.GetFileName(filePath))
+            case "CompiledTypeProviderServiceCollectionExtensions.cs":
+                switch (lineNumber)
                 {
                     // FilePath: CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
-                    case "CompiledTypeProviderServiceCollectionExtensions.cs":
+                    case 21:
                         services.Add(ServiceDescriptor.Transient<global::Nested.ServiceA, global::Nested.ServiceA>());
                         services.Add(ServiceDescriptor.Transient<global::IService>(a => a.GetRequiredService<global::Nested.ServiceA>()));
                         services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());

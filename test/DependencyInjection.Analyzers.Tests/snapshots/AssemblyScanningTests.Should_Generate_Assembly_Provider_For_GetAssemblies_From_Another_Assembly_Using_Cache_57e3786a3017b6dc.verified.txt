@@ -12,7 +12,7 @@
           },
           Expression:
 {
-    yield return typeof(global::Program).Assembly;
+    items.Add(typeof(global::Program).Assembly);
 }
         }
       ],
@@ -117,7 +117,7 @@
     assembly-2ef5b612d24518b3f7bc8729a3bc0300: {
       Expression:
 {
-    yield return typeof(global::Program).Assembly;
+    items.Add(typeof(global::Program).Assembly);
 }
     }
   },

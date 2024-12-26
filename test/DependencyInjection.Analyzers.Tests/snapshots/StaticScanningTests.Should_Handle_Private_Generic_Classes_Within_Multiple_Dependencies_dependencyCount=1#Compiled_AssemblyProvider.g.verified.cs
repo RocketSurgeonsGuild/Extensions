@@ -15,20 +15,22 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 {
     IEnumerable<Assembly> ICompiledTypeProvider.GetAssemblies(Action<IReflectionAssemblySelector> action, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Assembly>();
+        return items;
     }
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Type>();
+        return items;
     }
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (lineNumber)
+        switch (System.IO.Path.GetFileName(filePath))
         {
             // FilePath: Input0.cs Expression: i/Q9YfbrangthmO+cbE3ag==
-            case 15:
+            case "Input0.cs":
                 services.Add(ServiceDescriptor.Singleton<global::RootDependencyProject.IRequestHandler<global::Dependency1Project.Request0, global::Dependency1Project.Response0>, global::Dependency1Project.RequestHandler0>());
                 break;
         }

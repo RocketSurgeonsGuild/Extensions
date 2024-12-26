@@ -16,25 +16,27 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 {
     IEnumerable<Assembly> ICompiledTypeProvider.GetAssemblies(Action<IReflectionAssemblySelector> action, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Assembly>();
+        return items;
     }
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (lineNumber)
+        var items = new List<Type>();
+        switch (System.IO.Path.GetFileName(filePath))
         {
             // FilePath: Input0.cs Expression: WAZd2dprWkbDpjZXt4A58w==
-            case 14:
-                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!;
-                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!;
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter);
+            case "Input0.cs":
+                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
+                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!);
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
                 break;
         }
 
-        yield break;
+        return items;
     }
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)

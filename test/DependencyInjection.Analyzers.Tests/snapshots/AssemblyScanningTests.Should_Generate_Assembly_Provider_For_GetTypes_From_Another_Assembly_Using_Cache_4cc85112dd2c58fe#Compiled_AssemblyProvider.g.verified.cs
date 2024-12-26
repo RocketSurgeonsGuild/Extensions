@@ -15,81 +15,83 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 {
     IEnumerable<Assembly> ICompiledTypeProvider.GetAssemblies(Action<IReflectionAssemblySelector> action, int lineNumber, string filePath, string argumentExpression)
     {
-        yield break;
+        var items = new List<Assembly>();
+        return items;
     }
 
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (lineNumber)
+        var items = new List<Type>();
+        switch (System.IO.Path.GetFileName(filePath))
         {
             // FilePath: Input0.cs Expression: k3I/Rx+SkLucSpWhzM/FnQ==
-            case 14:
-                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorInfoEx")!;
-                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!;
-                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!;
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructorAttribute);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService);
-                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.KeyedService+AnyKeyObj")!;
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection);
-                yield return MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ServiceCollection+ServiceCollectionDebugView")!;
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceKeyAttribute);
-                yield return typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorTypeSelector);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceTypeSelector);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ITypeFilter);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter);
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`1")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`6")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`5")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`4")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`3")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`2")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`1")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`6")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`5")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`4")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`3")!;
-                yield return RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`2")!;
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<>);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,,,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<>);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,,,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.RegistrationLifetimeAttribute);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<>);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >);
-                yield return typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >);
+            case "Input0.cs":
+                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorInfoEx")!);
+                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
+                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!);
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructorAttribute));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService));
+                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.KeyedService+AnyKeyObj")!);
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection));
+                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ServiceCollection+ServiceCollectionDebugView")!);
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceKeyAttribute));
+                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorTypeSelector));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceTypeSelector));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ITypeFilter));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`1")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`6")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`5")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`4")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`3")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`2")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`1")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`6")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`5")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`4")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`3")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`2")!);
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<>));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,,,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<>));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,,,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.RegistrationLifetimeAttribute));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<>));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
                 break;
         }
 
-        yield break;
+        return items;
     }
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
