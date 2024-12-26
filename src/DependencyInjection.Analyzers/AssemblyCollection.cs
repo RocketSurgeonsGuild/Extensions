@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,15 +13,12 @@ internal static class AssemblyCollection
     public static IncrementalValueProvider<ImmutableArray<(InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel)>> Create(
         SyntaxValueProvider valueProvider,
         IncrementalValueProvider<bool> hasAssemblyLoadContext
-    )
-    {
-        return valueProvider
-              .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetMethod(syntaxContext))
-              .Combine(hasAssemblyLoadContext)
-              .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
-              .Select((tuple, _) => tuple.Left)
-              .Collect();
-    }
+    ) => valueProvider
+        .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetMethod(syntaxContext))
+        .Combine(hasAssemblyLoadContext)
+        .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
+        .Select((tuple, _) => tuple.Left)
+        .Collect();
 
     public static ImmutableList<ResolvedSourceLocation> ResolveSources(
         Compilation compilation,
@@ -34,7 +30,7 @@ internal static class AssemblyCollection
                              .References.Select(compilation.GetAssemblyOrModuleSymbol)
                              .Concat([compilation.Assembly])
                              .Select(
-                                  symbol => symbol switch { IAssemblySymbol assemblySymbol => assemblySymbol, IModuleSymbol moduleSymbol => moduleSymbol.ContainingAssembly, _ => null!, }
+                                  symbol => symbol switch { IAssemblySymbol assemblySymbol => assemblySymbol, IModuleSymbol moduleSymbol => moduleSymbol.ContainingAssembly, _ => null! }
                               )
                              .Where(z => z is { })
                              .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
@@ -64,7 +60,7 @@ internal static class AssemblyCollection
             }
             catch (Exception e)
             {
-                diagnostics.Add(
+                _ = diagnostics.Add(
                     Diagnostic.Create(
                         Diagnostics.UnhandledException,
                         null,
@@ -77,17 +73,24 @@ internal static class AssemblyCollection
             }
         }
 
-        return results.ToImmutableList();
-//        .WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results)));
+        return [.. results];
+        //        .WithBody(Block(SwitchGenerator.GenerateSwitchStatement(results)));
     }
 
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetMethod(
         GeneratorSyntaxContext context
     )
     {
-        var (method, selector) = GetMethod(context.Node);
-        if (method is null) return default;
-        if (selector is null) return default;
+        ( var method, var selector ) = GetMethod(context.Node);
+        if (method is null)
+        {
+            return default;
+        }
+
+        if (selector is null)
+        {
+            return default;
+        }
 
         var convertType = context.SemanticModel.GetTypeInfo(selector).ConvertedType;
         return convertType is not INamedTypeSymbol { TypeArguments: [{ Name: IReflectionAssemblySelector }, ..] }
@@ -104,37 +107,6 @@ internal static class AssemblyCollection
             ? ( invocationExpressionSyntax, expression )
             : default;
 
-    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
-
-    private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<IAssemblySymbol> assemblies, HashSet<IAssemblySymbol> privateAssemblies)
-    {
-        var block = Block();
-        foreach (var assembly in assemblies.OrderBy(z => z.ToDisplayString()))
-        {
-            // TODO: Make this always use the load context?
-            if (StatementGeneration.GetAssemblyExpression(compilation, assembly) is not { } assemblyExpression)
-            {
-                privateAssemblies.Add(assembly);
-                block = block.AddStatements(
-                    ExpressionStatement(
-                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
-                           .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetPrivateAssembly(assembly)))))
-                    )
-                );
-                continue;
-            }
-
-            block = block.AddStatements(
-                ExpressionStatement(
-                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
-                       .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(assemblyExpression))))
-                )
-            );
-        }
-
-        return block;
-    }
-
     public static ImmutableList<Item> GetAssemblyItems(
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
@@ -147,7 +119,7 @@ internal static class AssemblyCollection
         {
             try
             {
-                var (methodCallSyntax, selector, semanticModel) = tuple;
+                ( var methodCallSyntax, var selector, var semanticModel ) = tuple;
 
                 var assemblies = new List<IAssemblyDescriptor>();
                 var typeFilters = new List<ITypeFilterDescriptor>();
@@ -181,11 +153,11 @@ internal static class AssemblyCollection
             }
             catch (MustBeAnExpressionException e)
             {
-                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
+                _ = diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
             }
             catch (Exception e)
             {
-                diagnostics.Add(
+                _ = diagnostics.Add(
                     Diagnostic.Create(
                         Diagnostics.UnhandledException,
                         null,
@@ -199,6 +171,37 @@ internal static class AssemblyCollection
         }
 
         return items.ToImmutable();
+    }
+
+    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
+
+    private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<IAssemblySymbol> assemblies, HashSet<IAssemblySymbol> privateAssemblies)
+    {
+        var block = Block();
+        foreach (var assembly in assemblies.OrderBy(z => z.ToDisplayString()))
+        {
+            // TODO: Make this always use the load context?
+            if (StatementGeneration.GetAssemblyExpression(compilation, assembly) is not { } assemblyExpression)
+            {
+                _ = privateAssemblies.Add(assembly);
+                block = block.AddStatements(
+                    ExpressionStatement(
+                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                           .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetPrivateAssembly(assembly)))))
+                    )
+                );
+                continue;
+            }
+
+            block = block.AddStatements(
+                ExpressionStatement(
+                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                       .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(assemblyExpression))))
+                )
+            );
+        }
+
+        return block;
     }
 
     private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);

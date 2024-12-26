@@ -15,15 +15,12 @@ internal static class ReflectionCollection
     public static IncrementalValueProvider<ImmutableArray<(InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel)>> Create(
         SyntaxValueProvider valueProvider,
         IncrementalValueProvider<bool> hasAssemblyLoadContext
-    )
-    {
-        return valueProvider
-              .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetTypesMethod(syntaxContext))
-              .Combine(hasAssemblyLoadContext)
-              .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
-              .Select((tuple, _) => tuple.Left)
-              .Collect();
-    }
+    ) => valueProvider
+        .CreateSyntaxProvider((node, _) => IsValidMethod(node), (syntaxContext, _) => GetTypesMethod(syntaxContext))
+        .Combine(hasAssemblyLoadContext)
+        .Where(z => z is { Right: true, Left: { method: { }, selector: { } } })
+        .Select((tuple, _) => tuple.Left)
+        .Collect();
 
     public static ResolvedSourceLocation? ResolveSource(
         Compilation compilation,
@@ -38,13 +35,17 @@ internal static class ReflectionCollection
             var reducedTypes = new TypeSymbolVisitor(compilation, item.AssemblyFilter, item.TypeFilter)
                               .GetReferencedTypes(targetAssembly)
                               .GetTypes();
-            if (reducedTypes.Count == 0) return null;
+            if (reducedTypes.Count == 0)
+            {
+                return null;
+            }
+
             var localBlock = GenerateDescriptors(compilation, reducedTypes, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
             return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
         }
         catch (Exception e)
         {
-            diagnostics.Add(
+            _ = diagnostics.Add(
                 Diagnostic.Create(
                     Diagnostics.UnhandledException,
                     null,
@@ -65,32 +66,39 @@ internal static class ReflectionCollection
         IAssemblySymbol targetAssembly
     )
     {
-        if (!items.Any()) return [];
+        if (!items.Any())
+        {
+            return [];
+        }
+
         var results = new List<ResolvedSourceLocation>();
         foreach (var item in items)
         {
-            if (ResolveSource(compilation, diagnostics, item, targetAssembly) is not { } location) continue;
+            if (ResolveSource(compilation, diagnostics, item, targetAssembly) is not { } location)
+            {
+                continue;
+            }
+
             results.Add(location);
         }
 
-        return results.ToImmutableList();
+        return [.. results];
     }
 
-    public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel ) GetTypesMethod(GeneratorSyntaxContext context)
+    public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetTypesMethod(GeneratorSyntaxContext context)
     {
-        var baseData = GetTypesMethod(context.Node);
-        if (baseData.method is null
-         || baseData.selector is null
-         || context.SemanticModel.GetTypeInfo(baseData.selector).ConvertedType is not INamedTypeSymbol
+        ( var method, var selector ) = GetTypesMethod(context.Node);
+        return method is null
+         || selector is null
+         || context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
             {
                 TypeArguments: [{ Name: IReflectionTypeSelector }, ..],
-            })
-            return default;
-
-        return ( baseData.method, baseData.selector, semanticModel: context.SemanticModel );
+            }
+                ? default
+                : ( method, selector, semanticModel: context.SemanticModel );
     }
 
-    public static (InvocationExpressionSyntax method, ExpressionSyntax selector ) GetTypesMethod(SyntaxNode node) =>
+    public static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetTypesMethod(SyntaxNode node) =>
         node is InvocationExpressionSyntax
         {
             Expression: MemberAccessExpressionSyntax { Name.Identifier.Text: "GetTypes" },
@@ -124,15 +132,15 @@ internal static class ReflectionCollection
                     selector,
                     assemblies,
                     typeFilters,
-                    new(),
+                    [],
                     ref lifetime,
                     ref classFilter,
                     cancellationToken
                 );
 
                 var source = Helpers.CreateSourceLocation(methodCallSyntax, cancellationToken);
-                var assemblyFilter = new CompiledAssemblyFilter(assemblies.ToImmutableList(), source);
-                var typeFilter = new CompiledTypeFilter(classFilter, typeFilters.ToImmutableList(), source);
+                var assemblyFilter = new CompiledAssemblyFilter([.. assemblies], source);
+                var typeFilter = new CompiledTypeFilter(classFilter, [.. typeFilters], source);
 
 
                 var i = new Item(source, assemblyFilter, typeFilter);
@@ -140,11 +148,11 @@ internal static class ReflectionCollection
             }
             catch (MustBeAnExpressionException e)
             {
-                diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
+                _ = diagnostics.Add(Diagnostic.Create(Diagnostics.MustBeAnExpression, e.Location));
             }
             catch (Exception e)
             {
-                diagnostics.Add(
+                _ = diagnostics.Add(
                     Diagnostic.Create(
                         Diagnostics.UnhandledException,
                         null,
@@ -173,8 +181,12 @@ internal static class ReflectionCollection
                        .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetTypeOfExpression(compilation, type)))))
                 )
             );
-            if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)) continue;
-            privateAssemblies.Add(type.ContainingAssembly);
+            if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
+            {
+                continue;
+            }
+
+            _ = privateAssemblies.Add(type.ContainingAssembly);
         }
 
         return block;

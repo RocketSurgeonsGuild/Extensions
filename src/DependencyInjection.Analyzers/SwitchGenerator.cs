@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -53,7 +53,7 @@ internal static class SwitchGenerator
         if (blocks is [var localBlock])
         {
             return SwitchSection()
-                  .AddStatements([..ParseStatements(localBlock.Expression)])
+                  .AddStatements([.. ParseStatements(localBlock.Expression)])
                   .AddStatements(BreakStatement());
         }
 
@@ -78,34 +78,28 @@ internal static class SwitchGenerator
         return SwitchSection().AddStatements(section, BreakStatement());
     }
 
-    private static SwitchSectionSyntax generateLineNumberSwitchStatement(IGrouping<int, ResolvedSourceLocation> innerGroup)
-    {
-        return createNestedSwitchSections(
-            innerGroup.GroupBy(z => z.Location.ExpressionHash).Select(z => z.First()).ToArray(),
-            InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName("ICompiledTypeProvider"),
-                        IdentifierName("GetArgumentExpressionHash")
-                    )
+    private static SwitchSectionSyntax generateLineNumberSwitchStatement(IGrouping<int, ResolvedSourceLocation> innerGroup) => createNestedSwitchSections(
+        innerGroup.GroupBy(z => z.Location.ExpressionHash).Select(z => z.First()).ToArray(),
+        InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName("ICompiledTypeProvider"),
+                    IdentifierName("GetArgumentExpressionHash")
                 )
-               .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("argumentExpression"))))),
-            x => x.Location.ExpressionHash,
-            generateExpressionHashSwitchStatement,
-            value =>
-                LiteralExpression(
-                    SyntaxKind.StringLiteralExpression,
-                    Literal(value)
-                )
-        );
-    }
+            )
+           .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("argumentExpression"))))),
+        x => x.Location.ExpressionHash,
+        generateExpressionHashSwitchStatement,
+        value =>
+            LiteralExpression(
+                SyntaxKind.StringLiteralExpression,
+                Literal(value)
+            )
+    );
 
-    private static SwitchSectionSyntax generateExpressionHashSwitchStatement(IGrouping<string, ResolvedSourceLocation> innerGroup)
-    {
-        return SwitchSection()
-              .AddStatements([..ParseStatements(innerGroup.FirstOrDefault()?.Expression ?? "")])
-              .AddStatements(BreakStatement());
-    }
+    private static SwitchSectionSyntax generateExpressionHashSwitchStatement(IGrouping<string, ResolvedSourceLocation> innerGroup) => SwitchSection()
+       .AddStatements([.. ParseStatements(innerGroup.FirstOrDefault()?.Expression ?? "")])
+       .AddStatements(BreakStatement());
 
     private static IEnumerable<StatementSyntax> ParseStatements(string expression)
     {
