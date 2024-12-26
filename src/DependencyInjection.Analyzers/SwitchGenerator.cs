@@ -19,7 +19,7 @@ internal static class SwitchGenerator
             // disallow list?
             var location = lineGrouping.First().Location;
             var lineSwitchSection = createNestedSwitchSections(
-                    lineGrouping.ToArray(),
+                    [.. lineGrouping],
                     IdentifierName("lineNumber"),
                     x => x.Location.LineNumber,
                     generateLineNumberSwitchStatement,
