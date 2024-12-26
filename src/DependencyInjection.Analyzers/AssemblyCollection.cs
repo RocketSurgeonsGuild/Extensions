@@ -107,6 +107,37 @@ internal static class AssemblyCollection
             ? ( invocationExpressionSyntax, expression )
             : default;
 
+    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
+
+    private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<IAssemblySymbol> assemblies, HashSet<IAssemblySymbol> privateAssemblies)
+    {
+        var block = Block();
+        foreach (var assembly in assemblies.OrderBy(z => z.ToDisplayString()))
+        {
+            // TODO: Make this always use the load context?
+            if (StatementGeneration.GetAssemblyExpression(compilation, assembly) is not { } assemblyExpression)
+            {
+                privateAssemblies.Add(assembly);
+                block = block.AddStatements(
+                    ExpressionStatement(
+                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                           .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetPrivateAssembly(assembly)))))
+                    )
+                );
+                continue;
+            }
+
+            block = block.AddStatements(
+                ExpressionStatement(
+                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                       .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(assemblyExpression))))
+                )
+            );
+        }
+
+        return block;
+    }
+
     public static ImmutableList<Item> GetAssemblyItems(
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
