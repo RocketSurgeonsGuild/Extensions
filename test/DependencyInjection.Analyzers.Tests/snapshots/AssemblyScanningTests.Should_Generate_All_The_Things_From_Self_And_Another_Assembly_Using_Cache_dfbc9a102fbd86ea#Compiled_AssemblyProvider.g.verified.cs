@@ -141,7 +141,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -156,12 +156,12 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -176,11 +176,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
         }
 

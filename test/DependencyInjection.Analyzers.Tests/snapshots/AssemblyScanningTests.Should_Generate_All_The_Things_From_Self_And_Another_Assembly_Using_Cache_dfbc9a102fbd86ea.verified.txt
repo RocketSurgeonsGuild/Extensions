@@ -174,6 +174,120 @@
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
   },
+  PartialsCached: {
+    Reflection-2ef5b612d24518b3f7bc8729a3bc0300: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(OtherProject.GetType("Program")!);
+},
+      PrivateAssemblies: [
+        OtherProject
+      ]
+    },
+    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("FxResources.Microsoft.Extensions.DependencyInjection.Abstractions.SR")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities));
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ActivatorUtilitiesUpdateHandler")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.KeyedService));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions));
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.Internal.ParameterDefaultValue")!);
+},
+      PrivateAssemblies: [
+        Microsoft.Extensions.DependencyInjection.Abstractions
+      ]
+    },
+    Reflection-794233dec4f84d77ce80007b41438587: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
+    items.Add(typeof(global::TestAssembly.GenericServiceB));
+    items.Add(typeof(global::TestAssembly.IGenericService<>));
+    items.Add(typeof(global::TestAssembly.IOther));
+    items.Add(typeof(global::TestAssembly.IRequest<>));
+    items.Add(typeof(global::TestAssembly.IRequestHandler<, >));
+    items.Add(typeof(global::TestAssembly.IService));
+    items.Add(typeof(global::TestAssembly.IServiceB));
+    items.Add(typeof(global::TestAssembly.IValidator));
+    items.Add(typeof(global::TestAssembly.IValidator<>));
+    items.Add(typeof(global::TestAssembly.Nested));
+    items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
+    items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
+    items.Add(typeof(global::TestAssembly.Nested.ServiceA));
+    items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
+    items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+    items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+    items.Add(TestAssembly.GetType("TestAssembly.Response")!);
+    items.Add(typeof(global::TestAssembly.Service));
+    items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
+},
+      PrivateAssemblies: [
+        TestAssembly
+      ]
+    },
+    Reflection-f8286df541712f11fc17a6cd53b71e38: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorTypeSelector));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceLifetimeSelector));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceTypeSelector));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ITypeFilter));
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`1")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`6")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`5")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`4")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`3")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`2")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`1")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`6")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`5")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`4")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`3")!);
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`2")!);
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<>));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,,,, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,,, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,,, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<,, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScoped<, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<>));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,,,, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,,, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,,, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<,, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+},
+      PrivateAssemblies: [
+        Rocket.Surgery.DependencyInjection.Extensions
+      ]
+    }
+  },
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

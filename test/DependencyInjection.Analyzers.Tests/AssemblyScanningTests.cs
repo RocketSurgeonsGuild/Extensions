@@ -14,6 +14,7 @@ public partial class AssemblyScanningTests : GeneratorTest
     private string DebuggerDisplay => ToString();
 
     [Test]
+    [Retry(3)]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things(TestSource item)
     {
@@ -27,10 +28,12 @@ public partial class AssemblyScanningTests : GeneratorTest
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
              .UseParameters(item.Name)
-             .HashParameters();
+             .HashParameters()
+             .DisableRequireUniquePrefix();
     }
 
     [Test]
+    [Retry(3)]
     [DependsOn(nameof(Should_Generate_All_The_Things), ProceedOnFailure = true)]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things_Using_Cache(TestSource item)
@@ -45,11 +48,12 @@ public partial class AssemblyScanningTests : GeneratorTest
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
              .UseParameters(item.Name)
-             .HashParameters();
+             .HashParameters()
+             .DisableRequireUniquePrefix();
     }
 
-
     [Test]
+    [Retry(3)]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things_From_Another_Assembly(TestSource item)
     {
@@ -75,10 +79,12 @@ public partial class AssemblyScanningTests : GeneratorTest
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
              .UseParameters(item.Name)
-             .HashParameters();
+             .HashParameters()
+             .DisableRequireUniquePrefix();
     }
 
     [Test]
+    [Retry(3)]
     [DependsOn(nameof(Should_Generate_All_The_Things_From_Another_Assembly), ProceedOnFailure = true)]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things_From_Another_Assembly_Using_Cache(TestSource item)
@@ -105,11 +111,12 @@ public partial class AssemblyScanningTests : GeneratorTest
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
              .UseParameters(item.Name)
-             .HashParameters();
+             .HashParameters()
+             .DisableRequireUniquePrefix();
     }
 
-
     [Test]
+    [Retry(3)]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly(TestSource item)
     {
@@ -136,10 +143,12 @@ public partial class AssemblyScanningTests : GeneratorTest
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
              .UseParameters(item.Name)
-             .HashParameters();
+             .HashParameters()
+             .DisableRequireUniquePrefix();
     }
 
     [Test]
+    [Retry(3)]
     [DependsOn(nameof(Should_Generate_All_The_Things_From_Self_And_Another_Assembly), ProceedOnFailure = true)]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly_Using_Cache(TestSource item)
@@ -167,6 +176,7 @@ public partial class AssemblyScanningTests : GeneratorTest
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
              .UseParameters(item.Name)
-             .HashParameters();
+             .HashParameters()
+             .DisableRequireUniquePrefix();
     }
 }

@@ -168,6 +168,46 @@
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
   },
+  PartialsCached: {
+    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("FxResources.Microsoft.Extensions.DependencyInjection.Abstractions.SR")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities));
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ActivatorUtilitiesUpdateHandler")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.KeyedService));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions));
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.Internal.ParameterDefaultValue")!);
+},
+      PrivateAssemblies: [
+        Microsoft.Extensions.DependencyInjection.Abstractions
+      ]
+    },
+    Reflection-794233dec4f84d77ce80007b41438587: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(typeof(global::TestAssembly.Nested));
+},
+      PrivateAssemblies: null
+    },
+    Reflection-f8286df541712f11fc17a6cd53b71e38: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+},
+      PrivateAssemblies: null
+    }
+  },
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

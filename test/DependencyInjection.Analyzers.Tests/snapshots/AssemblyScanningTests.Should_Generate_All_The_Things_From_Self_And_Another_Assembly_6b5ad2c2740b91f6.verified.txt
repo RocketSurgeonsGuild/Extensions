@@ -167,6 +167,55 @@
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
   },
+  PartialsCached: {
+    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities));
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ActivatorUtilitiesUpdateHandler")!);
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorInfoEx")!);
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructorAttribute));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.KeyedService));
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.KeyedService+AnyKeyObj")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection));
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ServiceCollection+ServiceCollectionDebugView")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceKeyAttribute));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions));
+},
+      PrivateAssemblies: [
+        Microsoft.Extensions.DependencyInjection.Abstractions
+      ]
+    },
+    Reflection-f8286df541712f11fc17a6cd53b71e38: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+},
+      PrivateAssemblies: null
+    }
+  },
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

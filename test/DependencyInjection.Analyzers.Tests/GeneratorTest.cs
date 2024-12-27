@@ -69,7 +69,7 @@ internal static partial class VerifyExtensions
     {
         var projectPath = results.GlobalOptions["build_property.ProjectDir"];
         var tempPath = Path.Combine(projectPath, results.GlobalOptions["build_property.IntermediateOutputPath"]);
-        return new(results, [..Directory.EnumerateFiles(tempPath, "*", SearchOption.AllDirectories).Select(z => new FileInfo(z))]);
+        return new(results, tempPath);
     }
 
     public static GeneratorTestContextBuilder AddCacheOptions(this GeneratorTestContextBuilder builder, string tempPath)

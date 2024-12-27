@@ -164,18 +164,18 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.Nested));
                 items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: k3I/Rx+SkLucSpWhzM/FnQ==
             case 102:
@@ -242,7 +242,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -256,11 +256,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: Dejw5/f3yFikQXVKD2M3pg==
             case 122:
@@ -314,18 +314,18 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.Nested));
                 items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: 7vjZcTtcu7BiBUxN2YjR2A==
             case 132:
@@ -350,8 +350,13 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`4")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`3")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`2")!);
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: 9gMgkeelPSZE7F/SB5sG3Q==
             case 147:
@@ -416,7 +421,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -431,11 +436,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: ed8FYHtD7zTK9QRozv8iOA==
             case 158:
@@ -495,7 +500,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -510,11 +515,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: lMxYIBBphBNiTsf1qLYxDg==
             case 169:
@@ -559,7 +564,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IOther));
                 items.Add(typeof(global::TestAssembly.IService));
@@ -570,11 +575,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: le6aEBErwTZLSReiQZByDg==
             case 200:
@@ -645,7 +650,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -660,11 +665,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: KZ+tr2CZq8vKDpEywymRZA==
             case 211:
@@ -735,7 +740,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
-                items.Add(typeof(global::TestAssembly.GenericService));
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -750,11 +755,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
             // FilePath: Input0.cs Expression: iBsjVHnEAl/ss+AU7zbZQw==
             case 22:
@@ -937,7 +942,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
-                items.Add(typeof(global::TestAssembly.GenericService));
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -950,11 +954,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::TestAssembly.Nested));
                 items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
                 break;
             // FilePath: Input0.cs Expression: WAZd2dprWkbDpjZXt4A58w==
             case 72:
@@ -1199,7 +1199,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
-                items.Add(typeof(global::TestAssembly.GenericService));
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -1212,11 +1211,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::TestAssembly.Nested));
                 items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
                 break;
         }
 
@@ -1240,14 +1235,14 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 services.Add(ServiceDescriptor.Singleton<global::TestAssembly.Service, global::TestAssembly.Service>());
                 services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Service>()));
                 services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
-                services.Add(ServiceDescriptor.Singleton<global::TestAssembly.ServiceB, global::TestAssembly.ServiceB>());
-                services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.ServiceB>()));
+                services.Add(ServiceDescriptor.Singleton(TestAssembly.GetType("TestAssembly.ServiceB")!, TestAssembly.GetType("TestAssembly.ServiceB")!));
+                services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IService>(a => (global::TestAssembly.IService)a.GetRequiredService(TestAssembly.GetType("TestAssembly.ServiceB")!)));
                 break;
             // FilePath: Input0.cs Expression: nq9T1iBLdNPpqzJrTdNMCQ==
             case 274:
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService, global::TestAssembly.Nested.ServiceA>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService, global::TestAssembly.Service>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService, global::TestAssembly.ServiceB>());
+                services.Add(ServiceDescriptor.Scoped(typeof(global::TestAssembly.IService), TestAssembly.GetType("TestAssembly.ServiceB")!));
                 break;
             // FilePath: Input0.cs Expression: 3OfsQex7NYRaroSlneP6BQ==
             case 279:
@@ -1256,8 +1251,8 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 services.Add(ServiceDescriptor.Singleton<global::TestAssembly.Service, global::TestAssembly.Service>());
                 services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Service>()));
                 services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
-                services.Add(ServiceDescriptor.Singleton<global::TestAssembly.ServiceB, global::TestAssembly.ServiceB>());
-                services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.ServiceB>()));
+                services.Add(ServiceDescriptor.Singleton(TestAssembly.GetType("TestAssembly.ServiceB")!, TestAssembly.GetType("TestAssembly.ServiceB")!));
+                services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IService>(a => (global::TestAssembly.IService)a.GetRequiredService(TestAssembly.GetType("TestAssembly.ServiceB")!)));
                 break;
             // FilePath: Input0.cs Expression: omcyEv9CPv2iVxD3d0bsmQ==
             case 285:
@@ -1266,15 +1261,15 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Service, global::TestAssembly.Service>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Service>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.ServiceB, global::TestAssembly.ServiceB>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.ServiceB>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.ServiceB")!, TestAssembly.GetType("TestAssembly.ServiceB")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => (global::TestAssembly.IService)a.GetRequiredService(TestAssembly.GetType("TestAssembly.ServiceB")!)));
                 break;
             // FilePath: Input0.cs Expression: nxouMzl1QFVEUuYYtb+FlA==
             case 291:
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericService, global::TestAssembly.GenericService>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.GenericService")!, TestAssembly.GetType("TestAssembly.GenericService")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => (global::TestAssembly.IGenericService<global::System.Int32>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => (global::TestAssembly.IGenericService<global::System.String>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => (global::TestAssembly.IOther)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericServiceB, global::TestAssembly.GenericServiceB>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Decimal>>(a => a.GetRequiredService<global::TestAssembly.GenericServiceB>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => a.GetRequiredService<global::TestAssembly.GenericServiceB>()));
@@ -1284,10 +1279,10 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 break;
             // FilePath: Input0.cs Expression: kZPm/qtioIE2Q/XYleeTDg==
             case 296:
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericService, global::TestAssembly.GenericService>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.GenericService")!, TestAssembly.GetType("TestAssembly.GenericService")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => (global::TestAssembly.IGenericService<global::System.Int32>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => (global::TestAssembly.IGenericService<global::System.String>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => (global::TestAssembly.IOther)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericServiceB, global::TestAssembly.GenericServiceB>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Decimal>>(a => a.GetRequiredService<global::TestAssembly.GenericServiceB>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => a.GetRequiredService<global::TestAssembly.GenericServiceB>()));
@@ -1297,7 +1292,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 break;
             // FilePath: Input0.cs Expression: i/Q9YfbrangthmO+cbE3ag==
             case 302:
-                services.Add(ServiceDescriptor.Singleton<global::TestAssembly.IRequestHandler<global::TestAssembly.Request, global::TestAssembly.Response>, global::TestAssembly.RequestHandler>());
+                services.Add(ServiceDescriptor.Singleton(typeof(global::TestAssembly.IRequestHandler<, >).MakeGenericType(TestAssembly.GetType("TestAssembly.Request")!, TestAssembly.GetType("TestAssembly.Response")!)!, TestAssembly.GetType("TestAssembly.RequestHandler")!));
                 break;
             // FilePath: Input0.cs Expression: Na/OfX2a2Fx0+IoPnlDWxQ==
             case 307:
@@ -1306,8 +1301,8 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Service, global::TestAssembly.Service>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Service>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.ServiceB, global::TestAssembly.ServiceB>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.ServiceB>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.ServiceB")!, TestAssembly.GetType("TestAssembly.ServiceB")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => (global::TestAssembly.IService)a.GetRequiredService(TestAssembly.GetType("TestAssembly.ServiceB")!)));
                 break;
             // FilePath: Input0.cs Expression: 2bDwSkiqEgY2yMfzByQ/Dw==
             case 313:
@@ -1322,21 +1317,21 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Service, global::TestAssembly.Service>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Service>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.ServiceB, global::TestAssembly.ServiceB>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.ServiceB>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.ServiceB")!, TestAssembly.GetType("TestAssembly.ServiceB")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => (global::TestAssembly.IService)a.GetRequiredService(TestAssembly.GetType("TestAssembly.ServiceB")!)));
                 break;
             // FilePath: Input0.cs Expression: 3ndm9Cm5APZA6UEXJECnFg==
             case 325:
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Nested.ServiceA, global::TestAssembly.Nested.ServiceA>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Service, global::TestAssembly.Service>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.ServiceB, global::TestAssembly.ServiceB>());
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.ServiceB")!, TestAssembly.GetType("TestAssembly.ServiceB")!));
                 break;
             // FilePath: Input0.cs Expression: wZN42eb6ksINrJp/aOMX9Q==
             case 331:
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericService, global::TestAssembly.GenericService>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.GenericService")!, TestAssembly.GetType("TestAssembly.GenericService")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => (global::TestAssembly.IGenericService<global::System.Int32>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => (global::TestAssembly.IGenericService<global::System.String>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericServiceB, global::TestAssembly.GenericServiceB>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Decimal>>(a => a.GetRequiredService<global::TestAssembly.GenericServiceB>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Nested.GenericServiceA, global::TestAssembly.Nested.GenericServiceA>());
@@ -1350,12 +1345,12 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             case 342:
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService, global::TestAssembly.Nested.ServiceA>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService, global::TestAssembly.Service>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService, global::TestAssembly.ServiceB>());
+                services.Add(ServiceDescriptor.Scoped(typeof(global::TestAssembly.IService), TestAssembly.GetType("TestAssembly.ServiceB")!));
                 break;
             // FilePath: Input0.cs Expression: uKnnfpwHyRGKAgfPehO0Dg==
             case 347:
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericService, global::TestAssembly.GenericService>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.GenericService")!, TestAssembly.GetType("TestAssembly.GenericService")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => (global::TestAssembly.IGenericService<global::System.Int32>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericServiceB, global::TestAssembly.GenericServiceB>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Decimal>>(a => a.GetRequiredService<global::TestAssembly.GenericServiceB>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Nested.GenericServiceA, global::TestAssembly.Nested.GenericServiceA>());
@@ -1363,16 +1358,16 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 break;
             // FilePath: Input0.cs Expression: e6jKlf2yQ6H5hQN8Bx6GZg==
             case 353:
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>, global::TestAssembly.GenericService>());
+                services.Add(ServiceDescriptor.Scoped(typeof(global::TestAssembly.IGenericService<global::System.Int32>), TestAssembly.GetType("TestAssembly.GenericService")!));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Decimal>, global::TestAssembly.GenericServiceB>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>, global::TestAssembly.Nested.GenericServiceA>());
                 break;
             // FilePath: Input0.cs Expression: +ZwL1kukDVL/SHup/rQyqQ==
             case 372:
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericService, global::TestAssembly.GenericService>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => a.GetRequiredService<global::TestAssembly.GenericService>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.GenericService")!, TestAssembly.GetType("TestAssembly.GenericService")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => (global::TestAssembly.IGenericService<global::System.Int32>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => (global::TestAssembly.IGenericService<global::System.String>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => (global::TestAssembly.IOther)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.GenericServiceB, global::TestAssembly.GenericServiceB>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Decimal>>(a => a.GetRequiredService<global::TestAssembly.GenericServiceB>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => a.GetRequiredService<global::TestAssembly.GenericServiceB>()));
@@ -1386,16 +1381,16 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.Nested+Validator")!, TestAssembly.GetType("TestAssembly.Nested+Validator")!));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IValidator>(a => (global::TestAssembly.IValidator)a.GetRequiredService(TestAssembly.GetType("TestAssembly.Nested+Validator")!)));
                 services.Add(ServiceDescriptor.Scoped(typeof(global::TestAssembly.IValidator<>).MakeGenericType(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!)!, a => a.GetRequiredService(TestAssembly.GetType("TestAssembly.Nested+Validator")!)));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Request, global::TestAssembly.Request>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IRequest<global::TestAssembly.Response>>(a => a.GetRequiredService<global::TestAssembly.Request>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.RequestHandler, global::TestAssembly.RequestHandler>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IRequestHandler<global::TestAssembly.Request, global::TestAssembly.Response>>(a => a.GetRequiredService<global::TestAssembly.RequestHandler>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Response, global::TestAssembly.Response>());
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.Request")!, TestAssembly.GetType("TestAssembly.Request")!));
+                services.Add(ServiceDescriptor.Scoped(typeof(global::TestAssembly.IRequest<>).MakeGenericType(TestAssembly.GetType("TestAssembly.Response")!)!, a => a.GetRequiredService(TestAssembly.GetType("TestAssembly.Request")!)));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.RequestHandler")!, TestAssembly.GetType("TestAssembly.RequestHandler")!));
+                services.Add(ServiceDescriptor.Scoped(typeof(global::TestAssembly.IRequestHandler<, >).MakeGenericType(TestAssembly.GetType("TestAssembly.Request")!, TestAssembly.GetType("TestAssembly.Response")!)!, a => a.GetRequiredService(TestAssembly.GetType("TestAssembly.RequestHandler")!)));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.Response")!, TestAssembly.GetType("TestAssembly.Response")!));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Service, global::TestAssembly.Service>());
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Service>()));
                 services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.ServiceB, global::TestAssembly.ServiceB>());
-                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.ServiceB>()));
+                services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.ServiceB")!, TestAssembly.GetType("TestAssembly.ServiceB")!));
+                services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => (global::TestAssembly.IService)a.GetRequiredService(TestAssembly.GetType("TestAssembly.ServiceB")!)));
                 break;
         }
 

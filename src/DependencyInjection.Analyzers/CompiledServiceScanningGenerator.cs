@@ -134,7 +134,6 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                     assemblySymbols,
                     reflectionRequests,
                     serviceDescriptorRequests,
-                    privateAssemblies,
                     diagnostics
                 );
 

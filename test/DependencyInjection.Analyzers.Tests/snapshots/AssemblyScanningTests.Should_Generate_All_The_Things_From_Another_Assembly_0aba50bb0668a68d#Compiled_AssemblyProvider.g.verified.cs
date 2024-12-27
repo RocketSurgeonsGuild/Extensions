@@ -47,8 +47,13 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`4")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`3")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`2")!);
+                items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+                items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+                items.Add(TestAssembly.GetType("TestAssembly.Response")!);
+                items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
                 break;
         }
 

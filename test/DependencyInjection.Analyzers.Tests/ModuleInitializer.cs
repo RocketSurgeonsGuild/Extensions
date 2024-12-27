@@ -131,6 +131,8 @@ internal static partial class ModuleInitializer
             targets.AddRange(item.Value.SyntaxTrees.Select(Selector));
         }
 
+        var cacheFiles = Directory.EnumerateFiles(result.TempDirectory, "*", SearchOption.AllDirectories).Select(z => new FileInfo(z));
+
         var data = new Dictionary<string, object>
         {
             ["GlobalOptions"] = target.GlobalOptions,
@@ -144,33 +146,39 @@ internal static partial class ModuleInitializer
                             .Order(),
 
             ["FinalDiagnostics"] = target.FinalDiagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error),
-            ["GeneratorDiagnostics"] = target.Results.ToDictionary(
-                z => z.Key.FullName!,
-                z => z.Value.Diagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error)
-            ),
-            ["SkippedAssemblies"] = result
-                                   .CacheFiles
+            ["GeneratorDiagnostics"] = target
+                                      .Results
+                                      .ToDictionary(
+                                           z => z.Key.FullName!,
+                                           z => z.Value.Diagnostics.OrderDiagnosticResults(
+                                               DiagnosticSeverity.Error
+                                           )
+                                       ),
+            ["SkippedAssemblies"] = cacheFiles
                                    .Where(z => z.Extension == Constants.SkipExtension)
                                    .OrderBy(z => z.Name)
                                    .Select(z => Path.GetFileNameWithoutExtension(z.Name))
                                    .ToHashSet(StringComparer.OrdinalIgnoreCase),
-//            ["PartialsCached"] = result
-//                                .CacheFiles
-//                                .Where(z => z.Extension == Constants.PartialExtension)
-//                                .OrderBy(z => z.Name)
-//                                .ToDictionary(
-//                                     z => Path.GetFileNameWithoutExtension(z.Name),
-//                                     z =>
-//                                     {
-//                                         var value = JsonSerializer.Deserialize(
-//                                             File.ReadAllText(z.FullName),
-//                                             JsonSourceGenerationContext.Default.SavedSourceLocation
-//                                         )!;
-//                                         return value with { Expression = value.Expression.Replace("\r", "").Trim('\n'), PrivateAssemblies = [..value.PrivateAssemblies.OrderBy(z => z)]  };
-//                                     }
-//                                 ),
-            ["GeneratedCache"] = result
-                                .CacheFiles.Where(z => z.Extension == Constants.AssemblyJsonExtension)
+            ["PartialsCached"] = cacheFiles
+                                .Where(z => z.Extension == Constants.PartialExtension)
+                                .OrderBy(z => z.Name)
+                                .ToDictionary(
+                                     z => Path.GetFileNameWithoutExtension(z.Name),
+                                     z =>
+                                     {
+                                         var value = JsonSerializer.Deserialize(
+                                             File.ReadAllText(z.FullName),
+                                             JsonSourceGenerationContext.Default.SavedSourceLocation
+                                         )!;
+                                         return value with
+                                         {
+                                             Expression = value.Expression.Replace("\r", "").Trim('\n'),
+                                             PrivateAssemblies = [..value.PrivateAssemblies.OrderBy(z => z)]
+                                         };
+                                     }
+                                 ),
+            ["GeneratedCache"] = cacheFiles
+                                .Where(z => z.Extension == Constants.AssemblyJsonExtension)
                                 .OrderBy(z => z.Name)
                                 .ToDictionary(
                                      z => Path.GetFileNameWithoutExtension(z.Name),

@@ -17,23 +17,23 @@ public static class Nested
     private class Validator : IValidator<MyRecord>;
 }
 
-public class ServiceB : IService;
+class ServiceB : IService;
 
 public interface IRequest<T>;
 
 public interface IRequestHandler<T, R> where T : IRequest<R>;
 
-public class Request : IRequest<Response>;
+class Request : IRequest<Response>;
 
-public class Response;
+class Response;
 
-public class RequestHandler : IRequestHandler<Request, Response>;
+class RequestHandler : IRequestHandler<Request, Response>;
 
 public interface IOther;
 
 public interface IGenericService<T>;
 
-public class GenericService : IGenericService<int>, IGenericService<string>, IOther;
+class GenericService : IGenericService<int>, IGenericService<string>, IOther;
 
 public class GenericServiceB : IGenericService<decimal>, IOther;
 

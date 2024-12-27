@@ -97,6 +97,18 @@
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}
   },
+  PartialsCached: {
+    ServiceDescriptor-794233dec4f84d77ce80007b41438587: {
+      Kind: ServiceDescriptor,
+      Expression:
+{
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Service, global::TestAssembly.Service>());
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Service>()));
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
+},
+      PrivateAssemblies: null
+    }
+  },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     mscorlib.dll,
