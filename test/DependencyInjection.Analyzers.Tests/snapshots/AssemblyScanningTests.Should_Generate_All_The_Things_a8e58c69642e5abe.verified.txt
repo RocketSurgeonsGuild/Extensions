@@ -98,8 +98,15 @@
     build_property.ProjectDir: {TempPath}
   },
   PartialsCached: {
-    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-17fd52a459c314cbbc8417a8efad31df: {
       Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: mjy8n2sGZ/Gz2PKG2wj77Q==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities));
@@ -128,28 +135,15 @@
 },
       PrivateAssemblies: null
     },
-    Reflection-794233dec4f84d77ce80007b41438587: {
+    Reflection-Rocket_Surgery_DependencyInjection_Extensions-17fd52a459c314cbbc8417a8efad31df: {
       Kind: Reflection,
-      Expression:
-{
-    items.Add(typeof(global::TestAssembly.GenericServiceB));
-    items.Add(typeof(global::TestAssembly.IGenericService<>));
-    items.Add(typeof(global::TestAssembly.IOther));
-    items.Add(typeof(global::TestAssembly.IRequest<>));
-    items.Add(typeof(global::TestAssembly.IRequestHandler<, >));
-    items.Add(typeof(global::TestAssembly.IService));
-    items.Add(typeof(global::TestAssembly.IServiceB));
-    items.Add(typeof(global::TestAssembly.IValidator));
-    items.Add(typeof(global::TestAssembly.IValidator<>));
-    items.Add(typeof(global::TestAssembly.Nested));
-    items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
-    items.Add(typeof(global::TestAssembly.Nested.ServiceA));
-    items.Add(typeof(global::TestAssembly.Service));
-},
-      PrivateAssemblies: null
-    },
-    Reflection-f8286df541712f11fc17a6cd53b71e38: {
-      Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: mjy8n2sGZ/Gz2PKG2wj77Q==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
@@ -185,6 +179,33 @@
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+},
+      PrivateAssemblies: null
+    },
+    Reflection-TestAssembly-17fd52a459c314cbbc8417a8efad31df: {
+      Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: mjy8n2sGZ/Gz2PKG2wj77Q==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
+      Expression:
+{
+    items.Add(typeof(global::TestAssembly.GenericServiceB));
+    items.Add(typeof(global::TestAssembly.IGenericService<>));
+    items.Add(typeof(global::TestAssembly.IOther));
+    items.Add(typeof(global::TestAssembly.IRequest<>));
+    items.Add(typeof(global::TestAssembly.IRequestHandler<, >));
+    items.Add(typeof(global::TestAssembly.IService));
+    items.Add(typeof(global::TestAssembly.IServiceB));
+    items.Add(typeof(global::TestAssembly.IValidator));
+    items.Add(typeof(global::TestAssembly.IValidator<>));
+    items.Add(typeof(global::TestAssembly.Nested));
+    items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
+    items.Add(typeof(global::TestAssembly.Nested.ServiceA));
+    items.Add(typeof(global::TestAssembly.Service));
 },
       PrivateAssemblies: null
     }

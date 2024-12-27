@@ -98,8 +98,15 @@
     build_property.ProjectDir: {TempPath}
   },
   PartialsCached: {
-    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-b0778a7029a8e4ac9ecadc316495b1e1: {
       Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: CzvvM9SvABHOhmj5c5Ll9w==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("FxResources.Microsoft.Extensions.DependencyInjection.Abstractions.SR")!);
@@ -128,29 +135,15 @@
         Microsoft.Extensions.DependencyInjection.Abstractions
       ]
     },
-    Reflection-794233dec4f84d77ce80007b41438587: {
+    Reflection-Rocket_Surgery_DependencyInjection_Extensions-b0778a7029a8e4ac9ecadc316495b1e1: {
       Kind: Reflection,
-      Expression:
-{
-    items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
-    items.Add(typeof(global::TestAssembly.GenericServiceB));
-    items.Add(typeof(global::TestAssembly.Nested));
-    items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
-    items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
-    items.Add(typeof(global::TestAssembly.Nested.ServiceA));
-    items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
-    items.Add(TestAssembly.GetType("TestAssembly.Request")!);
-    items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
-    items.Add(TestAssembly.GetType("TestAssembly.Response")!);
-    items.Add(typeof(global::TestAssembly.Service));
-    items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
-},
-      PrivateAssemblies: [
-        TestAssembly
-      ]
-    },
-    Reflection-f8286df541712f11fc17a6cd53b71e38: {
-      Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: CzvvM9SvABHOhmj5c5Ll9w==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
@@ -182,6 +175,34 @@
 },
       PrivateAssemblies: [
         Rocket.Surgery.DependencyInjection.Extensions
+      ]
+    },
+    Reflection-TestAssembly-b0778a7029a8e4ac9ecadc316495b1e1: {
+      Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: CzvvM9SvABHOhmj5c5Ll9w==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
+      Expression:
+{
+    items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
+    items.Add(typeof(global::TestAssembly.GenericServiceB));
+    items.Add(typeof(global::TestAssembly.Nested));
+    items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
+    items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
+    items.Add(typeof(global::TestAssembly.Nested.ServiceA));
+    items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
+    items.Add(TestAssembly.GetType("TestAssembly.Request")!);
+    items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
+    items.Add(TestAssembly.GetType("TestAssembly.Response")!);
+    items.Add(typeof(global::TestAssembly.Service));
+    items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
+},
+      PrivateAssemblies: [
+        TestAssembly
       ]
     }
   },

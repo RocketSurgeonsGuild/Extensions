@@ -40,20 +40,27 @@ internal partial class AssemblyProviderConfiguration
     );
 #pragma warning restore RS1035
 
-    private static string GetCacheFileHash(SourceLocation location, IAssemblySymbol assemblySymbol)
+    private static string GetCacheFileHash(SourceLocation location)
     {
         using var hasher = MD5.Create();
-        hasher.ComputeHash(Encoding.UTF8.GetBytes(location.FileName));
-        hasher.ComputeHash(Encoding.UTF8.GetBytes(location.ExpressionHash));
-        hasher.ComputeHash(Encoding.UTF8.GetBytes(location.LineNumber.ToString()));
-        hasher.ComputeHash(Encoding.UTF8.GetBytes(assemblySymbol.MetadataName));
+        addStringToHash(hasher, location.FileName);
+        addStringToHash(hasher, location.ExpressionHash);
+        addStringToHash(hasher, location.LineNumber.ToString());
+        var hash = hasher.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
         return hasher.Hash.Aggregate("", (s, b) => s + b.ToString("x2"));
+
+
+        static void addStringToHash(ICryptoTransform cryptoTransform, string textToHash)
+        {
+            var inputBuffer = Encoding.UTF8.GetBytes(textToHash);
+            cryptoTransform.TransformBlock(inputBuffer, 0, inputBuffer.Length, inputBuffer, 0);
+        }
     }
 
 #pragma warning disable RS1035
     private ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, SourceLocationKind kind, Func<ResolvedSourceLocation?> factory)
     {
-        var cacheKey = $"{kind}-{GetCacheFileHash(location, assemblySymbol)}{Constants.PartialExtension}";
+        var cacheKey = $"{kind}-{assemblySymbol.MetadataName.Replace(".", "_")}-{GetCacheFileHash(location)}{Constants.PartialExtension}";
         if (partial.TryGetValue(cacheKey, out var text))
         {
             return new(location, text.Expression, [..text.PrivateAssemblies]);
@@ -61,7 +68,7 @@ internal partial class AssemblyProviderConfiguration
 
         var source = factory();
         if (source is {} && _cacheDirectory.Value is { } && !File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
-            File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), JsonSerializer.Serialize(new(kind, source.Expression, [..source.PrivateAssemblies]), JsonSourceGenerationContext.Default.SavedSourceLocation));
+            File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), JsonSerializer.Serialize(new(kind, location, source.Expression, [..source.PrivateAssemblies]), JsonSourceGenerationContext.Default.SavedSourceLocation));
         return source;
     }
 #pragma warning restore RS1035

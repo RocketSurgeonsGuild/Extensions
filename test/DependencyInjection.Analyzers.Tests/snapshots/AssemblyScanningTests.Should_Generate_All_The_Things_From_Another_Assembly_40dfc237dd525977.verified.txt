@@ -168,8 +168,15 @@
     build_property.ProjectDir: {TempPath}/test
   },
   PartialsCached: {
-    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-3bbbb0f90d21bcf63de19f3f453d1bde: {
       Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: mOaZ3T23RKRVhescjSqGpw==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities));
@@ -206,8 +213,15 @@
         Microsoft.Extensions.DependencyInjection.Abstractions
       ]
     },
-    Reflection-f8286df541712f11fc17a6cd53b71e38: {
+    Reflection-Rocket_Surgery_DependencyInjection_Extensions-3bbbb0f90d21bcf63de19f3f453d1bde: {
       Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: mOaZ3T23RKRVhescjSqGpw==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));

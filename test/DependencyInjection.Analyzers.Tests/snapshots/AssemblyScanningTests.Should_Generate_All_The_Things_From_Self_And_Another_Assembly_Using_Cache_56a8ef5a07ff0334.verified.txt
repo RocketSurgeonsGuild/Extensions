@@ -182,8 +182,15 @@
     build_property.ProjectDir: {TempPath}/test
   },
   PartialsCached: {
-    ServiceDescriptor-794233dec4f84d77ce80007b41438587: {
+    ServiceDescriptor-TestAssembly-0c8ae34cf24c610be1800868fc1f8af6: {
       Kind: ServiceDescriptor,
+      Location: {
+        Kind: ServiceDescriptor,
+        LineNumber: 16,
+        ExpressionHash: GzSo1ZIJ3PB0c4cYw44F8g==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Nested.ServiceA, global::TestAssembly.Nested.ServiceA>());

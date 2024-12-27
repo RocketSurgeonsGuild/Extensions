@@ -173,8 +173,15 @@
     build_property.ProjectDir: {TempPath}/test
   },
   PartialsCached: {
-    ServiceDescriptor-794233dec4f84d77ce80007b41438587: {
+    ServiceDescriptor-TestAssembly-bbb3dba50c78b7a54e5f59d8c0edb946: {
       Kind: ServiceDescriptor,
+      Location: {
+        Kind: ServiceDescriptor,
+        LineNumber: 16,
+        ExpressionHash: +ZwL1kukDVL/SHup/rQyqQ==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.GenericService")!, TestAssembly.GetType("TestAssembly.GenericService")!));

@@ -29,6 +29,8 @@ public record ResolvedSourceLocation(SourceLocation Location, string Expression,
 public record SavedSourceLocation(
     [property: JsonPropertyName("k")]
     SourceLocationKind Kind,
+    [property: JsonPropertyName("l")]
+    SourceLocation Location,
     [property: JsonPropertyName("e")]
     string Expression,
     [property: JsonPropertyName("a")]

@@ -98,8 +98,15 @@
     build_property.ProjectDir: {TempPath}
   },
   PartialsCached: {
-    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-c59a7feac54d2d6c4cd253d9be1887b5: {
       Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: WAZd2dprWkbDpjZXt4A58w==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
@@ -111,8 +118,15 @@
         Microsoft.Extensions.DependencyInjection.Abstractions
       ]
     },
-    Reflection-f8286df541712f11fc17a6cd53b71e38: {
+    Reflection-Rocket_Surgery_DependencyInjection_Extensions-c59a7feac54d2d6c4cd253d9be1887b5: {
       Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: WAZd2dprWkbDpjZXt4A58w==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter));

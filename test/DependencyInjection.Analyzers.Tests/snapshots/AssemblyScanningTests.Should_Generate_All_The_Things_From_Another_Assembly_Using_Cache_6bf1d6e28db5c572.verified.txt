@@ -168,8 +168,15 @@
     build_property.ProjectDir: {TempPath}/test
   },
   PartialsCached: {
-    ServiceDescriptor-794233dec4f84d77ce80007b41438587: {
+    ServiceDescriptor-TestAssembly-076e8e7452e60daa0281e195bc25a51d: {
       Kind: ServiceDescriptor,
+      Location: {
+        Kind: ServiceDescriptor,
+        LineNumber: 16,
+        ExpressionHash: i/Q9YfbrangthmO+cbE3ag==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     services.Add(ServiceDescriptor.Singleton(typeof(global::TestAssembly.IRequestHandler<, >).MakeGenericType(TestAssembly.GetType("TestAssembly.Request")!, TestAssembly.GetType("TestAssembly.Response")!)!, TestAssembly.GetType("TestAssembly.RequestHandler")!));

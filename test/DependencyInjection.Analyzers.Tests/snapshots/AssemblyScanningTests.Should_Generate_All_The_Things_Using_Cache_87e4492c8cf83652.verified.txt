@@ -98,8 +98,15 @@
     build_property.ProjectDir: {TempPath}
   },
   PartialsCached: {
-    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-a8f78d7c8c20bb73f64609541281aeb8: {
       Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: 1ecL2VuAmqERavxp/hDPEw==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>));
@@ -107,19 +114,15 @@
 },
       PrivateAssemblies: null
     },
-    Reflection-794233dec4f84d77ce80007b41438587: {
+    Reflection-Rocket_Surgery_DependencyInjection_Extensions-a8f78d7c8c20bb73f64609541281aeb8: {
       Kind: Reflection,
-      Expression:
-{
-    items.Add(typeof(global::TestAssembly.IGenericService<>));
-    items.Add(typeof(global::TestAssembly.IRequest<>));
-    items.Add(typeof(global::TestAssembly.IRequestHandler<, >));
-    items.Add(typeof(global::TestAssembly.IValidator<>));
-},
-      PrivateAssemblies: null
-    },
-    Reflection-f8286df541712f11fc17a6cd53b71e38: {
-      Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: 1ecL2VuAmqERavxp/hDPEw==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`1")!);
@@ -154,6 +157,24 @@
       PrivateAssemblies: [
         Rocket.Surgery.DependencyInjection.Extensions
       ]
+    },
+    Reflection-TestAssembly-a8f78d7c8c20bb73f64609541281aeb8: {
+      Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: 1ecL2VuAmqERavxp/hDPEw==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
+      Expression:
+{
+    items.Add(typeof(global::TestAssembly.IGenericService<>));
+    items.Add(typeof(global::TestAssembly.IRequest<>));
+    items.Add(typeof(global::TestAssembly.IRequestHandler<, >));
+    items.Add(typeof(global::TestAssembly.IValidator<>));
+},
+      PrivateAssemblies: null
     }
   },
   References: [

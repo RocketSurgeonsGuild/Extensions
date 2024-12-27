@@ -98,8 +98,15 @@
     build_property.ProjectDir: {TempPath}
   },
   PartialsCached: {
-    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-ddad9b50b1d6bcda45b3ca066d12de5e: {
       Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: ygNhwczilKlqHMF7Vh1YHw==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("FxResources.Microsoft.Extensions.DependencyInjection.Abstractions.SR")!);
@@ -116,16 +123,15 @@
         Microsoft.Extensions.DependencyInjection.Abstractions
       ]
     },
-    Reflection-794233dec4f84d77ce80007b41438587: {
+    Reflection-Rocket_Surgery_DependencyInjection_Extensions-ddad9b50b1d6bcda45b3ca066d12de5e: {
       Kind: Reflection,
-      Expression:
-{
-    items.Add(typeof(global::TestAssembly.Nested));
-},
-      PrivateAssemblies: null
-    },
-    Reflection-f8286df541712f11fc17a6cd53b71e38: {
-      Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: ygNhwczilKlqHMF7Vh1YHw==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
       Expression:
 {
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
@@ -133,6 +139,21 @@
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+},
+      PrivateAssemblies: null
+    },
+    Reflection-TestAssembly-ddad9b50b1d6bcda45b3ca066d12de5e: {
+      Kind: Reflection,
+      Location: {
+        Kind: Reflection,
+        LineNumber: 16,
+        ExpressionHash: ygNhwczilKlqHMF7Vh1YHw==,
+        FileName: Input0.cs,
+        FilePath: Input0.cs
+      },
+      Expression:
+{
+    items.Add(typeof(global::TestAssembly.Nested));
 },
       PrivateAssemblies: null
     }
