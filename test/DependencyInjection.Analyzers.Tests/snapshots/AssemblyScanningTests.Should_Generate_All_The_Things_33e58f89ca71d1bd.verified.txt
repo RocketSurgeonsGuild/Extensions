@@ -97,6 +97,18 @@
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}
   },
+  PartialsCached: {
+    ServiceDescriptor-794233dec4f84d77ce80007b41438587: {
+      Kind: ServiceDescriptor,
+      Expression:
+{
+    services.Add(ServiceDescriptor.Scoped(typeof(global::TestAssembly.IValidator<>).MakeGenericType(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!)!, TestAssembly.GetType("TestAssembly.Nested+Validator")!));
+},
+      PrivateAssemblies: [
+        TestAssembly
+      ]
+    }
+  },
   References: [
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,
     mscorlib.dll,

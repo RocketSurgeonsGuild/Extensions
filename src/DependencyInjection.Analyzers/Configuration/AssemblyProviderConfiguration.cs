@@ -56,7 +56,7 @@ internal partial class AssemblyProviderConfiguration
         var cacheKey = $"{kind}-{GetCacheFileHash(location, assemblySymbol)}{Constants.PartialExtension}";
         if (partial.TryGetValue(cacheKey, out var text))
         {
-            return new ResolvedSourceLocation(location, text.Expression, [..text.PrivateAssemblies]);
+            return new(location, text.Expression, [..text.PrivateAssemblies]);
         }
 
         var source = factory();
@@ -76,7 +76,6 @@ internal partial class AssemblyProviderConfiguration
             ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
             ImmutableList<ReflectionCollection.Item> reflectionRequests,
             ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptorRequests,
-            HashSet<IAssemblySymbol> globalPrivateAssemblies,
             HashSet<Diagnostic> globalDiagnostics
         )
    {
@@ -182,7 +181,7 @@ internal partial class AssemblyProviderConfiguration
         ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
     )
     {
-        var skipKey = assembly.MetadataName + Constants.SkipExtension;
+        var skipKey = (assembly.MetadataName + Constants.SkipExtension);
         if (skip.Contains(skipKey))
         {
             assemblyItems = [];
@@ -191,7 +190,7 @@ internal partial class AssemblyProviderConfiguration
             return;
         }
 
-        var cacheKey = assembly.MetadataName + Constants.AssemblyJsonExtension;
+        var cacheKey = (assembly.MetadataName + Constants.AssemblyJsonExtension);
         if (generatedJson.TryGetValue(cacheKey, out var generatedData))
         {
             assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
@@ -201,7 +200,6 @@ internal partial class AssemblyProviderConfiguration
             return;
         }
 
-        var assemblyAssemblySourcesBuilder = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
         var assemblyBuilder = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
         var reflectionBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
         var serviceDescriptorBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
@@ -218,13 +216,6 @@ internal partial class AssemblyProviderConfiguration
                         {
                             {
                                 var data = GetAssembliesFromString(assemblySymbols, getAssembliesData);
-                                var source = CacheSourceLocation(
-                                    data.Location,
-                                    assembly,
-                                    SourceLocationKind.Assemby,
-                                    () => AssemblyCollection.ResolveSources(compilation, [], [data]).SingleOrDefault()
-                                );
-                                if (source is { }) assemblyAssemblySourcesBuilder.Add(source);
                                 assemblyBuilder.Add(data);
                             }
                             break;

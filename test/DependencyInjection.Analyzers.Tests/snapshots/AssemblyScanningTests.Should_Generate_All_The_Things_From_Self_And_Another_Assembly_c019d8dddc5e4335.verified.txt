@@ -168,6 +168,30 @@
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
   },
+  PartialsCached: {
+    Reflection-38c29bdfac98ce8804acfe22506878cd: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
+    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!);
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope));
+    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime));
+},
+      PrivateAssemblies: [
+        Microsoft.Extensions.DependencyInjection.Abstractions
+      ]
+    },
+    Reflection-f8286df541712f11fc17a6cd53b71e38: {
+      Kind: Reflection,
+      Expression:
+{
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter));
+    items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
+},
+      PrivateAssemblies: null
+    }
+  },
   References: [
     <in-memory assembly>,
     Microsoft.Extensions.DependencyInjection.Abstractions.dll,

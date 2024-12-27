@@ -142,7 +142,6 @@ internal static class ReflectionCollection
                 var assemblyFilter = new CompiledAssemblyFilter([.. assemblies], source);
                 var typeFilter = new CompiledTypeFilter(classFilter, [.. typeFilters], source);
 
-
                 var i = new Item(source, assemblyFilter, typeFilter);
                 items.Add(i);
             }

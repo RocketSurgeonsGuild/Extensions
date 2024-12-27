@@ -82,7 +82,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
-                items.Add(typeof(global::TestAssembly.GenericService));
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -95,11 +94,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::TestAssembly.Nested));
                 items.Add(typeof(global::TestAssembly.Nested.GenericServiceA));
                 items.Add(typeof(global::TestAssembly.Nested.ServiceA));
-                items.Add(typeof(global::TestAssembly.Request));
-                items.Add(typeof(global::TestAssembly.RequestHandler));
-                items.Add(typeof(global::TestAssembly.Response));
                 items.Add(typeof(global::TestAssembly.Service));
-                items.Add(typeof(global::TestAssembly.ServiceB));
                 break;
         }
 
