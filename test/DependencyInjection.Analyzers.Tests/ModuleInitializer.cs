@@ -154,21 +154,21 @@ internal static partial class ModuleInitializer
                                    .OrderBy(z => z.Name)
                                    .Select(z => Path.GetFileNameWithoutExtension(z.Name))
                                    .ToHashSet(StringComparer.OrdinalIgnoreCase),
-            ["PartialsCached"] = result
-                                .CacheFiles
-                                .Where(z => z.Extension == Constants.PartialExtension)
-                                .OrderBy(z => z.Name)
-                                .ToDictionary(
-                                     z => Path.GetFileNameWithoutExtension(z.Name),
-                                     z =>
-                                     {
-                                         var value = JsonSerializer.Deserialize(
-                                             File.ReadAllText(z.FullName),
-                                             JsonSourceGenerationContext.Default.SavedSourceLocation
-                                         )!;
-                                         return value with { Expression = value.Expression.Replace("\r", "").Trim('\n') };
-                                     }
-                                 ),
+//            ["PartialsCached"] = result
+//                                .CacheFiles
+//                                .Where(z => z.Extension == Constants.PartialExtension)
+//                                .OrderBy(z => z.Name)
+//                                .ToDictionary(
+//                                     z => Path.GetFileNameWithoutExtension(z.Name),
+//                                     z =>
+//                                     {
+//                                         var value = JsonSerializer.Deserialize(
+//                                             File.ReadAllText(z.FullName),
+//                                             JsonSourceGenerationContext.Default.SavedSourceLocation
+//                                         )!;
+//                                         return value with { Expression = value.Expression.Replace("\r", "").Trim('\n'), PrivateAssemblies = [..value.PrivateAssemblies.OrderBy(z => z)]  };
+//                                     }
+//                                 ),
             ["GeneratedCache"] = result
                                 .CacheFiles.Where(z => z.Extension == Constants.AssemblyJsonExtension)
                                 .OrderBy(z => z.Name)
@@ -180,7 +180,7 @@ internal static partial class ModuleInitializer
                                              File.ReadAllText(z.FullName),
                                              JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
                                          )!;
-                                         return value with { AssemblySources = [..value.AssemblySources.Select(x => x with { Expression = x.Expression.Replace("\r", "").Trim('\n') })], };
+                                         return value;
                                      }
                                  )
         };

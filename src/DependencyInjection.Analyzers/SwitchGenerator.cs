@@ -9,24 +9,24 @@ internal static class SwitchGenerator
 {
     public static SwitchStatementSyntax GenerateSwitchStatement(IReadOnlyList<ResolvedSourceLocation> items)
     {
-        var filePathIdentifier = InvocationExpression(
-                MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, ParseName("System.IO.Path"), IdentifierName("GetFileName"))
-            )
-           .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("filePath")))));
-        var switchStatement = SwitchStatement(filePathIdentifier);
-        foreach (var lineGrouping in items.GroupBy(x => x.Location.FileName))
+        var lineNumberIdentifier = IdentifierName("lineNumber");
+        var switchStatement = SwitchStatement(lineNumberIdentifier);
+        foreach (var lineGrouping in items.GroupBy(x => x.Location.LineNumber))
         {
             // disallow list?
             var location = lineGrouping.First().Location;
             var lineSwitchSection = createNestedSwitchSections(
-                    [.. lineGrouping],
-                    IdentifierName("lineNumber"),
-                    x => x.Location.LineNumber,
-                    generateLineNumberSwitchStatement,
-                    value => LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(value))
+                    lineGrouping.ToArray(),
+                    InvocationExpression(
+                            MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, ParseName("System.IO.Path"), IdentifierName("GetFileName"))
+                        )
+                       .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(IdentifierName("filePath"))))),
+                    x => x.Location.FileName,
+                    generateFilePathSwitchStatement,
+                    value => LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(value))
                 )
                .AddLabels(
-                    CaseSwitchLabel(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(lineGrouping.Key)))
+                    CaseSwitchLabel(LiteralExpression(SyntaxKind.NumericLiteralExpression, Literal(lineGrouping.Key)))
                        .WithKeyword(
                             Token(
                                 TriviaList(Comment($"// FilePath: {location.FilePath.Replace("\\", "/")} Expression: {location.ExpressionHash}")),
@@ -72,13 +72,15 @@ internal static class SwitchGenerator
                             )
                         )
                 );
-            section = section.AddSections(newSection);
+            section = section.AddSections(
+                newSection
+            );
         }
 
         return SwitchSection().AddStatements(section, BreakStatement());
     }
 
-    private static SwitchSectionSyntax generateLineNumberSwitchStatement(IGrouping<int, ResolvedSourceLocation> innerGroup) => createNestedSwitchSections(
+    private static SwitchSectionSyntax generateFilePathSwitchStatement(IGrouping<string, ResolvedSourceLocation> innerGroup) => createNestedSwitchSections(
         innerGroup.GroupBy(z => z.Location.ExpressionHash).Select(z => z.First()).ToArray(),
         InvocationExpression(
                 MemberAccessExpression(

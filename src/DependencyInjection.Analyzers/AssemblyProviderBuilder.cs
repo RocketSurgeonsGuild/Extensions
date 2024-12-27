@@ -99,10 +99,19 @@ internal static class AssemblyProviderBuilder
                                 [
                                     ..locations
                                      .GroupBy(z => z.Location)
-                                     .Select(z => new ResolvedSourceLocation(z.Key, z.Aggregate("", (s, location) => s + "\n" + location.Expression), [])),
+                                     .Select(
+                                          z => z.Aggregate(
+                                                  new ResolvedSourceLocation(z.First().Location, "", []),
+                                                  (location, sourceLocation) => new (
+                                                      location.Location,
+                                                      location.Expression + "\n" + sourceLocation.Expression,
+                                                      [..location.PrivateAssemblies, ..sourceLocation.PrivateAssemblies]
+                                                  )
+                                              )
+                                      ),
                                 ]
                             ),
-                            returnStatement,
+                            returnStatement
                         ]
                     )
                 )
@@ -148,23 +157,26 @@ internal static class AssemblyProviderBuilder
                 )
             );
 
-    private static StatementSyntax GetCollectionVariable(TypeSyntax type) => LocalDeclarationStatement(
-        VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
-           .WithVariables(
-                SingletonSeparatedList(
-                    VariableDeclarator(Identifier("items"))
-                       .WithInitializer(
-                            EqualsValueClause(
-                                ObjectCreationExpression(
-                                        GenericName(Identifier("List"))
-                                           .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(type)))
-                                    )
-                                   .WithArgumentList(ArgumentList())
+    private static StatementSyntax GetCollectionVariable(TypeSyntax type)
+    {
+        return LocalDeclarationStatement(
+            VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
+               .WithVariables(
+                    SingletonSeparatedList(
+                        VariableDeclarator(Identifier("items"))
+                           .WithInitializer(
+                                EqualsValueClause(
+                                    ObjectCreationExpression(
+                                            GenericName(Identifier("List"))
+                                               .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(type)))
+                                        )
+                                       .WithArgumentList(ArgumentList())
+                                )
                             )
-                        )
+                    )
                 )
-            )
-    );
+        );
+    }
 
     private static readonly MethodDeclarationSyntax ScanMethod =
         MethodDeclaration(ParseName("Microsoft.Extensions.DependencyInjection.IServiceCollection"), Identifier("Scan"))

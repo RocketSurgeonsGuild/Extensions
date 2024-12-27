@@ -138,7 +138,7 @@ internal static class ReflectionCollection
                     cancellationToken
                 );
 
-                var source = Helpers.CreateSourceLocation(methodCallSyntax, cancellationToken);
+                var source = Helpers.CreateSourceLocation(SourceLocationKind.Reflection, methodCallSyntax, cancellationToken);
                 var assemblyFilter = new CompiledAssemblyFilter([.. assemblies], source);
                 var typeFilter = new CompiledTypeFilter(classFilter, [.. typeFilters], source);
 

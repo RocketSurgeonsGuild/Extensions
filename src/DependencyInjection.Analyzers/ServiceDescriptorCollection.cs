@@ -112,7 +112,7 @@ internal static class ServiceDescriptorCollection
                     cancellationToken
                 );
 
-                var source = Helpers.CreateSourceLocation(methodCallSyntax, cancellationToken);
+                var source = Helpers.CreateSourceLocation(SourceLocationKind.ServiceDescriptor, methodCallSyntax, cancellationToken);
                 var assemblyFilter = new CompiledAssemblyFilter(assemblies.ToImmutableList(), source);
                 var typeFilter = new CompiledTypeFilter(classFilter, typeFilters.ToImmutableList(), source);
                 var serviceDescriptorFilter = new CompiledServiceTypeDescriptors(serviceDescriptors.ToImmutableArray(), lifetime);

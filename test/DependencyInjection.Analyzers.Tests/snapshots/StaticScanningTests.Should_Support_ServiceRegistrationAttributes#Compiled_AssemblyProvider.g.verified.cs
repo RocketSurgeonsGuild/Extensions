@@ -27,14 +27,14 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (System.IO.Path.GetFileName(filePath))
+        switch (lineNumber)
         {
             // FilePath: CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
-            case "CompiledTypeProviderServiceCollectionExtensions.cs":
-                switch (lineNumber)
+            case 21:
+                switch (System.IO.Path.GetFileName(filePath))
                 {
                     // FilePath: CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8JsIfWGtyxwbpwWfPrtcbQ==
-                    case 21:
+                    case "CompiledTypeProviderServiceCollectionExtensions.cs":
                         services.Add(ServiceDescriptor.Transient<global::Nested.ServiceA, global::Nested.ServiceA>());
                         services.Add(ServiceDescriptor.Transient<global::IService>(a => a.GetRequiredService<global::Nested.ServiceA>()));
                         services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());

@@ -5,15 +5,13 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 public record CompiledAssemblyProviderData
 (
-    ImmutableList<ResolvedSourceLocation> AssemblySources,
+    ImmutableList<GetAssemblyConfiguration> InternalAssemblyRequests,
     ImmutableList<GetReflectionCollectionData> InternalReflectionRequests,
-    ImmutableList<GetServiceDescriptorCollectionData> InternalServiceDescriptorRequests,
-    ImmutableHashSet<string> PrivateAssemblyNames
+    ImmutableList<GetServiceDescriptorCollectionData> InternalServiceDescriptorRequests
 )
 {
     public bool IsEmpty =>
-        AssemblySources.IsEmpty
+        InternalAssemblyRequests.IsEmpty
      && InternalReflectionRequests.IsEmpty
-     && InternalServiceDescriptorRequests.IsEmpty
-     && PrivateAssemblyNames.IsEmpty;
+     && InternalServiceDescriptorRequests.IsEmpty;
 }

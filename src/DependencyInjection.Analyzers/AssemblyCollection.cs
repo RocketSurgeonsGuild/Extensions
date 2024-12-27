@@ -107,6 +107,37 @@ internal static class AssemblyCollection
             ? ( invocationExpressionSyntax, expression )
             : default;
 
+    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
+
+    private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<IAssemblySymbol> assemblies, HashSet<IAssemblySymbol> privateAssemblies)
+    {
+        var block = Block();
+        foreach (var assembly in assemblies.OrderBy(z => z.ToDisplayString()))
+        {
+            // TODO: Make this always use the load context?
+            if (StatementGeneration.GetAssemblyExpression(compilation, assembly) is not { } assemblyExpression)
+            {
+                privateAssemblies.Add(assembly);
+                block = block.AddStatements(
+                    ExpressionStatement(
+                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                           .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetPrivateAssembly(assembly)))))
+                    )
+                );
+                continue;
+            }
+
+            block = block.AddStatements(
+                ExpressionStatement(
+                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
+                       .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(assemblyExpression))))
+                )
+            );
+        }
+
+        return block;
+    }
+
     public static ImmutableList<Item> GetAssemblyItems(
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
@@ -141,7 +172,7 @@ internal static class AssemblyCollection
 
                 var assemblyFilter = new CompiledAssemblyFilter([.. assemblies]);
 
-                var source = Helpers.CreateSourceLocation(methodCallSyntax, cancellationToken);
+                var source = Helpers.CreateSourceLocation(SourceLocationKind.Assemby, methodCallSyntax, cancellationToken);
                 // disallow list?
                 if (source.FileName == "ConventionContextHelpers.cs")
                 {
@@ -171,37 +202,6 @@ internal static class AssemblyCollection
         }
 
         return items.ToImmutable();
-    }
-
-    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
-
-    private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<IAssemblySymbol> assemblies, HashSet<IAssemblySymbol> privateAssemblies)
-    {
-        var block = Block();
-        foreach (var assembly in assemblies.OrderBy(z => z.ToDisplayString()))
-        {
-            // TODO: Make this always use the load context?
-            if (StatementGeneration.GetAssemblyExpression(compilation, assembly) is not { } assemblyExpression)
-            {
-                _ = privateAssemblies.Add(assembly);
-                block = block.AddStatements(
-                    ExpressionStatement(
-                        InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
-                           .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetPrivateAssembly(assembly)))))
-                    )
-                );
-                continue;
-            }
-
-            block = block.AddStatements(
-                ExpressionStatement(
-                    InvocationExpression(MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, IdentifierName("items"), IdentifierName("Add")))
-                       .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(assemblyExpression))))
-                )
-            );
-        }
-
-        return block;
     }
 
     private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);

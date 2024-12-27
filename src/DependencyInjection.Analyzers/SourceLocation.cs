@@ -3,8 +3,14 @@ using System.Text.Json.Serialization;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
+public enum SourceLocationKind
+{
+    Assemby, Reflection, ServiceDescriptor
+}
 public record SourceLocation
 (
+    [property: JsonPropertyName("k")]
+    SourceLocationKind Kind,
     [property: JsonPropertyName("l")]
     int LineNumber,
     string FilePath,
@@ -21,7 +27,9 @@ public record SourceLocation
 public record ResolvedSourceLocation(SourceLocation Location, string Expression, [property: JsonIgnore] ImmutableHashSet<string> PrivateAssemblies);
 
 public record SavedSourceLocation(
+    [property: JsonPropertyName("k")]
+    SourceLocationKind Kind,
     [property: JsonPropertyName("e")]
     string Expression,
     [property: JsonPropertyName("a")]
-    ImmutableHashSet<string> PrivateAssemblies);
+    ImmutableArray<string> PrivateAssemblies);

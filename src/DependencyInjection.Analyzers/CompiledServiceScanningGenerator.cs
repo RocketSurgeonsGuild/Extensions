@@ -44,7 +44,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                             var source = text.GetText()?.ToString();
                                             if (source is not { Length: > 100 })
                                             {
-                                                return (path: Path.GetFileName(text.Path), source: new([], [], [], []));
+                                                return (path: Path.GetFileName(text.Path), source: new([], [], []));
                                             }
 
                                             return (path: Path.GetFileName(text.Path),
@@ -138,6 +138,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                     diagnostics
                 );
 
+                assemblyRequests = assemblyRequests.AddRange(resolvedData.InternalAssemblyRequests);
                 reflectionRequests = reflectionRequests.AddRange(resolvedData.InternalReflectionRequests);
                 serviceDescriptorRequests = serviceDescriptorRequests.AddRange(resolvedData.InternalServiceDescriptorRequests);
 
@@ -159,7 +160,6 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                     request.compilation.Assembly
                 );
 
-                assemblySources = assemblySources.AddRange(resolvedData.AssemblySources);
                 reflectionSources = reflectionSources.AddRange(resolvedData.ReflectionSources);
                 serviceDescriptorSources = serviceDescriptorSources.AddRange(resolvedData.ServiceDescriptorSources);
 

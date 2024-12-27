@@ -6,6 +6,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\DependencyInjection.Analyzers\Rocket.Surgery.DependencyInjection.Analyzers.csproj" />
         <ProjectReference Include="..\..\src\DependencyInjection.Extensions\Rocket.Surgery.DependencyInjection.Extensions.csproj" />
+        <ProjectReference Include="..\..\TestAssembly\TestAssembly.csproj"/>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" />

@@ -28,24 +28,17 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (System.IO.Path.GetFileName(filePath))
+        switch (lineNumber)
         {
             // FilePath: Input0.cs Expression: Na/OfX2a2Fx0+IoPnlDWxQ==
-            case "Input0.cs":
-                switch (lineNumber)
-                {
-                    // FilePath: Input0.cs Expression: Na/OfX2a2Fx0+IoPnlDWxQ==
-                    case 16:
-                        services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());
-                        services.Add(ServiceDescriptor.Scoped<global::IService>(a => a.GetRequiredService<global::Service>()));
-                        break;
-                    // FilePath: Input0.cs Expression: 09prPZ/hWI7/65JltlpdNg==
-                    case 26:
-                        services.Add(ServiceDescriptor.Scoped<global::ServiceB, global::ServiceB>());
-                        services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
-                        break;
-                }
-
+            case 16:
+                services.Add(ServiceDescriptor.Scoped<global::Service, global::Service>());
+                services.Add(ServiceDescriptor.Scoped<global::IService>(a => a.GetRequiredService<global::Service>()));
+                break;
+            // FilePath: Input0.cs Expression: 09prPZ/hWI7/65JltlpdNg==
+            case 26:
+                services.Add(ServiceDescriptor.Scoped<global::ServiceB, global::ServiceB>());
+                services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
                 break;
         }
 

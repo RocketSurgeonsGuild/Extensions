@@ -22,15 +22,15 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     IEnumerable<Type> ICompiledTypeProvider.GetTypes(Func<IReflectionTypeSelector, IEnumerable<Type>> selector, int lineNumber, string filePath, string argumentExpression)
     {
         var items = new List<Type>();
-        switch (System.IO.Path.GetFileName(filePath))
+        switch (lineNumber)
         {
             // FilePath: Input1.cs Expression: 79WDrmMI6zqNCHSOboZMpw==
-            case "Input1.cs":
+            case 11:
                 items.Add(typeof(global::OptionsA));
                 items.Add(typeof(global::OptionsB));
                 break;
             // FilePath: Input0.cs Expression: 79WDrmMI6zqNCHSOboZMpw==
-            case "Input0.cs":
+            case 25:
                 items.Add(typeof(global::OptionsA));
                 items.Add(typeof(global::OptionsB));
                 break;
