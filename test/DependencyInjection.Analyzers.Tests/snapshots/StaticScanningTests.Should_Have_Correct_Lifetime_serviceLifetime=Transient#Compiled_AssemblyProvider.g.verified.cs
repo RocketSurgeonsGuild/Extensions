@@ -28,24 +28,17 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (System.IO.Path.GetFileName(filePath))
+        switch (lineNumber)
         {
             // FilePath: Input0.cs Expression: VqjTzPUvZqKsVjt7V35sQA==
-            case "Input0.cs":
-                switch (lineNumber)
-                {
-                    // FilePath: Input0.cs Expression: VqjTzPUvZqKsVjt7V35sQA==
-                    case 16:
-                        services.Add(ServiceDescriptor.Transient<global::Service, global::Service>());
-                        services.Add(ServiceDescriptor.Transient<global::IService>(a => a.GetRequiredService<global::Service>()));
-                        break;
-                    // FilePath: Input0.cs Expression: jEruq2OuBOo50b7gHMAwSQ==
-                    case 26:
-                        services.Add(ServiceDescriptor.Transient<global::ServiceB, global::ServiceB>());
-                        services.Add(ServiceDescriptor.Transient<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
-                        break;
-                }
-
+            case 16:
+                services.Add(ServiceDescriptor.Transient<global::Service, global::Service>());
+                services.Add(ServiceDescriptor.Transient<global::IService>(a => a.GetRequiredService<global::Service>()));
+                break;
+            // FilePath: Input0.cs Expression: jEruq2OuBOo50b7gHMAwSQ==
+            case 26:
+                services.Add(ServiceDescriptor.Transient<global::ServiceB, global::ServiceB>());
+                services.Add(ServiceDescriptor.Transient<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
                 break;
         }
 

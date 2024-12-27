@@ -91,19 +91,30 @@ internal static class AssemblyProviderBuilder
 
         return baseMethod
            .WithBody(
-                Block(SyntaxList.Create(
-                    [
-                        ..item.Except([returnStatement]),
-                        SwitchGenerator.GenerateSwitchStatement(
-                            [
-                                ..locations
-                                 .GroupBy(z => z.Location)
-                                 .Select(z => new ResolvedSourceLocation(z.Key, z.Aggregate("", (s, location) => s + "\n" + location.Expression), [])),
-                            ]
-                        ),
-                        returnStatement
-                    ]
-                ))
+                Block(
+                    SyntaxList.Create(
+                        [
+                            ..item.Except([returnStatement]),
+                            SwitchGenerator.GenerateSwitchStatement(
+                                [
+                                    ..locations
+                                     .GroupBy(z => z.Location)
+                                     .Select(
+                                          z => z.Aggregate(
+                                                  new ResolvedSourceLocation(z.First().Location, "", []),
+                                                  (location, sourceLocation) => new (
+                                                      location.Location,
+                                                      location.Expression + "\n" + sourceLocation.Expression,
+                                                      [..location.PrivateAssemblies, ..sourceLocation.PrivateAssemblies]
+                                                  )
+                                              )
+                                      ),
+                                ]
+                            ),
+                            returnStatement
+                        ]
+                    )
+                )
             );
     }
 

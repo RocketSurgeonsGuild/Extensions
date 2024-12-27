@@ -56,6 +56,7 @@
                 <ModulePath>.*Rocket\.Surgery\.Reflection\.Extensions\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.System\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.Task\.Extensions\.dll</ModulePath>
+                <ModulePath>.*TestAssembly\.dll</ModulePath>
               </Include>
               <Exclude>
                 <ModulePath>.*Bogus\.dll</ModulePath>
@@ -86,7 +87,7 @@
                 <ModulePath>.*NETStandard\.Library\.dll</ModulePath>
                 <ModulePath>.*Newtonsoft\.Json\.dll</ModulePath>
                 <ModulePath>.*Nuke\.Common\.dll</ModulePath>
-                <ModulePath>.*Polyfill\.dll</ModulePath>
+                <ModulePath>.*PolySharp\.dll</ModulePath>
                 <ModulePath>.*ReportGenerator\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.Extensions\.Testing\.FakeItEasy\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.Extensions\.Testing\.SourceGenerators\.dll</ModulePath>
@@ -108,6 +109,7 @@
                 <ModulePath>.*System\.Reactive\.Observable\.Aliases\.dll</ModulePath>
                 <ModulePath>.*System\.Text\.Json\.dll</ModulePath>
                 <ModulePath>.*TUnit\.dll</ModulePath>
+                <ModulePath>.*Verify\.DiffPlex\.dll</ModulePath>
                 <ModulePath>.*Verify\.TUnit\.dll</ModulePath>
               </Exclude>
             </ModulePaths>

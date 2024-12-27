@@ -28,24 +28,17 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (System.IO.Path.GetFileName(filePath))
+        switch (lineNumber)
         {
             // FilePath: Input0.cs Expression: 3OfsQex7NYRaroSlneP6BQ==
-            case "Input0.cs":
-                switch (lineNumber)
-                {
-                    // FilePath: Input0.cs Expression: 3OfsQex7NYRaroSlneP6BQ==
-                    case 16:
-                        services.Add(ServiceDescriptor.Singleton<global::Service, global::Service>());
-                        services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::Service>()));
-                        break;
-                    // FilePath: Input0.cs Expression: KfP9Ho3bWVxDM4u7IMiqcw==
-                    case 26:
-                        services.Add(ServiceDescriptor.Singleton<global::ServiceB, global::ServiceB>());
-                        services.Add(ServiceDescriptor.Singleton<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
-                        break;
-                }
-
+            case 16:
+                services.Add(ServiceDescriptor.Singleton<global::Service, global::Service>());
+                services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::Service>()));
+                break;
+            // FilePath: Input0.cs Expression: KfP9Ho3bWVxDM4u7IMiqcw==
+            case 26:
+                services.Add(ServiceDescriptor.Singleton<global::ServiceB, global::ServiceB>());
+                services.Add(ServiceDescriptor.Singleton<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
                 break;
         }
 

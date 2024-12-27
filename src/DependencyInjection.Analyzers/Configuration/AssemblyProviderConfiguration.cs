@@ -51,23 +51,23 @@ internal partial class AssemblyProviderConfiguration
     }
 
 #pragma warning disable RS1035
-    private ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, string kind, Func<ResolvedSourceLocation?> factory)
+    private ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, SourceLocationKind kind, Func<ResolvedSourceLocation?> factory)
     {
         var cacheKey = $"{kind}-{GetCacheFileHash(location, assemblySymbol)}{Constants.PartialExtension}";
         if (partial.TryGetValue(cacheKey, out var text))
         {
-            return new ResolvedSourceLocation(location, text.Expression, text.PrivateAssemblies);
+            return new ResolvedSourceLocation(location, text.Expression, [..text.PrivateAssemblies]);
         }
 
         var source = factory();
         if (source is {} && _cacheDirectory.Value is { } && !File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
-            File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), JsonSerializer.Serialize(new SavedSourceLocation(source.Expression, source.PrivateAssemblies), JsonSourceGenerationContext.Default.SavedSourceLocation));
+            File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), JsonSerializer.Serialize(new(kind, source.Expression, [..source.PrivateAssemblies]), JsonSourceGenerationContext.Default.SavedSourceLocation));
         return source;
     }
 #pragma warning restore RS1035
 
     public (
-        ImmutableList<ResolvedSourceLocation> AssemblySources,
+        ImmutableList<AssemblyCollection.Item> InternalAssemblyRequests,
         ImmutableList<ReflectionCollection.Item> InternalReflectionRequests,
         ImmutableList<ResolvedSourceLocation> ReflectionSources,
         ImmutableList<ServiceDescriptorCollection.Item> InternalServiceDescriptorRequests,
@@ -80,10 +80,10 @@ internal partial class AssemblyProviderConfiguration
             HashSet<Diagnostic> globalDiagnostics
         )
    {
-        var assemblySources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
         var reflectionSources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
         var serviceDescriptorSources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
 
+        var internalAssemblyRequestsBuilder = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
         var internalReflectionRequestsBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
         var internalServiceDescriptorRequestsBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
         foreach (var assembly in assemblySymbols.Values.Except([compilation.Assembly]).OrderBy(z => z.MetadataName))
@@ -95,15 +95,12 @@ internal partial class AssemblyProviderConfiguration
                     out var assemblyAssemblySources,
                     out var assemblyReflectionBuilder,
                     out var assemblyServiceDescriptorBuilder,
-                    out var pAssemblies,
                     assemblySymbols
                 );
 
+                internalAssemblyRequestsBuilder.AddRange(assemblyAssemblySources);
                 internalReflectionRequestsBuilder.AddRange(assemblyReflectionBuilder);
                 internalServiceDescriptorRequestsBuilder.AddRange(assemblyServiceDescriptorBuilder);
-
-                assemblySources.AddRange(assemblyAssemblySources);
-                globalPrivateAssemblies.UnionWith(pAssemblies);
 
                 // steps
                 // cache requests resulting from an assembly.
@@ -135,7 +132,7 @@ internal partial class AssemblyProviderConfiguration
                 var source = CacheSourceLocation(
                     request.Location,
                     assembly,
-                    "reflection",
+                    SourceLocationKind.Reflection,
                     () => ReflectionCollection.ResolveSource(
                         compilation,
                         diagnostics,
@@ -151,7 +148,7 @@ internal partial class AssemblyProviderConfiguration
                 var source = CacheSourceLocation(
                     request.Location,
                     assembly,
-                    "service-descriptor",
+                    SourceLocationKind.ServiceDescriptor,
                     () => ServiceDescriptorCollection.ResolveSource(
                         compilation,
                         diagnostics,
@@ -166,7 +163,7 @@ internal partial class AssemblyProviderConfiguration
         globalDiagnostics.UnionWith(diagnostics);
 
         var result = (
-            assemblySources.ToImmutable(),
+            internalAssemblyRequestsBuilder.ToImmutable(),
             internalReflectionRequests,
             reflectionSources.ToImmutable(),
             internalServiceDescriptorRequests,
@@ -179,42 +176,36 @@ internal partial class AssemblyProviderConfiguration
 #pragma warning disable RS1035
     private void GetAssemblyData(
         IAssemblySymbol assembly,
-        out ImmutableList<ResolvedSourceLocation> assemblyAssemblySources,
+        out ImmutableList<AssemblyCollection.Item> assemblyItems,
         out ImmutableList<ReflectionCollection.Item> reflection,
         out ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptor,
-        out ImmutableHashSet<IAssemblySymbol> inaccessibleAssemblies,
         ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
     )
     {
         var skipKey = assembly.MetadataName + Constants.SkipExtension;
         if (skip.Contains(skipKey))
         {
-            assemblyAssemblySources = [];
+            assemblyItems = [];
             reflection = [];
             serviceDescriptor = [];
-            inaccessibleAssemblies = [];
             return;
         }
 
         var cacheKey = assembly.MetadataName + Constants.AssemblyJsonExtension;
         if (generatedJson.TryGetValue(cacheKey, out var generatedData))
         {
-            assemblyAssemblySources = generatedData.AssemblySources;
+            assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
             reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z)).ToImmutableList();
             serviceDescriptor =
                 generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z)).ToImmutableList();
-            inaccessibleAssemblies = generatedData
-                                    .PrivateAssemblyNames
-                                    .Join(assemblySymbols, z => z, z => z.Key, (_, pair) => pair.Value)
-                                    .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
             return;
         }
 
         var assemblyAssemblySourcesBuilder = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
+        var assemblyBuilder = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
         var reflectionBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
         var serviceDescriptorBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
         var attributes = assembly.GetAttributes();
-        HashSet<IAssemblySymbol> assemblies = new(SymbolEqualityComparer.Default);
         foreach (var attribute in attributes)
         {
             if (attribute is not { AttributeClass.MetadataName: "AssemblyMetadataAttribute" }) continue;
@@ -230,10 +221,11 @@ internal partial class AssemblyProviderConfiguration
                                 var source = CacheSourceLocation(
                                     data.Location,
                                     assembly,
-                                    "assembly",
+                                    SourceLocationKind.Assemby,
                                     () => AssemblyCollection.ResolveSources(compilation, [], [data]).SingleOrDefault()
                                 );
                                 if (source is { }) assemblyAssemblySourcesBuilder.Add(source);
+                                assemblyBuilder.Add(data);
                             }
                             break;
                         }
@@ -267,21 +259,16 @@ internal partial class AssemblyProviderConfiguration
             }
         }
 
-        assemblyAssemblySources = assemblyAssemblySourcesBuilder.ToImmutable();
+        assemblyItems = assemblyBuilder.ToImmutable();
         reflection = reflectionBuilder.ToImmutable();
         serviceDescriptor = serviceDescriptorBuilder.ToImmutable();
-        inaccessibleAssemblies = assemblies.ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
 
         if (_cacheDirectory.Value is null || File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey))) return;
 
         var result = new CompiledAssemblyProviderData(
-            assemblyAssemblySources,
+            assemblyBuilder.Select(GetAssembyCollectionData).ToImmutableList(),
             reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
-            serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList(),
-            assemblies
-               .Select(z => z.MetadataName)
-               .Concat(assemblyAssemblySources.SelectMany(z => z.PrivateAssemblies))
-               .ToImmutableHashSet()
+            serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList()
         );
 
         if (result.IsEmpty)
@@ -335,15 +322,26 @@ internal partial class AssemblyProviderConfiguration
         // ReSharper disable once NullableWarningSuppressionIsUsed
         var config = JsonSerializer.Deserialize(result, JsonSourceGenerationContext.Default.GetAssemblyConfiguration)!;
         Debug.Assert(config.Type == nameof(JsonSourceGenerationContext.Default.GetAssemblyConfiguration));
+        return GetAssembliesFromData(assemblySymbols, config);
+    }
+
+    private static AssemblyCollection.Item GetAssembliesFromData(ImmutableDictionary<string, IAssemblySymbol> assemblySymbols, GetAssemblyConfiguration config)
+    {
         var assemblyFilter = LoadAssemblyFilter(config.Assembly.Assembly, config.Assembly.Location, assemblySymbols);
         return new(config.Assembly.Location, assemblyFilter);
     }
 
     private static string GetAssembliesToString(AssemblyCollection.Item item)
     {
-        var data = new GetAssemblyConfiguration(new(item.Location, LoadAssemblyFilterData(item.AssemblyFilter)));
+        var data = GetAssembyCollectionData(item);
         var result = JsonSerializer.SerializeToUtf8Bytes(data, JsonSourceGenerationContext.Default.GetAssemblyConfiguration);
         return CompressString(result);
+    }
+
+    private static GetAssemblyConfiguration GetAssembyCollectionData(AssemblyCollection.Item item)
+    {
+        var data = new GetAssemblyConfiguration(new(item.Location, LoadAssemblyFilterData(item.AssemblyFilter)));
+        return data;
     }
 
     private static ReflectionCollection.Item GetReflectionFromString(

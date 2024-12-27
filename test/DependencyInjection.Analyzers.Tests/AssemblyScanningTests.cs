@@ -1,76 +1,63 @@
 using System.Linq;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
+using TestAssembly;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 
 
 [System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class AssemblyScanningTests : GeneratorTest
+public partial class AssemblyScanningTests : GeneratorTest
 {
     [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
     private string DebuggerDisplay => ToString();
 
     [Test]
-    [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetTypes(GetTypesTestsData.Item item)
+    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things(TestSource item)
     {
         var result = await Builder
-                          .AddSources(
-                               $$$""""
-                               using Rocket.Surgery.DependencyInjection;
-                               using Rocket.Surgery.DependencyInjection.Compiled;
-                               using Microsoft.Extensions.DependencyInjection;
-                               using System.ComponentModel;
-                               using System.Threading;
-                               using System.Threading.Tasks;
-                               using System;
-
-                               public static class Program
-                               {
-                                   static void Main()
-                                   {
-                                        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                               	        provider.GetTypes({{{item.Expression}}});
-                                   }
-                               }
-                               """"
-                           )
+                          .AddSources(item.Source)
+                          .AddReferences(typeof(IService))
                           .AddCacheOptions(item.GetTempDirectory())
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result.AddCacheFiles()).UseParameters(item.Name).HashParameters();
+        await Verify(result.AddCacheFiles())
+             .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
+             .UseParameters(item.Name)
+             .HashParameters();
     }
 
     [Test]
-    [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetTypes_From_Another_Assembly(GetTypesTestsData.Item item)
+    [DependsOn(nameof(Should_Generate_All_The_Things), ProceedOnFailure = true)]
+    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_Using_Cache(TestSource item)
+    {
+        var result = await Builder
+                          .AddSources(item.Source)
+                          .AddReferences(typeof(IService))
+                          .PopulateCache(item.GetTempDirectory())
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result.AddCacheFiles())
+             .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
+             .UseParameters(item.Name)
+             .HashParameters();
+    }
+
+
+    [Test]
+    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_From_Another_Assembly(TestSource item)
     {
         using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
         var other = await Builder
                          .WithProjectName("OtherProject")
-                         .AddSources(
-                              $$$""""
-                              using Rocket.Surgery.DependencyInjection;
-                              using Rocket.Surgery.DependencyInjection.Compiled;
-                              using Microsoft.Extensions.DependencyInjection;
-                              using System.ComponentModel;
-                              using System.Threading;
-                              using System.Threading.Tasks;
-                              using System;
-
-                              public static class Program
-                              {
-                                  static void Main()
-                                  {
-                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                              	       provider.GetTypes({{{item.Expression}}});
-                                  }
-                              }
-                              """"
-                          )
+                         .AddSources(item.Source)
+                         .AddReferences(typeof(IService))
                          .AddCacheOptions(item.GetTempDirectory("other"))
                          .Build()
                          .GenerateAsync();
@@ -80,149 +67,27 @@ public class AssemblyScanningTests : GeneratorTest
 
         var result = await Builder
                           .AddCompilationReferences(other)
+                          .AddReferences(typeof(IService))
                           .AddCacheOptions(item.GetTempDirectory("test"))
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result.AddCacheFiles()).UseParameters(item.Name).HashParameters();
+        await Verify(result.AddCacheFiles())
+             .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
+             .UseParameters(item.Name)
+             .HashParameters();
     }
 
     [Test]
-    [MethodDataSource(typeof(GetAssembliesTestsData), nameof(GetAssembliesTestsData.GetAssembliesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetAssemblies(GetAssembliesTestsData.Item getTypesItem)
-    {
-        var result = await Builder
-                          .AddSources(
-                               $$$""""
-                               using Rocket.Surgery.DependencyInjection;
-                               using Rocket.Surgery.DependencyInjection.Compiled;
-                               using Microsoft.Extensions.DependencyInjection;
-                               using System.ComponentModel;
-                               using System.Threading;
-                               using System.Threading.Tasks;
-                               using System;
-
-                               public static class Program
-                               {
-                                   static void Main()
-                                   {
-                                        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                               	        provider.GetAssemblies({{{getTypesItem.Expression}}});
-                                   }
-                               }
-                               """"
-                           )
-                          .AddCacheOptions(getTypesItem.GetTempDirectory())
-                          .Build()
-                          .GenerateAsync();
-
-        await Verify(result.AddCacheFiles()).UseParameters(getTypesItem.Name).HashParameters();
-    }
-
-    [Test]
-    [MethodDataSource(typeof(GetAssembliesTestsData), nameof(GetAssembliesTestsData.GetAssembliesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetAssemblies_From_Another_Assembly(GetAssembliesTestsData.Item getTypesItem)
+    [DependsOn(nameof(Should_Generate_All_The_Things_From_Another_Assembly), ProceedOnFailure = true)]
+    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_From_Another_Assembly_Using_Cache(TestSource item)
     {
         using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
         var other = await Builder
                          .WithProjectName("OtherProject")
-                         .AddSources(
-                              $$$""""
-                              using Rocket.Surgery.DependencyInjection;
-                              using Rocket.Surgery.DependencyInjection.Compiled;
-                              using Microsoft.Extensions.DependencyInjection;
-                              using System.ComponentModel;
-                              using System.Threading;
-                              using System.Threading.Tasks;
-                              using System;
-
-                              public static class Program
-                              {
-                                  static void Main()
-                                  {
-                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                              	       provider.GetAssemblies({{{getTypesItem.Expression}}});
-                                  }
-                              }
-                              """"
-                          )
-                         .AddCacheOptions(getTypesItem.GetTempDirectory("other"))
-                         .Build()
-                         .GenerateAsync();
-
-        other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).Should().BeEmpty();
-        other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
-
-        var result = await Builder
-                          .AddCompilationReferences(other)
-                          .AddCacheOptions(getTypesItem.GetTempDirectory("test"))
-                          .Build()
-                          .GenerateAsync();
-
-        await Verify(result.AddCacheFiles()).UseParameters(getTypesItem.Name).HashParameters();
-    }
-
-    [Test]
-    [DependsOn(nameof(Should_Generate_Assembly_Provider_For_GetTypes), ProceedOnFailure = true)]
-    [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetTypes_Using_Cache(GetTypesTestsData.Item item)
-    {
-        var result = await Builder
-                          .AddSources(
-                               $$$""""
-                               using Rocket.Surgery.DependencyInjection;
-                               using Rocket.Surgery.DependencyInjection.Compiled;
-                               using Microsoft.Extensions.DependencyInjection;
-                               using System.ComponentModel;
-                               using System.Threading;
-                               using System.Threading.Tasks;
-                               using System;
-
-                               public static class Program
-                               {
-                                   static void Main()
-                                   {
-                                        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                               	        provider.GetTypes({{{item.Expression}}});
-                                   }
-                               }
-                               """"
-                           )
-                          .PopulateCache(item.GetTempDirectory())
-                          .Build()
-                          .GenerateAsync();
-
-        await Verify(result.AddCacheFiles()).UseParameters(item.Name).HashParameters();
-    }
-
-    [Test]
-    [DependsOn(nameof(Should_Generate_Assembly_Provider_For_GetTypes_From_Another_Assembly), ProceedOnFailure = true)]
-    [MethodDataSource(typeof(GetTypesTestsData), nameof(GetTypesTestsData.GetTypesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetTypes_From_Another_Assembly_Using_Cache(GetTypesTestsData.Item item)
-    {
-        using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
-        var other = await Builder
-                         .WithProjectName("OtherProject")
-                         .AddSources(
-                              $$$""""
-                              using Rocket.Surgery.DependencyInjection;
-                              using Rocket.Surgery.DependencyInjection.Compiled;
-                              using Microsoft.Extensions.DependencyInjection;
-                              using System.ComponentModel;
-                              using System.Threading;
-                              using System.Threading.Tasks;
-                              using System;
-
-                              public static class Program
-                              {
-                                  static void Main()
-                                  {
-                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                              	       provider.GetTypes({{{item.Expression}}});
-                                  }
-                              }
-                              """"
-                          )
+                         .AddSources(item.Source)
+                         .AddReferences(typeof(IService))
                          .PopulateCache(item.GetTempDirectory("other"))
                          .Build()
                          .GenerateAsync();
@@ -232,75 +97,28 @@ public class AssemblyScanningTests : GeneratorTest
 
         var result = await Builder
                           .AddCompilationReferences(other)
+                          .AddReferences(typeof(IService))
                           .PopulateCache(item.GetTempDirectory("test"))
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result.AddCacheFiles()).UseParameters(item.Name).HashParameters();
+        await Verify(result.AddCacheFiles())
+             .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
+             .UseParameters(item.Name)
+             .HashParameters();
     }
 
-    [Test]
-    [DependsOn(nameof(Should_Generate_Assembly_Provider_For_GetAssemblies), ProceedOnFailure = true)]
-    [MethodDataSource(typeof(GetAssembliesTestsData), nameof(GetAssembliesTestsData.GetAssembliesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetAssemblies_Using_Cache(GetAssembliesTestsData.Item getTypesItem)
-    {
-        var result = await Builder
-                          .AddSources(
-                               $$$""""
-                               using Rocket.Surgery.DependencyInjection;
-                               using Rocket.Surgery.DependencyInjection.Compiled;
-                               using Microsoft.Extensions.DependencyInjection;
-                               using System.ComponentModel;
-                               using System.Threading;
-                               using System.Threading.Tasks;
-                               using System;
-
-                               public static class Program
-                               {
-                                   static void Main()
-                                   {
-                                        var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                               	        provider.GetAssemblies({{{getTypesItem.Expression}}});
-                                   }
-                               }
-                               """"
-                           )
-                          .PopulateCache(getTypesItem.GetTempDirectory())
-                          .Build()
-                          .GenerateAsync();
-
-        await Verify(result.AddCacheFiles()).UseParameters(getTypesItem.Name).HashParameters();
-    }
 
     [Test]
-    [DependsOn(nameof(Should_Generate_Assembly_Provider_For_GetAssemblies_From_Another_Assembly), ProceedOnFailure = true)]
-    [MethodDataSource(typeof(GetAssembliesTestsData), nameof(GetAssembliesTestsData.GetAssembliesData))]
-    public async Task Should_Generate_Assembly_Provider_For_GetAssemblies_From_Another_Assembly_Using_Cache(GetAssembliesTestsData.Item getTypesItem)
+    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly(TestSource item)
     {
         using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
         var other = await Builder
                          .WithProjectName("OtherProject")
-                         .AddSources(
-                              $$$""""
-                              using Rocket.Surgery.DependencyInjection;
-                              using Rocket.Surgery.DependencyInjection.Compiled;
-                              using Microsoft.Extensions.DependencyInjection;
-                              using System.ComponentModel;
-                              using System.Threading;
-                              using System.Threading.Tasks;
-                              using System;
-
-                              public static class Program
-                              {
-                                  static void Main()
-                                  {
-                                       var provider = typeof(Program).Assembly.GetCompiledTypeProvider();
-                              	       provider.GetAssemblies({{{getTypesItem.Expression}}});
-                                  }
-                              }
-                              """"
-                          )
-                         .PopulateCache(getTypesItem.GetTempDirectory("other"))
+                         .AddSources(item.Source)
+                         .AddReferences(typeof(IService))
+                         .AddCacheOptions(item.GetTempDirectory("other"))
                          .Build()
                          .GenerateAsync();
 
@@ -309,10 +127,46 @@ public class AssemblyScanningTests : GeneratorTest
 
         var result = await Builder
                           .AddCompilationReferences(other)
-                          .PopulateCache(getTypesItem.GetTempDirectory("test"))
+                          .AddSources(item.Source)
+                          .AddReferences(typeof(IService))
+                          .AddCacheOptions(item.GetTempDirectory("test"))
                           .Build()
                           .GenerateAsync();
 
-        await Verify(result.AddCacheFiles()).UseParameters(getTypesItem.Name).HashParameters();
+        await Verify(result.AddCacheFiles())
+             .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
+             .UseParameters(item.Name)
+             .HashParameters();
+    }
+
+    [Test]
+    [DependsOn(nameof(Should_Generate_All_The_Things_From_Self_And_Another_Assembly), ProceedOnFailure = true)]
+    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly_Using_Cache(TestSource item)
+    {
+        using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
+        var other = await Builder
+                         .WithProjectName("OtherProject")
+                         .AddSources(item.Source)
+                         .AddReferences(typeof(IService))
+                         .PopulateCache(item.GetTempDirectory("other"))
+                         .Build()
+                         .GenerateAsync();
+
+        other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).Should().BeEmpty();
+        other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
+
+        var result = await Builder
+                          .AddCompilationReferences(other)
+                          .AddSources(item.Source)
+                          .AddReferences(typeof(IService))
+                          .PopulateCache(item.GetTempDirectory("test"))
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result.AddCacheFiles())
+             .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
+             .UseParameters(item.Name)
+             .HashParameters();
     }
 }

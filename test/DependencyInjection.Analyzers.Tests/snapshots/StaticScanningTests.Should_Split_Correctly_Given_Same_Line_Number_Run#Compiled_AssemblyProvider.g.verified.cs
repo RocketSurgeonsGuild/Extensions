@@ -28,17 +28,24 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (System.IO.Path.GetFileName(filePath))
+        switch (lineNumber)
         {
             // FilePath: Input1.cs Expression: A6yjy1/sDfCZYryJ841HEQ==
-            case "Input1.cs":
-                services.Add(ServiceDescriptor.Singleton<global::Service, global::Service>());
-                services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::Service>()));
-                break;
-            // FilePath: Input2.cs Expression: fhNv/1snT1EgMxIUt2qh7Q==
-            case "Input2.cs":
-                services.Add(ServiceDescriptor.Scoped<global::ServiceB, global::ServiceB>());
-                services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
+            case 11:
+                switch (System.IO.Path.GetFileName(filePath))
+                {
+                    // FilePath: Input1.cs Expression: A6yjy1/sDfCZYryJ841HEQ==
+                    case "Input1.cs":
+                        services.Add(ServiceDescriptor.Singleton<global::Service, global::Service>());
+                        services.Add(ServiceDescriptor.Singleton<global::IService>(a => a.GetRequiredService<global::Service>()));
+                        break;
+                    // FilePath: Input2.cs Expression: fhNv/1snT1EgMxIUt2qh7Q==
+                    case "Input2.cs":
+                        services.Add(ServiceDescriptor.Scoped<global::ServiceB, global::ServiceB>());
+                        services.Add(ServiceDescriptor.Scoped<global::IServiceB>(a => a.GetRequiredService<global::ServiceB>()));
+                        break;
+                }
+
                 break;
         }
 

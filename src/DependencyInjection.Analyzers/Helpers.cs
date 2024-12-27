@@ -333,7 +333,7 @@ internal static class Helpers
             )
            .WithTarget(AttributeTargetSpecifier(Token(SyntaxKind.AssemblyKeyword)));
 
-    internal static SourceLocation CreateSourceLocation(InvocationExpressionSyntax methodCallSyntax, CancellationToken cancellationToken)
+    internal static SourceLocation CreateSourceLocation(SourceLocationKind kind, InvocationExpressionSyntax methodCallSyntax, CancellationToken cancellationToken)
     {
         if (methodCallSyntax is { Expression: MemberAccessExpressionSyntax memberAccess, ArgumentList.Arguments: [{ Expression: { } argumentExpression }] }) { }
         else if (methodCallSyntax is
@@ -353,6 +353,7 @@ internal static class Helpers
         var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(expression));
 
         var source = new SourceLocation(
+            kind,
             memberAccess
                .Name
                .SyntaxTree.GetText(cancellationToken)

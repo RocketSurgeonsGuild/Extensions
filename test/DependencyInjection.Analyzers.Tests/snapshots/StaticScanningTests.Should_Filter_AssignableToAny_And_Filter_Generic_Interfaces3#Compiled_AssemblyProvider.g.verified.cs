@@ -27,10 +27,10 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (System.IO.Path.GetFileName(filePath))
+        switch (lineNumber)
         {
             // FilePath: Input0.cs Expression: Ibe4iuU0MFY/Rf8IGp5VWg==
-            case "Input0.cs":
+            case 19:
                 services.Add(ServiceDescriptor.Scoped<global::IValidator<global::Nested.MyRecord>, global::Nested.Validator>());
                 break;
         }

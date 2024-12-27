@@ -28,10 +28,10 @@ file class CompiledTypeProvider : ICompiledTypeProvider
 
     Microsoft.Extensions.DependencyInjection.IServiceCollection ICompiledTypeProvider.Scan(Microsoft.Extensions.DependencyInjection.IServiceCollection services, Action<IServiceDescriptorAssemblySelector> selector, int lineNumber, string filePath, string argumentExpression)
     {
-        switch (System.IO.Path.GetFileName(filePath))
+        switch (lineNumber)
         {
             // FilePath: Input0.cs Expression: 44B794K0WP4CpbGnZy+t4A==
-            case "Input0.cs":
+            case 19:
                 services.Add(ServiceDescriptor.Scoped(TestProject.GetType("Nested+Validator")!, TestProject.GetType("Nested+Validator")!));
                 services.Add(ServiceDescriptor.Scoped(typeof(global::IValidator<>).MakeGenericType(TestProject.GetType("Nested+MyRecord")!)!, a => a.GetRequiredService(TestProject.GetType("Nested+Validator")!)));
                 break;
