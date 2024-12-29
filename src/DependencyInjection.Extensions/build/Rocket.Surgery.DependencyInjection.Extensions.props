@@ -1,6 +1,10 @@
 ﻿<Project>
+    <PropertyGroup>
+        <ExcludeAssemblyFromCTP>netstandard;System;mscorlib;Microsoft</ExcludeAssemblyFromCTP>
+    </PropertyGroup>
     <ItemGroup>
         <CompilerVisibleProperty Include="IntermediateOutputPath" />
         <CompilerVisibleProperty Include="ProjectDir" />
+        <CompilerVisibleProperty Include="ExcludeAssemblyFromCTP" />
     </ItemGroup>
 </Project>

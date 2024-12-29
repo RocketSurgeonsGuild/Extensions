@@ -23,6 +23,7 @@ internal static class ReflectionCollection
         .Collect();
 
     public static ResolvedSourceLocation? ResolveSource(
+        AssemblyProviderConfiguration configuration,
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
         Item item,
@@ -31,17 +32,14 @@ internal static class ReflectionCollection
     {
         try
         {
-            var pa = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
-            var reducedTypes = new TypeSymbolVisitor(compilation, item.AssemblyFilter, item.TypeFilter)
-                              .GetReferencedTypes(targetAssembly)
-                              .GetTypes();
-            if (reducedTypes.Count == 0)
-            {
-                return null;
-            }
-
-            var localBlock = GenerateDescriptors(compilation, reducedTypes, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
-            return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
+            return SymbolEqualityComparer.Default.Equals(targetAssembly, compilation.Assembly)
+                ? resolvedSourceLocation()
+                : configuration.CacheSourceLocation(
+                    item.Location,
+                    targetAssembly,
+                    SourceLocationKind.Reflection,
+                    resolvedSourceLocation
+                );
         }
         catch (Exception e)
         {
@@ -57,9 +55,25 @@ internal static class ReflectionCollection
             );
             return null;
         }
+
+        ResolvedSourceLocation? resolvedSourceLocation()
+        {
+            var pa = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+            var reducedTypes = new TypeSymbolVisitor(compilation, item.AssemblyFilter, item.TypeFilter)
+                              .GetReferencedTypes(targetAssembly)
+                              .GetTypes();
+            if (reducedTypes.Count == 0)
+            {
+                return null;
+            }
+
+            var localBlock = GenerateDescriptors(compilation, reducedTypes, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
+            return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
+        }
     }
 
     public static ImmutableList<ResolvedSourceLocation> ResolveSources(
+        AssemblyProviderConfiguration configuration,
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
         IReadOnlyList<Item> items,
@@ -74,7 +88,7 @@ internal static class ReflectionCollection
         var results = new List<ResolvedSourceLocation>();
         foreach (var item in items)
         {
-            if (ResolveSource(compilation, diagnostics, item, targetAssembly) is not { } location)
+            if (ResolveSource(configuration, compilation, diagnostics, item, targetAssembly) is not { } location)
             {
                 continue;
             }

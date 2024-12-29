@@ -26,30 +26,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: k3I/Rx+SkLucSpWhzM/FnQ==
             case 16:
-                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorInfoEx")!);
-                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
-                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!);
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructorAttribute));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService));
-                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.KeyedService+AnyKeyObj")!);
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection));
-                items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ServiceCollection+ServiceCollectionDebugView")!);
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceKeyAttribute));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime));
                 items.Add(OtherProject.GetType("Program")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ExcludeFromCompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector));
@@ -120,9 +99,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     }
 
     private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly)!;
-    private Assembly _MicrosoftExtensionsDependencyInjectionAbstractions;
-    private Assembly MicrosoftExtensionsDependencyInjectionAbstractions => _MicrosoftExtensionsDependencyInjectionAbstractions ??= _context.LoadFromAssemblyName(new AssemblyName("Microsoft.Extensions.DependencyInjection.Abstractions, Version=version, Culture=neutral, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f33a29044fa9d740c9b3213a93e57c84b472c84e0b8a0e1ae48e67a9f8f6de9d5f7f3d52ac23e48ac51801f1dc950abe901da34d2a9e3baadb141a17c77ef3c565dd5ee5054b91cf63bb3c6ab83f72ab3aafe93d0fc3c2348b764fafb0b1c0733de51459aeab46580384bf9d74c4e28164b7cde247f891ba07891c9d872ad2bb"));
-
     private Assembly _OtherProject;
     private Assembly OtherProject => _OtherProject ??= _context.LoadFromAssemblyName(new AssemblyName("OtherProject, Version=version, Culture=neutral, PublicKeyToken=null"));
 

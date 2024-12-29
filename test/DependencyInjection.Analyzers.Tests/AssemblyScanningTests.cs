@@ -22,6 +22,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddSources(item.Source)
                           .AddReferences(typeof(IService))
                           .AddCacheOptions(item.GetTempDirectory())
+                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft")
                           .Build()
                           .GenerateAsync();
 
@@ -42,6 +43,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddSources(item.Source)
                           .AddReferences(typeof(IService))
                           .PopulateCache(item.GetTempDirectory())
+                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft")
                           .Build()
                           .GenerateAsync();
 
@@ -63,6 +65,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                          .AddSources(item.Source)
                          .AddReferences(typeof(IService))
                          .AddCacheOptions(item.GetTempDirectory("other"))
+                         .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection")
                          .Build()
                          .GenerateAsync();
 
@@ -73,6 +76,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddCompilationReferences(other)
                           .AddReferences(typeof(IService))
                           .AddCacheOptions(item.GetTempDirectory("test"))
+                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection")
                           .Build()
                           .GenerateAsync();
 
@@ -95,6 +99,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                          .AddSources(item.Source)
                          .AddReferences(typeof(IService))
                          .PopulateCache(item.GetTempDirectory("other"))
+                         .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection")
                          .Build()
                          .GenerateAsync();
 
@@ -105,6 +110,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddCompilationReferences(other)
                           .AddReferences(typeof(IService))
                           .PopulateCache(item.GetTempDirectory("test"))
+                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection")
                           .Build()
                           .GenerateAsync();
 
@@ -126,6 +132,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                          .AddSources(item.Source)
                          .AddReferences(typeof(IService))
                          .AddCacheOptions(item.GetTempDirectory("other"))
+                         .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection.Abstractions")
                          .Build()
                          .GenerateAsync();
 
@@ -137,6 +144,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddSources(item.Source)
                           .AddReferences(typeof(IService))
                           .AddCacheOptions(item.GetTempDirectory("test"))
+                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection.Abstractions")
                           .Build()
                           .GenerateAsync();
 
@@ -159,6 +167,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                          .AddSources(item.Source)
                          .AddReferences(typeof(IService))
                          .PopulateCache(item.GetTempDirectory("other"))
+                         .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection.Abstractions")
                          .Build()
                          .GenerateAsync();
 
@@ -170,6 +179,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddSources(item.Source)
                           .AddReferences(typeof(IService))
                           .PopulateCache(item.GetTempDirectory("test"))
+                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection.Abstractions")
                           .Build()
                           .GenerateAsync();
 

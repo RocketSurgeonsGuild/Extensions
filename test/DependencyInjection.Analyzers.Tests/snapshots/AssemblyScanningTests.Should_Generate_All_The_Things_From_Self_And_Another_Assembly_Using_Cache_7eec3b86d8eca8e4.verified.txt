@@ -72,6 +72,7 @@
           Type: GetServiceDescriptorCollectionData
         }
       ],
+      ExcludeFromResolution: false,
       IsEmpty: false
     },
     Rocket.Surgery.DependencyInjection.Extensions: {
@@ -160,6 +161,7 @@
           Type: GetServiceDescriptorCollectionData
         }
       ],
+      ExcludeFromResolution: false,
       IsEmpty: false
     }
   },
@@ -167,6 +169,7 @@
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
   GlobalOptions: {
+    build_property.ExcludeAssemblyFromCTP: Microsoft.Extensions.DependencyInjection.Abstractions,
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
   },
@@ -209,7 +212,6 @@
     TestAssembly.dll
   ],
   SkippedAssemblies: [
-    Microsoft.Extensions.DependencyInjection.Abstractions,
     mscorlib,
     netstandard,
     System.ComponentModel,

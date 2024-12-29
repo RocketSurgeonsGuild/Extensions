@@ -29,9 +29,9 @@ internal partial class AssemblyProviderConfiguration
             var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
                 ? intermediateOutputPath
                 : null;
+            if (directory is null) return null;
             if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
                 directory = Path.Combine(projectDirectory, directory);
-            if (directory is null) return null;
             var cacheDirectory = Path.Combine(directory, "GeneratedAssemblyProvider");
             if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
 
@@ -58,7 +58,7 @@ internal partial class AssemblyProviderConfiguration
     }
 
 #pragma warning disable RS1035
-    private ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, SourceLocationKind kind, Func<ResolvedSourceLocation?> factory)
+    internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, SourceLocationKind kind, Func<ResolvedSourceLocation?> factory)
     {
         var cacheKey = $"{kind}-{assemblySymbol.MetadataName.Replace(".", "_")}-{GetCacheFileHash(location)}{Constants.PartialExtension}";
         if (partial.TryGetValue(cacheKey, out var text))
@@ -80,12 +80,12 @@ internal partial class AssemblyProviderConfiguration
         ImmutableList<ServiceDescriptorCollection.Item> InternalServiceDescriptorRequests,
         ImmutableList<ResolvedSourceLocation> ServiceDescriptorSources
         ) FromAssemblyAttributes(
-            ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
+            ref ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
             ImmutableList<ReflectionCollection.Item> reflectionRequests,
             ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptorRequests,
             HashSet<Diagnostic> globalDiagnostics
         )
-   {
+    {
         var reflectionSources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
         var serviceDescriptorSources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
 
@@ -101,12 +101,14 @@ internal partial class AssemblyProviderConfiguration
                     out var assemblyAssemblySources,
                     out var assemblyReflectionBuilder,
                     out var assemblyServiceDescriptorBuilder,
+                    out var excludeFromResolution,
                     assemblySymbols
                 );
 
                 internalAssemblyRequestsBuilder.AddRange(assemblyAssemblySources);
                 internalReflectionRequestsBuilder.AddRange(assemblyReflectionBuilder);
                 internalServiceDescriptorRequestsBuilder.AddRange(assemblyServiceDescriptorBuilder);
+                if (excludeFromResolution) assemblySymbols = assemblySymbols.Remove(assembly.MetadataName);
 
                 // steps
                 // cache requests resulting from an assembly.
@@ -135,32 +137,24 @@ internal partial class AssemblyProviderConfiguration
         {
             foreach (var request in reflectionRequests.Concat(internalReflectionRequests))
             {
-                var source = CacheSourceLocation(
-                    request.Location,
-                    assembly,
-                    SourceLocationKind.Reflection,
-                    () => ReflectionCollection.ResolveSource(
-                        compilation,
-                        diagnostics,
-                        request,
-                        assembly
-                    )
+                var source = ReflectionCollection.ResolveSource(
+                    this,
+                    compilation,
+                    diagnostics,
+                    request,
+                    assembly
                 );
                 if (source is { }) reflectionSources.Add(source);
             }
 
             foreach (var request in serviceDescriptorRequests.Concat(internalServiceDescriptorRequests))
             {
-                var source = CacheSourceLocation(
-                    request.Location,
-                    assembly,
-                    SourceLocationKind.ServiceDescriptor,
-                    () => ServiceDescriptorCollection.ResolveSource(
-                        compilation,
-                        diagnostics,
-                        request,
-                        assembly
-                    )
+                var source = ServiceDescriptorCollection.ResolveSource(
+                    this,
+                    compilation,
+                    diagnostics,
+                    request,
+                    assembly
                 );
                 if (source is { }) serviceDescriptorSources.Add(source);
             }
@@ -185,6 +179,7 @@ internal partial class AssemblyProviderConfiguration
         out ImmutableList<AssemblyCollection.Item> assemblyItems,
         out ImmutableList<ReflectionCollection.Item> reflection,
         out ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptor,
+        out bool excludeFromResolution,
         ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
     )
     {
@@ -194,6 +189,7 @@ internal partial class AssemblyProviderConfiguration
             assemblyItems = [];
             reflection = [];
             serviceDescriptor = [];
+            excludeFromResolution = false;
             return;
         }
 
@@ -204,15 +200,21 @@ internal partial class AssemblyProviderConfiguration
             reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z)).ToImmutableList();
             serviceDescriptor =
                 generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z)).ToImmutableList();
+            excludeFromResolution = generatedData.ExcludeFromResolution;
             return;
         }
 
         var assemblyBuilder = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
         var reflectionBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
         var serviceDescriptorBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
+        excludeFromResolution = false;
         var attributes = assembly.GetAttributes();
         foreach (var attribute in attributes)
         {
+            if (attribute is { AttributeClass.MetadataName: "ExcludeFromCompiledTypeProviderAttribute" })
+            {
+                excludeFromResolution = true;
+            }
             if (attribute is not { AttributeClass.MetadataName: "AssemblyMetadataAttribute" }) continue;
 
             try
@@ -266,7 +268,8 @@ internal partial class AssemblyProviderConfiguration
         var result = new CompiledAssemblyProviderData(
             assemblyBuilder.Select(GetAssembyCollectionData).ToImmutableList(),
             reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
-            serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList()
+            serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList(),
+            excludeFromResolution
         );
 
         if (result.IsEmpty)
@@ -753,14 +756,14 @@ internal partial class AssemblyProviderConfiguration
                  {
                      ImplementedInterfacesServiceTypeDescriptor i => new(
                          'i',
-                         TypeFilter: i.InterfaceFilter is { } ? LoadTypeFilterData(i.InterfaceFilter) : null
+                         TypeFilter: i is { InterfaceFilter: {} filter } ? LoadTypeFilterData(filter) : null
                      ),
                      MatchingInterfaceServiceTypeDescriptor => new('m'),
                      SelfServiceTypeDescriptor => new('s'),
                      AsTypeFilterServiceTypeDescriptor => new('a'),
-                     CompiledServiceTypeDescriptor c => new ServiceTypeData(
+                     CompiledServiceTypeDescriptor  { Type: {} namedType } => new ServiceTypeData(
                          'c',
-                         new(c.Type.ContainingAssembly.MetadataName, c.Type.MetadataName, c.Type.IsUnboundGenericType)
+                         TypeData: new(namedType.ContainingAssembly.MetadataName, namedType.MetadataName, namedType.IsUnboundGenericType)
                      ),
                      _ => throw new ArgumentOutOfRangeException(nameof(z)),
                  }

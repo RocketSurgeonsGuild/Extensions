@@ -35,7 +35,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
         var collectionProvider = assembliesSyntaxProvider
                                 .Combine(reflectionSyntaxProvider)
                                 .Combine(serviceDescriptorSyntaxProvider)
-                                .Select((z, _) => (assemblies: z.Left.Left, reflection: z.Left.Right, serviceDescriptors: z.Right));
+                                .Select((z, _) => ( assemblies: z.Left.Left, reflection: z.Left.Right, serviceDescriptors: z.Right ));
         var generatedJsonProvider = context
                                    .AdditionalTextsProvider.Where(z => z.Path.EndsWith(Constants.AssemblyJsonExtension, StringComparison.OrdinalIgnoreCase))
                                    .Select(
@@ -44,10 +44,10 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                                             var source = text.GetText()?.ToString();
                                             if (source is not { Length: > 100 })
                                             {
-                                                return (path: Path.GetFileName(text.Path), source: new([], [], []));
+                                                return ( path: Path.GetFileName(text.Path), source: new([], [], [], false) );
                                             }
 
-                                            return (path: Path.GetFileName(text.Path),
+                                            return ( path: Path.GetFileName(text.Path),
                                                      source: JsonSerializer.Deserialize(
                                                          source,
                                                          JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
@@ -65,16 +65,20 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
         var partialProvider = context
                              .AdditionalTextsProvider.Where(z => z.Path.EndsWith(Constants.PartialExtension, StringComparison.OrdinalIgnoreCase))
                              .Collect()
-                             .Select((z, _) => z.ToFrozenDictionary(static z => Path.GetFileName(z.Path), static z =>
-                                                                                                              JsonSerializer.Deserialize(
-                                                                                                                  z.GetText()?.ToString() ?? "",
-                                                                                                                  JsonSourceGenerationContext.Default.SavedSourceLocation
-                                                                                                              )!
-                                                                                                              ));
+                             .Select(
+                                  (z, _) => z.ToFrozenDictionary(
+                                      static z => Path.GetFileName(z.Path),
+                                      static z =>
+                                          JsonSerializer.Deserialize(
+                                              z.GetText()?.ToString() ?? "",
+                                              JsonSourceGenerationContext.Default.SavedSourceLocation
+                                          )!
+                                  )
+                              );
         var additionalFilesProvider = generatedJsonProvider
                                      .Combine(skipProvider)
                                      .Combine(partialProvider)
-                                     .Select((z, _) => (generatedJson: z.Left.Left, skip: z.Left.Right, partial: z.Right));
+                                     .Select((z, _) => ( generatedJson: z.Left.Left, skip: z.Left.Right, partial: z.Right ));
         context.RegisterImplementationSourceOutput(
             context
                .CompilationProvider
@@ -93,6 +97,7 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 ),
             static (context, request) =>
             {
+                HashSet<string> excludedAssemblies = request.options.GlobalOptions.TryGetValue("build_property.ExcludeAssemblyFromCTP", out var assemblies) ? [..assemblies.Split([';', ','], StringSplitOptions.RemoveEmptyEntries)] : [];
                 var privateAssemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
                 var diagnostics = new HashSet<Diagnostic>();
                 var assemblyRequests = AssemblyCollection.GetAssemblyItems(request.compilation, diagnostics, request.assemblies, context.CancellationToken);
@@ -110,28 +115,38 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 );
                 var attributes = AssemblyProviderConfiguration.ToAssemblyAttributes(assemblyRequests, reflectionRequests, serviceDescriptorRequests).ToArray();
 
-                var config = new AssemblyProviderConfiguration(context, request.compilation, request.options, request.additionalFiles.generatedJson, request.additionalFiles.skip, request.additionalFiles.partial);
+                var assemblySymbols = request
+                                     .compilation
+                                     .References
+                                     .Select(request.compilation.GetAssemblyOrModuleSymbol)
+                                     .Concat([request.compilation.Assembly])
+                                     .Select(
+                                          symbol =>
+                                          {
+                                              if (symbol is IAssemblySymbol assemblySymbol) return assemblySymbol;
 
-                var assemblySymbols = request.compilation
-                                             .References.Select(request.compilation.GetAssemblyOrModuleSymbol)
-                                             .Concat([request.compilation.Assembly])
-                                             .Select(
-                                                  symbol =>
-                                                  {
-                                                      if (symbol is IAssemblySymbol assemblySymbol) return assemblySymbol;
+                                              if (symbol is IModuleSymbol moduleSymbol) return moduleSymbol.ContainingAssembly;
 
-                                                      if (symbol is IModuleSymbol moduleSymbol) return moduleSymbol.ContainingAssembly;
+                                              // ReSharper disable once NullableWarningSuppressionIsUsed
+                                              return null!;
+                                          }
+                                      )
+                                     .Where(z => z is { })
+                                     .Where(z => excludedAssemblies.All(a => !z.MetadataName.StartsWith(a, StringComparison.OrdinalIgnoreCase)))
+                                     .GroupBy(z => z.MetadataName, z => z, (s, symbols) => ( Key: s, Symbol: symbols.First() ))
+                                     .ToImmutableDictionary(z => z.Key, z => z.Symbol);
 
-                                                      // ReSharper disable once NullableWarningSuppressionIsUsed
-                                                      return null!;
-                                                  }
-                                              )
-                                             .Where(z => z is { })
-                                             .GroupBy(z => z.MetadataName, z => z, (s, symbols) => (Key: s, Symbol: symbols.First()))
-                                             .ToImmutableDictionary(z => z.Key, z => z.Symbol);
+                var config = new AssemblyProviderConfiguration(
+                    context,
+                    request.compilation,
+                    request.options,
+                    request.additionalFiles.generatedJson,
+                    request.additionalFiles.skip,
+                    request.additionalFiles.partial
+                );
 
                 var resolvedData = config.FromAssemblyAttributes(
-                    assemblySymbols,
+                    ref assemblySymbols,
                     reflectionRequests,
                     serviceDescriptorRequests,
                     diagnostics
@@ -142,17 +157,21 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 serviceDescriptorRequests = serviceDescriptorRequests.AddRange(resolvedData.InternalServiceDescriptorRequests);
 
                 var assemblySources = AssemblyCollection.ResolveSources(
+                    config,
                     request.compilation,
                     diagnostics,
-                    assemblyRequests
+                    assemblyRequests,
+                    assemblySymbols
                 );
                 var reflectionSources = ReflectionCollection.ResolveSources(
+                    config,
                     request.compilation,
                     diagnostics,
                     reflectionRequests,
                     request.compilation.Assembly
                 );
                 var serviceDescriptorSources = ServiceDescriptorCollection.ResolveSources(
+                    config,
                     request.compilation,
                     diagnostics,
                     serviceDescriptorRequests,
@@ -162,14 +181,9 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 reflectionSources = reflectionSources.AddRange(resolvedData.ReflectionSources);
                 serviceDescriptorSources = serviceDescriptorSources.AddRange(resolvedData.ServiceDescriptorSources);
 
-                privateAssemblies.UnionWith(JoinAssemblies(assemblySymbols, assemblySources));
-                privateAssemblies.UnionWith(JoinAssemblies(assemblySymbols, reflectionSources));
-                privateAssemblies.UnionWith(JoinAssemblies(assemblySymbols, serviceDescriptorSources));
-
-                static IEnumerable<IAssemblySymbol> JoinAssemblies(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, IAssemblySymbol>> assemblies, System.Collections.Generic.IEnumerable<ResolvedSourceLocation> sources)
-                {
-                    return sources.SelectMany(z => z.PrivateAssemblies).Join(assemblies, z => z, z => z.Key, (_, a) => a.Value);
-                }
+                privateAssemblies.UnionWith(joinAssemblies(assemblySymbols, assemblySources));
+                privateAssemblies.UnionWith(joinAssemblies(assemblySymbols, reflectionSources));
+                privateAssemblies.UnionWith(joinAssemblies(assemblySymbols, serviceDescriptorSources));
 
                 var cu = CompilationUnit()
                    .WithUsings(
@@ -226,9 +240,15 @@ public class CompiledServiceScanningGenerator : IIncrementalGenerator
                 }
 
                 context.AddSource(
-                    "Compiled_AssemblyProvider.g.cs",
+                    "Compiled_AssemblyProvider.g.cs", // "CompiledTypeProvider.g.cs",
                     cu.NormalizeWhitespace().SyntaxTree.GetRoot().GetText(Encoding.UTF8)
                 );
+                return;
+
+                static IEnumerable<IAssemblySymbol> joinAssemblies(IEnumerable<KeyValuePair<string, IAssemblySymbol>> assemblies, IEnumerable<ResolvedSourceLocation> sources)
+                {
+                    return sources.SelectMany(z => z.PrivateAssemblies).Join(assemblies, z => z, z => z.Key, (_, a) => a.Value);
+                }
             }
         );
     }

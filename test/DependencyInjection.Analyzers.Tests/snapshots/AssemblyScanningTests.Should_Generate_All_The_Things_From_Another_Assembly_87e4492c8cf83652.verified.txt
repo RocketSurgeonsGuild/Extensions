@@ -70,6 +70,7 @@
           Type: GetReflectionCollectionData
         }
       ],
+      ExcludeFromResolution: false,
       IsEmpty: false
     },
     Rocket.Surgery.DependencyInjection.Extensions: {
@@ -158,6 +159,7 @@
           Type: GetServiceDescriptorCollectionData
         }
       ],
+      ExcludeFromResolution: false,
       IsEmpty: false
     }
   },
@@ -165,26 +167,11 @@
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
   GlobalOptions: {
+    build_property.ExcludeAssemblyFromCTP: Microsoft.Extensions.DependencyInjection,
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
   },
   PartialsCached: {
-    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-a8f78d7c8c20bb73f64609541281aeb8: {
-      Kind: Reflection,
-      Location: {
-        Kind: Reflection,
-        LineNumber: 16,
-        ExpressionHash: 1ecL2VuAmqERavxp/hDPEw==,
-        FileName: Input0.cs,
-        FilePath: Input0.cs
-      },
-      Expression:
-{
-    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>));
-    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>));
-},
-      PrivateAssemblies: null
-    },
     Reflection-Rocket_Surgery_DependencyInjection_Extensions-a8f78d7c8c20bb73f64609541281aeb8: {
       Kind: Reflection,
       Location: {
@@ -262,7 +249,6 @@
     TestAssembly.dll
   ],
   SkippedAssemblies: [
-    Microsoft.Extensions.DependencyInjection.Abstractions,
     mscorlib,
     netstandard,
     System.ComponentModel,

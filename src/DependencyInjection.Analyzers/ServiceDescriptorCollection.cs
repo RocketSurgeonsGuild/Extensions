@@ -26,6 +26,7 @@ internal static class ServiceDescriptorCollection
     }
 
     public static ResolvedSourceLocation? ResolveSource(
+        AssemblyProviderConfiguration configuration,
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
         Item item,
@@ -34,13 +35,25 @@ internal static class ServiceDescriptorCollection
     {
         try
         {
-            var pa = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
-            var reducedTypes = new TypeSymbolVisitor(compilation, item.AssemblyFilter, item.TypeFilter)
-                              .GetReferencedTypes(targetAssembly)
-                              .GetTypes();
-            if (reducedTypes.Count == 0) return null;
-            var localBlock = GenerateDescriptors(compilation, diagnostics, reducedTypes, item.ServicesTypeFilter, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
-            return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
+            return SymbolEqualityComparer.Default.Equals(targetAssembly, compilation.Assembly)
+                ? resolvedSourceLocation()
+                : configuration.CacheSourceLocation(
+                    item.Location,
+                    targetAssembly,
+                    SourceLocationKind.ServiceDescriptor,
+                    resolvedSourceLocation
+                );
+
+            ResolvedSourceLocation? resolvedSourceLocation()
+            {
+                var pa = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
+                var reducedTypes = new TypeSymbolVisitor(compilation, item.AssemblyFilter, item.TypeFilter)
+                                  .GetReferencedTypes(targetAssembly)
+                                  .GetTypes();
+                if (reducedTypes.Count == 0) return null;
+                var localBlock = GenerateDescriptors(compilation, diagnostics, reducedTypes, item.ServicesTypeFilter, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
+                return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
+            }
         }
         catch (Exception e)
         {
@@ -59,6 +72,7 @@ internal static class ServiceDescriptorCollection
     }
 
     public static ImmutableList<ResolvedSourceLocation> ResolveSources(
+        AssemblyProviderConfiguration configuration,
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
         IReadOnlyList<Item> items,
@@ -69,7 +83,7 @@ internal static class ServiceDescriptorCollection
         var results = new List<ResolvedSourceLocation>();
         foreach (var item in items)
         {
-            if (ResolveSource(compilation, diagnostics, item, targetAssembly) is not { } location) continue;
+            if (ResolveSource(configuration, compilation, diagnostics, item, targetAssembly) is not { } location) continue;
             results.Add(location);
         }
 

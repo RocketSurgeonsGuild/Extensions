@@ -70,6 +70,7 @@
           Type: GetReflectionCollectionData
         }
       ],
+      ExcludeFromResolution: false,
       IsEmpty: false
     },
     Rocket.Surgery.DependencyInjection.Extensions: {
@@ -158,6 +159,7 @@
           Type: GetServiceDescriptorCollectionData
         }
       ],
+      ExcludeFromResolution: false,
       IsEmpty: false
     }
   },
@@ -165,30 +167,11 @@
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
   GlobalOptions: {
+    build_property.ExcludeAssemblyFromCTP: Microsoft.Extensions.DependencyInjection,
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
   },
   PartialsCached: {
-    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-c59a7feac54d2d6c4cd253d9be1887b5: {
-      Kind: Reflection,
-      Location: {
-        Kind: Reflection,
-        LineNumber: 16,
-        ExpressionHash: WAZd2dprWkbDpjZXt4A58w==,
-        FileName: Input0.cs,
-        FilePath: Input0.cs
-      },
-      Expression:
-{
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!);
-    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope));
-    items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime));
-},
-      PrivateAssemblies: [
-        Microsoft.Extensions.DependencyInjection.Abstractions
-      ]
-    },
     Reflection-Rocket_Surgery_DependencyInjection_Extensions-c59a7feac54d2d6c4cd253d9be1887b5: {
       Kind: Reflection,
       Location: {
@@ -220,7 +203,6 @@
     TestAssembly.dll
   ],
   SkippedAssemblies: [
-    Microsoft.Extensions.DependencyInjection.Abstractions,
     mscorlib,
     netstandard,
     System.ComponentModel,
