@@ -76,6 +76,7 @@
           Type: GetReflectionCollectionData
         }
       ],
+      ExcludeFromResolution: false,
       IsEmpty: false
     },
     Rocket.Surgery.DependencyInjection.Extensions: {
@@ -164,6 +165,7 @@
           Type: GetServiceDescriptorCollectionData
         }
       ],
+      ExcludeFromResolution: false,
       IsEmpty: false
     }
   },
@@ -171,34 +173,11 @@
     Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
   },
   GlobalOptions: {
+    build_property.ExcludeAssemblyFromCTP: Microsoft.Extensions.DependencyInjection,
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
   },
   PartialsCached: {
-    Reflection-Microsoft_Extensions_DependencyInjection_Abstractions-19374c1ec3e8b09f1c0562a3654a8c8d: {
-      Kind: Reflection,
-      Location: {
-        Kind: Reflection,
-        LineNumber: 16,
-        ExpressionHash: 7vjZcTtcu7BiBUxN2YjR2A==,
-        FileName: Input0.cs,
-        FilePath: Input0.cs
-      },
-      Expression:
-{
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("FxResources.Microsoft.Extensions.DependencyInjection.Abstractions.SR")!);
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ActivatorUtilitiesUpdateHandler")!);
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorInfoEx")!);
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+ConstructorMatcher")!);
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ActivatorUtilities+FactoryParameterContext")!);
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.KeyedService+AnyKeyObj")!);
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.DependencyInjection.ServiceCollection+ServiceCollectionDebugView")!);
-    items.Add(MicrosoftExtensionsDependencyInjectionAbstractions.GetType("Microsoft.Extensions.Internal.ParameterDefaultValue")!);
-},
-      PrivateAssemblies: [
-        Microsoft.Extensions.DependencyInjection.Abstractions
-      ]
-    },
     Reflection-OtherProject-19374c1ec3e8b09f1c0562a3654a8c8d: {
       Kind: Reflection,
       Location: {
@@ -282,7 +261,6 @@
     TestAssembly.dll
   ],
   SkippedAssemblies: [
-    Microsoft.Extensions.DependencyInjection.Abstractions,
     mscorlib,
     netstandard,
     System.ComponentModel,

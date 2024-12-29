@@ -25,33 +25,11 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: smHMPY82+06HwG0itiaMJw==
             case 16:
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructorAttribute));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.AsyncServiceScope));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.KeyedService));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ObjectFactory<>));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollection));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceKeyAttribute));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
+                items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ExcludeFromCompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector));

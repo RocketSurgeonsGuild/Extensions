@@ -20,21 +20,15 @@ internal static class AssemblyCollection
         .Select((tuple, _) => tuple.Left)
         .Collect();
 
+
     public static ImmutableList<ResolvedSourceLocation> ResolveSources(
+        AssemblyProviderConfiguration configuration,
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
-        IReadOnlyList<Item> items
+        ImmutableList<Item> items,
+        ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
     )
     {
-        var assemblySymbols = compilation
-                             .References.Select(compilation.GetAssemblyOrModuleSymbol)
-                             .Concat([compilation.Assembly])
-                             .Select(
-                                  symbol => symbol switch { IAssemblySymbol assemblySymbol => assemblySymbol, IModuleSymbol moduleSymbol => moduleSymbol.ContainingAssembly, _ => null! }
-                              )
-                             .Where(z => z is { })
-                             .ToImmutableHashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
-
         var results = new List<ResolvedSourceLocation>();
         foreach (var item in items)
         {
@@ -42,6 +36,7 @@ internal static class AssemblyCollection
             try
             {
                 var filterAssemblies = assemblySymbols
+                                      .Values
                                       .Where(z => item.AssemblyFilter.IsMatch(compilation, z))
                                       .ToArray();
 
@@ -50,13 +45,8 @@ internal static class AssemblyCollection
                     continue;
                 }
 
-                results.Add(
-                    new(
-                        item.Location,
-                        GenerateDescriptors(compilation, filterAssemblies, pa).NormalizeWhitespace().ToFullString().Replace("\r", ""),
-                        pa.Select(z => z.MetadataName).ToImmutableHashSet()
-                    )
-                );
+                var descriptors = GenerateDescriptors(compilation, filterAssemblies, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
+                results.Add(new(item.Location, descriptors, pa.Select(z => z.MetadataName).ToImmutableHashSet()));
             }
             catch (Exception e)
             {

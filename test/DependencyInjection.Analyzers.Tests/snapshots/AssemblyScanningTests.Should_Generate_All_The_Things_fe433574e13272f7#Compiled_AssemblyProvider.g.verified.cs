@@ -21,7 +21,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: AJD0wI+GHf59jfK+xhPQQg==
             case 16:
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ActivatorUtilities).Assembly);
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions).Assembly);
                 items.Add(typeof(global::System.IServiceProvider).Assembly);
                 items.Add(typeof(global::TestAssembly.IService).Assembly);

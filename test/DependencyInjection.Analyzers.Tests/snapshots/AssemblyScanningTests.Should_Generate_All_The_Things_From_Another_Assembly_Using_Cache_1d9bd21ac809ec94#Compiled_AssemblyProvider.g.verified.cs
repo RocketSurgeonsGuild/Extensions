@@ -25,14 +25,6 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: k2UXW1Y4n0CiziE30f9ykg==
             case 16:
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceCollection));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderFactory<>));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsKeyedService));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceProviderIsService));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScope));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
-                items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ISupportRequiredService));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IServiceDescriptorAssemblySelector));

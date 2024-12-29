@@ -7,7 +7,8 @@ public record CompiledAssemblyProviderData
 (
     ImmutableList<GetAssemblyConfiguration> InternalAssemblyRequests,
     ImmutableList<GetReflectionCollectionData> InternalReflectionRequests,
-    ImmutableList<GetServiceDescriptorCollectionData> InternalServiceDescriptorRequests
+    ImmutableList<GetServiceDescriptorCollectionData> InternalServiceDescriptorRequests,
+    bool ExcludeFromResolution
 )
 {
     public bool IsEmpty =>

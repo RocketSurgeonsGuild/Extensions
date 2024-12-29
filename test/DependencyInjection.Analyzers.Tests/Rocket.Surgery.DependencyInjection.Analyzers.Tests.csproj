@@ -16,10 +16,7 @@
         <PackageReference Include="Microsoft.Reactive.Testing" />
         <PackageReference Include="Verify.DiffPlex" />
     </ItemGroup>
-    <!-- this lets vs work... -->
     <ItemGroup>
       <Compile Remove="snapshots\**" />
-      <EmbeddedResource Remove="snapshots\**" />
-      <None Remove="snapshots\**" />
     </ItemGroup>
 </Project>

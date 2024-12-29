@@ -133,6 +133,21 @@ internal static partial class ModuleInitializer
 
         var cacheFiles = Directory.EnumerateFiles(result.TempDirectory, "*", SearchOption.AllDirectories).Select(z => new FileInfo(z));
 
+        var generatedCache = cacheFiles
+                            .Where(z => z.Extension == Constants.AssemblyJsonExtension)
+                            .OrderBy(z => z.Name)
+                            .ToDictionary(
+                                 z => Path.GetFileNameWithoutExtension(z.Name),
+                                 z =>
+                                 {
+                                     var value = JsonSerializer.Deserialize(
+                                         File.ReadAllText(z.FullName),
+                                         JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
+                                     )!;
+                                     return value;
+                                 }
+                             );
+
         var data = new Dictionary<string, object>
         {
             ["GlobalOptions"] = target.GlobalOptions,
