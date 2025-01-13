@@ -92,7 +92,7 @@
     }
   },
   GeneratorDiagnostics: {
-    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator: []
   },
   GlobalOptions: {
     build_property.ExcludeAssemblyFromCTP: Microsoft,
@@ -100,16 +100,17 @@
     build_property.ProjectDir: {TempPath}
   },
   PartialsCached: {
-    Reflection-Rocket_Surgery_DependencyInjection_Extensions-19374c1ec3e8b09f1c0562a3654a8c8d: {
-      Kind: Reflection,
-      Location: {
-        Kind: Reflection,
-        LineNumber: 16,
-        ExpressionHash: 7vjZcTtcu7BiBUxN2YjR2A==,
-        FileName: Input0.cs,
-        FilePath: Input0.cs
-      },
-      Expression:
+    Guid_1: {
+      ResolvedSources: {
+        Rocket.Surgery.DependencyInjection.Extensions: {
+          Location: {
+            Kind: Reflection,
+            LineNumber: 16,
+            ExpressionHash: 7vjZcTtcu7BiBUxN2YjR2A==,
+            FileName: Input0.cs,
+            FilePath: Input0.cs
+          },
+          Expression:
 {
     items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`1")!);
     items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`6")!);
@@ -123,21 +124,17 @@
     items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`4")!);
     items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`3")!);
     items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`2")!);
-},
-      PrivateAssemblies: [
-        Rocket.Surgery.DependencyInjection.Extensions
-      ]
-    },
-    Reflection-TestAssembly-19374c1ec3e8b09f1c0562a3654a8c8d: {
-      Kind: Reflection,
-      Location: {
-        Kind: Reflection,
-        LineNumber: 16,
-        ExpressionHash: 7vjZcTtcu7BiBUxN2YjR2A==,
-        FileName: Input0.cs,
-        FilePath: Input0.cs
-      },
-      Expression:
+}
+        },
+        TestAssembly: {
+          Location: {
+            Kind: Reflection,
+            LineNumber: 16,
+            ExpressionHash: 7vjZcTtcu7BiBUxN2YjR2A==,
+            FileName: Input0.cs,
+            FilePath: Input0.cs
+          },
+          Expression:
 {
     items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
     items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
@@ -146,10 +143,9 @@
     items.Add(TestAssembly.GetType("TestAssembly.RequestHandler")!);
     items.Add(TestAssembly.GetType("TestAssembly.Response")!);
     items.Add(TestAssembly.GetType("TestAssembly.ServiceB")!);
-},
-      PrivateAssemblies: [
-        TestAssembly
-      ]
+}
+        }
+      }
     }
   },
   References: [
@@ -167,9 +163,9 @@
   SkippedAssemblies: [
     mscorlib,
     netstandard,
+    System,
     System.ComponentModel,
     System.Core,
-    System,
     System.Private.CoreLib,
     System.Runtime,
     TestAssembly

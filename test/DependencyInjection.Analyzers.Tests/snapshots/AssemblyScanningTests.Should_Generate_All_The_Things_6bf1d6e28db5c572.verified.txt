@@ -92,7 +92,7 @@
     }
   },
   GeneratorDiagnostics: {
-    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator: []
   },
   GlobalOptions: {
     build_property.ExcludeAssemblyFromCTP: Microsoft,
@@ -100,22 +100,22 @@
     build_property.ProjectDir: {TempPath}
   },
   PartialsCached: {
-    ServiceDescriptor-TestAssembly-076e8e7452e60daa0281e195bc25a51d: {
-      Kind: ServiceDescriptor,
-      Location: {
-        Kind: ServiceDescriptor,
-        LineNumber: 16,
-        ExpressionHash: i/Q9YfbrangthmO+cbE3ag==,
-        FileName: Input0.cs,
-        FilePath: Input0.cs
-      },
-      Expression:
+    Guid_1: {
+      ResolvedSources: {
+        TestAssembly: {
+          Location: {
+            Kind: ServiceDescriptor,
+            LineNumber: 16,
+            ExpressionHash: i/Q9YfbrangthmO+cbE3ag==,
+            FileName: Input0.cs,
+            FilePath: Input0.cs
+          },
+          Expression:
 {
     services.Add(ServiceDescriptor.Singleton(typeof(global::TestAssembly.IRequestHandler<, >).MakeGenericType(TestAssembly.GetType("TestAssembly.Request")!, TestAssembly.GetType("TestAssembly.Response")!)!, TestAssembly.GetType("TestAssembly.RequestHandler")!));
-},
-      PrivateAssemblies: [
-        TestAssembly
-      ]
+}
+        }
+      }
     }
   },
   References: [
@@ -133,9 +133,9 @@
   SkippedAssemblies: [
     mscorlib,
     netstandard,
+    System,
     System.ComponentModel,
     System.Core,
-    System,
     System.Private.CoreLib,
     System.Runtime,
     TestAssembly

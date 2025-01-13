@@ -168,7 +168,7 @@
     }
   },
   GeneratorDiagnostics: {
-    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: []
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator: []
   },
   GlobalOptions: {
     build_property.ExcludeAssemblyFromCTP: Microsoft.Extensions.DependencyInjection.Abstractions,
@@ -176,16 +176,17 @@
     build_property.ProjectDir: {TempPath}/test
   },
   PartialsCached: {
-    ServiceDescriptor-TestAssembly-27b1d70496ed7d79ab2158e5c24734a6: {
-      Kind: ServiceDescriptor,
-      Location: {
-        Kind: ServiceDescriptor,
-        LineNumber: 16,
-        ExpressionHash: nxouMzl1QFVEUuYYtb+FlA==,
-        FileName: Input0.cs,
-        FilePath: Input0.cs
-      },
-      Expression:
+    Guid_1: {
+      ResolvedSources: {
+        TestAssembly: {
+          Location: {
+            Kind: ServiceDescriptor,
+            LineNumber: 16,
+            ExpressionHash: nxouMzl1QFVEUuYYtb+FlA==,
+            FileName: Input0.cs,
+            FilePath: Input0.cs
+          },
+          Expression:
 {
     services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.GenericService")!, TestAssembly.GetType("TestAssembly.GenericService")!));
     services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.Int32>>(a => (global::TestAssembly.IGenericService<global::System.Int32>)a.GetRequiredService(TestAssembly.GetType("TestAssembly.GenericService")!)));
@@ -197,10 +198,9 @@
     services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Nested.GenericServiceA, global::TestAssembly.Nested.GenericServiceA>());
     services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IGenericService<global::System.String>>(a => a.GetRequiredService<global::TestAssembly.Nested.GenericServiceA>()));
     services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IOther>(a => a.GetRequiredService<global::TestAssembly.Nested.GenericServiceA>()));
-},
-      PrivateAssemblies: [
-        TestAssembly
-      ]
+}
+        }
+      }
     }
   },
   References: [
@@ -219,9 +219,9 @@
   SkippedAssemblies: [
     mscorlib,
     netstandard,
+    System,
     System.ComponentModel,
     System.Core,
-    System,
     System.Private.CoreLib,
     System.Runtime,
     TestAssembly

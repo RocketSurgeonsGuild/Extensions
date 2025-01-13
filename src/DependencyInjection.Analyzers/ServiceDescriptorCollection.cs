@@ -40,7 +40,6 @@ internal static class ServiceDescriptorCollection
                 : configuration.CacheSourceLocation(
                     item.Location,
                     targetAssembly,
-                    SourceLocationKind.ServiceDescriptor,
                     resolvedSourceLocation
                 );
 

@@ -22,4 +22,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 [JsonSerializable(typeof(GetAssemblyConfiguration))]
 [JsonSerializable(typeof(GetReflectionCollectionData))]
 [JsonSerializable(typeof(GetServiceDescriptorCollectionData))]
+[JsonSerializable(typeof(GeneratedAssemblyProviderData))]
+[JsonSerializable(typeof(GeneratedLocationAssemblyResolvedSourceCollection))]
 public partial class JsonSourceGenerationContext : JsonSerializerContext;

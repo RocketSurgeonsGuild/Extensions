@@ -37,7 +37,6 @@ internal static class ReflectionCollection
                 : configuration.CacheSourceLocation(
                     item.Location,
                     targetAssembly,
-                    SourceLocationKind.Reflection,
                     resolvedSourceLocation
                 );
         }

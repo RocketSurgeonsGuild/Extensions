@@ -12,7 +12,7 @@
     }
   ],
   GeneratorDiagnostics: {
-    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: [
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator: [
       {
         Id: RSGD0001,
         Title: Must be a expression,

@@ -16,7 +16,7 @@ internal static class GeneratorBuilderConstants
 {
     public static GeneratorTestContextBuilder Builder { get; } = GeneratorTestContextBuilder
                                                                 .Create()
-                                                                .WithGenerator<CompiledServiceScanningGenerator>()
+                                                                .WithGenerator<CompiledTypeProviderGenerator>()
                                                                 .AddReferences(
                                                                      typeof(ActivatorUtilities).Assembly,
                                                                      typeof(IServiceProvider).Assembly,
@@ -77,21 +77,22 @@ internal static partial class VerifyExtensions
         if (!Path.IsPathRooted(tempPath)) tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
         Directory.CreateDirectory(tempPath);
         return builder
-              .AddGlobalOption("build_property.IntermediateOutputPath", "obj/net9.0")
+              .AddGlobalOption("build_property.IntermediateOutputPath", IntermediateOutputPath)
               .AddGlobalOption("build_property.ProjectDir", tempPath.Replace("\\", "/"));
     }
+
+    private const string IntermediateOutputPath = "obj/net9.0";
 
     public static GeneratorTestContextBuilder PopulateCache(this GeneratorTestContextBuilder builder, string tempPath)
     {
         if (!Path.IsPathRooted(tempPath)) tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
-        var files = Directory
-                   .EnumerateFiles(tempPath, "*", SearchOption.AllDirectories)
-                   .Select(z => new GeneratorAdditionalText(z.Replace("\\", "/"), SourceText.From(File.ReadAllText(z))))
-                   .OfType<AdditionalText>()
-                   .ToArray();
+        var cachePath = $"{IntermediateOutputPath}/ctp/{Constants.CompiledTypeProviderCacheFileName}";
+        var fullCachePath = Path.Combine(tempPath, cachePath);
+        if (!File.Exists(fullCachePath)) throw new FileNotFoundException("Cache file not found", fullCachePath);
+
         return builder
               .AddCacheOptions(tempPath)
-              .AddAdditionalTexts(files);
+              .AddAdditionalTexts(new GeneratorAdditionalText(cachePath.Replace("\\", "/"), SourceText.From(File.ReadAllText(fullCachePath))));
     }
 
     internal class GeneratorAdditionalText(string path, SourceText sourceText) : AdditionalText

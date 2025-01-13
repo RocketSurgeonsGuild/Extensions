@@ -1,10 +1,8 @@
 <Project>
     <Target Name="CleanAssemblyCache" BeforeTargets="Clean">
-        <RemoveDir Directories="$(IntermediateOutputPath)\GeneratedAssemblyProvider\" />
+        <Delete Files="$(IntermediateOutputPath)\ctp\CompiledTypeProvider.ctpjson" Condition="Exists('$(IntermediateOutputPath)\gap\CompiledTypeProvider.ctpjson')" />
     </Target>
     <ItemGroup>
-        <AdditionalFiles Include="$(IntermediateOutputPath)\GeneratedAssemblyProvider\**\*.gadpartial" />
-        <AdditionalFiles Include="$(IntermediateOutputPath)\GeneratedAssemblyProvider\**\*.gadskip" />
-        <AdditionalFiles Include="$(IntermediateOutputPath)\GeneratedAssemblyProvider\**\*.gapjson" />
+        <AdditionalFiles Visible="false" Include="$(IntermediateOutputPath)\ctp\CompiledTypeProvider.ctpjson" Condition="Exists('$(IntermediateOutputPath)\gap\CompiledTypeProvider.ctpjson')" />
     </ItemGroup>
 </Project>

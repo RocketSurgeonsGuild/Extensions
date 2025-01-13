@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -19,9 +20,7 @@ internal static partial class ModuleInitializer
     [ModuleInitializer]
     public static void Init()
     {
-        FileExtensions.AddTextExtension(Constants.SkipExtension.Trim('.'));
-        FileExtensions.AddTextExtension(Constants.PartialExtension.Trim('.'));
-        FileExtensions.AddTextExtension(Constants.AssemblyJsonExtension.Trim('.'));
+        FileExtensions.AddTextExtension(Path.GetExtension(Constants.CompiledTypeProviderCacheFileName));
         TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         VerifierSettings.ScrubLinesWithReplace(s => s.Replace(TempDirectory, "{TempDirectory}").Replace(TempDirectory.Replace("\\", "/"), "{TempDirectory}"));
         VerifyGeneratorTextContext.Initialize(DiagnosticSeverity.Warning, Customizers.Default, Customizers.ExcludeParseOptions);
@@ -59,16 +58,17 @@ internal static partial class ModuleInitializer
                 ? s[..( s.IndexOf('"') + 1 )] + "{CompiledTypeProvider}" + s[s.LastIndexOf('"')..]
                 : s
         );
+        VerifierSettings.IgnoreMember<GeneratedLocationAssemblyResolvedSourceCollection>(z => z.SourceLocation);
         VerifierSettings.AddScrubber(
             (builder, counter) =>
             {
-                if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>() is
+                if (typeof(CompiledTypeProviderGenerator).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>() is
                     { Version: { Length: > 0 } version })
                 {
                     builder.Replace(version, "version");
                 }
 
-                if (typeof(CompiledServiceScanningGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0 } version2 })
+                if (typeof(CompiledTypeProviderGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0 } version2 })
                 {
                     builder.Replace(version2, "version");
                 }
@@ -131,22 +131,30 @@ internal static partial class ModuleInitializer
             targets.AddRange(item.Value.SyntaxTrees.Select(Selector));
         }
 
-        var cacheFiles = Directory.EnumerateFiles(result.TempDirectory, "*", SearchOption.AllDirectories).Select(z => new FileInfo(z));
+        var generatedCache = Directory
+                            .EnumerateFiles(result.TempDirectory, Constants.CompiledTypeProviderCacheFileName, SearchOption.AllDirectories)
+                            .Select(
+                                 z => JsonSerializer.Deserialize(
+                                     new FileInfo(z).OpenRead(),
+                                     JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData
+                                 )!
+                             )
+                            .SingleOrDefault()
+         ?? new(ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty, ImmutableHashSet<string>.Empty, ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty);
 
-        var generatedCache = cacheFiles
-                            .Where(z => z.Extension == Constants.AssemblyJsonExtension)
-                            .OrderBy(z => z.Name)
-                            .ToDictionary(
-                                 z => Path.GetFileNameWithoutExtension(z.Name),
-                                 z =>
-                                 {
-                                     var value = JsonSerializer.Deserialize(
-                                         File.ReadAllText(z.FullName),
-                                         JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
-                                     )!;
-                                     return value;
-                                 }
-                             );
+        var generatorDiagnostics = target
+                                  .Results
+                                  .ToDictionary(
+                                       z => z.Key.FullName!,
+                                       z => z.Value.Diagnostics.OrderDiagnosticResults(
+                                           DiagnosticSeverity.Error
+                                       )
+                                   );
+
+        var partialsCached = generatedCache
+                            .Partials
+                            .OrderBy(z => z.Key)
+                            .ToDictionary();
 
         var data = new Dictionary<string, object>
         {
@@ -161,51 +169,13 @@ internal static partial class ModuleInitializer
                             .Order(),
 
             ["FinalDiagnostics"] = target.FinalDiagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error),
-            ["GeneratorDiagnostics"] = target
-                                      .Results
-                                      .ToDictionary(
-                                           z => z.Key.FullName!,
-                                           z => z.Value.Diagnostics.OrderDiagnosticResults(
-                                               DiagnosticSeverity.Error
-                                           )
-                                       ),
-            ["SkippedAssemblies"] = cacheFiles
-                                   .Where(z => z.Extension == Constants.SkipExtension)
-                                   .OrderBy(z => z.Name)
-                                   .Select(z => Path.GetFileNameWithoutExtension(z.Name))
-                                   .ToHashSet(StringComparer.OrdinalIgnoreCase),
-            ["PartialsCached"] = cacheFiles
-                                .Where(z => z.Extension == Constants.PartialExtension)
-                                .OrderBy(z => z.Name)
-                                .ToDictionary(
-                                     z => Path.GetFileNameWithoutExtension(z.Name),
-                                     z =>
-                                     {
-                                         var value = JsonSerializer.Deserialize(
-                                             File.ReadAllText(z.FullName),
-                                             JsonSourceGenerationContext.Default.SavedSourceLocation
-                                         )!;
-                                         return value with
-                                         {
-                                             Expression = value.Expression.Replace("\r", "").Trim('\n'),
-                                             PrivateAssemblies = [..value.PrivateAssemblies.OrderBy(z => z)]
-                                         };
-                                     }
-                                 ),
-            ["GeneratedCache"] = cacheFiles
-                                .Where(z => z.Extension == Constants.AssemblyJsonExtension)
-                                .OrderBy(z => z.Name)
-                                .ToDictionary(
-                                     z => Path.GetFileNameWithoutExtension(z.Name),
-                                     z =>
-                                     {
-                                         var value = JsonSerializer.Deserialize(
-                                             File.ReadAllText(z.FullName),
-                                             JsonSourceGenerationContext.Default.CompiledAssemblyProviderData
-                                         )!;
-                                         return value;
-                                     }
-                                 )
+            ["GeneratorDiagnostics"] = generatorDiagnostics,
+            ["SkippedAssemblies"] = generatedCache.SkipAssemblies.OrderBy(z => z).ToArray(),
+            ["PartialsCached"] = partialsCached,
+            ["GeneratedCache"] = generatedCache
+                                .AssemblyData
+                                .OrderBy(z => z.Key)
+                                .ToDictionary()
         };
 
         return new(data, targets);

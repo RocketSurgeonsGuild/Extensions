@@ -17,61 +17,22 @@ internal partial class AssemblyProviderConfiguration
     SourceProductionContext context,
     Compilation compilation,
     AnalyzerConfigOptionsProvider options,
-    FrozenDictionary<string, CompiledAssemblyProviderData> generatedJson,
-    FrozenSet<string> skip,
-    FrozenDictionary<string, SavedSourceLocation> partial
+    GeneratedAssemblyProviderData generatedJson,
+    ResultingAssemblyProviderData resultingJson
 )
 {
-#pragma warning disable RS1035
-    private readonly Lazy<string?> _cacheDirectory = new(
-        () =>
-        {
-            var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
-                ? intermediateOutputPath
-                : null;
-            if (directory is null) return null;
-            if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
-                directory = Path.Combine(projectDirectory, directory);
-            var cacheDirectory = Path.Combine(directory, "GeneratedAssemblyProvider");
-            if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
-
-            return cacheDirectory;
-        }
-    );
-#pragma warning restore RS1035
-
-    private static string GetCacheFileHash(SourceLocation location)
+    #pragma warning disable RS1035
+    internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
     {
-        using var hasher = MD5.Create();
-        addStringToHash(hasher, location.FileName);
-        addStringToHash(hasher, location.ExpressionHash);
-        addStringToHash(hasher, location.LineNumber.ToString());
-        var hash = hasher.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
-        return hasher.Hash.Aggregate("", (s, b) => s + b.ToString("x2"));
-
-
-        static void addStringToHash(ICryptoTransform cryptoTransform, string textToHash)
+        if (generatedJson.GetSourceLocation(assemblySymbol.MetadataName, location, factory) is {} savedLocation)
         {
-            var inputBuffer = Encoding.UTF8.GetBytes(textToHash);
-            cryptoTransform.TransformBlock(inputBuffer, 0, inputBuffer.Length, inputBuffer, 0);
-        }
-    }
-
-#pragma warning disable RS1035
-    internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, SourceLocationKind kind, Func<ResolvedSourceLocation?> factory)
-    {
-        var cacheKey = $"{kind}-{assemblySymbol.MetadataName.Replace(".", "_")}-{GetCacheFileHash(location)}{Constants.PartialExtension}";
-        if (partial.TryGetValue(cacheKey, out var text))
-        {
-            return new(location, text.Expression, [..text.PrivateAssemblies]);
+            resultingJson.AddSourceLocation(assemblySymbol.MetadataName, savedLocation);
+            return savedLocation;
         }
 
-        var source = factory();
-        if (source is {} && _cacheDirectory.Value is { } && !File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey)))
-            File.WriteAllText(Path.Combine(_cacheDirectory.Value, cacheKey), JsonSerializer.Serialize(new(kind, location, source.Expression, [..source.PrivateAssemblies]), JsonSourceGenerationContext.Default.SavedSourceLocation));
-        return source;
+        return null;
     }
-#pragma warning restore RS1035
+    #pragma warning restore RS1035
 
     public (
         ImmutableList<AssemblyCollection.Item> InternalAssemblyRequests,
@@ -109,11 +70,6 @@ internal partial class AssemblyProviderConfiguration
                 internalReflectionRequestsBuilder.AddRange(assemblyReflectionBuilder);
                 internalServiceDescriptorRequestsBuilder.AddRange(assemblyServiceDescriptorBuilder);
                 if (excludeFromResolution) assemblySymbols = assemblySymbols.Remove(assembly.MetadataName);
-
-                // steps
-                // cache requests resulting from an assembly.
-                // cache results of assembly requests directly.
-                //
             }
             catch (Exception e)
             {
@@ -173,7 +129,7 @@ internal partial class AssemblyProviderConfiguration
         return result;
     }
 
-#pragma warning disable RS1035
+    #pragma warning disable RS1035
     private void GetAssemblyData(
         IAssemblySymbol assembly,
         out ImmutableList<AssemblyCollection.Item> assemblyItems,
@@ -183,9 +139,9 @@ internal partial class AssemblyProviderConfiguration
         ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
     )
     {
-        var skipKey = (assembly.MetadataName + Constants.SkipExtension);
-        if (skip.Contains(skipKey))
+        if (generatedJson.SkipAssemblies.Contains(assembly.MetadataName))
         {
+            resultingJson.AddSkipAssembly(assembly.MetadataName);
             assemblyItems = [];
             reflection = [];
             serviceDescriptor = [];
@@ -193,9 +149,9 @@ internal partial class AssemblyProviderConfiguration
             return;
         }
 
-        var cacheKey = (assembly.MetadataName + Constants.AssemblyJsonExtension);
-        if (generatedJson.TryGetValue(cacheKey, out var generatedData))
+        if (generatedJson.AssemblyData.TryGetValue(assembly.MetadataName, out var generatedData))
         {
+            resultingJson.AddAssemblyData(assembly.MetadataName, generatedData);
             assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
             reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z)).ToImmutableList();
             serviceDescriptor =
@@ -215,6 +171,7 @@ internal partial class AssemblyProviderConfiguration
             {
                 excludeFromResolution = true;
             }
+
             if (attribute is not { AttributeClass.MetadataName: "AssemblyMetadataAttribute" }) continue;
 
             try
@@ -263,24 +220,19 @@ internal partial class AssemblyProviderConfiguration
         reflection = reflectionBuilder.ToImmutable();
         serviceDescriptor = serviceDescriptorBuilder.ToImmutable();
 
-        if (_cacheDirectory.Value is null || File.Exists(Path.Combine(_cacheDirectory.Value, cacheKey))) return;
-
         var result = new CompiledAssemblyProviderData(
-            assemblyBuilder.Select(GetAssembyCollectionData).ToImmutableList(),
+            assemblyBuilder.Select(GetAssemblyCollectionData).ToImmutableList(),
             reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
             serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList(),
             excludeFromResolution
         );
 
         if (result.IsEmpty)
-            File.WriteAllText(Path.Combine(_cacheDirectory.Value, skipKey), string.Empty);
+            resultingJson.AddSkipAssembly(assembly.MetadataName);
         else
-            File.WriteAllText(
-                Path.Combine(_cacheDirectory.Value, cacheKey),
-                JsonSerializer.Serialize(result, JsonSourceGenerationContext.Default.CompiledAssemblyProviderData)
-            );
+            resultingJson.AddAssemblyData(assembly.MetadataName, result);
     }
-#pragma warning restore RS1035
+    #pragma warning restore RS1035
 
     public static IEnumerable<AttributeListSyntax> ToAssemblyAttributes(
         ImmutableList<AssemblyCollection.Item> assemblyRequests,
@@ -334,12 +286,12 @@ internal partial class AssemblyProviderConfiguration
 
     private static string GetAssembliesToString(AssemblyCollection.Item item)
     {
-        var data = GetAssembyCollectionData(item);
+        var data = GetAssemblyCollectionData(item);
         var result = JsonSerializer.SerializeToUtf8Bytes(data, JsonSourceGenerationContext.Default.GetAssemblyConfiguration);
         return CompressString(result);
     }
 
-    private static GetAssemblyConfiguration GetAssembyCollectionData(AssemblyCollection.Item item)
+    private static GetAssemblyConfiguration GetAssemblyCollectionData(AssemblyCollection.Item item)
     {
         var data = new GetAssemblyConfiguration(new(item.Location, LoadAssemblyFilterData(item.AssemblyFilter)));
         return data;
@@ -395,7 +347,11 @@ internal partial class AssemblyProviderConfiguration
         return GetServiceDescriptorFromData(compilation, assemblySymbols, config);
     }
 
-    private static ServiceDescriptorCollection.Item GetServiceDescriptorFromData(Compilation compilation, ImmutableDictionary<string, IAssemblySymbol> assemblySymbols, GetServiceDescriptorCollectionData config)
+    private static ServiceDescriptorCollection.Item GetServiceDescriptorFromData(
+        Compilation compilation,
+        ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
+        GetServiceDescriptorCollectionData config
+    )
     {
         var assemblyData = config.Assembly;
         var reflectionData = config.Reflection;
@@ -756,12 +712,12 @@ internal partial class AssemblyProviderConfiguration
                  {
                      ImplementedInterfacesServiceTypeDescriptor i => new(
                          'i',
-                         TypeFilter: i is { InterfaceFilter: {} filter } ? LoadTypeFilterData(filter) : null
+                         TypeFilter: i is { InterfaceFilter: { } filter } ? LoadTypeFilterData(filter) : null
                      ),
                      MatchingInterfaceServiceTypeDescriptor => new('m'),
-                     SelfServiceTypeDescriptor => new('s'),
-                     AsTypeFilterServiceTypeDescriptor => new('a'),
-                     CompiledServiceTypeDescriptor  { Type: {} namedType } => new ServiceTypeData(
+                     SelfServiceTypeDescriptor              => new('s'),
+                     AsTypeFilterServiceTypeDescriptor      => new('a'),
+                     CompiledServiceTypeDescriptor { Type: { } namedType } => new ServiceTypeData(
                          'c',
                          TypeData: new(namedType.ContainingAssembly.MetadataName, namedType.MetadataName, namedType.IsUnboundGenericType)
                      ),
@@ -792,7 +748,7 @@ internal partial class AssemblyProviderConfiguration
                     { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
                     { Identifier: 's' } => new SelfServiceTypeDescriptor(),
                     { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
-                    _ => throw new ArgumentOutOfRangeException(nameof(data)),
+                    _                   => throw new ArgumentOutOfRangeException(nameof(data)),
                 }
             );
         }
