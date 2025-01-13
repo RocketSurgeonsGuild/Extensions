@@ -96,9 +96,9 @@ internal static partial class VerifyExtensions
         var fullCachePath = Path.Combine(tempPath, cachePath);
         return ( !File.Exists(fullCachePath) )
             ? throw new FileNotFoundException("Cache file not found", fullCachePath)
-            :  builder
-              .AddCacheOptions(tempPath)
-              .AddAdditionalTexts(new GeneratorAdditionalText(cachePath.Replace("\\", "/"), SourceText.From(File.ReadAllText(fullCachePath))));
+            : builder
+             .AddCacheOptions(tempPath)
+             .AddAdditionalTexts(new GeneratorAdditionalText(cachePath.Replace("\\", "/"), SourceText.From(File.ReadAllText(fullCachePath))));
     }
 
     private const string IntermediateOutputPath = "obj/net9.0";

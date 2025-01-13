@@ -1,10 +1,11 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class ResultingAssemblyProviderData
 {
     internal static string GetCacheFileHash(SourceLocation location)
@@ -28,14 +29,8 @@ public class ResultingAssemblyProviderData
     private readonly HashSet<string> _skipAssemblies = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ResultingLocationAssemblyResolvedSourceCollection> _sourceLocations = [];
 
-    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay
-    {
-        get
-        {
-            return ToString();
-        }
-    }
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay => ToString();
 
     public void AddSourceLocation(string assemblyName, ResolvedSourceLocation resolvedSource)
     {
@@ -61,17 +56,17 @@ public class ResultingAssemblyProviderData
     public void AddSkipAssembly(string assemblyName) => _ = _skipAssemblies.Add(assemblyName);
 
     public GeneratedAssemblyProviderData ToGeneratedAssemblyProviderData() => new(
-            _assemblyData.ToImmutableDictionary(),
-            [.. _skipAssemblies],
-            _sourceLocations.ToImmutableDictionary(
-                x => x.Key,
-                x => new GeneratedLocationAssemblyResolvedSourceCollection(x.Value.SourceLocation, x.Value.ResolvedSources.ToImmutableDictionary())
-            )
-        );
+        _assemblyData.ToImmutableDictionary(),
+        [.. _skipAssemblies],
+        _sourceLocations.ToImmutableDictionary(
+            x => x.Key,
+            x => new GeneratedLocationAssemblyResolvedSourceCollection(x.Value.SourceLocation, x.Value.ResolvedSources.ToImmutableDictionary())
+        )
+    );
 }
 
-[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
-[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public record GeneratedAssemblyProviderData
 (
     ImmutableDictionary<string, CompiledAssemblyProviderData> AssemblyData,
@@ -79,14 +74,8 @@ public record GeneratedAssemblyProviderData
     ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection> Partials
 )
 {
-    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay
-    {
-        get
-        {
-            return ToString();
-        }
-    }
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay => ToString();
 
     public ResolvedSourceLocation? GetSourceLocation(string assemblyName, SourceLocation sourceLocation, Func<ResolvedSourceLocation?> factory)
     {
@@ -98,16 +87,27 @@ public record GeneratedAssemblyProviderData
     }
 }
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public record ResultingLocationAssemblyResolvedSourceCollection(SourceLocation SourceLocation)
 {
     public Dictionary<string, ResolvedSourceLocation> ResolvedSources { get; } = [];
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay
+    {
+        get
+        {
+            return ToString();
+        }
+    }
+
     public void AddSource(string assemblyName, ResolvedSourceLocation resolvedSource) => ResolvedSources[assemblyName] = resolvedSource;
 }
 
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public record GeneratedLocationAssemblyResolvedSourceCollection(SourceLocation SourceLocation, ImmutableDictionary<string, ResolvedSourceLocation> ResolvedSources)
 {
-    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string DebuggerDisplay
     {
         get

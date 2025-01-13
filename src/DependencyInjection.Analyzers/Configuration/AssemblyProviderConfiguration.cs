@@ -596,7 +596,8 @@ internal partial class AssemblyProviderConfiguration
 #pragma warning disable RS1035
     internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
     {
-        if (!( generatedJson.GetSourceLocation(assemblySymbol.MetadataName, location, factory) is { } savedLocation ))
+        if (generatedJson.GetSourceLocation(assemblySymbol.MetadataName, location, factory) is not
+            { } savedLocation)
         {
             return null;
         }

@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Microsoft.CodeAnalysis;
@@ -18,54 +19,17 @@ public static class Constants
 ///     Source generate used for scanning assemblies for registrations
 /// </summary>
 [Generator]
-[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class CompiledTypeProviderGenerator : IIncrementalGenerator
 {
-    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay
-    {
-        get
-        {
-            return ToString();
-        }
-    }
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay => ToString();
 #pragma warning disable RS1035
     private static string? GetCacheDirectory(AnalyzerConfigOptionsProvider options)
     {
-
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
         var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
-After:
-        var directory = ( options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath) )
-*/
-        var directory = 
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-        if (directory is null) return null;
-        if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
-            directory = Path.Combine(projectDirectory, directory);
-        var cacheDirectory = Path.Combine(directory, "ctp");
-        if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
-After:
-        if (directory is null)
-        {
-            return null;
-        }
-
-        if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
-        {
-            directory = Path.Combine(projectDirectory, directory);
-        }
-
-        var cacheDirectory = Path.Combine(directory, "ctp");
-        if (!Directory.Exists(cacheDirectory))
-        {
-            _ = Directory.CreateDirectory(cacheDirectory);
-*/
-( options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath) )
-            ? intermediateOutputPath
-            : null;
+                ? intermediateOutputPath
+                : null;
         if (directory is null)
         {
             return null;
@@ -103,44 +67,16 @@ After:
                                         (text, _) =>
                                         {
                                             var source = text.GetText()?.ToString();
-
-/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
-Before:
-                                            if (source is not { Length: > 100 })
-                                            {
-                                                return new(
-                                                    ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty,
-                                                    ImmutableHashSet<string>.Empty,
-                                                    ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty
-                                                );
-                                            }
-
-                                            return JsonSerializer.Deserialize(
-                                                source,
-                                                JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData
-                                            )!;
-After:
-                                            return ( source is not { Length: > 100 } )
+                                            return source is not { Length: > 100 }
                                                 ? new(
                                                     ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty,
                                                     [],
                                                     ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty
                                                 )
                                                 : JsonSerializer.Deserialize(
-                                                source,
-                                                JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData
-                                            );
-*/
-                                            return ( source is not { Length: > 100 } )
-                                                ?   new(
-                                                    ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty,
-                                                    [],
-                                                    ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty
-                                                )  
-                                                :  JsonSerializer.Deserialize(
-                                                source,
-                                                JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData
-                                            );
+                                                    source,
+                                                    JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData
+                                                );
                                         }
                                     )
                                    .Collect()
@@ -227,12 +163,13 @@ After:
                     resultingData
                 );
 
-                var (InternalAssemblyRequests, InternalReflectionRequests, ReflectionSources, InternalServiceDescriptorRequests, ServiceDescriptorSources) = config.FromAssemblyAttributes(
-                    ref assemblySymbols,
-                    reflectionRequests,
-                    serviceDescriptorRequests,
-                    diagnostics
-                );
+                var (InternalAssemblyRequests, InternalReflectionRequests, ReflectionSources, InternalServiceDescriptorRequests, ServiceDescriptorSources) =
+                    config.FromAssemblyAttributes(
+                        ref assemblySymbols,
+                        reflectionRequests,
+                        serviceDescriptorRequests,
+                        diagnostics
+                    );
 
                 assemblyRequests = assemblyRequests.AddRange(InternalAssemblyRequests);
                 reflectionRequests = reflectionRequests.AddRange(InternalReflectionRequests);
@@ -326,7 +263,8 @@ After:
                     cu.NormalizeWhitespace().SyntaxTree.GetRoot().GetText(Encoding.UTF8)
                 );
 
-                if (!( GetCacheDirectory(request.options) is { } cacheDirectory ))
+                if (GetCacheDirectory(request.options) is not
+                    { } cacheDirectory)
                 {
                     return;
 #pragma warning restore RS1035

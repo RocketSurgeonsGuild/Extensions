@@ -187,8 +187,6 @@ internal static partial class ModuleInitializer
         return new("cs", data.Replace("\r", "", StringComparison.OrdinalIgnoreCase), Path.GetFileNameWithoutExtension(hintPath));
     }
 
-    private static Target Selector((FileInfo fileInfo, string text) item) => new(item.fileInfo.Extension.Trim('.'), item.text, item.fileInfo.Name);
-
     [GeneratedRegex("Version=(.*?),", RegexOptions.Compiled)]
     private static partial Regex MyRegex();
 
