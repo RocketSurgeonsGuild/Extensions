@@ -1,7 +1,9 @@
 using System.Collections.Immutable;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -22,6 +24,28 @@ internal static class ReflectionCollection
         .Select((tuple, _) => tuple.Left)
         .Collect();
 
+    public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetTypesMethod(GeneratorSyntaxContext context)
+    {
+        (var method, var selector) = GetTypesMethod(context.Node);
+        return method is null
+         || selector is null
+         || context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
+         {
+             TypeArguments: [{ Name: IReflectionTypeSelector }, ..],
+         }
+                ? default
+                : (method, selector, semanticModel: context.SemanticModel);
+    }
+
+    public static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetTypesMethod(SyntaxNode node) =>
+        node is InvocationExpressionSyntax
+        {
+            Expression: MemberAccessExpressionSyntax { Name.Identifier.Text: "GetTypes" },
+            ArgumentList.Arguments: [.., { Expression: { } expression }],
+        } invocationExpressionSyntax
+            ? (invocationExpressionSyntax, expression)
+            : default;
+
     public static ResolvedSourceLocation? ResolveSource(
         AssemblyProviderConfiguration configuration,
         Compilation compilation,
@@ -37,7 +61,6 @@ internal static class ReflectionCollection
                 : configuration.CacheSourceLocation(
                     item.Location,
                     targetAssembly,
-                    SourceLocationKind.Reflection,
                     resolvedSourceLocation
                 );
         }
@@ -62,10 +85,7 @@ internal static class ReflectionCollection
             var reducedTypes = new TypeSymbolVisitor(compilation, item.AssemblyFilter, item.TypeFilter)
                               .GetReferencedTypes(targetAssembly)
                               .GetTypes();
-            if (reducedTypes.Count == 0)
-            {
-                return null;
-            }
+            if (reducedTypes.Count == 0) return null;
 
             var localBlock = GenerateDescriptors(compilation, reducedTypes, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
             return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
@@ -80,18 +100,12 @@ internal static class ReflectionCollection
         IAssemblySymbol targetAssembly
     )
     {
-        if (!items.Any())
-        {
-            return [];
-        }
+        if (!items.Any()) return [];
 
         var results = new List<ResolvedSourceLocation>();
         foreach (var item in items)
         {
-            if (ResolveSource(configuration, compilation, diagnostics, item, targetAssembly) is not { } location)
-            {
-                continue;
-            }
+            if (ResolveSource(configuration, compilation, diagnostics, item, targetAssembly) is not { } location) continue;
 
             results.Add(location);
         }
@@ -99,27 +113,7 @@ internal static class ReflectionCollection
         return [.. results];
     }
 
-    public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetTypesMethod(GeneratorSyntaxContext context)
-    {
-        ( var method, var selector ) = GetTypesMethod(context.Node);
-        return method is null
-         || selector is null
-         || context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
-            {
-                TypeArguments: [{ Name: IReflectionTypeSelector }, ..],
-            }
-                ? default
-                : ( method, selector, semanticModel: context.SemanticModel );
-    }
-
-    public static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetTypesMethod(SyntaxNode node) =>
-        node is InvocationExpressionSyntax
-        {
-            Expression: MemberAccessExpressionSyntax { Name.Identifier.Text: "GetTypes" },
-            ArgumentList.Arguments: [.., { Expression: { } expression }],
-        } invocationExpressionSyntax
-            ? ( invocationExpressionSyntax, expression )
-            : default;
+    public record Item(SourceLocation Location, CompiledAssemblyFilter AssemblyFilter, CompiledTypeFilter TypeFilter);
 
     internal static ImmutableList<Item> GetReflectionItems(
         Compilation compilation,
@@ -133,7 +127,7 @@ internal static class ReflectionCollection
         {
             try
             {
-                ( var methodCallSyntax, var selector, _ ) = tuple;
+                (var methodCallSyntax, var selector, _) = tuple;
 
                 var assemblies = new List<IAssemblyDescriptor>();
                 var typeFilters = new List<ITypeFilterDescriptor>();
@@ -181,8 +175,6 @@ internal static class ReflectionCollection
         return items.ToImmutable();
     }
 
-    private static bool IsValidMethod(SyntaxNode node) => GetTypesMethod(node) is { method: { }, selector: { } };
-
     private static BlockSyntax GenerateDescriptors(Compilation compilation, IEnumerable<INamedTypeSymbol> types, HashSet<IAssemblySymbol> privateAssemblies)
     {
         var block = Block();
@@ -194,10 +186,7 @@ internal static class ReflectionCollection
                        .WithArgumentList(ArgumentList(SingletonSeparatedList(Argument(StatementGeneration.GetTypeOfExpression(compilation, type)))))
                 )
             );
-            if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
-            {
-                continue;
-            }
+            if (compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)) continue;
 
             _ = privateAssemblies.Add(type.ContainingAssembly);
         }
@@ -205,8 +194,7 @@ internal static class ReflectionCollection
         return block;
     }
 
+    private static bool IsValidMethod(SyntaxNode node) => GetTypesMethod(node) is { method: { }, selector: { } };
 
     private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
-
-    public record Item(SourceLocation Location, CompiledAssemblyFilter AssemblyFilter, CompiledTypeFilter TypeFilter);
 }

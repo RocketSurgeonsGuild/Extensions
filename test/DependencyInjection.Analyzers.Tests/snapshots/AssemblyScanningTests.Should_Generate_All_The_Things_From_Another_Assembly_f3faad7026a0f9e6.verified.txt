@@ -1,0 +1,235 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratedCache: {
+    OtherProject: {
+      InternalServiceDescriptorRequests: [
+        {
+          Assembly: {
+            Location: {
+              Kind: ServiceDescriptor,
+              LineNumber: 16,
+              ExpressionHash: GzSo1ZIJ3PB0c4cYw44F8g==,
+              FileName: Input0.cs,
+              FilePath: Input0.cs
+            },
+            Assembly: {
+              AllAssembly: true,
+              IncludeSystem: false,
+              Assembly: null,
+              NotAssembly: null,
+              AssemblyDependencies: null
+            }
+          },
+          Reflection: {
+            Type: {
+              Filter: All,
+              NamespaceFilters: null,
+              NameFilters: null,
+              TypeKindFilters: [
+                {
+                  Include: true,
+                  TypeKinds: [
+                    Class
+                  ]
+                }
+              ],
+              TypeInfoFilters: [
+                {
+                  Include: false,
+                  TypeInfos: [
+                    Static,
+                    Abstract
+                  ]
+                }
+              ],
+              WithAttributeFilters: null,
+              WithAttributeStringFilters: null,
+              WithAnyAttributeFilters: null,
+              WithAnyAttributeStringFilters: null,
+              AssignableToTypeFilters: null,
+              AssignableToAnyTypeFilters: [
+                {
+                  Include: true,
+                  Types: [
+                    {
+                      Assembly: TestAssembly,
+                      Type: TestAssembly.IService,
+                      UnboundGenericType: false
+                    },
+                    {
+                      Assembly: TestAssembly,
+                      Type: TestAssembly.IServiceB,
+                      UnboundGenericType: false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          ServiceDescriptor: {
+            ServiceDescriptor: {
+              ServiceTypeDescriptors: [
+                {
+                  Identifier: "s"
+                },
+                {
+                  Identifier: "i"
+                }
+              ],
+              Lifetime: 1
+            },
+            Lifetime: 1
+          },
+          Type: GetServiceDescriptorCollectionData
+        }
+      ],
+      ExcludeFromResolution: false,
+      IsEmpty: false
+    },
+    Rocket.Surgery.DependencyInjection.Extensions: {
+      InternalServiceDescriptorRequests: [
+        {
+          Assembly: {
+            Location: {
+              Kind: ServiceDescriptor,
+              LineNumber: 21,
+              ExpressionHash: 8JsIfWGtyxwbpwWfPrtcbQ==,
+              FileName: CompiledTypeProviderServiceCollectionExtensions.cs,
+              FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
+            },
+            Assembly: {
+              AllAssembly: true,
+              IncludeSystem: false,
+              Assembly: null,
+              NotAssembly: null,
+              AssemblyDependencies: null
+            }
+          },
+          Reflection: {
+            Type: {
+              Filter: All,
+              NamespaceFilters: null,
+              NameFilters: null,
+              TypeKindFilters: [
+                {
+                  Include: true,
+                  TypeKinds: [
+                    Class
+                  ]
+                }
+              ],
+              TypeInfoFilters: [
+                {
+                  Include: false,
+                  TypeInfos: [
+                    Static,
+                    Abstract
+                  ]
+                }
+              ],
+              WithAttributeFilters: null,
+              WithAttributeStringFilters: null,
+              WithAnyAttributeFilters: [
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute,
+                  UnboundGenericType: false
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`2,
+                  UnboundGenericType: true
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`3,
+                  UnboundGenericType: true
+                },
+                {
+                  Include: true,
+                  Assembly: Rocket.Surgery.DependencyInjection.Extensions,
+                  Attribute: Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute`4,
+                  UnboundGenericType: true
+                }
+              ],
+              WithAnyAttributeStringFilters: null,
+              AssignableToTypeFilters: null,
+              AssignableToAnyTypeFilters: null
+            }
+          },
+          ServiceDescriptor: {
+            ServiceDescriptor: {
+              ServiceTypeDescriptors: [
+                {
+                  Identifier: "s"
+                }
+              ]
+            }
+          },
+          Type: GetServiceDescriptorCollectionData
+        }
+      ],
+      ExcludeFromResolution: false,
+      IsEmpty: false
+    }
+  },
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator: []
+  },
+  GlobalOptions: {
+    build_property.ExcludeAssemblyFromCTP: Microsoft.Extensions.DependencyInjection,
+    build_property.IntermediateOutputPath: obj/net9.0,
+    build_property.ProjectDir: {TempPath}/test
+  },
+  PartialsCached: {
+    Guid_1: {
+      ResolvedSources: {
+        TestAssembly: {
+          Location: {
+            Kind: ServiceDescriptor,
+            LineNumber: 16,
+            ExpressionHash: GzSo1ZIJ3PB0c4cYw44F8g==,
+            FileName: Input0.cs,
+            FilePath: Input0.cs
+          },
+          Expression:
+{
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Nested.ServiceA, global::TestAssembly.Nested.ServiceA>());
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Nested.ServiceA>()));
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.Service, global::TestAssembly.Service>());
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => a.GetRequiredService<global::TestAssembly.Service>()));
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IServiceB>(a => a.GetRequiredService<global::TestAssembly.Service>()));
+    services.Add(ServiceDescriptor.Scoped(TestAssembly.GetType("TestAssembly.ServiceB")!, TestAssembly.GetType("TestAssembly.ServiceB")!));
+    services.Add(ServiceDescriptor.Scoped<global::TestAssembly.IService>(a => (global::TestAssembly.IService)a.GetRequiredService(TestAssembly.GetType("TestAssembly.ServiceB")!)));
+}
+        }
+      }
+    }
+  },
+  References: [
+    <in-memory assembly>,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll,
+    TestAssembly.dll
+  ],
+  SkippedAssemblies: [
+    mscorlib,
+    netstandard,
+    System,
+    System.ComponentModel,
+    System.Core,
+    System.Private.CoreLib,
+    System.Runtime,
+    TestAssembly
+  ]
+}

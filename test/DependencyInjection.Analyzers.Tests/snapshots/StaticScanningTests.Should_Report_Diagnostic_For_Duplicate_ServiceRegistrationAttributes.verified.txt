@@ -22,7 +22,7 @@
     }
   ],
   GeneratorDiagnostics: {
-    Rocket.Surgery.DependencyInjection.Analyzers.CompiledServiceScanningGenerator: [
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator: [
       {
         Id: RSGD0005,
         Title: Duplicate service descriptor attribute,

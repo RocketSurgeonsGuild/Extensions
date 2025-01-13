@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using Nuke.Common.CI.GitHubActions;
+
 using Rocket.Surgery.Nuke.ContinuousIntegration;
 using Rocket.Surgery.Nuke.GithubActions;
 using Rocket.Surgery.Nuke.Jobs;
@@ -10,29 +10,29 @@ using Rocket.Surgery.Nuke.Jobs;
     "ci-ignore",
     GitHubActionsImage.UbuntuLatest,
     AutoGenerate = false,
-    On = [RocketSurgeonGitHubActionsTrigger.Push,],
-    OnPushTags = ["v*",],
-    OnPushBranches = ["master", "main", "next",],
-    OnPullRequestBranches = ["master", "main", "next",],
-    Enhancements = [nameof(CiIgnoreMiddleware),]
+    On = [RocketSurgeonGitHubActionsTrigger.Push],
+    OnPushTags = ["v*"],
+    OnPushBranches = ["master", "main", "next"],
+    OnPullRequestBranches = ["master", "main", "next"],
+    Enhancements = [nameof(CiIgnoreMiddleware)]
 )]
 [GitHubActionsSteps(
     "ci",
     GitHubActionsImage.UbuntuLatest,
     AutoGenerate = false,
-    On = [RocketSurgeonGitHubActionsTrigger.Push,],
-    OnPushTags = ["v*",],
-    OnPushBranches = ["master", "main", "next",],
-    OnPullRequestBranches = ["master", "main", "next",],
-    InvokedTargets = [nameof(Default),],
-    Enhancements = [nameof(CiMiddleware),]
+    On = [RocketSurgeonGitHubActionsTrigger.Push],
+    OnPushTags = ["v*"],
+    OnPushBranches = ["master", "main", "next"],
+    OnPullRequestBranches = ["master", "main", "next"],
+    InvokedTargets = [nameof(Default)],
+    Enhancements = [nameof(CiMiddleware)]
 )]
 [GitHubActionsLint(
     "lint",
     GitHubActionsImage.UbuntuLatest,
     AutoGenerate = false,
-    OnPullRequestTargetBranches = ["master", "main", "next",],
-    Enhancements = [nameof(LintStagedMiddleware),]
+    OnPullRequestTargetBranches = ["master", "main", "next"],
+    Enhancements = [nameof(LintStagedMiddleware)]
 )]
 [CloseMilestoneJob]
 [DraftReleaseJob]
@@ -42,7 +42,6 @@ using Rocket.Surgery.Nuke.Jobs;
 [UploadLogs]
 [TitleEvents]
 [ContinuousIntegrationConventions]
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
 internal partial class Pipeline
 {
     public static RocketSurgeonGitHubActionsConfiguration CiIgnoreMiddleware(RocketSurgeonGitHubActionsConfiguration configuration)
@@ -81,7 +80,4 @@ internal partial class Pipeline
 
         return configuration;
     }
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
 }
