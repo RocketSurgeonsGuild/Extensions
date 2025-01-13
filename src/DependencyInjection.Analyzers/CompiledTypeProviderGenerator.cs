@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
@@ -6,13 +5,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
-using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-public class Constants
+public static class Constants
 {
     public const string CompiledTypeProviderCacheFileName = "CompiledTypeProvider.ctpjson";
 }
@@ -21,8 +18,73 @@ public class Constants
 ///     Source generate used for scanning assemblies for registrations
 /// </summary>
 [Generator]
+[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class CompiledTypeProviderGenerator : IIncrementalGenerator
 {
+    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay
+    {
+        get
+        {
+            return ToString();
+        }
+    }
+#pragma warning disable RS1035
+    private static string? GetCacheDirectory(AnalyzerConfigOptionsProvider options)
+    {
+
+/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+Before:
+        var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
+After:
+        var directory = ( options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath) )
+*/
+        var directory = 
+/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+Before:
+        if (directory is null) return null;
+        if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
+            directory = Path.Combine(projectDirectory, directory);
+        var cacheDirectory = Path.Combine(directory, "ctp");
+        if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
+After:
+        if (directory is null)
+        {
+            return null;
+        }
+
+        if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
+        {
+            directory = Path.Combine(projectDirectory, directory);
+        }
+
+        var cacheDirectory = Path.Combine(directory, "ctp");
+        if (!Directory.Exists(cacheDirectory))
+        {
+            _ = Directory.CreateDirectory(cacheDirectory);
+*/
+( options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath) )
+            ? intermediateOutputPath
+            : null;
+        if (directory is null)
+        {
+            return null;
+        }
+
+        if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
+        {
+            directory = Path.Combine(projectDirectory, directory);
+        }
+
+        var cacheDirectory = Path.Combine(directory, "ctp");
+        if (!Directory.Exists(cacheDirectory))
+        {
+            _ = Directory.CreateDirectory(cacheDirectory);
+        }
+
+        return cacheDirectory;
+    }
+#pragma warning restore RS1035
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -34,13 +96,16 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
         var collectionProvider = assembliesSyntaxProvider
                                 .Combine(reflectionSyntaxProvider)
                                 .Combine(serviceDescriptorSyntaxProvider)
-                                .Select((z, _) => ( assemblies: z.Left.Left, reflection: z.Left.Right, serviceDescriptors: z.Right ));
+                                .Select((z, _) => (assemblies: z.Left.Left, reflection: z.Left.Right, serviceDescriptors: z.Right));
         var generatedJsonProvider = context
                                    .AdditionalTextsProvider.Where(z => Path.GetFileName(z.Path).Equals(Constants.CompiledTypeProviderCacheFileName, StringComparison.OrdinalIgnoreCase))
                                    .Select(
                                         (text, _) =>
                                         {
                                             var source = text.GetText()?.ToString();
+
+/* Unmerged change from project 'Rocket.Surgery.DependencyInjection.Analyzers.roslyn4.8'
+Before:
                                             if (source is not { Length: > 100 })
                                             {
                                                 return new(
@@ -54,6 +119,28 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                                 source,
                                                 JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData
                                             )!;
+After:
+                                            return ( source is not { Length: > 100 } )
+                                                ? new(
+                                                    ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty,
+                                                    [],
+                                                    ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty
+                                                )
+                                                : JsonSerializer.Deserialize(
+                                                source,
+                                                JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData
+                                            );
+*/
+                                            return ( source is not { Length: > 100 } )
+                                                ?   new(
+                                                    ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty,
+                                                    [],
+                                                    ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty
+                                                )  
+                                                :  JsonSerializer.Deserialize(
+                                                source,
+                                                JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData
+                                            );
                                         }
                                     )
                                    .Collect()
@@ -61,7 +148,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                         (z, _) => z.SingleOrDefault()
                                          ?? new(
                                                 ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty,
-                                                ImmutableHashSet<string>.Empty,
+                                                [],
                                                 ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty
                                             )
                                     );
@@ -83,8 +170,8 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                 ),
             static (context, request) =>
             {
-                HashSet<string> excludedAssemblies = request.options.GlobalOptions.TryGetValue("build_property.ExcludeAssemblyFromCTP", out var assemblies)
-                    ? [..assemblies.Split([';', ','], StringSplitOptions.RemoveEmptyEntries)]
+                HashSet<string> excludedAssemblies = ( request.options.GlobalOptions.TryGetValue("build_property.ExcludeAssemblyFromCTP", out var assemblies) )
+                    ? [.. assemblies.Split([';', ','], StringSplitOptions.RemoveEmptyEntries)]
                     : [];
                 var privateAssemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
                 var diagnostics = new HashSet<Diagnostic>();
@@ -111,9 +198,15 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                      .Select(
                                           symbol =>
                                           {
-                                              if (symbol is IAssemblySymbol assemblySymbol) return assemblySymbol;
+                                              if (symbol is IAssemblySymbol assemblySymbol)
+                                              {
+                                                  return assemblySymbol;
+                                              }
 
-                                              if (symbol is IModuleSymbol moduleSymbol) return moduleSymbol.ContainingAssembly;
+                                              if (symbol is IModuleSymbol moduleSymbol)
+                                              {
+                                                  return moduleSymbol.ContainingAssembly;
+                                              }
 
                                               // ReSharper disable once NullableWarningSuppressionIsUsed
                                               return null!;
@@ -121,7 +214,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                       )
                                      .Where(z => z is { })
                                      .Where(z => excludedAssemblies.All(a => !z.MetadataName.StartsWith(a, StringComparison.OrdinalIgnoreCase)))
-                                     .GroupBy(z => z.MetadataName, z => z, (s, symbols) => ( Key: s, Symbol: symbols.First() ))
+                                     .GroupBy(z => z.MetadataName, z => z, (s, symbols) => (Key: s, Symbol: symbols.First()))
                                      .ToImmutableDictionary(z => z.Key, z => z.Symbol);
 
                 var resultingData = new ResultingAssemblyProviderData();
@@ -134,16 +227,16 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                     resultingData
                 );
 
-                var resolvedData = config.FromAssemblyAttributes(
+                var (InternalAssemblyRequests, InternalReflectionRequests, ReflectionSources, InternalServiceDescriptorRequests, ServiceDescriptorSources) = config.FromAssemblyAttributes(
                     ref assemblySymbols,
                     reflectionRequests,
                     serviceDescriptorRequests,
                     diagnostics
                 );
 
-                assemblyRequests = assemblyRequests.AddRange(resolvedData.InternalAssemblyRequests);
-                reflectionRequests = reflectionRequests.AddRange(resolvedData.InternalReflectionRequests);
-                serviceDescriptorRequests = serviceDescriptorRequests.AddRange(resolvedData.InternalServiceDescriptorRequests);
+                assemblyRequests = assemblyRequests.AddRange(InternalAssemblyRequests);
+                reflectionRequests = reflectionRequests.AddRange(InternalReflectionRequests);
+                serviceDescriptorRequests = serviceDescriptorRequests.AddRange(InternalServiceDescriptorRequests);
 
                 var assemblySources = AssemblyCollection.ResolveSources(
                     config,
@@ -167,8 +260,8 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                     request.compilation.Assembly
                 );
 
-                reflectionSources = reflectionSources.AddRange(resolvedData.ReflectionSources);
-                serviceDescriptorSources = serviceDescriptorSources.AddRange(resolvedData.ServiceDescriptorSources);
+                reflectionSources = reflectionSources.AddRange(ReflectionSources);
+                serviceDescriptorSources = serviceDescriptorSources.AddRange(ServiceDescriptorSources);
 
                 privateAssemblies.UnionWith(joinAssemblies(assemblySymbols, assemblySources));
                 privateAssemblies.UnionWith(joinAssemblies(assemblySymbols, reflectionSources));
@@ -233,39 +326,22 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                     cu.NormalizeWhitespace().SyntaxTree.GetRoot().GetText(Encoding.UTF8)
                 );
 
-                if (GetCacheDirectory(request.options) is { } cacheDirectory)
+                if (!( GetCacheDirectory(request.options) is { } cacheDirectory ))
                 {
-                    var generatedData = resultingData.ToGeneratedAssemblyProviderData();
-                    var json = JsonSerializer.Serialize(generatedData, JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData);
-                    var path = Path.Combine(cacheDirectory, Constants.CompiledTypeProviderCacheFileName);
-                    #pragma warning disable RS1035
-                    File.WriteAllText(path, json);
-                    #pragma warning restore RS1035
+                    return;
+#pragma warning restore RS1035
                 }
+
+                var generatedData = resultingData.ToGeneratedAssemblyProviderData();
+                var json = JsonSerializer.Serialize(generatedData, JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData);
+                var path = Path.Combine(cacheDirectory, Constants.CompiledTypeProviderCacheFileName);
+#pragma warning disable RS1035
+                File.WriteAllText(path, json);
 
                 return;
 
-                static IEnumerable<IAssemblySymbol> joinAssemblies(IEnumerable<KeyValuePair<string, IAssemblySymbol>> assemblies, IEnumerable<ResolvedSourceLocation> sources)
-                {
-                    return sources.SelectMany(z => z.PrivateAssemblies).Join(assemblies, z => z, z => z.Key, (_, a) => a.Value);
-                }
+                static IEnumerable<IAssemblySymbol> joinAssemblies(IEnumerable<KeyValuePair<string, IAssemblySymbol>> assemblies, IEnumerable<ResolvedSourceLocation> sources) => sources.SelectMany(z => z.PrivateAssemblies).Join(assemblies, z => z, z => z.Key, (_, a) => a.Value);
             }
         );
     }
-
-    #pragma warning disable RS1035
-    private static string? GetCacheDirectory(AnalyzerConfigOptionsProvider options)
-    {
-        var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
-            ? intermediateOutputPath
-            : null;
-        if (directory is null) return null;
-        if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
-            directory = Path.Combine(projectDirectory, directory);
-        var cacheDirectory = Path.Combine(directory, "ctp");
-        if (!Directory.Exists(cacheDirectory)) Directory.CreateDirectory(cacheDirectory);
-
-        return cacheDirectory;
-    }
-    #pragma warning restore RS1035
 }

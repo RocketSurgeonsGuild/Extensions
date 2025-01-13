@@ -1,10 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.Loader;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
@@ -30,6 +26,16 @@ internal static class GeneratorBuilderConstants
 
 public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
 {
+    protected static void ClearCache(string tempPath)
+    {
+        if (!Directory.Exists(tempPath))
+        {
+            return;
+        }
+
+        Directory.Delete(tempPath, true);
+    }
+
     protected string TempPath { get; } = Path.Combine(ModuleInitializer.TempDirectory, Guid.NewGuid().ToString());
     protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
     protected AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
@@ -37,7 +43,7 @@ public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
     [Before(Test)]
     public void InitializeAsync()
     {
-        Directory.CreateDirectory(TempPath);
+        _ = Directory.CreateDirectory(TempPath);
         Builder = GeneratorBuilderConstants
                  .Builder
                  .WithAssemblyLoadContext(AssemblyLoadContext);
@@ -52,14 +58,8 @@ public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
     protected string GetTempPath()
     {
         var path = Path.Combine(TempPath, Guid.NewGuid().ToString());
-        Directory.CreateDirectory(path);
+        _ = Directory.CreateDirectory(path);
         return path;
-    }
-
-    protected static void ClearCache(string tempPath)
-    {
-        if (Directory.Exists(tempPath))
-            Directory.Delete(tempPath, true);
     }
 }
 
@@ -74,34 +74,39 @@ internal static partial class VerifyExtensions
 
     public static GeneratorTestContextBuilder AddCacheOptions(this GeneratorTestContextBuilder builder, string tempPath)
     {
-        if (!Path.IsPathRooted(tempPath)) tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
-        Directory.CreateDirectory(tempPath);
+        if (!Path.IsPathRooted(tempPath))
+        {
+            tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
+        }
+
+        _ = Directory.CreateDirectory(tempPath);
         return builder
               .AddGlobalOption("build_property.IntermediateOutputPath", IntermediateOutputPath)
               .AddGlobalOption("build_property.ProjectDir", tempPath.Replace("\\", "/"));
     }
 
-    private const string IntermediateOutputPath = "obj/net9.0";
-
     public static GeneratorTestContextBuilder PopulateCache(this GeneratorTestContextBuilder builder, string tempPath)
     {
-        if (!Path.IsPathRooted(tempPath)) tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
+        if (!Path.IsPathRooted(tempPath))
+        {
+            tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
+        }
+
         var cachePath = $"{IntermediateOutputPath}/ctp/{Constants.CompiledTypeProviderCacheFileName}";
         var fullCachePath = Path.Combine(tempPath, cachePath);
-        if (!File.Exists(fullCachePath)) throw new FileNotFoundException("Cache file not found", fullCachePath);
-
-        return builder
+        return ( !File.Exists(fullCachePath) )
+            ? throw new FileNotFoundException("Cache file not found", fullCachePath)
+            :  builder
               .AddCacheOptions(tempPath)
               .AddAdditionalTexts(new GeneratorAdditionalText(cachePath.Replace("\\", "/"), SourceText.From(File.ReadAllText(fullCachePath))));
     }
+
+    private const string IntermediateOutputPath = "obj/net9.0";
 
     internal class GeneratorAdditionalText(string path, SourceText sourceText) : AdditionalText
     {
         public override string Path { get; } = path;
 
-        public override SourceText? GetText(CancellationToken cancellationToken = new())
-        {
-            return sourceText;
-        }
+        public override SourceText? GetText(CancellationToken cancellationToken = new()) => sourceText;
     }
 }

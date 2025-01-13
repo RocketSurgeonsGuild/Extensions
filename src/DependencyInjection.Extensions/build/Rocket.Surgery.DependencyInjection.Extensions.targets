@@ -1,8 +1,13 @@
 <Project>
     <Target Name="CleanAssemblyCache" BeforeTargets="Clean">
-        <Delete Files="$(IntermediateOutputPath)\ctp\CompiledTypeProvider.ctpjson" Condition="Exists('$(IntermediateOutputPath)\gap\CompiledTypeProvider.ctpjson')" />
+        <Delete
+            Files="$(IntermediateOutputPath)\ctp\CompiledTypeProvider.ctpjson"
+            Condition="Exists('$(IntermediateOutputPath)\gap\CompiledTypeProvider.ctpjson')" />
     </Target>
     <ItemGroup>
-        <AdditionalFiles Visible="false" Include="$(IntermediateOutputPath)\ctp\CompiledTypeProvider.ctpjson" Condition="Exists('$(IntermediateOutputPath)\gap\CompiledTypeProvider.ctpjson')" />
+        <AdditionalFiles
+            Visible="false"
+            Include="$(IntermediateOutputPath)\ctp\CompiledTypeProvider.ctpjson"
+            Condition="Exists('$(IntermediateOutputPath)\gap\CompiledTypeProvider.ctpjson')" />
     </ItemGroup>
 </Project>

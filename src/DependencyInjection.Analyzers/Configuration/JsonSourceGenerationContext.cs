@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
@@ -24,4 +24,15 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 [JsonSerializable(typeof(GetServiceDescriptorCollectionData))]
 [JsonSerializable(typeof(GeneratedAssemblyProviderData))]
 [JsonSerializable(typeof(GeneratedLocationAssemblyResolvedSourceCollection))]
-public partial class JsonSourceGenerationContext : JsonSerializerContext;
+[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
+public partial class JsonSourceGenerationContext : JsonSerializerContext
+{
+    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay
+    {
+        get
+        {
+            return ToString();
+        }
+    }
+}

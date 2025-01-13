@@ -1,8 +1,5 @@
-using System.Collections.Frozen;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,219 +18,6 @@ internal partial class AssemblyProviderConfiguration
     ResultingAssemblyProviderData resultingJson
 )
 {
-    #pragma warning disable RS1035
-    internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
-    {
-        if (generatedJson.GetSourceLocation(assemblySymbol.MetadataName, location, factory) is {} savedLocation)
-        {
-            resultingJson.AddSourceLocation(assemblySymbol.MetadataName, savedLocation);
-            return savedLocation;
-        }
-
-        return null;
-    }
-    #pragma warning restore RS1035
-
-    public (
-        ImmutableList<AssemblyCollection.Item> InternalAssemblyRequests,
-        ImmutableList<ReflectionCollection.Item> InternalReflectionRequests,
-        ImmutableList<ResolvedSourceLocation> ReflectionSources,
-        ImmutableList<ServiceDescriptorCollection.Item> InternalServiceDescriptorRequests,
-        ImmutableList<ResolvedSourceLocation> ServiceDescriptorSources
-        ) FromAssemblyAttributes(
-            ref ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
-            ImmutableList<ReflectionCollection.Item> reflectionRequests,
-            ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptorRequests,
-            HashSet<Diagnostic> globalDiagnostics
-        )
-    {
-        var reflectionSources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
-        var serviceDescriptorSources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
-
-        var internalAssemblyRequestsBuilder = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
-        var internalReflectionRequestsBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
-        var internalServiceDescriptorRequestsBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
-        foreach (var assembly in assemblySymbols.Values.Except([compilation.Assembly]).OrderBy(z => z.MetadataName))
-        {
-            try
-            {
-                GetAssemblyData(
-                    assembly,
-                    out var assemblyAssemblySources,
-                    out var assemblyReflectionBuilder,
-                    out var assemblyServiceDescriptorBuilder,
-                    out var excludeFromResolution,
-                    assemblySymbols
-                );
-
-                internalAssemblyRequestsBuilder.AddRange(assemblyAssemblySources);
-                internalReflectionRequestsBuilder.AddRange(assemblyReflectionBuilder);
-                internalServiceDescriptorRequestsBuilder.AddRange(assemblyServiceDescriptorBuilder);
-                if (excludeFromResolution) assemblySymbols = assemblySymbols.Remove(assembly.MetadataName);
-            }
-            catch (Exception e)
-            {
-                globalDiagnostics.Add(
-                    Diagnostic.Create(
-                        Diagnostics.UnhandledException,
-                        assembly.Locations.FirstOrDefault(),
-                        e.Message.Replace("\r", "").Replace("\n", ""),
-                        e.StackTrace.Replace("\r", "").Replace("\n", ""),
-                        e.GetType().Name,
-                        e.ToString()
-                    )
-                );
-            }
-        }
-
-        var internalReflectionRequests = internalReflectionRequestsBuilder.ToImmutable();
-        var internalServiceDescriptorRequests = internalServiceDescriptorRequestsBuilder.ToImmutable();
-        var diagnostics = new HashSet<Diagnostic>();
-        foreach (var assembly in assemblySymbols.Values.Except([compilation.Assembly]).OrderBy(z => z.MetadataName))
-        {
-            foreach (var request in reflectionRequests.Concat(internalReflectionRequests))
-            {
-                var source = ReflectionCollection.ResolveSource(
-                    this,
-                    compilation,
-                    diagnostics,
-                    request,
-                    assembly
-                );
-                if (source is { }) reflectionSources.Add(source);
-            }
-
-            foreach (var request in serviceDescriptorRequests.Concat(internalServiceDescriptorRequests))
-            {
-                var source = ServiceDescriptorCollection.ResolveSource(
-                    this,
-                    compilation,
-                    diagnostics,
-                    request,
-                    assembly
-                );
-                if (source is { }) serviceDescriptorSources.Add(source);
-            }
-        }
-
-        globalDiagnostics.UnionWith(diagnostics);
-
-        var result = (
-            internalAssemblyRequestsBuilder.ToImmutable(),
-            internalReflectionRequests,
-            reflectionSources.ToImmutable(),
-            internalServiceDescriptorRequests,
-            serviceDescriptorSources.ToImmutable()
-        );
-
-        return result;
-    }
-
-    #pragma warning disable RS1035
-    private void GetAssemblyData(
-        IAssemblySymbol assembly,
-        out ImmutableList<AssemblyCollection.Item> assemblyItems,
-        out ImmutableList<ReflectionCollection.Item> reflection,
-        out ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptor,
-        out bool excludeFromResolution,
-        ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
-    )
-    {
-        if (generatedJson.SkipAssemblies.Contains(assembly.MetadataName))
-        {
-            resultingJson.AddSkipAssembly(assembly.MetadataName);
-            assemblyItems = [];
-            reflection = [];
-            serviceDescriptor = [];
-            excludeFromResolution = false;
-            return;
-        }
-
-        if (generatedJson.AssemblyData.TryGetValue(assembly.MetadataName, out var generatedData))
-        {
-            resultingJson.AddAssemblyData(assembly.MetadataName, generatedData);
-            assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
-            reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z)).ToImmutableList();
-            serviceDescriptor =
-                generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z)).ToImmutableList();
-            excludeFromResolution = generatedData.ExcludeFromResolution;
-            return;
-        }
-
-        var assemblyBuilder = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
-        var reflectionBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
-        var serviceDescriptorBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
-        excludeFromResolution = false;
-        var attributes = assembly.GetAttributes();
-        foreach (var attribute in attributes)
-        {
-            if (attribute is { AttributeClass.MetadataName: "ExcludeFromCompiledTypeProviderAttribute" })
-            {
-                excludeFromResolution = true;
-            }
-
-            if (attribute is not { AttributeClass.MetadataName: "AssemblyMetadataAttribute" }) continue;
-
-            try
-            {
-                switch (attribute)
-                {
-                    case { ConstructorArguments: [{ Value: AssembliesKey }, { Value: string getAssembliesData }] }:
-                        {
-                            {
-                                var data = GetAssembliesFromString(assemblySymbols, getAssembliesData);
-                                assemblyBuilder.Add(data);
-                            }
-                            break;
-                        }
-
-                    case { ConstructorArguments: [{ Value: ReflectionTypesKey }, { Value: string reflectionData }] }:
-                        {
-                            {
-                                var data = GetReflectionFromString(compilation, assemblySymbols, reflectionData);
-                                reflectionBuilder.Add(data);
-                            }
-                            break;
-                        }
-
-                    case { ConstructorArguments: [{ Value: ServiceDescriptorTypesKey }, { Value: string serviceDescriptorData }] }:
-                        {
-                            {
-                                var data = GetServiceDescriptorFromString(compilation, assemblySymbols, serviceDescriptorData);
-                                serviceDescriptorBuilder.Add(data);
-                            }
-                            break;
-                        }
-                }
-            }
-            catch (InvalidOperationException)
-            {
-                //?
-            }
-            catch (JsonException)
-            {
-                //?
-            }
-        }
-
-        assemblyItems = assemblyBuilder.ToImmutable();
-        reflection = reflectionBuilder.ToImmutable();
-        serviceDescriptor = serviceDescriptorBuilder.ToImmutable();
-
-        var result = new CompiledAssemblyProviderData(
-            assemblyBuilder.Select(GetAssemblyCollectionData).ToImmutableList(),
-            reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
-            serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList(),
-            excludeFromResolution
-        );
-
-        if (result.IsEmpty)
-            resultingJson.AddSkipAssembly(assembly.MetadataName);
-        else
-            resultingJson.AddAssemblyData(assembly.MetadataName, result);
-    }
-    #pragma warning restore RS1035
-
     public static IEnumerable<AttributeListSyntax> ToAssemblyAttributes(
         ImmutableList<AssemblyCollection.Item> assemblyRequests,
         ImmutableList<ReflectionCollection.Item> reflectionTypes,
@@ -407,21 +191,21 @@ internal partial class AssemblyProviderConfiguration
               .TypeFilterDescriptors.OfType<NameFilterDescriptor>()
               .Select(static z => new NameFilterData(z.Include, z.Filter, [.. z.Names.OrderBy(z => z)]))
               .OrderBy(static z => string.Join(",", z.Names.OrderBy(static z => z)))
-              .ThenBy(static z => z.Filter)
+              .ThenBy(static z => z.Filter),
         ],
         [
             .. typeFilter
               .TypeFilterDescriptors.OfType<TypeKindFilterDescriptor>()
               .Select(static z => new TypeKindFilterData(z.Include, [.. z.TypeKinds.OrderBy(z => z)]))
               .OrderBy(static z => string.Join(",", z.TypeKinds.OrderBy(static z => z)))
-              .ThenBy(static z => z.Include)
+              .ThenBy(static z => z.Include),
         ],
         [
             .. typeFilter
               .TypeFilterDescriptors.OfType<TypeInfoFilterDescriptor>()
               .Select(static z => new TypeInfoFilterData(z.Include, [.. z.TypeInfos.OrderBy(z => z)]))
               .OrderBy(static z => string.Join(",", z.TypeInfos.OrderBy(static z => z)))
-              .ThenBy(static z => z.Include)
+              .ThenBy(static z => z.Include),
         ],
         [
             .. typeFilter
@@ -447,7 +231,7 @@ internal partial class AssemblyProviderConfiguration
               .Where(z => z is { })
               .OrderBy(z => z.Assembly)
               .ThenBy(z => z.Attribute)
-              .ThenBy(z => z.Include)
+              .ThenBy(z => z.Include),
         ],
         [
             .. typeFilter
@@ -462,7 +246,7 @@ internal partial class AssemblyProviderConfiguration
                )
               .Where(z => z is { })
               .OrderBy(z => z.Attribute)
-              .ThenBy(z => z.Include)
+              .ThenBy(z => z.Include),
         ],
         [
             .. typeFilter
@@ -486,7 +270,7 @@ internal partial class AssemblyProviderConfiguration
               .Where(z => z is { })
               .OrderBy(z => z.Assembly)
               .ThenBy(z => z.Attribute)
-              .ThenBy(z => z.Include)
+              .ThenBy(z => z.Include),
         ],
         [
             .. typeFilter
@@ -503,7 +287,7 @@ internal partial class AssemblyProviderConfiguration
                )
               .Where(z => z is { })
               .OrderBy(z => z.Attribute)
-              .ThenBy(z => z.Include)
+              .ThenBy(z => z.Include),
         ],
         [
             .. typeFilter
@@ -529,7 +313,7 @@ internal partial class AssemblyProviderConfiguration
               .Where(z => z is { })
               .OrderBy(z => z.Assembly)
               .ThenBy(z => z.Type)
-              .ThenBy(z => z.Include)
+              .ThenBy(z => z.Include),
         ],
         [
             .. typeFilter
@@ -545,7 +329,7 @@ internal partial class AssemblyProviderConfiguration
                                            z => new AnyTypeData(z.ContainingAssembly.MetadataName, Helpers.GetFullMetadataName(z), z.IsUnboundGenericType)
                                        )
                                       .OrderBy(z => z.Assembly)
-                                      .ThenBy(z => z.Type)
+                                      .ThenBy(z => z.Type),
                                 ]
                             ),
                             NotAssignableToAnyTypeFilterDescriptor descriptor => new AssignableToAnyTypeData(
@@ -555,7 +339,7 @@ internal partial class AssemblyProviderConfiguration
                                       .Types
                                       .Select(z => new AnyTypeData(z.ContainingAssembly.MetadataName, Helpers.GetFullMetadataName(z), z.IsUnboundGenericType))
                                       .OrderBy(z => z.Assembly)
-                                      .ThenBy(z => z.Type)
+                                      .ThenBy(z => z.Type),
                                 ]
                             ),
                             _ => null!,
@@ -563,7 +347,7 @@ internal partial class AssemblyProviderConfiguration
                )
               .Where(z => z is { })
               .OrderBy(z => string.Join(",", z.Types))
-              .ThenBy(z => z.Include)
+              .ThenBy(z => z.Include),
         ]
     );
 
@@ -574,25 +358,43 @@ internal partial class AssemblyProviderConfiguration
     )
     {
         var descriptors = ImmutableList.CreateBuilder<IAssemblyDescriptor>();
-        if (data.AllAssembly) descriptors.Add(new AllAssemblyDescriptor());
+        if (data.AllAssembly)
+        {
+            descriptors.Add(new AllAssemblyDescriptor());
+        }
 
-        if (data.IncludeSystem) descriptors.Add(new IncludeSystemAssembliesDescriptor());
+        if (data.IncludeSystem)
+        {
+            descriptors.Add(new IncludeSystemAssembliesDescriptor());
+        }
 
         foreach (var item in data.Assembly)
         {
-            if (!assemblySymbols.TryGetValue(item, out var assembly)) continue;
+            if (!assemblySymbols.TryGetValue(item, out var assembly))
+            {
+                continue;
+            }
+
             descriptors.Add(new AssemblyDescriptor(assembly));
         }
 
         foreach (var item in data.NotAssembly)
         {
-            if (!assemblySymbols.TryGetValue(item, out var assembly)) continue;
+            if (!assemblySymbols.TryGetValue(item, out var assembly))
+            {
+                continue;
+            }
+
             descriptors.Add(new NotAssemblyDescriptor(assembly));
         }
 
         foreach (var item in data.AssemblyDependencies)
         {
-            if (!assemblySymbols.TryGetValue(item, out var assembly)) continue;
+            if (!assemblySymbols.TryGetValue(item, out var assembly))
+            {
+                continue;
+            }
+
             descriptors.Add(new AssemblyDependenciesDescriptor(assembly));
         }
 
@@ -629,15 +431,23 @@ internal partial class AssemblyProviderConfiguration
 
         foreach (var item in data.WithAttributeFilters)
         {
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type) continue;
-            if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
-            descriptors.Add(item.Include ? new WithAttributeFilterDescriptor(type) : new WithoutAttributeFilterDescriptor(type));
+            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type)
+            {
+                continue;
+            }
+
+            if (item.UnboundGenericType)
+            {
+                type = type.ConstructUnboundGenericType();
+            }
+
+            descriptors.Add(( item.Include ) ? new WithAttributeFilterDescriptor(type) : new WithoutAttributeFilterDescriptor(type));
         }
 
         foreach (var item in data.WithAttributeStringFilters)
         {
             descriptors.Add(
-                item.Include
+                ( item.Include )
                     ? new WithAttributeStringFilterDescriptor(item.Attribute)
                     : new WithoutAttributeStringFilterDescriptor(item.Attribute)
             );
@@ -646,12 +456,23 @@ internal partial class AssemblyProviderConfiguration
         var withAnyAttributeFilter = new List<INamedTypeSymbol>();
         foreach (var item in data.WithAnyAttributeFilters)
         {
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type) continue;
-            if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
+            if (findType(assemblySymbols, compilation, item.Assembly, item.Attribute) is not { } type)
+            {
+                continue;
+            }
+
+            if (item.UnboundGenericType)
+            {
+                type = type.ConstructUnboundGenericType();
+            }
+
             withAnyAttributeFilter.Add(type);
         }
 
-        if (withAnyAttributeFilter.Any()) descriptors.Add(new WithAnyAttributeFilterDescriptor(withAnyAttributeFilter.ToImmutableHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default)));
+        if (withAnyAttributeFilter.Any())
+        {
+            descriptors.Add(new WithAnyAttributeFilterDescriptor(withAnyAttributeFilter.ToImmutableHashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default)));
+        }
 
         var withAnyAttributeStringFilter = new List<string>();
         foreach (var item in data.WithAnyAttributeStringFilters)
@@ -659,13 +480,24 @@ internal partial class AssemblyProviderConfiguration
             withAnyAttributeStringFilter.Add(item.Attribute);
         }
 
-        if (withAnyAttributeStringFilter.Any()) descriptors.Add(new WithAnyAttributeStringFilterDescriptor([.. withAnyAttributeStringFilter]));
+        if (withAnyAttributeStringFilter.Any())
+        {
+            descriptors.Add(new WithAnyAttributeStringFilterDescriptor([.. withAnyAttributeStringFilter]));
+        }
 
         foreach (var item in data.AssignableToTypeFilters)
         {
-            if (findType(assemblySymbols, compilation, item.Assembly, item.Type) is not { } type) continue;
-            if (item.UnboundGenericType) type = type.ConstructUnboundGenericType();
-            descriptors.Add(item.Include ? new AssignableToTypeFilterDescriptor(type) : new NotAssignableToTypeFilterDescriptor(type));
+            if (findType(assemblySymbols, compilation, item.Assembly, item.Type) is not { } type)
+            {
+                continue;
+            }
+
+            if (item.UnboundGenericType)
+            {
+                type = type.ConstructUnboundGenericType();
+            }
+
+            descriptors.Add(( item.Include ) ? new AssignableToTypeFilterDescriptor(type) : new NotAssignableToTypeFilterDescriptor(type));
         }
 
         foreach (var item in data.AssignableToAnyTypeFilters)
@@ -673,13 +505,21 @@ internal partial class AssemblyProviderConfiguration
             var filters = ImmutableHashSet.CreateBuilder<INamedTypeSymbol>(SymbolEqualityComparer.Default);
             foreach (var typeData in item.Types)
             {
-                if (findType(assemblySymbols, compilation, typeData.Assembly, typeData.Type) is not { } type) continue;
-                if (typeData.UnboundGenericType) type = type.ConstructUnboundGenericType();
-                filters.Add(type);
+                if (findType(assemblySymbols, compilation, typeData.Assembly, typeData.Type) is not { } type)
+                {
+                    continue;
+                }
+
+                if (typeData.UnboundGenericType)
+                {
+                    type = type.ConstructUnboundGenericType();
+                }
+
+                _ = filters.Add(type);
             }
 
             descriptors.Add(
-                item.Include
+                ( item.Include )
                     ? new AssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
                     : new NotAssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
             );
@@ -693,15 +533,13 @@ internal partial class AssemblyProviderConfiguration
         Compilation compilation,
         string assemblyName,
         string typeName
-    )
-    {
-        return CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName)
+    ) =>
+        ( CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName) )
             ? compilation.GetTypeByMetadataName(typeName)
-            : !assemblySymbols.TryGetValue(assemblyName, out var assembly)
-         || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type
+            : ( !assemblySymbols.TryGetValue(assemblyName, out var assembly)
+         || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type )
                 ? compilation.GetTypeByMetadataName(typeName)
                 : type;
-    }
 
     private static ServiceDescriptorFilterData LoadServiceDescriptorsData(
         CompiledServiceTypeDescriptors serviceTypeDescriptors
@@ -712,14 +550,14 @@ internal partial class AssemblyProviderConfiguration
                  {
                      ImplementedInterfacesServiceTypeDescriptor i => new(
                          'i',
-                         TypeFilter: i is { InterfaceFilter: { } filter } ? LoadTypeFilterData(filter) : null
+                         TypeFilter: ( i is { InterfaceFilter: { } filter } ) ? LoadTypeFilterData(filter) : null
                      ),
                      MatchingInterfaceServiceTypeDescriptor => new('m'),
-                     SelfServiceTypeDescriptor              => new('s'),
-                     AsTypeFilterServiceTypeDescriptor      => new('a'),
+                     SelfServiceTypeDescriptor => new('s'),
+                     AsTypeFilterServiceTypeDescriptor => new('a'),
                      CompiledServiceTypeDescriptor { Type: { } namedType } => new ServiceTypeData(
                          'c',
-                         TypeData: new(namedType.ContainingAssembly.MetadataName, namedType.MetadataName, namedType.IsUnboundGenericType)
+                         new(namedType.ContainingAssembly.MetadataName, namedType.MetadataName, namedType.IsUnboundGenericType)
                      ),
                      _ => throw new ArgumentOutOfRangeException(nameof(z)),
                  }
@@ -748,11 +586,242 @@ internal partial class AssemblyProviderConfiguration
                     { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
                     { Identifier: 's' } => new SelfServiceTypeDescriptor(),
                     { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
-                    _                   => throw new ArgumentOutOfRangeException(nameof(data)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(data)),
                 }
             );
         }
 
         return new(descriptors.ToImmutable(), data.Lifetime);
     }
+#pragma warning disable RS1035
+    internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
+    {
+        if (!( generatedJson.GetSourceLocation(assemblySymbol.MetadataName, location, factory) is { } savedLocation ))
+        {
+            return null;
+        }
+
+        resultingJson.AddSourceLocation(assemblySymbol.MetadataName, savedLocation);
+        return savedLocation;
+    }
+#pragma warning restore RS1035
+
+    public (
+        ImmutableList<AssemblyCollection.Item> InternalAssemblyRequests,
+        ImmutableList<ReflectionCollection.Item> InternalReflectionRequests,
+        ImmutableList<ResolvedSourceLocation> ReflectionSources,
+        ImmutableList<ServiceDescriptorCollection.Item> InternalServiceDescriptorRequests,
+        ImmutableList<ResolvedSourceLocation> ServiceDescriptorSources
+        ) FromAssemblyAttributes(
+            ref ImmutableDictionary<string, IAssemblySymbol> assemblySymbols,
+            ImmutableList<ReflectionCollection.Item> reflectionRequests,
+            ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptorRequests,
+            HashSet<Diagnostic> globalDiagnostics
+        )
+    {
+        var reflectionSources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
+        var serviceDescriptorSources = ImmutableList.CreateBuilder<ResolvedSourceLocation>();
+
+        var internalAssemblyRequestsBuilder = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
+        var internalReflectionRequestsBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
+        var internalServiceDescriptorRequestsBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
+        foreach (var assembly in assemblySymbols.Values.Except([compilation.Assembly]).OrderBy(z => z.MetadataName))
+        {
+            try
+            {
+                GetAssemblyData(
+                    assembly,
+                    out var assemblyAssemblySources,
+                    out var assemblyReflectionBuilder,
+                    out var assemblyServiceDescriptorBuilder,
+                    out var excludeFromResolution,
+                    assemblySymbols
+                );
+
+                internalAssemblyRequestsBuilder.AddRange(assemblyAssemblySources);
+                internalReflectionRequestsBuilder.AddRange(assemblyReflectionBuilder);
+                internalServiceDescriptorRequestsBuilder.AddRange(assemblyServiceDescriptorBuilder);
+                if (excludeFromResolution)
+                {
+                    assemblySymbols = assemblySymbols.Remove(assembly.MetadataName);
+                }
+            }
+            catch (Exception e)
+            {
+                _ = globalDiagnostics.Add(
+                    Diagnostic.Create(
+                        Diagnostics.UnhandledException,
+                        assembly.Locations.FirstOrDefault(),
+                        e.Message.Replace("\r", "").Replace("\n", ""),
+                        e.StackTrace.Replace("\r", "").Replace("\n", ""),
+                        e.GetType().Name,
+                        e.ToString()
+                    )
+                );
+            }
+        }
+
+        var internalReflectionRequests = internalReflectionRequestsBuilder.ToImmutable();
+        var internalServiceDescriptorRequests = internalServiceDescriptorRequestsBuilder.ToImmutable();
+        var diagnostics = new HashSet<Diagnostic>();
+        foreach (var assembly in assemblySymbols.Values.Except([compilation.Assembly]).OrderBy(z => z.MetadataName))
+        {
+            foreach (var request in reflectionRequests.Concat(internalReflectionRequests))
+            {
+                var source = ReflectionCollection.ResolveSource(
+                    this,
+                    compilation,
+                    diagnostics,
+                    request,
+                    assembly
+                );
+                if (source is { })
+                {
+                    reflectionSources.Add(source);
+                }
+            }
+
+            foreach (var request in serviceDescriptorRequests.Concat(internalServiceDescriptorRequests))
+            {
+                var source = ServiceDescriptorCollection.ResolveSource(
+                    this,
+                    compilation,
+                    diagnostics,
+                    request,
+                    assembly
+                );
+                if (source is { })
+                {
+                    serviceDescriptorSources.Add(source);
+                }
+            }
+        }
+
+        globalDiagnostics.UnionWith(diagnostics);
+
+        var result = (
+            internalAssemblyRequestsBuilder.ToImmutable(),
+            internalReflectionRequests,
+            reflectionSources.ToImmutable(),
+            internalServiceDescriptorRequests,
+            serviceDescriptorSources.ToImmutable()
+        );
+
+        return result;
+    }
+
+#pragma warning disable RS1035
+    private void GetAssemblyData(
+        IAssemblySymbol assembly,
+        out ImmutableList<AssemblyCollection.Item> assemblyItems,
+        out ImmutableList<ReflectionCollection.Item> reflection,
+        out ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptor,
+        out bool excludeFromResolution,
+        ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
+    )
+    {
+        if (generatedJson.SkipAssemblies.Contains(assembly.MetadataName))
+        {
+            resultingJson.AddSkipAssembly(assembly.MetadataName);
+            assemblyItems = [];
+            reflection = [];
+            serviceDescriptor = [];
+            excludeFromResolution = false;
+            return;
+        }
+
+        if (generatedJson.AssemblyData.TryGetValue(assembly.MetadataName, out var generatedData))
+        {
+            resultingJson.AddAssemblyData(assembly.MetadataName, generatedData);
+            assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
+            reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z)).ToImmutableList();
+            serviceDescriptor =
+                generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z)).ToImmutableList();
+            excludeFromResolution = generatedData.ExcludeFromResolution;
+            return;
+        }
+
+        var assemblyBuilder = ImmutableList.CreateBuilder<AssemblyCollection.Item>();
+        var reflectionBuilder = ImmutableList.CreateBuilder<ReflectionCollection.Item>();
+        var serviceDescriptorBuilder = ImmutableList.CreateBuilder<ServiceDescriptorCollection.Item>();
+        excludeFromResolution = false;
+        var attributes = assembly.GetAttributes();
+        foreach (var attribute in attributes)
+        {
+            if (attribute is { AttributeClass.MetadataName: "ExcludeFromCompiledTypeProviderAttribute" })
+            {
+                excludeFromResolution = true;
+            }
+
+            if (attribute is not { AttributeClass.MetadataName: "AssemblyMetadataAttribute" })
+            {
+                continue;
+            }
+
+            try
+            {
+                switch (attribute)
+                {
+                    case { ConstructorArguments: [{ Value: AssembliesKey }, { Value: string getAssembliesData }] }:
+                        {
+                            {
+                                var data = GetAssembliesFromString(assemblySymbols, getAssembliesData);
+                                assemblyBuilder.Add(data);
+                            }
+                            break;
+                        }
+
+                    case { ConstructorArguments: [{ Value: ReflectionTypesKey }, { Value: string reflectionData }] }:
+                        {
+                            {
+                                var data = GetReflectionFromString(compilation, assemblySymbols, reflectionData);
+                                reflectionBuilder.Add(data);
+                            }
+                            break;
+                        }
+
+                    case { ConstructorArguments: [{ Value: ServiceDescriptorTypesKey }, { Value: string serviceDescriptorData }] }:
+                        {
+                            {
+                                var data = GetServiceDescriptorFromString(compilation, assemblySymbols, serviceDescriptorData);
+                                serviceDescriptorBuilder.Add(data);
+                            }
+                            break;
+                        }
+
+                    default:
+                        break;
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                //?
+            }
+            catch (JsonException)
+            {
+                //?
+            }
+        }
+
+        assemblyItems = assemblyBuilder.ToImmutable();
+        reflection = reflectionBuilder.ToImmutable();
+        serviceDescriptor = serviceDescriptorBuilder.ToImmutable();
+
+        var result = new CompiledAssemblyProviderData(
+            assemblyBuilder.Select(GetAssemblyCollectionData).ToImmutableList(),
+            reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
+            serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList(),
+            excludeFromResolution
+        );
+
+        if (result.IsEmpty)
+        {
+            resultingJson.AddSkipAssembly(assembly.MetadataName);
+        }
+        else
+        {
+            resultingJson.AddAssemblyData(assembly.MetadataName, result);
+        }
+    }
+#pragma warning restore RS1035
 }

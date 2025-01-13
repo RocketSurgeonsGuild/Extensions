@@ -32,7 +32,7 @@ internal static class ReflectionCollection
     {
         try
         {
-            return SymbolEqualityComparer.Default.Equals(targetAssembly, compilation.Assembly)
+            return ( SymbolEqualityComparer.Default.Equals(targetAssembly, compilation.Assembly) )
                 ? resolvedSourceLocation()
                 : configuration.CacheSourceLocation(
                     item.Location,
@@ -100,24 +100,24 @@ internal static class ReflectionCollection
 
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetTypesMethod(GeneratorSyntaxContext context)
     {
-        ( var method, var selector ) = GetTypesMethod(context.Node);
-        return method is null
+        var (method, selector) = GetTypesMethod(context.Node);
+        return ( method is null
          || selector is null
          || context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
-            {
-                TypeArguments: [{ Name: IReflectionTypeSelector }, ..],
-            }
+         {
+             TypeArguments: [{ Name: IReflectionTypeSelector }, ..],
+         } )
                 ? default
-                : ( method, selector, semanticModel: context.SemanticModel );
+                : (method, selector, semanticModel: context.SemanticModel);
     }
 
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetTypesMethod(SyntaxNode node) =>
-        node is InvocationExpressionSyntax
+        ( node is InvocationExpressionSyntax
         {
             Expression: MemberAccessExpressionSyntax { Name.Identifier.Text: "GetTypes" },
             ArgumentList.Arguments: [.., { Expression: { } expression }],
-        } invocationExpressionSyntax
-            ? ( invocationExpressionSyntax, expression )
+        } invocationExpressionSyntax )
+            ? (invocationExpressionSyntax, expression)
             : default;
 
     internal static ImmutableList<Item> GetReflectionItems(
@@ -132,7 +132,7 @@ internal static class ReflectionCollection
         {
             try
             {
-                ( var methodCallSyntax, var selector, _ ) = tuple;
+                (var methodCallSyntax, var selector, _) = tuple;
 
                 var assemblies = new List<IAssemblyDescriptor>();
                 var typeFilters = new List<ITypeFilterDescriptor>();

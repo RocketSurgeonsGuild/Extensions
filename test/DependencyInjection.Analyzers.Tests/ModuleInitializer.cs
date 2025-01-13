@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using Argon;
 using DiffEngine;
 using EmptyFiles;
 using Microsoft.CodeAnalysis;
@@ -15,7 +13,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 internal static partial class ModuleInitializer
 {
-    public static string TempDirectory { get; private set; }
+    public static string TempDirectory { get; private set; } = null!;
 
     [ModuleInitializer]
     public static void Init()
@@ -65,19 +63,19 @@ internal static partial class ModuleInitializer
                 if (typeof(CompiledTypeProviderGenerator).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>() is
                     { Version: { Length: > 0 } version })
                 {
-                    builder.Replace(version, "version");
+                    _ = builder.Replace(version, "version");
                 }
 
                 if (typeof(CompiledTypeProviderGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0 } version2 })
                 {
-                    builder.Replace(version2, "version");
+                    _ = builder.Replace(version2, "version");
                 }
 
                 // regex to replace the version number in this string Version=12.0.0.0,
                 var regex = MyRegex();
                 var result = regex.Replace(builder.ToString(), "Version=version,");
-                builder.Clear();
-                builder.Append(result);
+                _ = builder.Clear();
+                _ = builder.Append(result);
             }
         );
     }
@@ -116,7 +114,7 @@ internal static partial class ModuleInitializer
                 z => z.Key.FullName!,
                 z => z.Value.Diagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error)
             ),
-            ["Services"] = services
+            ["Services"] = services,
         };
 
         return new(data, targets);
@@ -140,7 +138,7 @@ internal static partial class ModuleInitializer
                                  )!
                              )
                             .SingleOrDefault()
-         ?? new(ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty, ImmutableHashSet<string>.Empty, ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty);
+         ?? new(ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty, [], ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty);
 
         var generatorDiagnostics = target
                                   .Results
@@ -170,12 +168,12 @@ internal static partial class ModuleInitializer
 
             ["FinalDiagnostics"] = target.FinalDiagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error),
             ["GeneratorDiagnostics"] = generatorDiagnostics,
-            ["SkippedAssemblies"] = generatedCache.SkipAssemblies.OrderBy(z => z).ToArray(),
+            ["SkippedAssemblies"] = generatedCache.SkipAssemblies.Order().ToArray(),
             ["PartialsCached"] = partialsCached,
             ["GeneratedCache"] = generatedCache
                                 .AssemblyData
                                 .OrderBy(z => z.Key)
-                                .ToDictionary()
+                                .ToDictionary(),
         };
 
         return new(data, targets);
@@ -189,10 +187,10 @@ internal static partial class ModuleInitializer
         return new("cs", data.Replace("\r", "", StringComparison.OrdinalIgnoreCase), Path.GetFileNameWithoutExtension(hintPath));
     }
 
-    private static Target Selector((FileInfo fileInfo, string text) item)
-    {
-        return new(item.fileInfo.Extension.Trim('.'), item.text, item.fileInfo.Name);
-    }
+    private static Target Selector((FileInfo fileInfo, string text) item) => new(item.fileInfo.Extension.Trim('.'), item.text, item.fileInfo.Name);
+
+    [GeneratedRegex("Version=(.*?),", RegexOptions.Compiled)]
+    private static partial Regex MyRegex();
 
     private class ServiceDescriptorConverter : WriteOnlyJsonConverter<ServiceDescriptor>
     {
@@ -245,7 +243,4 @@ internal static partial class ModuleInitializer
             writer.WriteEndObject();
         }
     }
-
-    [GeneratedRegex("Version=(.*?),", RegexOptions.Compiled)]
-    private static partial Regex MyRegex();
 }
