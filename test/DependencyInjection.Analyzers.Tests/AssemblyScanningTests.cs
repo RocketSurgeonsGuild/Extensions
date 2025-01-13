@@ -8,7 +8,6 @@ using TestAssembly;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public partial class AssemblyScanningTests : GeneratorTest
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

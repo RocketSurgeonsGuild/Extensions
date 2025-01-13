@@ -5,7 +5,6 @@ using System.Text;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class ResultingAssemblyProviderData
 {
     internal static string GetCacheFileHash(SourceLocation location)
@@ -27,9 +26,6 @@ public class ResultingAssemblyProviderData
     private readonly Dictionary<string, CompiledAssemblyProviderData> _assemblyData = [];
     private readonly HashSet<string> _skipAssemblies = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ResultingLocationAssemblyResolvedSourceCollection> _sourceLocations = [];
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
 
     public void AddSourceLocation(string assemblyName, ResolvedSourceLocation resolvedSource)
     {
@@ -64,8 +60,6 @@ public class ResultingAssemblyProviderData
     );
 }
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public record GeneratedAssemblyProviderData
 (
     ImmutableDictionary<string, CompiledAssemblyProviderData> AssemblyData,
@@ -73,9 +67,6 @@ public record GeneratedAssemblyProviderData
     ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection> Partials
 )
 {
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
-
     public ResolvedSourceLocation? GetSourceLocation(string assemblyName, SourceLocation sourceLocation, Func<ResolvedSourceLocation?> factory)
     {
         var cacheKey = ResultingAssemblyProviderData.GetCacheFileHash(sourceLocation);
@@ -86,7 +77,6 @@ public record GeneratedAssemblyProviderData
     }
 }
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public record ResultingLocationAssemblyResolvedSourceCollection(SourceLocation SourceLocation)
 {
     public Dictionary<string, ResolvedSourceLocation> ResolvedSources { get; } = [];
@@ -97,7 +87,6 @@ public record ResultingLocationAssemblyResolvedSourceCollection(SourceLocation S
     public void AddSource(string assemblyName, ResolvedSourceLocation resolvedSource) => ResolvedSources[assemblyName] = resolvedSource;
 }
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public record GeneratedLocationAssemblyResolvedSourceCollection(SourceLocation SourceLocation, ImmutableDictionary<string, ResolvedSourceLocation> ResolvedSources)
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

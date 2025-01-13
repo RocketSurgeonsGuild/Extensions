@@ -20,7 +20,6 @@ public static class Constants
 ///     Source generate used for scanning assemblies for registrations
 /// </summary>
 [Generator]
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public class CompiledTypeProviderGenerator : IIncrementalGenerator
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

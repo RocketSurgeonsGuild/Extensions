@@ -42,7 +42,6 @@ using Rocket.Surgery.Nuke.Jobs;
 [UploadLogs]
 [TitleEvents]
 [ContinuousIntegrationConventions]
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
 internal partial class Pipeline
 {
     public static RocketSurgeonGitHubActionsConfiguration CiIgnoreMiddleware(RocketSurgeonGitHubActionsConfiguration configuration)
@@ -81,7 +80,4 @@ internal partial class Pipeline
 
         return configuration;
     }
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
 }
