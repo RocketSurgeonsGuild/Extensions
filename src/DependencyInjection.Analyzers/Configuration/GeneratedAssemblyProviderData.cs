@@ -93,13 +93,7 @@ public record ResultingLocationAssemblyResolvedSourceCollection(SourceLocation S
     public Dictionary<string, ResolvedSourceLocation> ResolvedSources { get; } = [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay
-    {
-        get
-        {
-            return ToString();
-        }
-    }
+    private string DebuggerDisplay => ToString();
 
     public void AddSource(string assemblyName, ResolvedSourceLocation resolvedSource) => ResolvedSources[assemblyName] = resolvedSource;
 }
@@ -108,13 +102,7 @@ public record ResultingLocationAssemblyResolvedSourceCollection(SourceLocation S
 public record GeneratedLocationAssemblyResolvedSourceCollection(SourceLocation SourceLocation, ImmutableDictionary<string, ResolvedSourceLocation> ResolvedSources)
 {
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay
-    {
-        get
-        {
-            return ToString();
-        }
-    }
+    private string DebuggerDisplay => ToString();
 
     public ResolvedSourceLocation? GetSourceLocation(string assemblyName) =>
         ( ResolvedSources.TryGetValue(assemblyName, out var resolvedSourceLocation) )

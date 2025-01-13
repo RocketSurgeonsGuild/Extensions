@@ -27,9 +27,9 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
 #pragma warning disable RS1035
     private static string? GetCacheDirectory(AnalyzerConfigOptionsProvider options)
     {
-        var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
-                ? intermediateOutputPath
-                : null;
+        var directory = ( options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath) )
+            ? intermediateOutputPath
+            : null;
         if (directory is null)
         {
             return null;
@@ -67,7 +67,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                         (text, _) =>
                                         {
                                             var source = text.GetText()?.ToString();
-                                            return source is not { Length: > 100 }
+                                            return ( source is not { Length: > 100 } )
                                                 ? new(
                                                     ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty,
                                                     [],
