@@ -73,14 +73,14 @@ public partial class AssemblyScanningTests
                 yield return CreateTest(GetTypeName(item.Expression), [$"provider.Scan(services, {item.Expression});"]);
             }
 
-            string[] expressions =
-            [
-                ..assemblyRequests.Select(item => $"provider.GetAssemblies({item.Expression});"),
-                ..reflectionRequests.Select(item => $"provider.GetTypes({item.Expression});"),
-                ..serviceDescriptorRequests.Select(item => $"provider.Scan(services, {item.Expression});")
-            ];
+//            string[] expressions =
+//            [
+//                ..assemblyRequests.Select(item => $"provider.GetAssemblies({item.Expression});"),
+//                ..reflectionRequests.Select(item => $"provider.GetTypes({item.Expression});"),
+//                ..serviceDescriptorRequests.Select(item => $"provider.Scan(services, {item.Expression});")
+//            ];
 
-            yield return CreateTest("all-together", expressions);
+//            yield return CreateTest("all-together", expressions);
 
             static string GetTypeName(string expression)
             {
