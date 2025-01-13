@@ -22,29 +22,18 @@ public static class Constants
 [Generator]
 public class CompiledTypeProviderGenerator : IIncrementalGenerator
 {
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
 #pragma warning disable RS1035
     private static string? GetCacheDirectory(AnalyzerConfigOptionsProvider options)
     {
         var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
             ? intermediateOutputPath
             : null;
-        if (directory is null)
-        {
-            return null;
-        }
+        if (directory is null) return null;
 
-        if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory))
-        {
-            directory = Path.Combine(projectDirectory, directory);
-        }
+        if (!Path.IsPathRooted(directory) && options.GlobalOptions.TryGetValue("build_property.ProjectDir", out var projectDirectory)) directory = Path.Combine(projectDirectory, directory);
 
         var cacheDirectory = Path.Combine(directory, "ctp");
-        if (!Directory.Exists(cacheDirectory))
-        {
-            _ = Directory.CreateDirectory(cacheDirectory);
-        }
+        if (!Directory.Exists(cacheDirectory)) _ = Directory.CreateDirectory(cacheDirectory);
 
         return cacheDirectory;
     }
@@ -134,15 +123,9 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                      .Select(
                                           symbol =>
                                           {
-                                              if (symbol is IAssemblySymbol assemblySymbol)
-                                              {
-                                                  return assemblySymbol;
-                                              }
+                                              if (symbol is IAssemblySymbol assemblySymbol) return assemblySymbol;
 
-                                              if (symbol is IModuleSymbol moduleSymbol)
-                                              {
-                                                  return moduleSymbol.ContainingAssembly;
-                                              }
+                                              if (symbol is IModuleSymbol moduleSymbol) return moduleSymbol.ContainingAssembly;
 
                                               // ReSharper disable once NullableWarningSuppressionIsUsed
                                               return null!;
@@ -226,10 +209,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                     serviceDescriptorSources,
                     privateAssemblies
                 );
-                if (privateAssemblies.Any())
-                {
-                    cu = cu.AddUsings(UsingDirective(ParseName("System.Runtime.Loader")));
-                }
+                if (privateAssemblies.Any()) cu = cu.AddUsings(UsingDirective(ParseName("System.Runtime.Loader")));
 
                 MemberDeclarationSyntax[] members = [assemblyProvider];
 

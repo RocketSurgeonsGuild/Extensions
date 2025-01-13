@@ -28,20 +28,6 @@ internal static class GeneratorBuilderConstants
 
 public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
 {
-    protected static void ClearCache(string tempPath)
-    {
-        if (!Directory.Exists(tempPath))
-        {
-            return;
-        }
-
-        Directory.Delete(tempPath, true);
-    }
-
-    protected string TempPath { get; } = Path.Combine(ModuleInitializer.TempDirectory, Guid.NewGuid().ToString());
-    protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
-    protected AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
-
     [Before(Test)]
     public void InitializeAsync()
     {
@@ -49,12 +35,16 @@ public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
         Builder = GeneratorBuilderConstants
                  .Builder
                  .WithAssemblyLoadContext(AssemblyLoadContext);
-        if (AssemblyLoadContext is not IDisposable disposable)
-        {
-            return;
-        }
+        if (AssemblyLoadContext is not IDisposable disposable) return;
 
         Disposables.Add(disposable);
+    }
+
+    protected static void ClearCache(string tempPath)
+    {
+        if (!Directory.Exists(tempPath)) return;
+
+        Directory.Delete(tempPath, true);
     }
 
     protected string GetTempPath()
@@ -63,6 +53,11 @@ public abstract partial class GeneratorTest() : LoggerTest(Defaults.LoggerTest)
         _ = Directory.CreateDirectory(path);
         return path;
     }
+
+    protected AssemblyLoadContext AssemblyLoadContext { get; } = new CollectibleTestAssemblyLoadContext();
+    protected GeneratorTestContextBuilder Builder { get; private set; } = null!;
+
+    protected string TempPath { get; } = Path.Combine(ModuleInitializer.TempDirectory, Guid.NewGuid().ToString());
 }
 
 internal static partial class VerifyExtensions
@@ -76,10 +71,7 @@ internal static partial class VerifyExtensions
 
     public static GeneratorTestContextBuilder AddCacheOptions(this GeneratorTestContextBuilder builder, string tempPath)
     {
-        if (!Path.IsPathRooted(tempPath))
-        {
-            tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
-        }
+        if (!Path.IsPathRooted(tempPath)) tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
 
         _ = Directory.CreateDirectory(tempPath);
         return builder
@@ -89,10 +81,7 @@ internal static partial class VerifyExtensions
 
     public static GeneratorTestContextBuilder PopulateCache(this GeneratorTestContextBuilder builder, string tempPath)
     {
-        if (!Path.IsPathRooted(tempPath))
-        {
-            tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
-        }
+        if (!Path.IsPathRooted(tempPath)) tempPath = Path.Combine(ModuleInitializer.TempDirectory, tempPath);
 
         var cachePath = $"{IntermediateOutputPath}/ctp/{Constants.CompiledTypeProviderCacheFileName}";
         var fullCachePath = Path.Combine(tempPath, cachePath);
@@ -103,12 +92,11 @@ internal static partial class VerifyExtensions
              .AddAdditionalTexts(new GeneratorAdditionalText(cachePath.Replace("\\", "/"), SourceText.From(File.ReadAllText(fullCachePath))));
     }
 
-    private const string IntermediateOutputPath = "obj/net9.0";
-
     internal class GeneratorAdditionalText(string path, SourceText sourceText) : AdditionalText
     {
-        public override string Path { get; } = path;
-
         public override SourceText? GetText(CancellationToken cancellationToken = new()) => sourceText;
+        public override string Path { get; } = path;
     }
+
+    private const string IntermediateOutputPath = "obj/net9.0";
 }

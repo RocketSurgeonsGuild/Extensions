@@ -49,10 +49,7 @@ internal static class ServiceDescriptorCollection
                                   .GetReferencedTypes(targetAssembly)
                                   .GetTypes();
 
-                if (reducedTypes.Count == 0)
-                {
-                    return null;
-                }
+                if (reducedTypes.Count == 0) return null;
 
                 var localBlock = GenerateDescriptors(compilation, diagnostics, reducedTypes, item.ServicesTypeFilter, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
                 return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
@@ -82,24 +79,26 @@ internal static class ServiceDescriptorCollection
         IAssemblySymbol targetAssembly
     )
     {
-        if (!items.Any())
-        {
-            return [];
-        }
+        if (!items.Any()) return [];
 
         var results = new List<ResolvedSourceLocation>();
         foreach (var item in items)
         {
-            if (ResolveSource(configuration, compilation, diagnostics, item, targetAssembly) is not { } location)
-            {
-                continue;
-            }
+            if (ResolveSource(configuration, compilation, diagnostics, item, targetAssembly) is not { } location) continue;
 
             results.Add(location);
         }
 
         return [.. results];
     }
+
+    public record Item
+    (
+        SourceLocation Location,
+        CompiledAssemblyFilter AssemblyFilter,
+        CompiledTypeFilter TypeFilter,
+        CompiledServiceTypeDescriptors ServicesTypeFilter,
+        int Lifetime);
 
     internal static ImmutableList<Item> GetServiceDescriptorItems(
         Compilation compilation,
@@ -167,31 +166,6 @@ internal static class ServiceDescriptorCollection
         return items.ToImmutable();
     }
 
-    private static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetServiceDescriptorMethod(GeneratorSyntaxContext context)
-    {
-        (var method, var selector) = GetMethod(context.Node);
-        return context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
-        {
-            TypeArguments: [{ Name: IServiceDescriptorAssemblySelector }, ..],
-        }
-            ? default
-            : (method, selector, semanticModel: context.SemanticModel);
-    }
-
-    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
-
-    private static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetMethod(SyntaxNode node) =>
-        node is InvocationExpressionSyntax
-        {
-            Expression: MemberAccessExpressionSyntax
-            {
-                Name.Identifier.Text: "Scan",
-            },
-            ArgumentList.Arguments: [.., { Expression: { } expression }],
-        } invocationExpressionSyntax
-            ? (invocationExpressionSyntax, expression)
-            : default;
-
     private static BlockSyntax GenerateDescriptors(
         Compilation compilation,
         HashSet<Diagnostic> diagnostics,
@@ -214,10 +188,7 @@ internal static class ServiceDescriptorCollection
             var emittedTypes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
 #pragma warning restore RS1024
             var typeIsOpenGeneric = type.IsOpenGenericType();
-            if (!compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
-            {
-                _ = privateAssemblies.Add(type.ContainingAssembly);
-            }
+            if (!compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)) _ = privateAssemblies.Add(type.ContainingAssembly);
 
             var discoveredLifetime =
                 type
@@ -283,27 +254,18 @@ internal static class ServiceDescriptorCollection
             var abort = false;
             foreach (var registration in lifetimeRegistrations)
             {
-                if (registration.Count() <= 1)
-                {
-                    continue;
-                }
+                if (registration.Count() <= 1) continue;
 
                 foreach (var item in registration)
                 {
-                    if (!item.Type.DeclaringSyntaxReferences.Any())
-                    {
-                        continue;
-                    }
+                    if (!item.Type.DeclaringSyntaxReferences.Any()) continue;
 
                     _ = diagnostics.Add(Diagnostic.Create(Diagnostics.DuplicateServiceDescriptorAttribute, item.Type.Locations.FirstOrDefault()));
                     abort = true;
                 }
             }
 
-            if (abort)
-            {
-                return Block();
-            }
+            if (abort) return Block();
 
             foreach ((var lifetime, var serviceType) in lifetimeRegistrations.Select(z => z.First()))
             {
@@ -311,10 +273,7 @@ internal static class ServiceDescriptorCollection
                 // need diagnostics for double registration
                 // need to get services from the generic arguments of the class
 
-                if (emittedTypes.Contains(serviceType))
-                {
-                    continue;
-                }
+                if (emittedTypes.Contains(serviceType)) continue;
 
                 services.Add(
                     !SymbolEqualityComparer.Default.Equals(serviceType, type)
@@ -344,10 +303,7 @@ internal static class ServiceDescriptorCollection
                         serviceTypes.GetLifetime()
                     )
                 );
-                if (!compilation.IsSymbolAccessibleWithin(type, compilation.Assembly))
-                {
-                    _ = privateAssemblies.Add(type.ContainingAssembly);
-                }
+                if (!compilation.IsSymbolAccessibleWithin(type, compilation.Assembly)) _ = privateAssemblies.Add(type.ContainingAssembly);
 
                 _ = emittedTypes.Add(type);
             }
@@ -373,10 +329,7 @@ internal static class ServiceDescriptorCollection
                                 serviceTypes.GetLifetime()
                             )
                     );
-                    if (!compilation.IsSymbolAccessibleWithin(@interface, compilation.Assembly))
-                    {
-                        _ = privateAssemblies.Add(type.ContainingAssembly);
-                    }
+                    if (!compilation.IsSymbolAccessibleWithin(@interface, compilation.Assembly)) _ = privateAssemblies.Add(type.ContainingAssembly);
 
                     _ = emittedTypes.Add(@interface);
                 }
@@ -396,10 +349,7 @@ internal static class ServiceDescriptorCollection
 
                 foreach (var @interface in interfaces.OrderBy(z => z.ToDisplayString()))
                 {
-                    if (emittedTypes.Contains(@interface))
-                    {
-                        continue;
-                    }
+                    if (emittedTypes.Contains(@interface)) continue;
 
                     services.Add(
                         typeIsOpenGeneric || !asSelf
@@ -416,10 +366,7 @@ internal static class ServiceDescriptorCollection
                                 serviceTypes.GetLifetime()
                             )
                     );
-                    if (!compilation.IsSymbolAccessibleWithin(@interface, compilation.Assembly))
-                    {
-                        _ = privateAssemblies.Add(type.ContainingAssembly);
-                    }
+                    if (!compilation.IsSymbolAccessibleWithin(@interface, compilation.Assembly)) _ = privateAssemblies.Add(type.ContainingAssembly);
 
                     _ = emittedTypes.Add(@interface);
                 }
@@ -427,15 +374,9 @@ internal static class ServiceDescriptorCollection
 
             foreach (var asType in asSpecificTypes.OrderBy(z => z.ToDisplayString()))
             {
-                if (emittedTypes.Contains(asType))
-                {
-                    continue;
-                }
+                if (emittedTypes.Contains(asType)) continue;
 
-                if (!Helpers.HasImplicitGenericConversion(compilation, asType, type))
-                {
-                    continue;
-                }
+                if (!Helpers.HasImplicitGenericConversion(compilation, asType, type)) continue;
 
                 services.Add(
                     !asSelf
@@ -459,10 +400,7 @@ internal static class ServiceDescriptorCollection
             {
                 foreach (var @interface in type.AllInterfaces.OrderBy(z => z.ToDisplayString()))
                 {
-                    if (emittedTypes.Contains(@interface))
-                    {
-                        continue;
-                    }
+                    if (emittedTypes.Contains(@interface)) continue;
 
                     services.Add(
                         StatementGeneration.GenerateServiceFactory(
@@ -493,8 +431,6 @@ internal static class ServiceDescriptorCollection
         return block;
     }
 
-    private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
-
     private static string? GetLifetimeValue(AttributeData? attribute)
     {
         if (attribute is not
@@ -520,11 +456,30 @@ internal static class ServiceDescriptorCollection
         return value.Name;
     }
 
-    public record Item
-    (
-        SourceLocation Location,
-        CompiledAssemblyFilter AssemblyFilter,
-        CompiledTypeFilter TypeFilter,
-        CompiledServiceTypeDescriptors ServicesTypeFilter,
-        int Lifetime);
+    private static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetMethod(SyntaxNode node) =>
+        node is InvocationExpressionSyntax
+        {
+            Expression: MemberAccessExpressionSyntax
+            {
+                Name.Identifier.Text: "Scan",
+            },
+            ArgumentList.Arguments: [.., { Expression: { } expression }],
+        } invocationExpressionSyntax
+            ? (invocationExpressionSyntax, expression)
+            : default;
+
+    private static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetServiceDescriptorMethod(GeneratorSyntaxContext context)
+    {
+        (var method, var selector) = GetMethod(context.Node);
+        return context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
+        {
+            TypeArguments: [{ Name: IServiceDescriptorAssemblySelector }, ..],
+        }
+            ? default
+            : (method, selector, semanticModel: context.SemanticModel);
+    }
+
+    private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
+
+    private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
 }

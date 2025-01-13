@@ -10,9 +10,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 public partial class AssemblyScanningTests : GeneratorTest
 {
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
-
     [Test]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things(TestSource item)
@@ -21,25 +18,6 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddSources(item.Source)
                           .AddReferences(typeof(IService))
                           .AddCacheOptions(item.GetTempDirectory())
-                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft")
-                          .Build()
-                          .GenerateAsync();
-
-        await Verify(result.AddCacheFiles())
-             .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
-             .UseParameters((item.Name, item.Source))
-             .HashParameters();
-    }
-
-    [Test]
-    [DependsOn(nameof(Should_Generate_All_The_Things), ProceedOnFailure = true)]
-    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
-    public async Task Should_Generate_All_The_Things_Using_Cache(TestSource item)
-    {
-        var result = await Builder
-                          .AddSources(item.Source)
-                          .AddReferences(typeof(IService))
-                          .PopulateCache(item.GetTempDirectory())
                           .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft")
                           .Build()
                           .GenerateAsync();
@@ -177,4 +155,26 @@ public partial class AssemblyScanningTests : GeneratorTest
              .UseParameters((item.Name, item.Source))
              .HashParameters();
     }
+
+    [Test]
+    [DependsOn(nameof(Should_Generate_All_The_Things), ProceedOnFailure = true)]
+    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_Using_Cache(TestSource item)
+    {
+        var result = await Builder
+                          .AddSources(item.Source)
+                          .AddReferences(typeof(IService))
+                          .PopulateCache(item.GetTempDirectory())
+                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft")
+                          .Build()
+                          .GenerateAsync();
+
+        await Verify(result.AddCacheFiles())
+             .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
+             .UseParameters((item.Name, item.Source))
+             .HashParameters();
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private string DebuggerDisplay => ToString();
 }

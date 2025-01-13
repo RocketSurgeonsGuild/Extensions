@@ -7,6 +7,32 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 public class ResultingAssemblyProviderData
 {
+    public void AddAssemblyData(string assemblyName, CompiledAssemblyProviderData data)
+    {
+        if (_assemblyData.TryGetValue(assemblyName, out _)) return;
+
+        _assemblyData.Add(assemblyName, data);
+    }
+
+    public void AddSkipAssembly(string assemblyName) => _ = _skipAssemblies.Add(assemblyName);
+
+    public void AddSourceLocation(string assemblyName, ResolvedSourceLocation resolvedSource)
+    {
+        var cacheKey = GetCacheFileHash(resolvedSource.Location);
+        if (!_sourceLocations.TryGetValue(cacheKey, out _)) _sourceLocations.Add(cacheKey, new(resolvedSource.Location));
+
+        _sourceLocations[cacheKey].AddSource(assemblyName, resolvedSource);
+    }
+
+    public GeneratedAssemblyProviderData ToGeneratedAssemblyProviderData() => new(
+        _assemblyData.ToImmutableDictionary(),
+        [.. _skipAssemblies],
+        _sourceLocations.ToImmutableDictionary(
+            x => x.Key,
+            x => new GeneratedLocationAssemblyResolvedSourceCollection(x.Value.SourceLocation, x.Value.ResolvedSources.ToImmutableDictionary())
+        )
+    );
+
     internal static string GetCacheFileHash(SourceLocation location)
     {
         using var hasher = MD5.Create();
@@ -26,38 +52,6 @@ public class ResultingAssemblyProviderData
     private readonly Dictionary<string, CompiledAssemblyProviderData> _assemblyData = [];
     private readonly HashSet<string> _skipAssemblies = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ResultingLocationAssemblyResolvedSourceCollection> _sourceLocations = [];
-
-    public void AddSourceLocation(string assemblyName, ResolvedSourceLocation resolvedSource)
-    {
-        var cacheKey = GetCacheFileHash(resolvedSource.Location);
-        if (!_sourceLocations.TryGetValue(cacheKey, out _))
-        {
-            _sourceLocations.Add(cacheKey, new(resolvedSource.Location));
-        }
-
-        _sourceLocations[cacheKey].AddSource(assemblyName, resolvedSource);
-    }
-
-    public void AddAssemblyData(string assemblyName, CompiledAssemblyProviderData data)
-    {
-        if (_assemblyData.TryGetValue(assemblyName, out _))
-        {
-            return;
-        }
-
-        _assemblyData.Add(assemblyName, data);
-    }
-
-    public void AddSkipAssembly(string assemblyName) => _ = _skipAssemblies.Add(assemblyName);
-
-    public GeneratedAssemblyProviderData ToGeneratedAssemblyProviderData() => new(
-        _assemblyData.ToImmutableDictionary(),
-        [.. _skipAssemblies],
-        _sourceLocations.ToImmutableDictionary(
-            x => x.Key,
-            x => new GeneratedLocationAssemblyResolvedSourceCollection(x.Value.SourceLocation, x.Value.ResolvedSources.ToImmutableDictionary())
-        )
-    );
 }
 
 public record GeneratedAssemblyProviderData
@@ -79,19 +73,12 @@ public record GeneratedAssemblyProviderData
 
 public record ResultingLocationAssemblyResolvedSourceCollection(SourceLocation SourceLocation)
 {
-    public Dictionary<string, ResolvedSourceLocation> ResolvedSources { get; } = [];
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
-
     public void AddSource(string assemblyName, ResolvedSourceLocation resolvedSource) => ResolvedSources[assemblyName] = resolvedSource;
+    public Dictionary<string, ResolvedSourceLocation> ResolvedSources { get; } = [];
 }
 
 public record GeneratedLocationAssemblyResolvedSourceCollection(SourceLocation SourceLocation, ImmutableDictionary<string, ResolvedSourceLocation> ResolvedSources)
 {
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
-
     public ResolvedSourceLocation? GetSourceLocation(string assemblyName) =>
         ResolvedSources.TryGetValue(assemblyName, out var resolvedSourceLocation)
             ? resolvedSourceLocation

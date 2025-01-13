@@ -27,6 +27,4 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 [JsonSerializable(typeof(GeneratedLocationAssemblyResolvedSourceCollection))]
 public partial class JsonSourceGenerationContext : JsonSerializerContext
 {
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
 }

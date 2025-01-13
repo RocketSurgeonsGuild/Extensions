@@ -17,8 +17,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 internal static partial class ModuleInitializer
 {
-    public static string TempDirectory { get; private set; } = null!;
-
     [ModuleInitializer]
     public static void Init()
     {
@@ -70,10 +68,7 @@ internal static partial class ModuleInitializer
                     _ = builder.Replace(version, "version");
                 }
 
-                if (typeof(CompiledTypeProviderGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0 } version2 })
-                {
-                    _ = builder.Replace(version2, "version");
-                }
+                if (typeof(CompiledTypeProviderGenerator).Assembly.GetCustomAttribute<AssemblyVersionAttribute>() is { Version: { Length: > 0 } version2 }) _ = builder.Replace(version2, "version");
 
                 // regex to replace the version number in this string Version=12.0.0.0,
                 var regex = MyRegex();
@@ -82,6 +77,60 @@ internal static partial class ModuleInitializer
                 _ = builder.Append(result);
             }
         );
+    }
+
+    public static string TempDirectory { get; private set; } = null!;
+
+    private class ServiceDescriptorConverter : WriteOnlyJsonConverter<ServiceDescriptor>
+    {
+        public override void Write(VerifyJsonWriter writer, ServiceDescriptor value)
+        {
+            writer.WriteStartObject();
+            writer.WritePropertyName(nameof(ServiceDescriptor.Lifetime));
+            writer.WriteValue(value.Lifetime.ToString());
+            writer.WritePropertyName(nameof(ServiceDescriptor.ServiceType));
+            writer.WriteValue(value.ServiceType.FullName);
+            if (value.IsKeyedService)
+            {
+                writer.WritePropertyName(nameof(ServiceDescriptor.ServiceKey));
+                writer.WriteValue(value.ServiceKey);
+                if (value.KeyedImplementationType?.FullName is { } implementationType)
+                {
+                    writer.WritePropertyName(nameof(ServiceDescriptor.KeyedImplementationType));
+                    writer.WriteValue(implementationType);
+                }
+                else if (value.KeyedImplementationInstance is { } implementationInstance)
+                {
+                    writer.WritePropertyName(nameof(ServiceDescriptor.KeyedImplementationInstance));
+                    writer.WriteValue(implementationInstance.ToString());
+                }
+                else if (value.KeyedImplementationFactory is { } implementationFactory)
+                {
+                    writer.WritePropertyName(nameof(ServiceDescriptor.KeyedImplementationFactory));
+                    writer.WriteValue(implementationFactory.ToString());
+                }
+            }
+            else
+            {
+                if (value.ImplementationType?.FullName is { } implementationType)
+                {
+                    writer.WritePropertyName(nameof(ServiceDescriptor.ImplementationType));
+                    writer.WriteValue(implementationType);
+                }
+                else if (value.ImplementationInstance is { } implementationInstance)
+                {
+                    writer.WritePropertyName(nameof(ServiceDescriptor.ImplementationInstance));
+                    writer.WriteValue(implementationInstance.ToString());
+                }
+                else if (value.ImplementationFactory is { } implementationFactory)
+                {
+                    writer.WritePropertyName(nameof(ServiceDescriptor.ImplementationFactory));
+                    writer.WriteValue(implementationFactory.ToString());
+                }
+            }
+
+            writer.WriteEndObject();
+        }
     }
 
     internal static IEnumerable<Diagnostic> OrderDiagnosticResults(this IEnumerable<Diagnostic> diagnostics, DiagnosticSeverity severity) => diagnostics
@@ -182,66 +231,14 @@ internal static partial class ModuleInitializer
         return new(data, targets);
     }
 
+    [GeneratedRegex("Version=(.*?),", RegexOptions.Compiled)]
+    private static partial Regex MyRegex();
+
     private static Target Selector(SyntaxTree source)
     {
         var hintPath = source.FilePath;
         var data = $@"//HintName: {hintPath.Replace("\\", "/")}
 {source.GetText()}";
         return new("cs", data.Replace("\r", "", StringComparison.OrdinalIgnoreCase), Path.GetFileNameWithoutExtension(hintPath));
-    }
-
-    [GeneratedRegex("Version=(.*?),", RegexOptions.Compiled)]
-    private static partial Regex MyRegex();
-
-    private class ServiceDescriptorConverter : WriteOnlyJsonConverter<ServiceDescriptor>
-    {
-        public override void Write(VerifyJsonWriter writer, ServiceDescriptor value)
-        {
-            writer.WriteStartObject();
-            writer.WritePropertyName(nameof(ServiceDescriptor.Lifetime));
-            writer.WriteValue(value.Lifetime.ToString());
-            writer.WritePropertyName(nameof(ServiceDescriptor.ServiceType));
-            writer.WriteValue(value.ServiceType.FullName);
-            if (value.IsKeyedService)
-            {
-                writer.WritePropertyName(nameof(ServiceDescriptor.ServiceKey));
-                writer.WriteValue(value.ServiceKey);
-                if (value.KeyedImplementationType?.FullName is { } implementationType)
-                {
-                    writer.WritePropertyName(nameof(ServiceDescriptor.KeyedImplementationType));
-                    writer.WriteValue(implementationType);
-                }
-                else if (value.KeyedImplementationInstance is { } implementationInstance)
-                {
-                    writer.WritePropertyName(nameof(ServiceDescriptor.KeyedImplementationInstance));
-                    writer.WriteValue(implementationInstance.ToString());
-                }
-                else if (value.KeyedImplementationFactory is { } implementationFactory)
-                {
-                    writer.WritePropertyName(nameof(ServiceDescriptor.KeyedImplementationFactory));
-                    writer.WriteValue(implementationFactory.ToString());
-                }
-            }
-            else
-            {
-                if (value.ImplementationType?.FullName is { } implementationType)
-                {
-                    writer.WritePropertyName(nameof(ServiceDescriptor.ImplementationType));
-                    writer.WriteValue(implementationType);
-                }
-                else if (value.ImplementationInstance is { } implementationInstance)
-                {
-                    writer.WritePropertyName(nameof(ServiceDescriptor.ImplementationInstance));
-                    writer.WriteValue(implementationInstance.ToString());
-                }
-                else if (value.ImplementationFactory is { } implementationFactory)
-                {
-                    writer.WritePropertyName(nameof(ServiceDescriptor.ImplementationFactory));
-                    writer.WriteValue(implementationFactory.ToString());
-                }
-            }
-
-            writer.WriteEndObject();
-        }
     }
 }
