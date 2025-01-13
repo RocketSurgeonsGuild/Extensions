@@ -1,16 +1,17 @@
-using System.Linq;
+using System.Diagnostics;
+
 using FluentAssertions;
+
 using Microsoft.CodeAnalysis;
+
 using TestAssembly;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
-
-
-[System.Diagnostics.DebuggerDisplay("{DebuggerDisplay,nq}")]
+[DebuggerDisplay("{DebuggerDisplay,nq}")]
 public partial class AssemblyScanningTests : GeneratorTest
 {
-    [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string DebuggerDisplay => ToString();
 
     [Test]
