@@ -1,7 +1,9 @@
 using System.Collections.Immutable;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -32,7 +34,7 @@ internal static class ReflectionCollection
     {
         try
         {
-            return ( SymbolEqualityComparer.Default.Equals(targetAssembly, compilation.Assembly) )
+            return SymbolEqualityComparer.Default.Equals(targetAssembly, compilation.Assembly)
                 ? resolvedSourceLocation()
                 : configuration.CacheSourceLocation(
                     item.Location,
@@ -100,23 +102,23 @@ internal static class ReflectionCollection
 
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetTypesMethod(GeneratorSyntaxContext context)
     {
-        var (method, selector) = GetTypesMethod(context.Node);
-        return ( method is null
+        (var method, var selector) = GetTypesMethod(context.Node);
+        return method is null
          || selector is null
          || context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
          {
              TypeArguments: [{ Name: IReflectionTypeSelector }, ..],
-         } )
+         }
                 ? default
                 : (method, selector, semanticModel: context.SemanticModel);
     }
 
     public static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetTypesMethod(SyntaxNode node) =>
-        ( node is InvocationExpressionSyntax
+        node is InvocationExpressionSyntax
         {
             Expression: MemberAccessExpressionSyntax { Name.Identifier.Text: "GetTypes" },
             ArgumentList.Arguments: [.., { Expression: { } expression }],
-        } invocationExpressionSyntax )
+        } invocationExpressionSyntax
             ? (invocationExpressionSyntax, expression)
             : default;
 
@@ -203,7 +205,6 @@ internal static class ReflectionCollection
 
         return block;
     }
-
 
     private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
 

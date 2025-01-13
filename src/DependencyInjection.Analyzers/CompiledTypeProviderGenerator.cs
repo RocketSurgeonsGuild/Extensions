@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,7 +28,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
 #pragma warning disable RS1035
     private static string? GetCacheDirectory(AnalyzerConfigOptionsProvider options)
     {
-        var directory = ( options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath) )
+        var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
             ? intermediateOutputPath
             : null;
         if (directory is null)
@@ -66,8 +67,8 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                    .Select(
                                         (text, _) =>
                                         {
-                                            var source = text.GetText()?.ToString();
-                                            return ( source is not { Length: > 100 } )
+                                            var source = text.GetText(_)?.ToString();
+                                            return source is not { Length: > 100 }
                                                 ? new(
                                                     ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty,
                                                     [],
@@ -106,7 +107,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                 ),
             static (context, request) =>
             {
-                HashSet<string> excludedAssemblies = ( request.options.GlobalOptions.TryGetValue("build_property.ExcludeAssemblyFromCTP", out var assemblies) )
+                HashSet<string> excludedAssemblies = request.options.GlobalOptions.TryGetValue("build_property.ExcludeAssemblyFromCTP", out var assemblies)
                     ? [.. assemblies.Split([';', ','], StringSplitOptions.RemoveEmptyEntries)]
                     : [];
                 var privateAssemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
@@ -163,7 +164,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                     resultingData
                 );
 
-                var (InternalAssemblyRequests, InternalReflectionRequests, ReflectionSources, InternalServiceDescriptorRequests, ServiceDescriptorSources) =
+                (var InternalAssemblyRequests, var InternalReflectionRequests, var ReflectionSources, var InternalServiceDescriptorRequests, var ServiceDescriptorSources) =
                     config.FromAssemblyAttributes(
                         ref assemblySymbols,
                         reflectionRequests,

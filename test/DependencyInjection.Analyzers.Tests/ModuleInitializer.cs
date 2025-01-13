@@ -2,10 +2,14 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+
 using DiffEngine;
+
 using EmptyFiles;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -38,7 +42,7 @@ internal static partial class ModuleInitializer
         DerivePathInfo(
             (sourceFile, projectDirectory, type, method) =>
             {
-                static string GetTypeName(Type type) => ( type.IsNested ) ? $"{type.ReflectedType!.Name}.{type.Name}" : type.Name;
+                static string GetTypeName(Type type) => type.IsNested ? $"{type.ReflectedType!.Name}.{type.Name}" : type.Name;
 
                 var typeName = GetTypeName(type);
 
@@ -47,12 +51,12 @@ internal static partial class ModuleInitializer
             }
         );
         VerifierSettings.ScrubLinesWithReplace(
-            s => ( s.Contains("AssemblyMetadata(\"AssemblyProvider.", StringComparison.OrdinalIgnoreCase) )
+            s => s.Contains("AssemblyMetadata(\"AssemblyProvider.", StringComparison.OrdinalIgnoreCase)
                 ? s[..( s.IndexOf('"', s.IndexOf('"') + 1) + 2 )] + "\"{scrubbed}\")]"
                 : s
         );
         VerifierSettings.ScrubLinesWithReplace(
-            s => ( s.Contains("<Compiled_AssemblyProvider_g>", StringComparison.OrdinalIgnoreCase) )
+            s => s.Contains("<Compiled_AssemblyProvider_g>", StringComparison.OrdinalIgnoreCase)
                 ? s[..( s.IndexOf('"') + 1 )] + "{CompiledTypeProvider}" + s[s.LastIndexOf('"')..]
                 : s
         );
@@ -85,7 +89,6 @@ internal static partial class ModuleInitializer
        .OrderBy(static z => z.Location.GetMappedLineSpan().ToString())
        .ThenBy(static z => z.Severity)
        .ThenBy(static z => z.Id);
-
 
     private static ConversionResult Convert(GeneratorTestResultsWithServices result, IReadOnlyDictionary<string, object> context)
     {

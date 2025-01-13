@@ -1,9 +1,11 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
@@ -441,13 +443,13 @@ internal partial class AssemblyProviderConfiguration
                 type = type.ConstructUnboundGenericType();
             }
 
-            descriptors.Add(( item.Include ) ? new WithAttributeFilterDescriptor(type) : new WithoutAttributeFilterDescriptor(type));
+            descriptors.Add(item.Include ? new WithAttributeFilterDescriptor(type) : new WithoutAttributeFilterDescriptor(type));
         }
 
         foreach (var item in data.WithAttributeStringFilters)
         {
             descriptors.Add(
-                ( item.Include )
+                item.Include
                     ? new WithAttributeStringFilterDescriptor(item.Attribute)
                     : new WithoutAttributeStringFilterDescriptor(item.Attribute)
             );
@@ -497,7 +499,7 @@ internal partial class AssemblyProviderConfiguration
                 type = type.ConstructUnboundGenericType();
             }
 
-            descriptors.Add(( item.Include ) ? new AssignableToTypeFilterDescriptor(type) : new NotAssignableToTypeFilterDescriptor(type));
+            descriptors.Add(item.Include ? new AssignableToTypeFilterDescriptor(type) : new NotAssignableToTypeFilterDescriptor(type));
         }
 
         foreach (var item in data.AssignableToAnyTypeFilters)
@@ -519,7 +521,7 @@ internal partial class AssemblyProviderConfiguration
             }
 
             descriptors.Add(
-                ( item.Include )
+                item.Include
                     ? new AssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
                     : new NotAssignableToAnyTypeFilterDescriptor(filters.ToImmutable())
             );
@@ -534,10 +536,10 @@ internal partial class AssemblyProviderConfiguration
         string assemblyName,
         string typeName
     ) =>
-        ( CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName) )
+        CompiledAssemblyFilter.coreAssemblies.Contains(assemblyName)
             ? compilation.GetTypeByMetadataName(typeName)
-            : ( !assemblySymbols.TryGetValue(assemblyName, out var assembly)
-         || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type )
+            : !assemblySymbols.TryGetValue(assemblyName, out var assembly)
+         || FindTypeVisitor.FindType(compilation, assembly, typeName) is not { } type
                 ? compilation.GetTypeByMetadataName(typeName)
                 : type;
 
@@ -550,7 +552,7 @@ internal partial class AssemblyProviderConfiguration
                  {
                      ImplementedInterfacesServiceTypeDescriptor i => new(
                          'i',
-                         TypeFilter: ( i is { InterfaceFilter: { } filter } ) ? LoadTypeFilterData(filter) : null
+                         TypeFilter: i is { InterfaceFilter: { } filter } ? LoadTypeFilterData(filter) : null
                      ),
                      MatchingInterfaceServiceTypeDescriptor => new('m'),
                      SelfServiceTypeDescriptor => new('s'),

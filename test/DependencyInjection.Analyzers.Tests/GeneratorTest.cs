@@ -1,8 +1,10 @@
 using System.ComponentModel;
 using System.Runtime.Loader;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
+
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
 
@@ -94,7 +96,7 @@ internal static partial class VerifyExtensions
 
         var cachePath = $"{IntermediateOutputPath}/ctp/{Constants.CompiledTypeProviderCacheFileName}";
         var fullCachePath = Path.Combine(tempPath, cachePath);
-        return ( !File.Exists(fullCachePath) )
+        return !File.Exists(fullCachePath)
             ? throw new FileNotFoundException("Cache file not found", fullCachePath)
             : builder
              .AddCacheOptions(tempPath)

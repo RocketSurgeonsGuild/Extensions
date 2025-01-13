@@ -1,7 +1,9 @@
 using System.Collections.Immutable;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -32,7 +34,7 @@ internal static class ServiceDescriptorCollection
     {
         try
         {
-            return ( SymbolEqualityComparer.Default.Equals(targetAssembly, compilation.Assembly) )
+            return SymbolEqualityComparer.Default.Equals(targetAssembly, compilation.Assembly)
                 ? resolvedSourceLocation()
                 : configuration.CacheSourceLocation(
                     item.Location,
@@ -140,7 +142,6 @@ internal static class ServiceDescriptorCollection
                 var typeFilter = new CompiledTypeFilter(classFilter, [.. typeFilters], source);
                 var serviceDescriptorFilter = new CompiledServiceTypeDescriptors([.. serviceDescriptors], lifetime);
 
-
                 var i = new Item(source, assemblyFilter, typeFilter, serviceDescriptorFilter, lifetime);
                 items.Add(i);
             }
@@ -168,11 +169,11 @@ internal static class ServiceDescriptorCollection
 
     private static (InvocationExpressionSyntax method, ExpressionSyntax selector, SemanticModel semanticModel) GetServiceDescriptorMethod(GeneratorSyntaxContext context)
     {
-        var (method, selector) = GetMethod(context.Node);
-        return ( context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
+        (var method, var selector) = GetMethod(context.Node);
+        return context.SemanticModel.GetTypeInfo(selector).ConvertedType is not INamedTypeSymbol
         {
             TypeArguments: [{ Name: IServiceDescriptorAssemblySelector }, ..],
-        } )
+        }
             ? default
             : (method, selector, semanticModel: context.SemanticModel);
     }
@@ -180,14 +181,14 @@ internal static class ServiceDescriptorCollection
     private static bool IsValidMethod(SyntaxNode node) => GetMethod(node) is { method: { }, selector: { } };
 
     private static (InvocationExpressionSyntax method, ExpressionSyntax selector) GetMethod(SyntaxNode node) =>
-        ( node is InvocationExpressionSyntax
+        node is InvocationExpressionSyntax
         {
             Expression: MemberAccessExpressionSyntax
             {
                 Name.Identifier.Text: "Scan",
             },
             ArgumentList.Arguments: [.., { Expression: { } expression }],
-        } invocationExpressionSyntax )
+        } invocationExpressionSyntax
             ? (invocationExpressionSyntax, expression)
             : default;
 
@@ -316,7 +317,7 @@ internal static class ServiceDescriptorCollection
                 }
 
                 services.Add(
-                    ( !SymbolEqualityComparer.Default.Equals(serviceType, type) )
+                    !SymbolEqualityComparer.Default.Equals(serviceType, type)
                         ? StatementGeneration.GenerateServiceFactory(
                             compilation,
                             serviceType,
@@ -358,7 +359,7 @@ internal static class ServiceDescriptorCollection
                 if (@interface is { } && !emittedTypes.Contains(@interface))
                 {
                     services.Add(
-                        ( typeIsOpenGeneric || !asSelf )
+                        typeIsOpenGeneric || !asSelf
                             ? StatementGeneration.GenerateServiceType(
                                 compilation,
                                 @interface,
@@ -388,11 +389,10 @@ internal static class ServiceDescriptorCollection
                 // todo: filter interfaces by type filter or implemented interfaces filter expression (a reuse of the type filter)
                 // It should support open generic types as well (think abstract validator from fluent validation)
                 interfaces.AddRange(
-                    ( asImplementedInterfaces is [{ InterfaceFilter: { } filter }] )
+                    asImplementedInterfaces is [{ InterfaceFilter: { } filter }]
                         ? type.AllInterfaces.Where(item => filter.IsMatch(compilation, item))
                         : type.AllInterfaces
                 );
-
 
                 foreach (var @interface in interfaces.OrderBy(z => z.ToDisplayString()))
                 {
@@ -402,7 +402,7 @@ internal static class ServiceDescriptorCollection
                     }
 
                     services.Add(
-                        ( typeIsOpenGeneric || !asSelf )
+                        typeIsOpenGeneric || !asSelf
                             ? StatementGeneration.GenerateServiceType(
                                 compilation,
                                 @interface,
@@ -438,7 +438,7 @@ internal static class ServiceDescriptorCollection
                 }
 
                 services.Add(
-                    ( !asSelf )
+                    !asSelf
                         ? StatementGeneration.GenerateServiceType(
                             compilation,
                             Helpers.GetClosedGenericConversion(compilation, asType, type),

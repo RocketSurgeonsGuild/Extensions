@@ -17,7 +17,6 @@ public class ResultingAssemblyProviderData
         var hash = hasher.TransformFinalBlock([], 0, 0);
         return hasher.Hash.Aggregate("", (s, b) => s + b.ToString("x2"));
 
-
         static void addStringToHash(ICryptoTransform cryptoTransform, string textToHash)
         {
             var inputBuffer = Encoding.UTF8.GetBytes(textToHash);
@@ -80,8 +79,8 @@ public record GeneratedAssemblyProviderData
     public ResolvedSourceLocation? GetSourceLocation(string assemblyName, SourceLocation sourceLocation, Func<ResolvedSourceLocation?> factory)
     {
         var cacheKey = ResultingAssemblyProviderData.GetCacheFileHash(sourceLocation);
-        return ( Partials.TryGetValue(cacheKey, out var resolvedSourceLocations)
-         && resolvedSourceLocations.GetSourceLocation(assemblyName) is { } resolvedSourceLocation )
+        return Partials.TryGetValue(cacheKey, out var resolvedSourceLocations)
+         && resolvedSourceLocations.GetSourceLocation(assemblyName) is { } resolvedSourceLocation
                 ? resolvedSourceLocation
                 : factory();
     }
@@ -105,7 +104,7 @@ public record GeneratedLocationAssemblyResolvedSourceCollection(SourceLocation S
     private string DebuggerDisplay => ToString();
 
     public ResolvedSourceLocation? GetSourceLocation(string assemblyName) =>
-        ( ResolvedSources.TryGetValue(assemblyName, out var resolvedSourceLocation) )
+        ResolvedSources.TryGetValue(assemblyName, out var resolvedSourceLocation)
             ? resolvedSourceLocation
             : null;
 }
