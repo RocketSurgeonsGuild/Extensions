@@ -56,17 +56,17 @@ public partial class AssemblyScanningTests
 
             var faker = new Faker { Random = new(1444) };
 
-            foreach (var (Expression, TypeName) in assemblyRequests)
+            foreach ((var Expression, var TypeName) in assemblyRequests)
             {
                 yield return CreateTest(GetTypeName(Expression), [$"provider.GetAssemblies({Expression});"]);
             }
 
-            foreach (var (Expression, TypeName) in reflectionRequests)
+            foreach ((var Expression, var TypeName) in reflectionRequests)
             {
                 yield return CreateTest(GetTypeName(Expression), [$"provider.GetTypes({Expression});"]);
             }
 
-            foreach (var (Expression, TypeName) in serviceDescriptorRequests)
+            foreach ((var Expression, var TypeName) in serviceDescriptorRequests)
             {
                 yield return CreateTest(GetTypeName(Expression), [$"provider.Scan(services, {Expression});"]);
             }
@@ -121,15 +121,16 @@ public partial class AssemblyScanningTests
         [GeneratedRegex(@"(\s)\s+")]
         internal static partial Regex ReplaceSpaces();
 
-        private static IEnumerable<(string Expression, string TypeName)> GetAssemblyRequests() => [
-                ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblies()),
-                ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>()),
-                ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblies().NotFromAssemblyOf<IService>()),
-                ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssembly()),
-                ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblyDependenciesOf<ServiceRegistrationAttribute>()),
-                ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblyDependenciesOf<IService>()),
-                //yield return TestMethod(z => z.IncludeSystemAssemblies().FromAssemblies());
-            ];
+        private static IEnumerable<(string Expression, string TypeName)> GetAssemblyRequests() =>
+        [
+            ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblies()),
+            ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblies().NotFromAssemblyOf<ServiceRegistrationAttribute>()),
+            ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblies().NotFromAssemblyOf<IService>()),
+            ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssembly()),
+            ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblyDependenciesOf<ServiceRegistrationAttribute>()),
+            ToExpression<Action<IReflectionTypeSelector>>(z => z.FromAssemblyDependenciesOf<IService>()),
+            //yield return TestMethod(z => z.IncludeSystemAssemblies().FromAssemblies());
+        ];
 
         private static IEnumerable<(string Expression, string TypeName)> GetReflectionRequests() =>
         [
@@ -655,6 +656,9 @@ public partial class AssemblyScanningTests
             ),
         ];
 
+        [GeneratedRegex(@"(\s)\s+")]
+        private static partial Regex MyRegex();
+
         private static (string Expression, string TypeName) ToExpression<TSelector>(TSelector func, [CallerArgumentExpression(nameof(func))] string expression = null!)
         {
             var typeName = expression
@@ -664,8 +668,5 @@ public partial class AssemblyScanningTests
                           .Trim();
             return (expression, typeName);
         }
-
-        [GeneratedRegex(@"(\s)\s+")]
-        private static partial Regex MyRegex();
     }
 }
