@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -140,12 +141,35 @@ internal static class AssemblyProviderBuilder
                                       ),
                                 ]
                             ),
-                            returnStatement
+                            returnStatement,
                         ]
                     )
                 )
             );
     }
+
+    private static StatementSyntax GetCollectionVariable(TypeSyntax type) => LocalDeclarationStatement(
+        VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
+           .WithVariables(
+                SingletonSeparatedList(
+                    VariableDeclarator(Identifier("items"))
+                       .WithInitializer(
+                            EqualsValueClause(
+                                ObjectCreationExpression(
+                                        GenericName(Identifier("List"))
+                                           .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(type)))
+                                    )
+                                   .WithArgumentList(ArgumentList())
+                            )
+                        )
+                )
+            )
+        );
+
+    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
+
+    private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
+    private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
 
     private static readonly MethodDeclarationSyntax TypesMethod =
         MethodDeclaration(
@@ -186,27 +210,6 @@ internal static class AssemblyProviderBuilder
                 )
             );
 
-    private static StatementSyntax GetCollectionVariable(TypeSyntax type)
-    {
-        return LocalDeclarationStatement(
-            VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
-               .WithVariables(
-                    SingletonSeparatedList(
-                        VariableDeclarator(Identifier("items"))
-                           .WithInitializer(
-                                EqualsValueClause(
-                                    ObjectCreationExpression(
-                                            GenericName(Identifier("List"))
-                                               .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(type)))
-                                        )
-                                       .WithArgumentList(ArgumentList())
-                                )
-                            )
-                    )
-                )
-        );
-    }
-
     private static readonly MethodDeclarationSyntax ScanMethod =
         MethodDeclaration(ParseName("Microsoft.Extensions.DependencyInjection.IServiceCollection"), Identifier("Scan"))
            .WithExplicitInterfaceSpecifier(ExplicitInterfaceSpecifier(IdentifierName("ICompiledTypeProvider")))
@@ -219,10 +222,6 @@ internal static class AssemblyProviderBuilder
                 Parameter(Identifier("argumentExpression")).WithType(PredefinedType(Token(SyntaxKind.StringKeyword)))
             )
            .WithBody(Block(ReturnStatement(IdentifierName("services"))));
-
-    private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
-    private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
-    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
 
     private static readonly MethodDeclarationSyntax AssembliesMethod =
         MethodDeclaration(

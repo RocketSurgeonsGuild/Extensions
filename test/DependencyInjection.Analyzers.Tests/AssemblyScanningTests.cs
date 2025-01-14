@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 using FluentAssertions;
 
 using Microsoft.CodeAnalysis;

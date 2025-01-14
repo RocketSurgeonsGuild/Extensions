@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Security.Cryptography;
 using System.Text;
+
 using Microsoft.CodeAnalysis;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;

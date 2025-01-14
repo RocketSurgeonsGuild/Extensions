@@ -5,7 +5,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 public enum SourceLocationKind
 {
-    Assemby, Reflection, ServiceDescriptor
+    Assembly, Reflection, ServiceDescriptor,
 }
 
 public record SourceLocation

@@ -148,10 +148,7 @@ internal partial class AssemblyProviderConfiguration
 #pragma warning disable RS1035
     internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
     {
-        if (generatedJson.GetSourceLocation(assemblySymbol, location, factory) is not { } savedLocation)
-        {
-            return null;
-        }
+        if (generatedJson.GetSourceLocation(assemblySymbol, location, factory) is not { } savedLocation) return null;
 
         resultingJson.AddSourceLocation(assemblySymbol, savedLocation);
         return savedLocation;
@@ -223,7 +220,7 @@ internal partial class AssemblyProviderConfiguration
             return;
         }
 
-        if (generatedJson.GetAssemblyData(assembly) is {} generatedData)
+        if (generatedJson.GetAssemblyData(assembly) is { } generatedData)
         {
             resultingJson.AddAssemblyData(assembly, generatedData);
             assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
