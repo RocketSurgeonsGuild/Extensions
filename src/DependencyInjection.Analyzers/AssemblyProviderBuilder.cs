@@ -164,7 +164,7 @@ internal static class AssemblyProviderBuilder
                         )
                 )
             )
-        );
+    );
 
     private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
 

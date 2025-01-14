@@ -13,15 +13,15 @@ internal static class AssemblySymbolExtensions
 
     private static string? GetCompiledTypeProviderHash(IAssemblySymbol assembly) =>
         assembly
-          .GetAttributes()
-          .FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == "Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute")
-         ?.ConstructorArguments.LastOrDefault()
-          .Value?.ToString();
+           .GetAttributes()
+           .FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == "Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute")
+          ?.ConstructorArguments.LastOrDefault()
+           .Value?.ToString();
 
     private static string? GetInformationalVersion(IAssemblySymbol assembly) =>
         assembly
-          .GetAttributes()
-          .FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == "System.Reflection.AssemblyInformationalVersionAttribute")
-         ?.ConstructorArguments.FirstOrDefault()
-          .Value?.ToString();
+           .GetAttributes()
+           .FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == "System.Reflection.AssemblyInformationalVersionAttribute")
+          ?.ConstructorArguments.FirstOrDefault()
+           .Value?.ToString();
 }

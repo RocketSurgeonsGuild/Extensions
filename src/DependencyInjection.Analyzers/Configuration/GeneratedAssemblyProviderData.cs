@@ -18,10 +18,10 @@ public record GeneratedAssemblyProviderData
 
     public ResolvedSourceLocation? GetSourceLocation(IAssemblySymbol assembly, SourceLocation sourceLocation, Func<ResolvedSourceLocation?> factory) =>
         Partials.TryGetValue(ResultingAssemblyProviderData.GetCacheFileHash(sourceLocation), out var resolvedSourceLocations)
-         && resolvedSourceLocations.GetSourceLocation(assembly.MetadataName) is { } data
-         && assembly.MatchesCachedVersion(data.CacheVersion)
-                ? data
-                : factory();
+     && resolvedSourceLocations.GetSourceLocation(assembly.MetadataName) is { } data
+     && assembly.MatchesCachedVersion(data.CacheVersion)
+            ? data
+            : factory();
 
     public bool IsAssemblySkipped(IAssemblySymbol assembly) => SkipAssemblies.Contains(assembly.MetadataName);
 }
