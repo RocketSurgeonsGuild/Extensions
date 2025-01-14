@@ -7,6 +7,7 @@ public enum SourceLocationKind
 {
     Assemby, Reflection, ServiceDescriptor
 }
+
 public record SourceLocation
 (
     [property: JsonPropertyName("k")]
@@ -24,14 +25,10 @@ public record SourceLocation
     public string FilePath { get; init; } = FilePath.Replace("\\", "/");
 }
 
-public record ResolvedSourceLocation(SourceLocation Location, string Expression, [property: JsonIgnore] ImmutableHashSet<string> PrivateAssemblies);
-
-public record SavedSourceLocation(
-    [property: JsonPropertyName("k")]
-    SourceLocationKind Kind,
-    [property: JsonPropertyName("l")]
+public record ResolvedSourceLocation
+(
     SourceLocation Location,
-    [property: JsonPropertyName("e")]
     string Expression,
-    [property: JsonPropertyName("a")]
-    ImmutableArray<string> PrivateAssemblies);
+    ImmutableHashSet<string> PrivateAssemblies,
+    string? CacheVersion
+);

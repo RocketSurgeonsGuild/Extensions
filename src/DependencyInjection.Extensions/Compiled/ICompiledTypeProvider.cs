@@ -11,6 +11,8 @@ namespace Rocket.Surgery.DependencyInjection.Compiled;
 ///     A provider that gets a list of assemblies for a given context
 /// </summary>
 [PublicAPI]
+[SuppressMessage("Security", "CA5351:Do Not Use Broken Cryptographic Algorithms")]
+[SuppressMessage("Performance", "CA1850:Prefer static \'HashData\' method over \'ComputeHash\'")]
 public interface ICompiledTypeProvider
 {
     /// <summary>
@@ -21,9 +23,14 @@ public interface ICompiledTypeProvider
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static string GetArgumentExpressionHash(string argumentExpression)
     {
-        var expression = argumentExpression.Replace("\r", "");
-        expression = string.Join("", expression.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()));
-        return Convert.ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(expression)));
+        ArgumentNullException.ThrowIfNull(argumentExpression);
+        var expression = string.Concat(
+            argumentExpression
+               .Split(['\n', '\r', ' ', '\t'], StringSplitOptions.RemoveEmptyEntries)
+               .Select(z => z.Trim())
+        );
+        using var hasher = MD5.Create();
+        return Convert.ToBase64String(hasher.ComputeHash(Encoding.UTF8.GetBytes(expression)));
     }
 
     /// <summary>

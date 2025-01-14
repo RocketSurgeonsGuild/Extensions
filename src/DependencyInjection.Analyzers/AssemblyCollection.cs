@@ -46,7 +46,7 @@ internal static class AssemblyCollection
                 }
 
                 var descriptors = GenerateDescriptors(compilation, filterAssemblies, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
-                results.Add(new(item.Location, descriptors, pa.Select(z => z.MetadataName).ToImmutableHashSet()));
+                results.Add(new(item.Location, descriptors, pa.Select(z => z.MetadataName).ToImmutableHashSet(), ""));
             }
             catch (Exception e)
             {

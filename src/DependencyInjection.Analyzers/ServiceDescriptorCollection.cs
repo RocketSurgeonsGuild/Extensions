@@ -52,7 +52,7 @@ internal static class ServiceDescriptorCollection
                 if (reducedTypes.Count == 0) return null;
 
                 var localBlock = GenerateDescriptors(compilation, diagnostics, reducedTypes, item.ServicesTypeFilter, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
-                return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet());
+                return new(item.Location, localBlock, pa.Select(z => z.MetadataName).ToImmutableHashSet(), targetAssembly.GetCachedVersion());
             }
         }
         catch (Exception e)

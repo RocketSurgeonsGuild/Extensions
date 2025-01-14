@@ -5,8 +5,13 @@ namespace Rocket.Surgery.DependencyInjection.Compiled;
 /// </summary>
 [PublicAPI]
 [AttributeUsage(AttributeTargets.Assembly)]
-public sealed class CompiledTypeProviderAttribute(Type type) : Attribute
+public sealed class CompiledTypeProviderAttribute(Type type, string generatedHash) : Attribute
 {
+    /// <summary>
+    /// The generated hash to be used for cache busting
+    /// </summary>
+    public string GeneratedHash { get; } = generatedHash;
+
     // ReSharper disable once NullableWarningSuppressionIsUsed
     private Lazy<ICompiledTypeProvider> _compiledTypeProvider = new(() => (ICompiledTypeProvider)Activator.CreateInstance(type)!);
 

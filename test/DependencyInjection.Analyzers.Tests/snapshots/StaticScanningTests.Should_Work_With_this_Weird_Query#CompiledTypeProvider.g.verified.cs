@@ -1,6 +1,6 @@
 ﻿//HintName: Rocket.Surgery.DependencyInjection.Analyzers/Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator/CompiledTypeProvider.g.cs
 #nullable enable
-#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669, IL2026, IL2072
+#pragma warning disable CA1002, CA1034, CA1822, CS0105, CS1573, CA5351, CS8618, CS8669, IL2026, IL2072
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -9,7 +9,7 @@ using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
 
 [assembly: System.Reflection.AssemblyMetadata("AssemblyProvider.ReflectionTypes","{scrubbed}")]
-[assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider))]
+[assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider), "/aDOxW2TOZk2gqUtT0bXKA==")]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 file class CompiledTypeProvider : ICompiledTypeProvider
 {
@@ -24,12 +24,12 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         var items = new List<Type>();
         switch (lineNumber)
         {
-            // FilePath: Input1.cs Expression: 79WDrmMI6zqNCHSOboZMpw==
+            // FilePath: Input1.cs Expression: 1KAkG8FuvhSzyjSjAEZH3A==
             case 11:
                 items.Add(typeof(global::OptionsA));
                 items.Add(typeof(global::OptionsB));
                 break;
-            // FilePath: Input0.cs Expression: 79WDrmMI6zqNCHSOboZMpw==
+            // FilePath: Input0.cs Expression: 1KAkG8FuvhSzyjSjAEZH3A==
             case 25:
                 items.Add(typeof(global::OptionsA));
                 items.Add(typeof(global::OptionsB));
@@ -44,5 +44,5 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         return services;
     }
 }
-#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CS8618, CS8669, IL2026, IL2072
+#pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CA5351, CS8618, CS8669, IL2026, IL2072
 #nullable restore

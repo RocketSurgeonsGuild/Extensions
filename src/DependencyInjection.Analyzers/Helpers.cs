@@ -347,10 +347,14 @@ internal static class Helpers
             throw new InvalidOperationException("Invalid method call syntax");
         }
 
-        var hasher = MD5.Create();
-        var expression = argumentExpression.ToFullString().Replace("\r", "");
-        expression = string.Concat(expression.Split(['\n'], StringSplitOptions.RemoveEmptyEntries).Select(z => z.Trim()));
-        var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(expression));
+        var  expression = string.Concat(
+            argumentExpression
+               .ToFullString()
+               .Split(['\n', '\r', ' ', '\t'], StringSplitOptions.RemoveEmptyEntries)
+               .Select(z => z.Trim())
+        );
+        using var hasher = MD5.Create();
+        var hash = Convert.ToBase64String(hasher.ComputeHash(Encoding.UTF8.GetBytes(expression)));
 
         var source = new SourceLocation(
             kind,
@@ -361,7 +365,7 @@ internal static class Helpers
                .LineNumber
           + 1,
             memberAccess.SyntaxTree.FilePath,
-            Convert.ToBase64String(hash)
+            hash
         );
         return source;
     }
@@ -374,6 +378,7 @@ internal static class Helpers
         "CA1822",
         "CS0105",
         "CS1573",
+        "CA5351",
         "CS8618",
         "CS8669",
         "IL2026",

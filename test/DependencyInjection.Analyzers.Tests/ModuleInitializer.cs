@@ -28,6 +28,8 @@ internal static partial class ModuleInitializer
         VerifyDiffPlex.Initialize();
 
         VerifierSettings.ScrubInlineGuids();
+        VerifierSettings.ScrubMember<ResolvedSourceLocation>(z => z.CacheVersion);
+        VerifierSettings.ScrubMember<CompiledAssemblyProviderData>(z => z.CacheVersion);
 
         VerifierSettings.AddExtraSettings(
             settings => settings.Converters.Add(new ServiceDescriptorConverter())

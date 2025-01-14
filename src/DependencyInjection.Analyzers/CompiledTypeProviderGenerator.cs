@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -32,7 +31,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
         var collectionProvider = assembliesSyntaxProvider
                                 .Combine(reflectionSyntaxProvider)
                                 .Combine(serviceDescriptorSyntaxProvider)
-                                .Select((z, _) => (assemblies: z.Left.Left, reflection: z.Left.Right, serviceDescriptors: z.Right));
+                                .Select((z, _) => ( assemblies: z.Left.Left, reflection: z.Left.Right, serviceDescriptors: z.Right ));
         var generatedJsonProvider = context
                                    .AdditionalTextsProvider.Where(z => Path.GetFileName(z.Path).Equals(Constants.CompiledTypeProviderCacheFileName, StringComparison.OrdinalIgnoreCase))
                                    .Select(
@@ -107,16 +106,14 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                           symbol =>
                                           {
                                               if (symbol is IAssemblySymbol assemblySymbol) return assemblySymbol;
-
                                               if (symbol is IModuleSymbol moduleSymbol) return moduleSymbol.ContainingAssembly;
-
                                               // ReSharper disable once NullableWarningSuppressionIsUsed
                                               return null!;
                                           }
                                       )
                                      .Where(z => z is { })
                                      .Where(z => excludedAssemblies.All(a => !z.MetadataName.StartsWith(a, StringComparison.OrdinalIgnoreCase)))
-                                     .GroupBy(z => z.MetadataName, z => z, (s, symbols) => (Key: s, Symbol: symbols.First()))
+                                     .GroupBy(z => z.MetadataName, z => z, (s, symbols) => ( Key: s, Symbol: symbols.First() ))
                                      .ToImmutableDictionary(z => z.Key, z => z.Symbol);
 
                 var resultingData = new ResultingAssemblyProviderData();
@@ -190,12 +187,11 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                     );
 
                 var assemblyProvider = AssemblyProviderBuilder.GetAssemblyProvider(
-                    context,
-                    request.compilation,
                     assemblySources,
                     reflectionSources,
                     serviceDescriptorSources,
-                    privateAssemblies
+                    privateAssemblies,
+                    out var cacheHash
                 );
                 if (privateAssemblies.Any()) cu = cu.AddUsings(UsingDirective(ParseName("System.Runtime.Loader")));
 
@@ -210,8 +206,11 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                      Attribute(
                                          ParseName("Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute"),
                                          AttributeArgumentList(
-                                             SingletonSeparatedList(
-                                                 AttributeArgument(TypeOfExpression(ParseName(assemblyProvider.Identifier.Text)))
+                                             SeparatedList(
+                                                 [
+                                                     AttributeArgument(TypeOfExpression(ParseName(assemblyProvider.Identifier.Text))),
+                                                     AttributeArgument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(cacheHash)))
+                                                 ]
                                              )
                                          )
                                      )
@@ -233,20 +232,33 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
 
                 if (GetCacheDirectory(request.options) is not { } cacheDirectory) return;
 
-                var generatedData = resultingData.ToGeneratedAssemblyProviderData();
-                var json = JsonSerializer.Serialize(generatedData, JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData);
-                var path = Path.Combine(cacheDirectory, Constants.CompiledTypeProviderCacheFileName);
-#pragma warning disable RS1035
-                File.WriteAllText(path, json);
-#pragma warning restore RS1035
+                #pragma warning disable RS1035
+
+                var fileInfo = new FileInfo(Path.Combine(cacheDirectory, Constants.CompiledTypeProviderCacheFileName));
+                var writer = fileInfo.Open(fileInfo.Exists ? FileMode.Truncate : FileMode.CreateNew);
+                try
+                {
+                    using var streamWriter = new StreamWriter(writer);
+                    var generatedData = resultingData.ToGeneratedAssemblyProviderData();
+                    streamWriter.Write(JsonSerializer.Serialize(generatedData, JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData));
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
+
+                #pragma warning restore RS1035
 
                 return;
 
-                static IEnumerable<IAssemblySymbol> joinAssemblies(IEnumerable<KeyValuePair<string, IAssemblySymbol>> assemblies, IEnumerable<ResolvedSourceLocation> sources) => sources.SelectMany(z => z.PrivateAssemblies).Join(assemblies, z => z, z => z.Key, (_, a) => a.Value);
+                static IEnumerable<IAssemblySymbol> joinAssemblies(IEnumerable<KeyValuePair<string, IAssemblySymbol>> assemblies, IEnumerable<ResolvedSourceLocation> sources) =>
+                    sources.SelectMany(z => z.PrivateAssemblies).Join(assemblies, z => z, z => z.Key, (_, a) => a.Value);
             }
         );
     }
-#pragma warning disable RS1035
+    #pragma warning disable RS1035
     private static string? GetCacheDirectory(AnalyzerConfigOptionsProvider options)
     {
         var directory = options.GlobalOptions.TryGetValue("build_property.IntermediateOutputPath", out var intermediateOutputPath)
@@ -261,5 +273,5 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
 
         return cacheDirectory;
     }
-#pragma warning restore RS1035
+    #pragma warning restore RS1035
 }
