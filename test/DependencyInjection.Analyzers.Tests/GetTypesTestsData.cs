@@ -5,8 +5,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Bogus;
-
 using Microsoft.Extensions.DependencyInjection;
 
 using Rocket.Surgery.DependencyInjection.Compiled;
@@ -20,28 +18,18 @@ public partial record TestSource(string Name, string Source)
 {
     public string GetTempDirectory(string? suffix = null) => (
             suffix is { }
-                ? Path.Combine(ModuleInitializer.TempDirectory, GenerateFilenameSafeString(HashFilename(Source)), suffix)
-                : Path.Combine(ModuleInitializer.TempDirectory, GenerateFilenameSafeString(HashFilename(Source)))
+                ? Path.Combine(ModuleInitializer.TempDirectory, FileSafeName, suffix)
+                : Path.Combine(ModuleInitializer.TempDirectory, FileSafeName)
         )
        .Replace("\\", "/");
 
-    public override string ToString() => GenerateFilenameSafeString(Name);
+    /// <inheritdoc />
+    public override string ToString() => AssemblyScanningTests.GenerateFilenameSafeString(Name);
 
-    private static string GenerateFilenameSafeString(string input) =>
-        // Replace invalid filename characters with an underscore
-        AssemblyScanningTests.TestData.ReplaceSpaces().Replace(MyRegex().Replace(input, ""), "");
-
-    private static string HashFilename(string input)
-    {
-        var bytes = Encoding.UTF8.GetBytes(input);
-        return Convert.ToBase64String(SHA256.HashData(bytes)).ToLowerInvariant();
-    }
-
-    [GeneratedRegex(@"[^a-zA-Z0-9]")]
-    private static partial Regex MyRegex();
+    public string FileSafeName => AssemblyScanningTests.GenerateFilenameSafeString(AssemblyScanningTests.HashFilename(Name, Source));
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
+    private string DebuggerDisplay => Source;
 }
 
 public partial class AssemblyScanningTests
@@ -50,48 +38,39 @@ public partial class AssemblyScanningTests
     {
         public static IEnumerable<Func<TestSource>> GetTestData()
         {
-            var assemblyRequests = GetAssemblyRequests().DistinctBy(z => z.TypeName).ToHashSet();
-            var reflectionRequests = GetReflectionRequests().DistinctBy(z => z.TypeName).ToHashSet();
-            var serviceDescriptorRequests = GetServiceDescriptorRequests().DistinctBy(z => z.TypeName).ToHashSet();
-
-            var faker = new Faker { Random = new(1444) };
+            var items = new List<TestSource>();
+            var assemblyRequests = GetAssemblyRequests().ToHashSet();
+            var reflectionRequests = GetReflectionRequests().ToHashSet();
+            var serviceDescriptorRequests = GetServiceDescriptorRequests().ToHashSet();
 
             foreach ((var Expression, var TypeName) in assemblyRequests)
             {
-                yield return CreateTest(GetTypeName(Expression), [$"provider.GetAssemblies({Expression});"]);
+                items.Add(CreateTest($"assembly: {TypeName}", [$"provider.GetAssemblies({Expression});"]));
             }
 
             foreach ((var Expression, var TypeName) in reflectionRequests)
             {
-                yield return CreateTest(GetTypeName(Expression), [$"provider.GetTypes({Expression});"]);
+                items.Add(CreateTest($"reflection: {TypeName}", [$"provider.GetTypes({Expression});"]));
             }
 
             foreach ((var Expression, var TypeName) in serviceDescriptorRequests)
             {
-                yield return CreateTest(GetTypeName(Expression), [$"provider.Scan(services, {Expression});"]);
+                items.Add(CreateTest($"services: {TypeName}", [$"provider.Scan(services, {Expression});"]));
             }
 
-            //            string[] expressions =
-            //            [
-            //                ..assemblyRequests.Select(item => $"provider.GetAssemblies({item.Expression});"),
-            //                ..reflectionRequests.Select(item => $"provider.GetTypes({item.Expression});"),
-            //                ..serviceDescriptorRequests.Select(item => $"provider.Scan(services, {item.Expression});")
-            //            ];
+            string[] expressions =
+            [
+                ..assemblyRequests.Select(item => $"provider.GetAssemblies({item.Expression});"),
+                ..reflectionRequests.Select(item => $"provider.GetTypes({item.Expression});"),
+                ..serviceDescriptorRequests.Select(item => $"provider.Scan(services, {item.Expression});"),
+            ];
 
-            //            yield return CreateTest("all-together", expressions);
+            items.Add(CreateTest("all-together", expressions));
+            return items
+                  .DistinctBy(z => z.FileSafeName)
+                  .Select(static i => (Func<TestSource>)( () => i ));
 
-            static string GetTypeName(string expression)
-            {
-                var typeName = expression
-                              .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
-                              .Select(z => z.Trim())
-                              .Aggregate("", (x, y) => x + y)
-                              .Trim();
-
-                return ReplaceSpaces().Replace(typeName, "$1");
-            }
-
-            static Func<TestSource> CreateTest(string id, string[] expressions)
+            static TestSource CreateTest(string name, string[] expressions)
             {
                 var source = $$$"""
                     using Rocket.Surgery.DependencyInjection;
@@ -114,12 +93,9 @@ public partial class AssemblyScanningTests
                     }
                     """;
 
-                return () => new(id, source);
+                return new(name, source);
             }
         }
-
-        [GeneratedRegex(@"(\s)\s+")]
-        internal static partial Regex ReplaceSpaces();
 
         private static IEnumerable<(string Expression, string TypeName)> GetAssemblyRequests() =>
         [
@@ -669,4 +645,16 @@ public partial class AssemblyScanningTests
             return (expression, typeName);
         }
     }
+
+    internal static string GenerateFilenameSafeString(string input) =>
+        // Replace invalid filename characters with an underscore
+        OnlyLetters().Replace(ReplaceSpaces().Replace(input, ""), "_");
+
+    internal static string HashFilename(string name, string source) => Convert.ToBase64String(SHA256.HashData([.. Encoding.UTF8.GetBytes(name), .. Encoding.UTF8.GetBytes(source)])).ToLowerInvariant();
+
+    [GeneratedRegex(@"(\s)\s+")]
+    internal static partial Regex ReplaceSpaces();
+
+    [GeneratedRegex(@"[^a-zA-Z0-9]")]
+    private static partial Regex OnlyLetters();
 }

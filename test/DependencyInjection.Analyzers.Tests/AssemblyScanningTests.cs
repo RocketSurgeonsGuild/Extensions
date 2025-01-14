@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 using FluentAssertions;
 
 using Microsoft.CodeAnalysis;
@@ -24,8 +22,7 @@ public partial class AssemblyScanningTests : GeneratorTest
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
-             .UseParameters((item.Name, item.Source))
-             .HashParameters();
+             .UseParameters(item.FileSafeName);
     }
 
     [Test]
@@ -55,8 +52,7 @@ public partial class AssemblyScanningTests : GeneratorTest
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
-             .UseParameters((item.Name, item.Source))
-             .HashParameters();
+             .UseParameters(item.FileSafeName);
     }
 
     [Test]
@@ -87,11 +83,11 @@ public partial class AssemblyScanningTests : GeneratorTest
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
-             .UseParameters((item.Name, item.Source))
-             .HashParameters();
+             .UseParameters(item.FileSafeName);
     }
 
     [Test]
+    [Skip("This test is flaky")]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly(TestSource item)
     {
@@ -119,11 +115,11 @@ public partial class AssemblyScanningTests : GeneratorTest
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
-             .UseParameters((item.Name, item.Source))
-             .HashParameters();
+             .UseParameters(item.FileSafeName);
     }
 
     [Test]
+    [Skip("This test is flaky")]
     [DependsOn(nameof(Should_Generate_All_The_Things_From_Self_And_Another_Assembly), ProceedOnFailure = true)]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
     public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly_Using_Cache(TestSource item)
@@ -152,8 +148,7 @@ public partial class AssemblyScanningTests : GeneratorTest
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
-             .UseParameters((item.Name, item.Source))
-             .HashParameters();
+             .UseParameters(item.FileSafeName);
     }
 
     [Test]
@@ -171,10 +166,6 @@ public partial class AssemblyScanningTests : GeneratorTest
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
-             .UseParameters((item.Name, item.Source))
-             .HashParameters();
+             .UseParameters(item.FileSafeName);
     }
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
 }

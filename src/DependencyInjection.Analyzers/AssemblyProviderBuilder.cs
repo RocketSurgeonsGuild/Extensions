@@ -1,4 +1,9 @@
 using System.Collections.Immutable;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,28 +14,50 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 internal static class AssemblyProviderBuilder
 {
     public static TypeDeclarationSyntax GetAssemblyProvider(
-        SourceProductionContext context,
-        Compilation compilation,
         ImmutableList<ResolvedSourceLocation> assemblyRequests,
         ImmutableList<ResolvedSourceLocation> reflectionRequests,
         ImmutableList<ResolvedSourceLocation> serviceDescriptorRequests,
-        HashSet<IAssemblySymbol> privateAssemblies
+        HashSet<IAssemblySymbol> privateAssemblies,
+        out string cacheHash
     )
     {
+        using var hasher = MD5.Create();
+
+        static void addStringToHash(ICryptoTransform hasher, string textToHash)
+        {
+            var inputBuffer = Encoding.UTF8.GetBytes(textToHash);
+            hasher.TransformBlock(inputBuffer, 0, inputBuffer.Length, inputBuffer, 0);
+        }
+
+        static IEnumerable<T> dohash<T>(ICryptoTransform hasher, IEnumerable<T> enumerable, JsonTypeInfo<T> jsonTypeInfo)
+        {
+            foreach (var item in enumerable)
+            {
+                addStringToHash(hasher, JsonSerializer.Serialize(item, jsonTypeInfo));
+                yield return item;
+            }
+        }
+
         var resolvedAssemblyDetails = assemblyRequests is { Count: > 0 }
-            ? GenerateMethodBody(AssembliesMethod, assemblyRequests)
+            ? GenerateMethodBody(AssembliesMethod, dohash(hasher, assemblyRequests, JsonSourceGenerationContext.Default.ResolvedSourceLocation))
             : AssembliesMethod;
 
         var resolvedReflectionDetails = reflectionRequests is { Count: > 0 }
-            ? GenerateMethodBody(TypesMethod, reflectionRequests)
+            ? GenerateMethodBody(TypesMethod, dohash(hasher, reflectionRequests, JsonSourceGenerationContext.Default.ResolvedSourceLocation))
             : TypesMethod;
 
         var resolvedServiceDescriptorDetails = serviceDescriptorRequests is { Count: > 0 }
-            ? GenerateMethodBody(ScanMethod, serviceDescriptorRequests)
+            ? GenerateMethodBody(ScanMethod, dohash(hasher, serviceDescriptorRequests, JsonSourceGenerationContext.Default.ResolvedSourceLocation))
             : ScanMethod;
 
         var privateMembers = privateAssemblies
-                            .OrderBy(z => z.MetadataName)
+                            .OrderBy(
+                                 z =>
+                                 {
+                                     addStringToHash(hasher, z.MetadataName);
+                                     return z.MetadataName;
+                                 }
+                             )
                             .SelectMany(StatementGeneration.AssemblyDeclaration)
                             .ToList();
         if (privateAssemblies.Any())
@@ -76,6 +103,8 @@ internal static class AssemblyProviderBuilder
             );
         }
 
+        _ = hasher.TransformFinalBlock([], 0, 0);
+        cacheHash = Convert.ToBase64String(hasher.Hash);
         return ClassDeclaration("CompiledTypeProvider")
               .AddAttributeLists(Helpers.CompilerGeneratedAttributes)
               .WithModifiers(TokenList(Token(SyntaxKind.FileKeyword)))
@@ -84,7 +113,7 @@ internal static class AssemblyProviderBuilder
               .AddMembers([.. privateMembers]);
     }
 
-    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IReadOnlyList<ResolvedSourceLocation> locations)
+    private static MethodDeclarationSyntax GenerateMethodBody(MethodDeclarationSyntax baseMethod, IEnumerable<ResolvedSourceLocation> locations)
     {
         StatementSyntax[] item = [.. baseMethod.Body?.Statements ?? []];
         var returnStatement = item.OfType<ReturnStatementSyntax>().Single();
@@ -101,22 +130,46 @@ internal static class AssemblyProviderBuilder
                                      .GroupBy(z => z.Location)
                                      .Select(
                                           z => z.Aggregate(
-                                                  new ResolvedSourceLocation(z.First().Location, "", []),
-                                                  (location, sourceLocation) => new (
-                                                      location.Location,
-                                                      location.Expression + "\n" + sourceLocation.Expression,
-                                                      [..location.PrivateAssemblies, ..sourceLocation.PrivateAssemblies]
-                                                  )
+                                              new ResolvedSourceLocation(z.First().Location, "", [], null),
+                                              (location, sourceLocation) => new(
+                                                  location.Location,
+                                                  location.Expression + "\n" + sourceLocation.Expression,
+                                                  [..location.PrivateAssemblies, ..sourceLocation.PrivateAssemblies],
+                                                  null
                                               )
+                                          )
                                       ),
                                 ]
                             ),
-                            returnStatement
+                            returnStatement,
                         ]
                     )
                 )
             );
     }
+
+    private static StatementSyntax GetCollectionVariable(TypeSyntax type) => LocalDeclarationStatement(
+        VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
+           .WithVariables(
+                SingletonSeparatedList(
+                    VariableDeclarator(Identifier("items"))
+                       .WithInitializer(
+                            EqualsValueClause(
+                                ObjectCreationExpression(
+                                        GenericName(Identifier("List"))
+                                           .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(type)))
+                                    )
+                                   .WithArgumentList(ArgumentList())
+                            )
+                        )
+                )
+            )
+    );
+
+    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
+
+    private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
+    private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
 
     private static readonly MethodDeclarationSyntax TypesMethod =
         MethodDeclaration(
@@ -157,27 +210,6 @@ internal static class AssemblyProviderBuilder
                 )
             );
 
-    private static StatementSyntax GetCollectionVariable(TypeSyntax type)
-    {
-        return LocalDeclarationStatement(
-            VariableDeclaration(IdentifierName(Identifier(TriviaList(), SyntaxKind.VarKeyword, "var", "var", TriviaList())))
-               .WithVariables(
-                    SingletonSeparatedList(
-                        VariableDeclarator(Identifier("items"))
-                           .WithInitializer(
-                                EqualsValueClause(
-                                    ObjectCreationExpression(
-                                            GenericName(Identifier("List"))
-                                               .WithTypeArgumentList(TypeArgumentList(SingletonSeparatedList(type)))
-                                        )
-                                       .WithArgumentList(ArgumentList())
-                                )
-                            )
-                    )
-                )
-        );
-    }
-
     private static readonly MethodDeclarationSyntax ScanMethod =
         MethodDeclaration(ParseName("Microsoft.Extensions.DependencyInjection.IServiceCollection"), Identifier("Scan"))
            .WithExplicitInterfaceSpecifier(ExplicitInterfaceSpecifier(IdentifierName("ICompiledTypeProvider")))
@@ -190,10 +222,6 @@ internal static class AssemblyProviderBuilder
                 Parameter(Identifier("argumentExpression")).WithType(PredefinedType(Token(SyntaxKind.StringKeyword)))
             )
            .WithBody(Block(ReturnStatement(IdentifierName("services"))));
-
-    private const string IReflectionTypeSelector = nameof(IReflectionTypeSelector);
-    private const string IServiceDescriptorAssemblySelector = nameof(IServiceDescriptorAssemblySelector);
-    private const string IReflectionAssemblySelector = nameof(IReflectionAssemblySelector);
 
     private static readonly MethodDeclarationSyntax AssembliesMethod =
         MethodDeclaration(

@@ -107,9 +107,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                           symbol =>
                                           {
                                               if (symbol is IAssemblySymbol assemblySymbol) return assemblySymbol;
-
                                               if (symbol is IModuleSymbol moduleSymbol) return moduleSymbol.ContainingAssembly;
-
                                               // ReSharper disable once NullableWarningSuppressionIsUsed
                                               return null!;
                                           }
@@ -190,12 +188,11 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                     );
 
                 var assemblyProvider = AssemblyProviderBuilder.GetAssemblyProvider(
-                    context,
-                    request.compilation,
                     assemblySources,
                     reflectionSources,
                     serviceDescriptorSources,
-                    privateAssemblies
+                    privateAssemblies,
+                    out var cacheHash
                 );
                 if (privateAssemblies.Any()) cu = cu.AddUsings(UsingDirective(ParseName("System.Runtime.Loader")));
 
@@ -210,8 +207,11 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                                      Attribute(
                                          ParseName("Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute"),
                                          AttributeArgumentList(
-                                             SingletonSeparatedList(
-                                                 AttributeArgument(TypeOfExpression(ParseName(assemblyProvider.Identifier.Text)))
+                                             SeparatedList(
+                                                 [
+                                                     AttributeArgument(TypeOfExpression(ParseName(assemblyProvider.Identifier.Text))),
+                                                     AttributeArgument(LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(cacheHash))),
+                                                 ]
                                              )
                                          )
                                      )
@@ -233,11 +233,23 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
 
                 if (GetCacheDirectory(request.options) is not { } cacheDirectory) return;
 
-                var generatedData = resultingData.ToGeneratedAssemblyProviderData();
-                var json = JsonSerializer.Serialize(generatedData, JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData);
-                var path = Path.Combine(cacheDirectory, Constants.CompiledTypeProviderCacheFileName);
 #pragma warning disable RS1035
-                File.WriteAllText(path, json);
+
+                var fileInfo = new FileInfo(Path.Combine(cacheDirectory, Constants.CompiledTypeProviderCacheFileName));
+                var writer = fileInfo.Open(fileInfo.Exists ? FileMode.Truncate : FileMode.CreateNew);
+                try
+                {
+                    using var streamWriter = new StreamWriter(writer);
+                    var generatedData = resultingData.ToGeneratedAssemblyProviderData();
+                    streamWriter.Write(JsonSerializer.Serialize(generatedData, JsonSourceGenerationContext.Default.GeneratedAssemblyProviderData));
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
+
 #pragma warning restore RS1035
 
                 return;

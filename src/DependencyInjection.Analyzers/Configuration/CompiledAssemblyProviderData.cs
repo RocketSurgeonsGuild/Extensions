@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
@@ -8,7 +7,8 @@ public record CompiledAssemblyProviderData
     ImmutableList<GetAssemblyConfiguration> InternalAssemblyRequests,
     ImmutableList<GetReflectionCollectionData> InternalReflectionRequests,
     ImmutableList<GetServiceDescriptorCollectionData> InternalServiceDescriptorRequests,
-    bool ExcludeFromResolution
+    bool ExcludeFromResolution,
+    string? CacheVersion
 )
 {
     public bool IsEmpty =>

@@ -28,6 +28,8 @@ internal static partial class ModuleInitializer
         VerifyDiffPlex.Initialize();
 
         VerifierSettings.ScrubInlineGuids();
+        VerifierSettings.ScrubMember<ResolvedSourceLocation>(z => z.CacheVersion);
+        VerifierSettings.ScrubMember<CompiledAssemblyProviderData>(z => z.CacheVersion);
 
         VerifierSettings.AddExtraSettings(
             settings => settings.Converters.Add(new ServiceDescriptorConverter())
@@ -51,6 +53,11 @@ internal static partial class ModuleInitializer
         VerifierSettings.ScrubLinesWithReplace(
             s => s.Contains("AssemblyMetadata(\"AssemblyProvider.", StringComparison.OrdinalIgnoreCase)
                 ? s[..( s.IndexOf('"', s.IndexOf('"') + 1) + 2 )] + "\"{scrubbed}\")]"
+                : s
+        );
+        VerifierSettings.ScrubLinesWithReplace(
+            s => s.Contains("CompiledTypeProviderAttribute", StringComparison.OrdinalIgnoreCase) && s.IndexOf('"') > -1
+                ? s.Replace(s[s.IndexOf('"')..s.LastIndexOf(')')], "\"{scrubbed}\"")
                 : s
         );
         VerifierSettings.ScrubLinesWithReplace(

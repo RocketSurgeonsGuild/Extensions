@@ -148,13 +148,9 @@ internal partial class AssemblyProviderConfiguration
 #pragma warning disable RS1035
     internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
     {
-        if (generatedJson.GetSourceLocation(assemblySymbol.MetadataName, location, factory) is not
-            { } savedLocation)
-        {
-            return null;
-        }
+        if (generatedJson.GetSourceLocation(assemblySymbol, location, factory) is not { } savedLocation) return null;
 
-        resultingJson.AddSourceLocation(assemblySymbol.MetadataName, savedLocation);
+        resultingJson.AddSourceLocation(assemblySymbol, savedLocation);
         return savedLocation;
     }
 #pragma warning restore RS1035
@@ -214,9 +210,9 @@ internal partial class AssemblyProviderConfiguration
         ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
     )
     {
-        if (generatedJson.SkipAssemblies.Contains(assembly.MetadataName))
+        if (generatedJson.IsAssemblySkipped(assembly))
         {
-            resultingJson.AddSkipAssembly(assembly.MetadataName);
+            resultingJson.AddSkipAssembly(assembly);
             assemblyItems = [];
             reflection = [];
             serviceDescriptor = [];
@@ -224,13 +220,12 @@ internal partial class AssemblyProviderConfiguration
             return;
         }
 
-        if (generatedJson.AssemblyData.TryGetValue(assembly.MetadataName, out var generatedData))
+        if (generatedJson.GetAssemblyData(assembly) is { } generatedData)
         {
-            resultingJson.AddAssemblyData(assembly.MetadataName, generatedData);
+            resultingJson.AddAssemblyData(assembly, generatedData);
             assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
             reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z)).ToImmutableList();
-            serviceDescriptor =
-                generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z)).ToImmutableList();
+            serviceDescriptor = generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z)).ToImmutableList();
             excludeFromResolution = generatedData.ExcludeFromResolution;
             return;
         }
@@ -299,13 +294,14 @@ internal partial class AssemblyProviderConfiguration
             assemblyBuilder.Select(GetAssemblyCollectionData).ToImmutableList(),
             reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
             serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList(),
-            excludeFromResolution
+            excludeFromResolution,
+            assembly.GetCachedVersion()
         );
 
         if (result.IsEmpty)
-            resultingJson.AddSkipAssembly(assembly.MetadataName);
+            resultingJson.AddSkipAssembly(assembly);
         else
-            resultingJson.AddAssemblyData(assembly.MetadataName, result);
+            resultingJson.AddAssemblyData(assembly, result);
     }
 #pragma warning restore RS1035
 

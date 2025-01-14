@@ -8,7 +8,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 [JsonSerializable(typeof(ServiceDescriptorCollectionData))]
 [JsonSerializable(typeof(AssemblyFilterData))]
 [JsonSerializable(typeof(SourceLocation))]
-[JsonSerializable(typeof(SavedSourceLocation))]
 [JsonSerializable(typeof(TypeFilterData))]
 [JsonSerializable(typeof(NamespaceFilterData))]
 [JsonSerializable(typeof(NameFilterData))]
