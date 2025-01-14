@@ -143,10 +143,7 @@ public class Base32Url
     /// </param>
     public Base32Url(bool padding, bool caseSensitive, bool ignoreWhiteSpaceWhenDecoding, CharMap[] alphabet)
     {
-        if (alphabet == null)
-        {
-            throw new ArgumentNullException(nameof(alphabet));
-        }
+        ArgumentNullException.ThrowIfNull(alphabet);
 
         if (alphabet.Length != 32)
         {
@@ -198,10 +195,7 @@ public class Base32Url
     /// <returns>base 32 string</returns>
     public string Encode(byte[] data)
     {
-        if (data is null)
-        {
-            throw new ArgumentNullException(nameof(data));
-        }
+        ArgumentNullException.ThrowIfNull(data);
 
         var result = new StringBuilder(Math.Max((int)Math.Ceiling(( data.Length * 8 ) / 5.0), 1));
 
@@ -244,10 +238,7 @@ public class Base32Url
     /// </exception>
     public byte[] Decode(string input)
     {
-        if (input == null)
-        {
-            throw new ArgumentNullException(nameof(input));
-        }
+        ArgumentNullException.ThrowIfNull(input);
 
         if (IgnoreWhiteSpaceWhenDecoding)
         {

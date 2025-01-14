@@ -27,10 +27,7 @@ public class BackingFieldValueProvider : IValueProvider
     /// <inheritdoc />
     public void SetValue(object target, object? value)
     {
-        if (target == null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        ArgumentNullException.ThrowIfNull(target);
 
         try
         {
@@ -45,10 +42,7 @@ public class BackingFieldValueProvider : IValueProvider
     /// <inheritdoc />
     public object? GetValue(object target)
     {
-        if (target == null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        ArgumentNullException.ThrowIfNull(target);
 
         try
         {

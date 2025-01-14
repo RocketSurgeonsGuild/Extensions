@@ -25,10 +25,7 @@ public static class JsonBinderExtensions
     public static T Bind<T>(this IJsonBinder binder, IConfiguration configuration)
         where T : class, new()
     {
-        if (binder == null)
-        {
-            throw new ArgumentNullException(nameof(binder));
-        }
+        ArgumentNullException.ThrowIfNull(binder);
 
         return binder.Bind<T>(GetValues(configuration));
     }
@@ -43,10 +40,7 @@ public static class JsonBinderExtensions
     public static T Bind<T>(this IJsonBinder binder, IConfiguration configuration, JsonSerializer serializer)
         where T : class, new()
     {
-        if (binder == null)
-        {
-            throw new ArgumentNullException(nameof(binder));
-        }
+        ArgumentNullException.ThrowIfNull(binder);
 
         return binder.Bind<T>(GetValues(configuration), serializer);
     }
@@ -59,10 +53,7 @@ public static class JsonBinderExtensions
     /// <param name="configuration">The configuration.</param>
     public static object Bind(this IJsonBinder binder, Type objectType, IConfiguration configuration)
     {
-        if (binder == null)
-        {
-            throw new ArgumentNullException(nameof(binder));
-        }
+        ArgumentNullException.ThrowIfNull(binder);
 
         return binder.Bind(objectType, GetValues(configuration));
     }
@@ -76,10 +67,7 @@ public static class JsonBinderExtensions
     /// <param name="serializer">The serializer.</param>
     public static object Bind(this IJsonBinder binder, Type objectType, IConfiguration configuration, JsonSerializer serializer)
     {
-        if (binder == null)
-        {
-            throw new ArgumentNullException(nameof(binder));
-        }
+        ArgumentNullException.ThrowIfNull(binder);
 
         return binder.Bind(objectType, GetValues(configuration), serializer);
     }
@@ -94,10 +82,7 @@ public static class JsonBinderExtensions
     public static T Populate<T>(this IJsonBinder binder, T value, IConfiguration configuration)
         where T : class
     {
-        if (binder == null)
-        {
-            throw new ArgumentNullException(nameof(binder));
-        }
+        ArgumentNullException.ThrowIfNull(binder);
 
         return binder.Populate(value, GetValues(configuration));
     }
@@ -113,10 +98,7 @@ public static class JsonBinderExtensions
     public static T Populate<T>(this IJsonBinder binder, T value, IConfiguration configuration, JsonSerializer serializer)
         where T : class
     {
-        if (binder == null)
-        {
-            throw new ArgumentNullException(nameof(binder));
-        }
+        ArgumentNullException.ThrowIfNull(binder);
 
         return binder.Populate(value, GetValues(configuration), serializer);
     }

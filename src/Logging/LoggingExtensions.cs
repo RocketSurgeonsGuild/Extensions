@@ -20,10 +20,7 @@ public static class LoggingAbstractionsExtensions
     /// <returns>IDisposable.</returns>
     public static IDisposable TimeTrace(this ILogger logger, string message, params object[] args)
     {
-        if (logger == null)
-        {
-            throw new ArgumentNullException(nameof(logger));
-        }
+        ArgumentNullException.ThrowIfNull(logger);
 
         if (!logger.IsEnabled(LogLevel.Trace)) return NoopDisposable.Instance;
 
@@ -48,10 +45,7 @@ public static class LoggingAbstractionsExtensions
     /// <returns>IDisposable.</returns>
     public static IDisposable TimeDebug(this ILogger logger, string message, params object[] args)
     {
-        if (logger == null)
-        {
-            throw new ArgumentNullException(nameof(logger));
-        }
+        ArgumentNullException.ThrowIfNull(logger);
 
         if (!logger.IsEnabled(LogLevel.Debug)) return NoopDisposable.Instance;
 
@@ -76,10 +70,7 @@ public static class LoggingAbstractionsExtensions
     /// <returns>IDisposable.</returns>
     public static IDisposable TimeInformation(this ILogger logger, string message, params object[] args)
     {
-        if (logger == null)
-        {
-            throw new ArgumentNullException(nameof(logger));
-        }
+        ArgumentNullException.ThrowIfNull(logger);
 
         if (!logger.IsEnabled(LogLevel.Information)) return NoopDisposable.Instance;
 

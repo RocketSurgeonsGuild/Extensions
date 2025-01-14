@@ -7,10 +7,7 @@ internal class ExecuteScoped<T>(IServiceScopeFactory serviceScopeFactoryFactory)
 {
     public void Invoke(Action<T> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
         using var scope = serviceScopeFactoryFactory.CreateScope();
         action(scope.ServiceProvider.GetRequiredService<T>());
@@ -18,10 +15,7 @@ internal class ExecuteScoped<T>(IServiceScopeFactory serviceScopeFactoryFactory)
 
     public TResult Invoke<TResult>(Func<T, TResult> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
         using var scope = serviceScopeFactoryFactory.CreateScope();
         return action(scope.ServiceProvider.GetRequiredService<T>());
@@ -29,10 +23,7 @@ internal class ExecuteScoped<T>(IServiceScopeFactory serviceScopeFactoryFactory)
 
     public async Task Invoke(Func<T, CancellationToken, Task> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
         using var scope = serviceScopeFactoryFactory.CreateScope();
         await action(scope.ServiceProvider.GetRequiredService<T>(), cancellationToken).ConfigureAwait(false);
@@ -40,10 +31,7 @@ internal class ExecuteScoped<T>(IServiceScopeFactory serviceScopeFactoryFactory)
 
     public async Task<TResult> Invoke<TResult>(Func<T, CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
         using var scope = serviceScopeFactoryFactory.CreateScope();
         return await action(scope.ServiceProvider.GetRequiredService<T>(), cancellationToken).ConfigureAwait(false);
@@ -60,25 +48,15 @@ internal class ExecuteScoped<T>(IServiceScopeFactory serviceScopeFactoryFactory)
     }
 }
 
-internal class ExecuteScoped<T1, T2> : IExecuteScoped<T1, T2>
+internal class ExecuteScoped<T1, T2>(IServiceScopeFactory serviceScopeFactoryFactory) : IExecuteScoped<T1, T2>
     where T1 : notnull
     where T2 : notnull
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public ExecuteScoped(IServiceScopeFactory serviceScopeFactoryFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactoryFactory;
-    }
-
     public void Invoke(Action<T1, T2> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>()
@@ -87,12 +65,9 @@ internal class ExecuteScoped<T1, T2> : IExecuteScoped<T1, T2>
 
     public TResult Invoke<TResult>(Func<T1, T2, TResult> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>()
@@ -101,12 +76,9 @@ internal class ExecuteScoped<T1, T2> : IExecuteScoped<T1, T2>
 
     public async Task Invoke(Func<T1, T2, CancellationToken, Task> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -116,12 +88,9 @@ internal class ExecuteScoped<T1, T2> : IExecuteScoped<T1, T2>
 
     public async Task<TResult> Invoke<TResult>(Func<T1, T2, CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -140,26 +109,16 @@ internal class ExecuteScoped<T1, T2> : IExecuteScoped<T1, T2>
     }
 }
 
-internal class ExecuteScoped<T1, T2, T3> : IExecuteScoped<T1, T2, T3>
+internal class ExecuteScoped<T1, T2, T3>(IServiceScopeFactory serviceScopeFactoryFactory) : IExecuteScoped<T1, T2, T3>
     where T1 : notnull
     where T2 : notnull
     where T3 : notnull
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public ExecuteScoped(IServiceScopeFactory serviceScopeFactoryFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactoryFactory;
-    }
-
     public void Invoke(Action<T1, T2, T3> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -169,12 +128,9 @@ internal class ExecuteScoped<T1, T2, T3> : IExecuteScoped<T1, T2, T3>
 
     public TResult Invoke<TResult>(Func<T1, T2, T3, TResult> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -184,12 +140,9 @@ internal class ExecuteScoped<T1, T2, T3> : IExecuteScoped<T1, T2, T3>
 
     public async Task Invoke(Func<T1, T2, T3, CancellationToken, Task> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -200,12 +153,9 @@ internal class ExecuteScoped<T1, T2, T3> : IExecuteScoped<T1, T2, T3>
 
     public async Task<TResult> Invoke<TResult>(Func<T1, T2, T3, CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -225,27 +175,17 @@ internal class ExecuteScoped<T1, T2, T3> : IExecuteScoped<T1, T2, T3>
     }
 }
 
-internal class ExecuteScoped<T1, T2, T3, T4> : IExecuteScoped<T1, T2, T3, T4>
+internal class ExecuteScoped<T1, T2, T3, T4>(IServiceScopeFactory serviceScopeFactoryFactory) : IExecuteScoped<T1, T2, T3, T4>
     where T1 : notnull
     where T2 : notnull
     where T3 : notnull
     where T4 : notnull
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public ExecuteScoped(IServiceScopeFactory serviceScopeFactoryFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactoryFactory;
-    }
-
     public void Invoke(Action<T1, T2, T3, T4> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -256,12 +196,9 @@ internal class ExecuteScoped<T1, T2, T3, T4> : IExecuteScoped<T1, T2, T3, T4>
 
     public TResult Invoke<TResult>(Func<T1, T2, T3, T4, TResult> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -272,12 +209,9 @@ internal class ExecuteScoped<T1, T2, T3, T4> : IExecuteScoped<T1, T2, T3, T4>
 
     public async Task Invoke(Func<T1, T2, T3, T4, CancellationToken, Task> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -289,12 +223,9 @@ internal class ExecuteScoped<T1, T2, T3, T4> : IExecuteScoped<T1, T2, T3, T4>
 
     public async Task<TResult> Invoke<TResult>(Func<T1, T2, T3, T4, CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -315,28 +246,18 @@ internal class ExecuteScoped<T1, T2, T3, T4> : IExecuteScoped<T1, T2, T3, T4>
     }
 }
 
-internal class ExecuteScoped<T1, T2, T3, T4, T5> : IExecuteScoped<T1, T2, T3, T4, T5>
+internal class ExecuteScoped<T1, T2, T3, T4, T5>(IServiceScopeFactory serviceScopeFactoryFactory) : IExecuteScoped<T1, T2, T3, T4, T5>
     where T1 : notnull
     where T2 : notnull
     where T3 : notnull
     where T4 : notnull
     where T5 : notnull
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public ExecuteScoped(IServiceScopeFactory serviceScopeFactoryFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactoryFactory;
-    }
-
     public void Invoke(Action<T1, T2, T3, T4, T5> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -348,12 +269,9 @@ internal class ExecuteScoped<T1, T2, T3, T4, T5> : IExecuteScoped<T1, T2, T3, T4
 
     public TResult Invoke<TResult>(Func<T1, T2, T3, T4, T5, TResult> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -365,12 +283,9 @@ internal class ExecuteScoped<T1, T2, T3, T4, T5> : IExecuteScoped<T1, T2, T3, T4
 
     public async Task Invoke(Func<T1, T2, T3, T4, T5, CancellationToken, Task> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -383,12 +298,9 @@ internal class ExecuteScoped<T1, T2, T3, T4, T5> : IExecuteScoped<T1, T2, T3, T4
 
     public async Task<TResult> Invoke<TResult>(Func<T1, T2, T3, T4, T5, CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -410,7 +322,7 @@ internal class ExecuteScoped<T1, T2, T3, T4, T5> : IExecuteScoped<T1, T2, T3, T4
     }
 }
 
-internal class ExecuteScoped<T1, T2, T3, T4, T5, T6> : IExecuteScoped<T1, T2, T3, T4, T5, T6>
+internal class ExecuteScoped<T1, T2, T3, T4, T5, T6>(IServiceScopeFactory serviceScopeFactoryFactory) : IExecuteScoped<T1, T2, T3, T4, T5, T6>
     where T1 : notnull
     where T2 : notnull
     where T3 : notnull
@@ -418,21 +330,11 @@ internal class ExecuteScoped<T1, T2, T3, T4, T5, T6> : IExecuteScoped<T1, T2, T3
     where T5 : notnull
     where T6 : notnull
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public ExecuteScoped(IServiceScopeFactory serviceScopeFactoryFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactoryFactory;
-    }
-
     public void Invoke(Action<T1, T2, T3, T4, T5, T6> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -445,12 +347,9 @@ internal class ExecuteScoped<T1, T2, T3, T4, T5, T6> : IExecuteScoped<T1, T2, T3
 
     public TResult Invoke<TResult>(Func<T1, T2, T3, T4, T5, T6, TResult> action)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -463,12 +362,9 @@ internal class ExecuteScoped<T1, T2, T3, T4, T5, T6> : IExecuteScoped<T1, T2, T3
 
     public async Task Invoke(Func<T1, T2, T3, T4, T5, T6, CancellationToken, Task> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),
@@ -482,12 +378,9 @@ internal class ExecuteScoped<T1, T2, T3, T4, T5, T6> : IExecuteScoped<T1, T2, T3
 
     public async Task<TResult> Invoke<TResult>(Func<T1, T2, T3, T4, T5, T6, CancellationToken, Task<TResult>> action, CancellationToken cancellationToken)
     {
-        if (action is null)
-        {
-            throw new ArgumentNullException(nameof(action));
-        }
+        ArgumentNullException.ThrowIfNull(action);
 
-        using var scope = _serviceScopeFactory.CreateScope();
+        using var scope = serviceScopeFactoryFactory.CreateScope();
         return await action(
             scope.ServiceProvider.GetRequiredService<T1>(),
             scope.ServiceProvider.GetRequiredService<T2>(),

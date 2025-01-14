@@ -181,10 +181,7 @@ public class JsonBinder : IJsonBinder
     /// <inheritdoc />
     public JObject Parse(IEnumerable<KeyValuePair<string, string?>> values)
     {
-        if (values == null)
-        {
-            throw new ArgumentNullException(nameof(values));
-        }
+        ArgumentNullException.ThrowIfNull(values);
 
         var result = new JObject();
         foreach (var item in values)

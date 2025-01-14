@@ -21,10 +21,7 @@ public static class Base64Url
     public static string ToBase64ForUrlString(byte[] input)
         #pragma warning restore CA1055 // Uri return values should not be strings
     {
-        if (input == null)
-        {
-            throw new ArgumentNullException(nameof(input));
-        }
+        ArgumentNullException.ThrowIfNull(input);
 
         var result = new StringBuilder(Convert.ToBase64String(input).TrimEnd('='));
 
@@ -45,10 +42,7 @@ public static class Base64Url
     public static byte[] FromBase64ForUrlString(string base64ForUrlInput)
         #pragma warning restore CA1054 // Uri parameters should not be strings
     {
-        if (base64ForUrlInput is null)
-        {
-            throw new ArgumentNullException(nameof(base64ForUrlInput));
-        }
+        ArgumentNullException.ThrowIfNull(base64ForUrlInput);
 
         var padChars = base64ForUrlInput.Length % 4 == 0 ? 0 : 4 - ( base64ForUrlInput.Length % 4 );
 

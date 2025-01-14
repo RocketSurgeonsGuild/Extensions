@@ -1885,10 +1885,7 @@ public static class ObservableExtensions
     /// <exception cref="ArgumentNullException">source</exception>
     public static IObservable<Unit> ToSignal<TSource>(this IObservable<TSource> source)
     {
-        if (source == null)
-        {
-            throw new ArgumentNullException(nameof(source));
-        }
+        ArgumentNullException.ThrowIfNull(source);
 
         return source
            .Select(_ => Unit.Default);

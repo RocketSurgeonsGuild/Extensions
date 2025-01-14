@@ -45,8 +45,8 @@ public class PropertyGetter
         out T? value
     )
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
-        if (path == null) throw new ArgumentNullException(nameof(path));
+        ArgumentNullException.ThrowIfNull(instance);
+        ArgumentNullException.ThrowIfNull(path);
 
         if (TryGetter<T>(instance.GetType(), path, out var getter))
         {
@@ -67,7 +67,7 @@ public class PropertyGetter
     /// <returns></returns>
     public T Get<T>(object instance, string path)
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(instance);
         if (TryGet<T>(instance, path, out var propertyValue)) return propertyValue;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
@@ -88,7 +88,7 @@ public class PropertyGetter
         out object? value
     )
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(instance);
 
         if (TryGetter(instance.GetType(), path, out var getter))
         {
@@ -108,7 +108,7 @@ public class PropertyGetter
     /// <returns></returns>
     public object Get(object instance, string path)
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(instance);
         if (TryGet(instance, path, out var propertyValue)) return propertyValue;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
@@ -129,7 +129,7 @@ public class PropertyGetter
         out Type? type
     )
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(instance);
         return TryGetPropertyType(instance.GetType(), path, out type);
     }
 
@@ -141,7 +141,7 @@ public class PropertyGetter
     /// <returns></returns>
     public Type GetPropertyType(object instance, string path)
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(instance);
         if (TryGetPropertyType(instance, path, out var propertyValue)) return propertyValue;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
@@ -162,8 +162,8 @@ public class PropertyGetter
         out Type? propertyType
     )
     {
-        if (type == null) throw new ArgumentNullException(nameof(type));
-        if (path == null) throw new ArgumentNullException(nameof(path));
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(path);
 
         var typeDelegate = GetOrCreateTypeDelegate(type);
         if (!typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
@@ -205,8 +205,8 @@ public class PropertyGetter
         out Func<object, T>? getter
     )
     {
-        if (type == null) throw new ArgumentNullException(nameof(type));
-        if (path == null) throw new ArgumentNullException(nameof(path));
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(path);
 
         var typeDelegate = GetOrCreateTypeDelegate(type);
         if (!typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
@@ -248,8 +248,8 @@ public class PropertyGetter
         out Func<object, object>? getter
     )
     {
-        if (type == null) throw new ArgumentNullException(nameof(type));
-        if (path == null) throw new ArgumentNullException(nameof(path));
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(path);
 
         var typeDelegate = GetOrCreateTypeDelegate(type);
         if (!typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
@@ -283,7 +283,7 @@ public class PropertyGetter
     /// <returns></returns>
     public bool TryGetExpression(object instance, string path, out Expression expression)
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(instance);
         return TryGetExpression(instance.GetType(), path, out expression);
     }
 
@@ -295,7 +295,7 @@ public class PropertyGetter
     /// <returns></returns>
     public Expression GetExpression(object instance, string path)
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(instance);
         if (TryGetExpression(instance, path, out var expression)) return expression;
         throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
@@ -309,8 +309,8 @@ public class PropertyGetter
     /// <returns></returns>
     public bool TryGetExpression(Type type, string path, out Expression expression)
     {
-        if (type == null) throw new ArgumentNullException(nameof(type));
-        if (path == null) throw new ArgumentNullException(nameof(path));
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(path);
 
         var typeDelegate = GetOrCreateTypeDelegate(type);
         if (typeDelegate.TryGetPropertyDelegate(path, out var propertyDelegate))
@@ -344,7 +344,7 @@ public class PropertyGetter
     /// <returns></returns>
     public bool TryGetPropertyDelegate(object instance, string path, out PropertyDelegate propertyDelegate)
     {
-        if (instance == null) throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(instance);
         return TryGetPropertyDelegate(instance.GetType(), path, out propertyDelegate);
     }
 
@@ -369,8 +369,8 @@ public class PropertyGetter
     /// <returns></returns>
     public bool TryGetPropertyDelegate(Type type, string path, out PropertyDelegate propertyDelegate)
     {
-        if (type == null) throw new ArgumentNullException(nameof(type));
-        if (path == null) throw new ArgumentNullException(nameof(path));
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(path);
 
         var typeDelegate = GetOrCreateTypeDelegate(type);
         return typeDelegate.TryGetPropertyDelegate(path, out propertyDelegate);
@@ -390,10 +390,7 @@ public class PropertyGetter
 
     private TypeDelegate GetOrCreateTypeDelegate(Type type)
     {
-        if (!_cachedTypeDelegates.TryGetValue(type, out var typeDelegate))
-        {
-            _cachedTypeDelegates.TryAdd(type, typeDelegate = new(type, _separator, _comparison));
-        }
+        if (!_cachedTypeDelegates.TryGetValue(type, out var typeDelegate)) _cachedTypeDelegates.TryAdd(type, typeDelegate = new(type, _separator, _comparison));
 
         return typeDelegate;
     }

@@ -16,10 +16,7 @@ public class InjectableMethodTests
     {
         public static void Execute(IConfigured1 configured1)
         {
-            if (configured1 is null)
-            {
-                throw new ArgumentNullException(nameof(configured1));
-            }
+            ArgumentNullException.ThrowIfNull(configured1);
         }
     }
 

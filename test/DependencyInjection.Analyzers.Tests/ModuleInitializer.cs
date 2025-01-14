@@ -56,6 +56,11 @@ internal static partial class ModuleInitializer
                 : s
         );
         VerifierSettings.ScrubLinesWithReplace(
+            s => s.Contains("CompiledTypeProviderAttribute", StringComparison.OrdinalIgnoreCase) && s.IndexOf('"') > -1
+                ? s.Replace(s[s.IndexOf('"')..s.LastIndexOf(')')], "\"{scrubbed}\"")
+                : s
+        );
+        VerifierSettings.ScrubLinesWithReplace(
             s => s.Contains("<Compiled_AssemblyProvider_g>", StringComparison.OrdinalIgnoreCase)
                 ? s[..( s.IndexOf('"') + 1 )] + "{CompiledTypeProvider}" + s[s.LastIndexOf('"')..]
                 : s

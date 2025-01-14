@@ -17,10 +17,7 @@ public static class TaskExtensions
     /// <exception cref="ArgumentNullException">this</exception>
     public static ConfiguredTaskAwaitable ContinueOnAnyContext(this Task task)
     {
-        if (task == null)
-        {
-            throw new ArgumentNullException(nameof(task));
-        }
+        ArgumentNullException.ThrowIfNull(task);
 
         return task.ConfigureAwait(false);
     }
@@ -34,10 +31,7 @@ public static class TaskExtensions
     /// <exception cref="ArgumentNullException">this</exception>
     public static ConfiguredTaskAwaitable<T> ContinueOnAnyContext<T>(this Task<T> task)
     {
-        if (task == null)
-        {
-            throw new ArgumentNullException(nameof(task));
-        }
+        ArgumentNullException.ThrowIfNull(task);
 
         return task.ConfigureAwait(false);
     }

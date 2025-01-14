@@ -26,7 +26,7 @@ public partial record TestSource(string Name, string Source)
     /// <inheritdoc />
     public override string ToString() => AssemblyScanningTests.GenerateFilenameSafeString(Name);
 
-    public string FileSafeName => AssemblyScanningTests.HashFilename(Name, Source);
+    public string FileSafeName => AssemblyScanningTests.GenerateFilenameSafeString(AssemblyScanningTests.HashFilename(Name, Source));
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string DebuggerDisplay => Source;
