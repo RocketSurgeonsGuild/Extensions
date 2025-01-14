@@ -1,4 +1,5 @@
 using System.Reflection;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -7,21 +8,27 @@ namespace Rocket.Surgery.Binding;
 /// <summary>
 ///     Allows Newtonsoft.Json to set the underlying backing field for a given readonly autoprop
 /// </summary>
+/// <remarks>
+///     Initializes a new instance of the <see cref="BackingFieldValueProvider" /> class.
+/// </remarks>
+/// <param name="memberInfo">The member information.</param>
+/// <param name="backingField">The backing field.</param>
 [PublicAPI]
-public class BackingFieldValueProvider : IValueProvider
+public class BackingFieldValueProvider(MemberInfo memberInfo, FieldInfo backingField) : IValueProvider
 {
-    private readonly FieldInfo _backingField;
-    private readonly MemberInfo _memberInfo;
-
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="BackingFieldValueProvider" /> class.
-    /// </summary>
-    /// <param name="memberInfo">The member information.</param>
-    /// <param name="backingField">The backing field.</param>
-    public BackingFieldValueProvider(MemberInfo memberInfo, FieldInfo backingField)
+    /// <inheritdoc />
+    public object? GetValue(object target)
     {
-        _backingField = backingField;
-        _memberInfo = memberInfo;
+        ArgumentNullException.ThrowIfNull(target);
+
+        try
+        {
+            return _backingField.GetValue(target);
+        }
+        catch (Exception ex)
+        {
+            throw new JsonSerializationException($"Error getting value from '{_memberInfo.Name}' on '{target.GetType()}'.", ex);
+        }
     }
 
     /// <inheritdoc />
@@ -39,18 +46,6 @@ public class BackingFieldValueProvider : IValueProvider
         }
     }
 
-    /// <inheritdoc />
-    public object? GetValue(object target)
-    {
-        ArgumentNullException.ThrowIfNull(target);
-
-        try
-        {
-            return _backingField.GetValue(target);
-        }
-        catch (Exception ex)
-        {
-            throw new JsonSerializationException($"Error getting value from '{_memberInfo.Name}' on '{target.GetType()}'.", ex);
-        }
-    }
+    private readonly FieldInfo _backingField = backingField;
+    private readonly MemberInfo _memberInfo = memberInfo;
 }

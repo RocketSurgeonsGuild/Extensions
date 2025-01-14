@@ -16,62 +16,8 @@ namespace Rocket.Surgery.Extensions.Encoding;
 ///     For more information see http://en.wikipedia.org/wiki/Base32
 /// </summary>
 [PublicAPI]
-public class Base32Url
+public partial class Base32Url
 {
-    /// <summary>
-    ///     StandardPaddingChar
-    /// </summary>
-    public const char StandardPaddingChar = '=';
-
-    /// <summary>
-    ///     Base32StandardAlphabet
-    /// </summary>
-    public const string Base32StandardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-
-    /// <summary>
-    ///     ZBase32Alphabet
-    /// </summary>
-    public const string ZBase32Alphabet = "ybndrfg8ejkmcpqxot1uwisza345h769";
-
-    /// <summary>
-    ///     Base32LowProfanityAlphabet
-    /// </summary>
-    public const string Base32LowProfanityAlphabet = "ybndrfg8NjkmGpq2HtPRYSszT3J5h769";
-
-    /// <summary>
-    ///     Base32CrockfordHumanFriendlyAlphabet
-    /// </summary>
-    public static readonly CharMap[] Base32CrockfordHumanFriendlyAlphabet =
-    {
-        new('0', "0Oo"), new('1', "1IiLl"), new('2', "2"), new('3', "3"), new('4', "4"),
-        new('5', "5"), new('6', "6"), new('7', "7"), new('8', "8"), new('9', "9"), new('A', "Aa"),
-        new('B', "Bb"), new('C', "Cc"), new('D', "Dd"), new('E', "Ee"), new('F', "Ff"), new('G', "Gg"),
-        new('H', "Hh"), new('J', "Jj"), new('K', "Kk"), new('M', "Mm"), new('N', "Nn"), new('P', "Pp"),
-        new('Q', "Qq"), new('R', "Rr"), new('S', "Ss"), new('T', "Tt"), new('V', "Vv"), new('W', "Ww"),
-        new('X', "Xx"), new('Y', "Yy"), new('Z', "Zz"),
-    };
-
-    /// <summary>
-    ///     Decode a base32 string to a byte[] using the default options
-    ///     (case insensitive without padding using the standard base32 alphabet from rfc4648).
-    ///     White space is not permitted (not ignored).
-    ///     Use alternative constructors for more options.
-    /// </summary>
-    public static byte[] FromBase32String(string input) => new Base32Url().Decode(input);
-
-    /// <summary>
-    ///     Encode a base32 string from a byte[] using the default options
-    ///     (case insensitive without padding using the standard base32 alphabet from rfc4648).
-    ///     Use alternative constructors for more options.
-    /// </summary>
-    public static string ToBase32String(byte[] data) => new Base32Url().Encode(data);
-
-    // alphabets may be used with varying case sensitivity, thus index must not ignore case
-    private static readonly Dictionary<string, Dictionary<string, uint>> Indexes = new(2, StringComparer.Ordinal);
-
-    private readonly CharMap[] _alphabet;
-    private Dictionary<string, uint>? _index;
-
     /// <summary>
     ///     Create case insensitive encoder/decoder using the standard base32 alphabet without padding.
     ///     White space is not permitted when decoding (not ignored).
@@ -104,7 +50,8 @@ public class Base32Url
         caseSensitive,
         ignoreWhiteSpaceWhenDecoding,
         Base32StandardAlphabet
-    ) { }
+    )
+    { }
 
     /// <summary>
     ///     Create case insensitive encoder/decoder with alternative alphabet and no padding.
@@ -145,15 +92,9 @@ public class Base32Url
     {
         ArgumentNullException.ThrowIfNull(alphabet);
 
-        if (alphabet.Length != 32)
-        {
-            throw new ArgumentException("Alphabet must be exactly 32 characters long for base 32 encoding.");
-        }
+        if (alphabet.Length != 32) throw new ArgumentException("Alphabet must be exactly 32 characters long for base 32 encoding.");
 
-        if (alphabet.Any(t => t.Decode == null || t.Decode.Length == 0))
-        {
-            throw new ArgumentException("Alphabet must contain at least one decoding character for any given encoding character.");
-        }
+        if (alphabet.Any(t => t.Decode is null || t.Decode.Length == 0)) throw new ArgumentException("Alphabet must contain at least one decoding character for any given encoding character.");
 
         var equality = caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
 
@@ -179,52 +120,12 @@ public class Base32Url
             );
         }
 
-
         PaddingChar = StandardPaddingChar;
         UsePadding = padding;
         IsCaseSensitive = caseSensitive;
         IgnoreWhiteSpaceWhenDecoding = ignoreWhiteSpaceWhenDecoding;
 
         _alphabet = alphabet;
-    }
-
-    /// <summary>
-    ///     Converts a byte[] to a base32 string with the parameters provided in the constructor.
-    /// </summary>
-    /// <param name="data">bytes to encode</param>
-    /// <returns>base 32 string</returns>
-    public string Encode(byte[] data)
-    {
-        ArgumentNullException.ThrowIfNull(data);
-
-        var result = new StringBuilder(Math.Max((int)Math.Ceiling(( data.Length * 8 ) / 5.0), 1));
-
-        var emptyBuff = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-        var buff = new byte[8];
-
-        // take input five bytes at a time to chunk it up for encoding
-        for (var i = 0; i < data.Length; i += 5)
-        {
-            var bytes = Math.Min(data.Length - i, 5);
-
-            // parse five bytes at a time using an 8 byte ulong
-            Array.Copy(emptyBuff, buff, emptyBuff.Length);
-            Array.Copy(data, i, buff, buff.Length - ( bytes + 1 ), bytes);
-            Array.Reverse(buff);
-            var val = BitConverter.ToUInt64(buff, 0);
-
-            for (var bitOffset = ( ( bytes + 1 ) * 8 ) - 5; bitOffset > 3; bitOffset -= 5)
-            {
-                result.Append(_alphabet[(int)( ( val >> bitOffset ) & 0x1f )].Encode);
-            }
-        }
-
-        if (UsePadding)
-        {
-            result.Append(string.Empty.PadRight(result.Length % 8 == 0 ? 0 : 8 - ( result.Length % 8 ), PaddingChar));
-        }
-
-        return result.ToString();
     }
 
     /// <summary>
@@ -240,17 +141,11 @@ public class Base32Url
     {
         ArgumentNullException.ThrowIfNull(input);
 
-        if (IgnoreWhiteSpaceWhenDecoding)
-        {
-            input = Regex.Replace(input, "\\s+", "");
-        }
+        if (IgnoreWhiteSpaceWhenDecoding) input = MyRegex().Replace(input, "");
 
         if (UsePadding)
         {
-            if (input.Length % 8 != 0)
-            {
-                throw new ArgumentException("Invalid length for a base32 string with padding.");
-            }
+            if (input.Length % 8 != 0) throw new ArgumentException("Invalid length for a base32 string with padding.");
 
             input = input.TrimEnd(PaddingChar);
         }
@@ -258,7 +153,7 @@ public class Base32Url
         // index the alphabet for decoding only when needed
         EnsureAlphabetIndexed();
 
-        using var ms = new MemoryStream(Math.Max((int)Math.Ceiling(( input.Length * 5 ) / 8.0), 1));
+        using var ms = new MemoryStream(Math.Max((int)Math.Ceiling( input.Length * 5  / 8.0), 1));
 
         // take input eight bytes at a time to chunk it up for encoding
         for (var i = 0; i < input.Length; i += 8)
@@ -289,14 +184,149 @@ public class Base32Url
         return ms.ToArray();
     }
 
+    /// <summary>
+    ///     Converts a byte[] to a base32 string with the parameters provided in the constructor.
+    /// </summary>
+    /// <param name="data">bytes to encode</param>
+    /// <returns>base 32 string</returns>
+    public string Encode(byte[] data)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        var result = new StringBuilder(Math.Max((int)Math.Ceiling( data.Length * 8  / 5.0), 1));
+
+        var emptyBuff = new[] { (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0 };
+        var buff = new byte[8];
+
+        // take input five bytes at a time to chunk it up for encoding
+        for (var i = 0; i < data.Length; i += 5)
+        {
+            var bytes = Math.Min(data.Length - i, 5);
+
+            // parse five bytes at a time using an 8 byte ulong
+            Array.Copy(emptyBuff, buff, emptyBuff.Length);
+            Array.Copy(data, i, buff, buff.Length - ( bytes + 1 ), bytes);
+            Array.Reverse(buff);
+            var val = BitConverter.ToUInt64(buff, 0);
+
+            for (var bitOffset = ( ( bytes + 1 ) * 8 ) - 5; bitOffset > 3; bitOffset -= 5)
+            {
+                result.Append(_alphabet[(int)( ( val >> bitOffset ) & 0x1f )].Encode);
+            }
+        }
+
+        if (UsePadding) result.Append(string.Empty.PadRight(result.Length % 8 == 0 ? 0 : 8 - ( result.Length % 8 ), PaddingChar));
+
+        return result.ToString();
+    }
+
+    /// <summary>
+    ///     Decode a base32 string to a byte[] using the default options
+    ///     (case insensitive without padding using the standard base32 alphabet from rfc4648).
+    ///     White space is not permitted (not ignored).
+    ///     Use alternative constructors for more options.
+    /// </summary>
+    public static byte[] FromBase32String(string input) => new Base32Url().Decode(input);
+
+    /// <summary>
+    ///     Encode a base32 string from a byte[] using the default options
+    ///     (case insensitive without padding using the standard base32 alphabet from rfc4648).
+    ///     Use alternative constructors for more options.
+    /// </summary>
+    public static string ToBase32String(byte[] data) => new Base32Url().Encode(data);
+
+    /// <summary>
+    ///     Base32LowProfanityAlphabet
+    /// </summary>
+    public const string Base32LowProfanityAlphabet = "ybndrfg8NjkmGpq2HtPRYSszT3J5h769";
+
+    /// <summary>
+    ///     Base32StandardAlphabet
+    /// </summary>
+    public const string Base32StandardAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
+    /// <summary>
+    ///     StandardPaddingChar
+    /// </summary>
+    public const char StandardPaddingChar = '=';
+
+    /// <summary>
+    ///     ZBase32Alphabet
+    /// </summary>
+    public const string ZBase32Alphabet = "ybndrfg8ejkmcpqxot1uwisza345h769";
+
+    /// <summary>
+    ///     Base32CrockfordHumanFriendlyAlphabet
+    /// </summary>
+    public static readonly CharMap[] Base32CrockfordHumanFriendlyAlphabet =
+    [
+        new('0', "0Oo"), new('1', "1IiLl"), new('2', "2"), new('3', "3"), new('4', "4"),
+        new('5', "5"), new('6', "6"), new('7', "7"), new('8', "8"), new('9', "9"), new('A', "Aa"),
+        new('B', "Bb"), new('C', "Cc"), new('D', "Dd"), new('E', "Ee"), new('F', "Ff"), new('G', "Gg"),
+        new('H', "Hh"), new('J', "Jj"), new('K', "Kk"), new('M', "Mm"), new('N', "Nn"), new('P', "Pp"),
+        new('Q', "Qq"), new('R', "Rr"), new('S', "Ss"), new('T', "Tt"), new('V', "Vv"), new('W', "Ww"),
+        new('X', "Xx"), new('Y', "Yy"), new('Z', "Zz"),
+    ];
+
+    #region CharMap struct
+
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+#pragma warning disable CA1034 // Nested types should not be visible
+    /// <summary>
+    ///     CharMap
+    /// </summary>
+    public readonly struct CharMap
+#pragma warning restore CA1034 // Nested types should not be visible
+#pragma warning restore CA1815 // Override equals and operator equals on value types
+    {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="CharMap" /> struct.
+        /// </summary>
+        /// <param name="encodeTo">The encode to.</param>
+        /// <param name="decodeFrom">The decode from.</param>
+        public CharMap(char encodeTo, IEnumerable<char> decodeFrom)
+        {
+            Encode = encodeTo.ToString();
+
+            if (decodeFrom is null) throw new ArgumentException("CharMap decodeFrom cannot be null, encodeTo was: " + Encode);
+
+            Decode = decodeFrom.Select(c => c.ToString()).ToArray();
+
+            if (Decode.Length == 0) throw new ArgumentException("CharMap decodeFrom cannot be empty, encodeTo was: " + Encode);
+
+            if (Decode.Contains(Encode))
+            {
+                return;
+            }
+
+            throw new ArgumentException(
+                "CharMap decodeFrom must include encodeTo. encodeTo was: '" + Encode + "', decodeFrom was: '" + string.Concat(Decode) + "'"
+            );
+        }
+
+#pragma warning disable CA1051 // Do not declare visible instance fields
+        /// <summary>
+        ///     Encode
+        /// </summary>
+        public readonly string? Encode;
+
+        /// <summary>
+        ///     Decode
+        /// </summary>
+        public readonly string[]? Decode;
+#pragma warning restore CA1051 // Do not declare visible instance fields
+    }
+
+    #endregion CharMap struct
+
     private void EnsureAlphabetIndexed()
     {
-        if (_index != null) return;
+        if (_index is not null) return;
 
         var indexKey = ( IsCaseSensitive ? "S" : "I" )
-          + string.Join("", _alphabet.Select(t => t.Encode))
+          + string.Concat(_alphabet.Select(t => t.Encode))
           + "_"
-          + string.Join("", _alphabet.SelectMany(t => t.Decode ?? Array.Empty<string>()).Select(c => c));
+          + string.Concat(_alphabet.SelectMany(t => t.Decode ?? []).Select(c => c));
 
         if (!Indexes.TryGetValue(indexKey, out var cidx))
         {
@@ -308,7 +338,7 @@ public class Base32Url
                     cidx = new(_alphabet.Length, equality);
                     for (var i = 0; i < _alphabet.Length; i++)
                     {
-                        foreach (var c in ( _alphabet[i].Decode ?? Array.Empty<string>() ).Select(c => c))
+                        foreach (var c in ( _alphabet[i].Decode ?? [] ).Select(c => c))
                         {
                             cidx[c] = (uint)i;
                         }
@@ -322,62 +352,13 @@ public class Base32Url
         _index = cidx;
     }
 
-    #region CharMap struct
+    private readonly CharMap[] _alphabet;
+    private Dictionary<string, uint>? _index;
 
-    #pragma warning disable CA1815 // Override equals and operator equals on value types
-    #pragma warning disable CA1034 // Nested types should not be visible
-    /// <summary>
-    ///     CharMap
-    /// </summary>
-    public struct CharMap
-        #pragma warning restore CA1034 // Nested types should not be visible
-        #pragma warning restore CA1815 // Override equals and operator equals on value types
-    {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="CharMap" /> struct.
-        /// </summary>
-        /// <param name="encodeTo">The encode to.</param>
-        /// <param name="decodeFrom">The decode from.</param>
-        public CharMap(char encodeTo, IEnumerable<char> decodeFrom)
-        {
-            Encode = encodeTo.ToString();
+    // alphabets may be used with varying case sensitivity, thus index must not ignore case
+    private static readonly Dictionary<string, Dictionary<string, uint>> Indexes = new(2, StringComparer.Ordinal);
 
-            if (decodeFrom == null)
-            {
-                throw new ArgumentException("CharMap decodeFrom cannot be null, encodeTo was: " + Encode);
-            }
-
-            Decode = decodeFrom.Select(c => c.ToString()).ToArray();
-
-            if (Decode.Length == 0)
-            {
-                throw new ArgumentException("CharMap decodeFrom cannot be empty, encodeTo was: " + Encode);
-            }
-
-            if (!Decode.Contains(Encode))
-            {
-                throw new ArgumentException(
-                    "CharMap decodeFrom must include encodeTo. encodeTo was: '" + Encode + "', decodeFrom was: '" + string.Join("", Decode) + "'"
-                );
-            }
-        }
-
-        #pragma warning disable CA1051 // Do not declare visible instance fields
-        /// <summary>
-        ///     Encode
-        /// </summary>
-        public readonly string? Encode;
-
-        /// <summary>
-        ///     Decode
-        /// </summary>
-        public readonly string[]? Decode;
-        #pragma warning restore CA1051 // Do not declare visible instance fields
-    }
-
-    #endregion CharMap struct
-
-    #pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1051 // Do not declare visible instance fields
     /// <summary>
     ///     PaddingChar
     /// </summary>
@@ -397,5 +378,8 @@ public class Base32Url
     ///     IgnoreWhiteSpaceWhenDecoding
     /// </summary>
     public bool IgnoreWhiteSpaceWhenDecoding;
-    #pragma warning restore CA1051 // Do not declare visible instance fields
+
+    [GeneratedRegex("\\s+")]
+    private static partial Regex MyRegex();
+#pragma warning restore CA1051 // Do not declare visible instance fields
 }

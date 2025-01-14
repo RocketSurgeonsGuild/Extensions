@@ -1,5 +1,7 @@
 using FakeItEasy;
+
 using FluentAssertions;
+
 using Rocket.Surgery.Extensions.Tests.Fixtures;
 using Rocket.Surgery.Reflection;
 
@@ -12,19 +14,27 @@ namespace Rocket.Surgery.Extensions.Tests;
 
 public class InjectableMethodTests
 {
-    public static class MethodFuncTestStatic
+    [Test]
+    public void HandlesInheritedTypes()
     {
-        public static void Execute(IConfigured1 configured1)
-        {
-            ArgumentNullException.ThrowIfNull(configured1);
-        }
+        var serviceProviderMock = A.Fake<IServiceProvider>();
+        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
+        A.Fake<MethodFuncTest2>();
+        var a = () =>
+                {
+                    InjectableMethodBuilder
+                       .Create<MethodFuncTest2>(nameof(MethodFuncTest2.Execute))
+                       .WithParameter<IConfigured1>()
+                       .Compile();
+                };
+        a.Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void HandlesInheritedValues()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
-        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
         var methodFuncTest = A.Fake<MethodFuncTest>();
         var action = InjectableMethodBuilder
                     .Create<MethodFuncTest>(nameof(MethodFuncTest.Execute))
@@ -44,26 +54,10 @@ public class InjectableMethodTests
     }
 
     [Test]
-    public void HandlesInheritedTypes()
-    {
-        var serviceProviderMock = A.Fake<IServiceProvider>();
-        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
-        A.Fake<MethodFuncTest2>();
-        var a = () =>
-                {
-                    InjectableMethodBuilder
-                       .Create<MethodFuncTest2>(nameof(MethodFuncTest2.Execute))
-                       .WithParameter<IConfigured1>()
-                       .Compile();
-                };
-        a.Should().Throw<ArgumentException>();
-    }
-
-    [Test]
     public void HandlesOutheritedTypes()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
-        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
         var methodFuncTest = A.Fake<MethodFuncTest3>();
         var action = InjectableMethodBuilder
                     .Create<MethodFuncTest3>(nameof(MethodFuncTest3.Execute))
@@ -75,12 +69,11 @@ public class InjectableMethodTests
         A.CallTo(() => serviceProviderMock.GetService(A<Type>.Ignored)).MustNotHaveHappened();
     }
 
-
     [Test]
     public void HandlesOutheritedTypes2()
     {
         var serviceProviderMock = A.Fake<IServiceProvider>();
-        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null!);
+        A.CallTo(() => serviceProviderMock.GetService(A<Type>._)).Returns(null);
         var methodFuncTest = A.Fake<MethodFuncTest3>();
         var action = InjectableMethodBuilder
                     .Create<MethodFuncTest3>(nameof(MethodFuncTest3.Execute2))
@@ -105,12 +98,6 @@ public class InjectableMethodTests
 
         A.CallTo(() => serviceProviderMock.GetService(typeof(IConfigured1))).MustHaveHappened();
     }
-
-    public interface IConfigured1Sub : IConfigured1 { }
-
-    private class Configured1 : IConfigured1 { }
-
-    private class Configured1Sub : IConfigured1Sub { }
 
     public abstract class AbstractBase { }
 
@@ -137,4 +124,15 @@ public class InjectableMethodTests
 
         public virtual void Execute2(AbstractBase configured1) { }
     }
+
+    public static class MethodFuncTestStatic
+    {
+        public static void Execute(IConfigured1 configured1) => ArgumentNullException.ThrowIfNull(configured1);
+    }
+
+    public interface IConfigured1Sub : IConfigured1 { }
+
+    private class Configured1 : IConfigured1 { }
+
+    private class Configured1Sub : IConfigured1Sub { }
 }

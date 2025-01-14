@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+
 using Newtonsoft.Json;
 
 namespace Rocket.Surgery.Binding;
@@ -9,13 +10,6 @@ namespace Rocket.Surgery.Binding;
 [PublicAPI]
 public static class JsonBinderExtensions
 {
-    private static IEnumerable<KeyValuePair<string, string?>> GetValues(IConfiguration configuration)
-    {
-        return configuration
-              .AsEnumerable(true)
-              .Where(x => x.Value != null);
-    }
-
     /// <summary>
     ///     Bind the values to the given configuration
     /// </summary>
@@ -102,4 +96,8 @@ public static class JsonBinderExtensions
 
         return binder.Populate(value, GetValues(configuration), serializer);
     }
+
+    private static IEnumerable<KeyValuePair<string, string?>> GetValues(IConfiguration configuration) => configuration
+        .AsEnumerable(true)
+        .Where(x => x.Value is not null);
 }

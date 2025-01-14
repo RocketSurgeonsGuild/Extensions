@@ -1,8 +1,8 @@
 using System.Diagnostics;
+
 using Microsoft.Extensions.Logging;
 
-#pragma warning disable CA2254
-#pragma warning disable CA1848
+#pragma warning disable CA2254, CA1848
 // ReSharper disable TemplateIsNotCompileTimeConstantProblem
 namespace Rocket.Surgery.Extensions.Logging;
 
@@ -11,31 +11,6 @@ namespace Rocket.Surgery.Extensions.Logging;
 /// </summary>
 public static class LoggingAbstractionsExtensions
 {
-    /// <summary>
-    ///     Times the trace.
-    /// </summary>
-    /// <param name="logger">The logger.</param>
-    /// <param name="message">The message.</param>
-    /// <param name="args">The arguments.</param>
-    /// <returns>IDisposable.</returns>
-    public static IDisposable TimeTrace(this ILogger logger, string message, params object[] args)
-    {
-        ArgumentNullException.ThrowIfNull(logger);
-
-        if (!logger.IsEnabled(LogLevel.Trace)) return NoopDisposable.Instance;
-
-        var scope = logger.BeginScope(new { });
-        logger.LogTrace($"Starting: {message}", args);
-        return new Disposable(
-            scope,
-            elapsed =>
-            {
-                var a = args.Concat([elapsed]).ToArray();
-                logger.LogTrace($"Finished: {message} in {{ElapsedMilliseconds}}ms", a);
-            }
-        );
-    }
-
     /// <summary>
     ///     Times the debug.
     /// </summary>
@@ -86,13 +61,29 @@ public static class LoggingAbstractionsExtensions
         );
     }
 
-    private class NoopDisposable : IDisposable
+    /// <summary>
+    ///     Times the trace.
+    /// </summary>
+    /// <param name="logger">The logger.</param>
+    /// <param name="message">The message.</param>
+    /// <param name="args">The arguments.</param>
+    /// <returns>IDisposable.</returns>
+    public static IDisposable TimeTrace(this ILogger logger, string message, params object[] args)
     {
-        public static readonly NoopDisposable Instance = new();
+        ArgumentNullException.ThrowIfNull(logger);
 
-        private NoopDisposable() { }
+        if (!logger.IsEnabled(LogLevel.Trace)) return NoopDisposable.Instance;
 
-        public void Dispose() { }
+        var scope = logger.BeginScope(new { });
+        logger.LogTrace($"Starting: {message}", args);
+        return new Disposable(
+            scope,
+            elapsed =>
+            {
+                var a = args.Concat([elapsed]).ToArray();
+                logger.LogTrace($"Finished: {message} in {{ElapsedMilliseconds}}ms", a);
+            }
+        );
     }
 
     /// <summary>
@@ -102,10 +93,6 @@ public static class LoggingAbstractionsExtensions
     /// <seealso cref="IDisposable" />
     private class Disposable : IDisposable
     {
-        private readonly IDisposable _disposable;
-        private readonly Action<long> _action;
-        private readonly Stopwatch _sw;
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="Disposable" /> class.
         /// </summary>
@@ -128,5 +115,17 @@ public static class LoggingAbstractionsExtensions
             _action(_sw.ElapsedMilliseconds);
             _disposable.Dispose();
         }
+
+        private readonly Action<long> _action;
+        private readonly IDisposable _disposable;
+        private readonly Stopwatch _sw;
+    }
+
+    private class NoopDisposable : IDisposable
+    {
+        public void Dispose() { }
+        public static readonly NoopDisposable Instance = new();
+
+        private NoopDisposable() { }
     }
 }
