@@ -294,10 +294,7 @@ public partial class Base32Url
 
             if (Decode.Length == 0) throw new ArgumentException("CharMap decodeFrom cannot be empty, encodeTo was: " + Encode);
 
-            if (Decode.Contains(Encode))
-            {
-                return;
-            }
+            if (Decode.Contains(Encode)) return;
 
             throw new ArgumentException(
                 "CharMap decodeFrom must include encodeTo. encodeTo was: '" + Encode + "', decodeFrom was: '" + string.Concat(Decode) + "'"
@@ -321,7 +318,7 @@ public partial class Base32Url
 
     private void EnsureAlphabetIndexed()
     {
-        if (_index is not null) return;
+        if (_index is { }) return;
 
         var indexKey = ( IsCaseSensitive ? "S" : "I" )
           + string.Concat(_alphabet.Select(t => t.Encode))

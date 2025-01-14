@@ -98,6 +98,6 @@ public static class JsonBinderExtensions
     }
 
     private static IEnumerable<KeyValuePair<string, string?>> GetValues(IConfiguration configuration) => configuration
-        .AsEnumerable(true)
-        .Where(x => x.Value is not null);
+                                                                                                        .AsEnumerable(true)
+                                                                                                        .Where(x => x.Value is { });
 }

@@ -68,38 +68,38 @@ public class JsonBinder(string separator, JsonSerializer serializer) : IJsonBind
     /// <inheritdoc />
     public IEnumerable<KeyValuePair<string, string?>> From<T>(T value)
         where T : class => JObject
-        .FromObject(value, _serializer)
-        .Descendants()
-        .Where(p => !p.Any())
-        .OfType<JValue>()
-        .Select(item => new KeyValuePair<string, string?>(GetKey(item), item.ToString()));
+                          .FromObject(value, _serializer)
+                          .Descendants()
+                          .Where(p => !p.Any())
+                          .OfType<JValue>()
+                          .Select(item => new KeyValuePair<string, string?>(GetKey(item), item.ToString()));
 
     /// <inheritdoc />
     public IEnumerable<KeyValuePair<string, string?>> From<T>(T value, JsonSerializer serializer)
         where T : class => JObject
-        .FromObject(value, serializer)
-        .Descendants()
-        .Where(p => !p.Any())
-        .OfType<JValue>()
-        .Select(item => new KeyValuePair<string, string?>(GetKey(item), item.ToString()));
+                          .FromObject(value, serializer)
+                          .Descendants()
+                          .Where(p => !p.Any())
+                          .OfType<JValue>()
+                          .Select(item => new KeyValuePair<string, string?>(GetKey(item), item.ToString()));
 
     /// <inheritdoc />
     public IEnumerable<KeyValuePair<string, JValue>> GetValues<T>(T value)
         where T : class => JObject
-        .FromObject(value, _serializer)
-        .Descendants()
-        .Where(p => !p.Any())
-        .OfType<JValue>()
-        .Select(item => new KeyValuePair<string, JValue>(GetKey(item), item));
+                          .FromObject(value, _serializer)
+                          .Descendants()
+                          .Where(p => !p.Any())
+                          .OfType<JValue>()
+                          .Select(item => new KeyValuePair<string, JValue>(GetKey(item), item));
 
     /// <inheritdoc />
     public IEnumerable<KeyValuePair<string, JValue>> GetValues<T>(T value, JsonSerializer serializer)
         where T : class => JObject
-        .FromObject(value, serializer)
-        .Descendants()
-        .Where(p => !p.Any())
-        .OfType<JValue>()
-        .Select(item => new KeyValuePair<string, JValue>(GetKey(item), item));
+                          .FromObject(value, serializer)
+                          .Descendants()
+                          .Where(p => !p.Any())
+                          .OfType<JValue>()
+                          .Select(item => new KeyValuePair<string, JValue>(GetKey(item), item));
 
     /// <inheritdoc />
     public JObject Parse(IEnumerable<KeyValuePair<string, string?>> values)
@@ -119,7 +119,7 @@ public class JsonBinder(string separator, JsonSerializer serializer) : IJsonBind
 
             foreach ((var key, var next) in zippedKeys)
             {
-                root = int.TryParse(next, out _)  ?   SetValueToToken(root, key, new JArray())   :   SetValueToToken(root, key, new JObject());
+                root = int.TryParse(next, out _) ? SetValueToToken(root, key, new JArray()) : SetValueToToken(root, key, new JObject());
             }
 
             SetValueToToken(root, prop, new JValue(item.Value));
@@ -150,7 +150,7 @@ public class JsonBinder(string separator, JsonSerializer serializer) : IJsonBind
     private string GetKey(JToken token)
     {
         var items = new Stack<string?>();
-        while (token.Parent is not null)
+        while (token.Parent is { })
         {
             if (token.Parent is JArray arr) items.Push(arr.IndexOf(token).ToString());
 
@@ -166,10 +166,7 @@ public class JsonBinder(string separator, JsonSerializer serializer) : IJsonBind
     {
         if (root is JArray arr)
         {
-            if (int.TryParse(key, out var index))
-            {
-                return  arr.Count <= index  ?   null   :  arr[index];
-            }
+            if (int.TryParse(key, out var index)) return arr.Count <= index ? null : arr[index];
 #pragma warning disable CA2201
             throw new IndexOutOfRangeException(key);
 #pragma warning restore CA2201

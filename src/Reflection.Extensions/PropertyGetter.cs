@@ -28,8 +28,8 @@ public class PropertyGetter(string? separator = null, StringComparison compariso
     public T Get<T>(object instance, string path)
     {
         ArgumentNullException.ThrowIfNull(instance);
-        return  TryGet<T>(instance, path, out var propertyValue) 
-            ?  propertyValue 
+        return TryGet<T>(instance, path, out var propertyValue)
+            ? propertyValue
             : throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -42,8 +42,8 @@ public class PropertyGetter(string? separator = null, StringComparison compariso
     public object Get(object instance, string path)
     {
         ArgumentNullException.ThrowIfNull(instance);
-        return  TryGet(instance, path, out var propertyValue) 
-            ?  propertyValue 
+        return TryGet(instance, path, out var propertyValue)
+            ? propertyValue
             : throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -56,8 +56,8 @@ public class PropertyGetter(string? separator = null, StringComparison compariso
     public Expression GetExpression(object instance, string path)
     {
         ArgumentNullException.ThrowIfNull(instance);
-        return  TryGetExpression(instance, path, out var expression) 
-            ?  expression 
+        return TryGetExpression(instance, path, out var expression)
+            ? expression
             : throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 
@@ -100,8 +100,8 @@ public class PropertyGetter(string? separator = null, StringComparison compariso
     public Type GetPropertyType(object instance, string path)
     {
         ArgumentNullException.ThrowIfNull(instance);
-        return  TryGetPropertyType(instance, path, out var propertyValue) 
-            ?  propertyValue 
+        return TryGetPropertyType(instance, path, out var propertyValue)
+            ? propertyValue
             : throw new ArgumentOutOfRangeException(nameof(path), $"Could not find property or field '{path}'.");
     }
 

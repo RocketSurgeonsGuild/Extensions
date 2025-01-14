@@ -390,7 +390,7 @@ internal class ExecuteScopedOptional<T1, T2, T3, T4, T5, T6>(IServiceScopeFactor
             f
         ),
         CancellationToken.None
-        );
+    );
 
     public Task<TResult> Invoke<TResult>(Func<T1?, T2?, T3?, T4?, T5?, T6?, Task<TResult>> action) => Invoke(
         (
@@ -410,5 +410,5 @@ internal class ExecuteScopedOptional<T1, T2, T3, T4, T5, T6>(IServiceScopeFactor
             f
         ),
         CancellationToken.None
-        );
+    );
 }

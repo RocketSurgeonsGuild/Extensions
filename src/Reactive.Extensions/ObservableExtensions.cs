@@ -1873,5 +1873,5 @@ public static class ObservableExtensions
     /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
     /// <param name="source">The source observable sequence</param>
     /// <returns>IObservable{TSource}.</returns>
-    public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> source) => source.Where(x => x is not null);
+    public static IObservable<TSource> WhereNotNull<TSource>(this IObservable<TSource> source) => source.Where(x => x is { });
 }
