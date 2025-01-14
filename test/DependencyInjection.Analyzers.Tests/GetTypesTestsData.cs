@@ -43,17 +43,17 @@ public partial class AssemblyScanningTests
             var reflectionRequests = GetReflectionRequests().ToHashSet();
             var serviceDescriptorRequests = GetServiceDescriptorRequests().ToHashSet();
 
-            foreach (var (Expression, TypeName) in assemblyRequests)
+            foreach ((var Expression, var TypeName) in assemblyRequests)
             {
                 items.Add(CreateTest($"assembly: {TypeName}", [$"provider.GetAssemblies({Expression});"]));
             }
 
-            foreach (var (Expression, TypeName) in reflectionRequests)
+            foreach ((var Expression, var TypeName) in reflectionRequests)
             {
                 items.Add(CreateTest($"reflection: {TypeName}", [$"provider.GetTypes({Expression});"]));
             }
 
-            foreach (var (Expression, TypeName) in serviceDescriptorRequests)
+            foreach ((var Expression, var TypeName) in serviceDescriptorRequests)
             {
                 items.Add(CreateTest($"services: {TypeName}", [$"provider.Scan(services, {Expression});"]));
             }
