@@ -7,16 +7,6 @@
             "matchCategories": ["js"],
             "automerge": true,
             "labels": [":truck: private-dependencies"]
-        },
-        {
-            "description": "dotnet monorepo",
-            "enabled": false,
-            "matchSourceUrls": [
-                "https://github.com/dotnet/aspnetcore{/,}**",
-                "https://github.com/dotnet/efcore{/,}**",
-                "https://github.com/dotnet/extensions{/,}**",
-                "https://github.com/dotnet/runtime{/,}**"
-            ]
         }
     ]
 }
