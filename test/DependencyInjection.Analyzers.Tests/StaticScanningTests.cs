@@ -1786,6 +1786,7 @@ public class Service : IService { }
     }
 
     [Test]
+    [MatrixDataSource]
     public async Task Should_Handle_Private_Generic_Classes_Within_Multiple_Dependencies(
         [Matrix(
             0,
@@ -1887,6 +1888,7 @@ namespace TestProject
     }
 
     [Test]
+    [MatrixDataSource]
     public async Task Should_Handle_Private_Classes_Within_Multiple_Dependencies(
         [Matrix(
             0,
@@ -1983,6 +1985,7 @@ namespace TestProject
     }
 
     [Test]
+    [MatrixDataSource]
     public async Task Should_Have_Correct_Lifetime(
         [Matrix(ServiceLifetime.Scoped, ServiceLifetime.Singleton, ServiceLifetime.Transient)]
         ServiceLifetime serviceLifetime
@@ -2042,6 +2045,7 @@ namespace TestProject
     }
 
     [Test]
+    [MatrixDataSource]
     public async Task Should_Filter_WithAttribute([Matrix(true, false)] bool useTypeof)
     {
         var result = await Builder
@@ -2096,6 +2100,7 @@ namespace TestProject
     }
 
     [Test]
+    [MatrixDataSource]
     public async Task Should_Filter_WithoutAttribute([Matrix(true, false)] bool useTypeof)
     {
         var result = await Builder
@@ -2315,6 +2320,7 @@ namespace TestProject
     }
 
     [Test]
+    [MatrixDataSource]
     public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyOf([Matrix(true, false)] bool useTypeof)
     {
         var dependencies = new List<GeneratorTestResults>();
@@ -2410,6 +2416,7 @@ namespace TestProject
     }
 
     [Test]
+    [MatrixDataSource]
     public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyDependenciesOf(
         [Matrix("ServiceA", "ServiceB", "ServiceC")]
         string className,
