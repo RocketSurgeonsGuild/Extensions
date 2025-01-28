@@ -11,12 +11,12 @@
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" VersionOverride="4.12.0" PrivateAssets="all"/>
-    <PackageReference Include="PolySharp" PrivateAssets="all"/>
-    <PackageReference Include="System.Text.Json" VersionOverride="8.0.0" PrivateAssets="all"/>
-    <PackageReference Include="JetBrains.Annotations" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" VersionOverride="4.12.0" PrivateAssets="all" />
+    <PackageReference Include="PolySharp" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" VersionOverride="8.0.5" PrivateAssets="all" />
+    <PackageReference Include="JetBrains.Annotations" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\DependencyInjection.Analyzers\**\*.cs" Exclude="..\DependencyInjection.Analyzers\obj\**\*.cs"/>
+    <Compile Include="..\DependencyInjection.Analyzers\**\*.cs" Exclude="..\DependencyInjection.Analyzers\obj\**\*.cs" />
   </ItemGroup>
 </Project>
