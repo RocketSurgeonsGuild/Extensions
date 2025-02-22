@@ -1,5 +1,4 @@
 ﻿using System.Reactive.Linq;
-using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using Rocket.Surgery.Extensions.Testing;
 
@@ -20,7 +19,7 @@ public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
         observable.RealThrottle(TimeSpan.FromTicks(20), scheduler: _scheduler).Subscribe(receiver);
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 
     [Test]
@@ -34,7 +33,7 @@ public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
         observable.RealThrottle(TimeSpan.FromTicks(5), false, true, _scheduler).Subscribe(receiver.CreateUnitObserver());
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 
     [Test]
@@ -50,7 +49,7 @@ public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
            .Subscribe(receiver);
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 
     [Test]
@@ -66,7 +65,7 @@ public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
            .Subscribe(receiver);
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 
     [Test]
@@ -82,6 +81,6 @@ public class RealThrottleTests() : LoggerTest(Defaults.LoggerTest)
            .Subscribe(receiver);
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 }

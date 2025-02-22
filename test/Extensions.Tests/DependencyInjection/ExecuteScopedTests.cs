@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.Extensions.Testing;
@@ -32,11 +31,11 @@ public class ExecuteScopedTests : LoggerTest
 
         List<Type> services = [typeof(Service1), typeof(Service2), typeof(Service3), typeof(Service4), typeof(Service5), typeof(Service6)];
 
-        foreach (( var serviceType, var implementationType ) in interfaces.Join(
+        foreach ((var serviceType, var implementationType) in interfaces.Join(
                      implementations,
                      z => z.Name.Substring(1),
                      z => z.Name,
-                     (serviceType, implementationType) => ( serviceType, implementationType )
+                     (serviceType, implementationType) => (serviceType, implementationType)
                  ))
         {
             yield return () => (
@@ -72,10 +71,10 @@ public class ExecuteScopedTests : LoggerTest
     public async Task Work_With_One_Service()
     {
         var executor = _serviceProvider.WithScoped<Service1>();
-        executor.Invoke(s => s.ScopedValue).Value.Should().Be(0);
-        executor.Invoke(s => { s.ScopedValue.Value.Should().Be(1); });
-        ( await executor.Invoke(async s => s.ScopedValue.Value).ConfigureAwait(false) ).Should().Be(2);
-        await executor.Invoke(async s => { s.ScopedValue.Value.Should().Be(3); }).ConfigureAwait(false);
+        executor.Invoke(s => s.ScopedValue).Value.ShouldBe(0);
+        executor.Invoke(s => { s.ScopedValue.Value.ShouldBe(1); });
+        (await executor.Invoke(async s => s.ScopedValue.Value).ConfigureAwait(false)).ShouldBe(2);
+        await executor.Invoke(async s => { s.ScopedValue.Value.ShouldBe(3); }).ConfigureAwait(false);
     }
 
     [Test]
@@ -86,36 +85,34 @@ public class ExecuteScopedTests : LoggerTest
            .Invoke(
                 (s1, s2) =>
                 {
-                    s2.Service.Should().BeSameAs(s1);
+                    s2.Service.ShouldBeSameAs(s1);
                     return s2.Service.ScopedValue;
                 }
             )
-           .Value.Should()
-           .Be(0);
+           .Value.ShouldBe(0);
         executor.Invoke(
             (s1, s2) =>
             {
-                s2.Service.Should().BeSameAs(s1);
-                s1.ScopedValue.Value.Should().Be(1);
+                s2.Service.ShouldBeSameAs(s1);
+                s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        ( await executor
+        (await executor
                .Invoke(
                     async (s1, s2) =>
                     {
-                        s2.Service.Should().BeSameAs(s1);
+                        s2.Service.ShouldBeSameAs(s1);
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false) )
-           .Should()
-           .Be(2);
+               .ConfigureAwait(false))
+           .ShouldBe(2);
         await executor
              .Invoke(
                   async (s1, s2) =>
                   {
-                      s2.Service.Should().BeSameAs(s1);
-                      s1.ScopedValue.Value.Should().Be(3);
+                      s2.Service.ShouldBeSameAs(s1);
+                      s1.ScopedValue.Value.ShouldBe(3);
                   }
               )
              .ConfigureAwait(false);
@@ -129,40 +126,38 @@ public class ExecuteScopedTests : LoggerTest
            .Invoke(
                 (s1, s2, s3) =>
                 {
-                    s3.Service.Should().BeSameAs(s2);
-                    s2.Service.Should().BeSameAs(s1);
+                    s3.Service.ShouldBeSameAs(s2);
+                    s2.Service.ShouldBeSameAs(s1);
                     return s2.Service.ScopedValue;
                 }
             )
-           .Value.Should()
-           .Be(0);
+           .Value.ShouldBe(0);
         executor.Invoke(
             (s1, s2, s3) =>
             {
-                s3.Service.Should().BeSameAs(s2);
-                s2.Service.Should().BeSameAs(s1);
-                s1.ScopedValue.Value.Should().Be(1);
+                s3.Service.ShouldBeSameAs(s2);
+                s2.Service.ShouldBeSameAs(s1);
+                s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        ( await executor
+        (await executor
                .Invoke(
                     async (s1, s2, s3) =>
                     {
-                        s3.Service.Should().BeSameAs(s2);
-                        s2.Service.Should().BeSameAs(s1);
+                        s3.Service.ShouldBeSameAs(s2);
+                        s2.Service.ShouldBeSameAs(s1);
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false) )
-           .Should()
-           .Be(2);
+               .ConfigureAwait(false))
+           .ShouldBe(2);
         await executor
              .Invoke(
                   async (s1, s2, s3) =>
                   {
-                      s3.Service.Should().BeSameAs(s2);
-                      s2.Service.Should().BeSameAs(s1);
-                      s1.ScopedValue.Value.Should().Be(3);
+                      s3.Service.ShouldBeSameAs(s2);
+                      s2.Service.ShouldBeSameAs(s1);
+                      s1.ScopedValue.Value.ShouldBe(3);
                   }
               )
              .ConfigureAwait(false);
@@ -176,44 +171,42 @@ public class ExecuteScopedTests : LoggerTest
            .Invoke(
                 (s1, s2, s3, s4) =>
                 {
-                    s4.Service.Should().BeSameAs(s3);
-                    s3.Service.Should().BeSameAs(s2);
-                    s2.Service.Should().BeSameAs(s1);
+                    s4.Service.ShouldBeSameAs(s3);
+                    s3.Service.ShouldBeSameAs(s2);
+                    s2.Service.ShouldBeSameAs(s1);
                     return s2.Service.ScopedValue;
                 }
             )
-           .Value.Should()
-           .Be(0);
+           .Value.ShouldBe(0);
         executor.Invoke(
             (s1, s2, s3, s4) =>
             {
-                s4.Service.Should().BeSameAs(s3);
-                s3.Service.Should().BeSameAs(s2);
-                s2.Service.Should().BeSameAs(s1);
-                s1.ScopedValue.Value.Should().Be(1);
+                s4.Service.ShouldBeSameAs(s3);
+                s3.Service.ShouldBeSameAs(s2);
+                s2.Service.ShouldBeSameAs(s1);
+                s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        ( await executor
+        (await executor
                .Invoke(
                     async (s1, s2, s3, s4) =>
                     {
-                        s4.Service.Should().BeSameAs(s3);
-                        s3.Service.Should().BeSameAs(s2);
-                        s2.Service.Should().BeSameAs(s1);
+                        s4.Service.ShouldBeSameAs(s3);
+                        s3.Service.ShouldBeSameAs(s2);
+                        s2.Service.ShouldBeSameAs(s1);
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false) )
-           .Should()
-           .Be(2);
+               .ConfigureAwait(false))
+           .ShouldBe(2);
         await executor
              .Invoke(
                   async (s1, s2, s3, s4) =>
                   {
-                      s4.Service.Should().BeSameAs(s3);
-                      s3.Service.Should().BeSameAs(s2);
-                      s2.Service.Should().BeSameAs(s1);
-                      s1.ScopedValue.Value.Should().Be(3);
+                      s4.Service.ShouldBeSameAs(s3);
+                      s3.Service.ShouldBeSameAs(s2);
+                      s2.Service.ShouldBeSameAs(s1);
+                      s1.ScopedValue.Value.ShouldBe(3);
                   }
               )
              .ConfigureAwait(false);
@@ -227,48 +220,46 @@ public class ExecuteScopedTests : LoggerTest
            .Invoke(
                 (s1, s2, s3, s4, s5) =>
                 {
-                    s5.Service.Should().BeSameAs(s4);
-                    s4.Service.Should().BeSameAs(s3);
-                    s3.Service.Should().BeSameAs(s2);
-                    s2.Service.Should().BeSameAs(s1);
+                    s5.Service.ShouldBeSameAs(s4);
+                    s4.Service.ShouldBeSameAs(s3);
+                    s3.Service.ShouldBeSameAs(s2);
+                    s2.Service.ShouldBeSameAs(s1);
                     return s2.Service.ScopedValue;
                 }
             )
-           .Value.Should()
-           .Be(0);
+           .Value.ShouldBe(0);
         executor.Invoke(
             (s1, s2, s3, s4, s5) =>
             {
-                s5.Service.Should().BeSameAs(s4);
-                s4.Service.Should().BeSameAs(s3);
-                s3.Service.Should().BeSameAs(s2);
-                s2.Service.Should().BeSameAs(s1);
-                s1.ScopedValue.Value.Should().Be(1);
+                s5.Service.ShouldBeSameAs(s4);
+                s4.Service.ShouldBeSameAs(s3);
+                s3.Service.ShouldBeSameAs(s2);
+                s2.Service.ShouldBeSameAs(s1);
+                s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        ( await executor
+        (await executor
                .Invoke(
                     async (s1, s2, s3, s4, s5) =>
                     {
-                        s5.Service.Should().BeSameAs(s4);
-                        s4.Service.Should().BeSameAs(s3);
-                        s3.Service.Should().BeSameAs(s2);
-                        s2.Service.Should().BeSameAs(s1);
+                        s5.Service.ShouldBeSameAs(s4);
+                        s4.Service.ShouldBeSameAs(s3);
+                        s3.Service.ShouldBeSameAs(s2);
+                        s2.Service.ShouldBeSameAs(s1);
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false) )
-           .Should()
-           .Be(2);
+               .ConfigureAwait(false))
+           .ShouldBe(2);
         await executor
              .Invoke(
                   async (s1, s2, s3, s4, s5) =>
                   {
-                      s5.Service.Should().BeSameAs(s4);
-                      s4.Service.Should().BeSameAs(s3);
-                      s3.Service.Should().BeSameAs(s2);
-                      s2.Service.Should().BeSameAs(s1);
-                      s1.ScopedValue.Value.Should().Be(3);
+                      s5.Service.ShouldBeSameAs(s4);
+                      s4.Service.ShouldBeSameAs(s3);
+                      s3.Service.ShouldBeSameAs(s2);
+                      s2.Service.ShouldBeSameAs(s1);
+                      s1.ScopedValue.Value.ShouldBe(3);
                   }
               )
              .ConfigureAwait(false);
@@ -282,52 +273,50 @@ public class ExecuteScopedTests : LoggerTest
            .Invoke(
                 (s1, s2, s3, s4, s5, s6) =>
                 {
-                    s6.Service.Should().BeSameAs(s5);
-                    s5.Service.Should().BeSameAs(s4);
-                    s4.Service.Should().BeSameAs(s3);
-                    s3.Service.Should().BeSameAs(s2);
-                    s2.Service.Should().BeSameAs(s1);
+                    s6.Service.ShouldBeSameAs(s5);
+                    s5.Service.ShouldBeSameAs(s4);
+                    s4.Service.ShouldBeSameAs(s3);
+                    s3.Service.ShouldBeSameAs(s2);
+                    s2.Service.ShouldBeSameAs(s1);
                     return s2.Service.ScopedValue;
                 }
             )
-           .Value.Should()
-           .Be(0);
+           .Value.ShouldBe(0);
         executor.Invoke(
             (s1, s2, s3, s4, s5, s6) =>
             {
-                s6.Service.Should().BeSameAs(s5);
-                s5.Service.Should().BeSameAs(s4);
-                s4.Service.Should().BeSameAs(s3);
-                s3.Service.Should().BeSameAs(s2);
-                s2.Service.Should().BeSameAs(s1);
-                s1.ScopedValue.Value.Should().Be(1);
+                s6.Service.ShouldBeSameAs(s5);
+                s5.Service.ShouldBeSameAs(s4);
+                s4.Service.ShouldBeSameAs(s3);
+                s3.Service.ShouldBeSameAs(s2);
+                s2.Service.ShouldBeSameAs(s1);
+                s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        ( await executor
+        (await executor
                .Invoke(
                     async (s1, s2, s3, s4, s5, s6) =>
                     {
-                        s6.Service.Should().BeSameAs(s5);
-                        s5.Service.Should().BeSameAs(s4);
-                        s4.Service.Should().BeSameAs(s3);
-                        s3.Service.Should().BeSameAs(s2);
-                        s2.Service.Should().BeSameAs(s1);
+                        s6.Service.ShouldBeSameAs(s5);
+                        s5.Service.ShouldBeSameAs(s4);
+                        s4.Service.ShouldBeSameAs(s3);
+                        s3.Service.ShouldBeSameAs(s2);
+                        s2.Service.ShouldBeSameAs(s1);
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false) )
-           .Should()
-           .Be(2);
+               .ConfigureAwait(false))
+           .ShouldBe(2);
         await executor
              .Invoke(
                   async (s1, s2, s3, s4, s5, s6) =>
                   {
-                      s6.Service.Should().BeSameAs(s5);
-                      s5.Service.Should().BeSameAs(s4);
-                      s4.Service.Should().BeSameAs(s3);
-                      s3.Service.Should().BeSameAs(s2);
-                      s2.Service.Should().BeSameAs(s1);
-                      s1.ScopedValue.Value.Should().Be(3);
+                      s6.Service.ShouldBeSameAs(s5);
+                      s5.Service.ShouldBeSameAs(s4);
+                      s4.Service.ShouldBeSameAs(s3);
+                      s3.Service.ShouldBeSameAs(s2);
+                      s2.Service.ShouldBeSameAs(s1);
+                      s1.ScopedValue.Value.ShouldBe(3);
                   }
               )
              .ConfigureAwait(false);
@@ -336,7 +325,7 @@ public class ExecuteScopedTests : LoggerTest
     [Test]
     [MethodDataSource(nameof(ExecuteScopedTypes))]
     public async Task Should_Resolve_ExecuteScoped(Type serviceType, Type implementationType) =>
-        _serviceProvider.GetService(serviceType).Should().BeOfType(implementationType);
+        _serviceProvider.GetService(serviceType).ShouldBeOfType(implementationType);
 
     private class ScopedValue
     {

@@ -1,6 +1,5 @@
 #nullable disable
 using System.Reflection;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -209,7 +208,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_AutoProperty(BindDelegate @delegate)
+    public Task BindsTo_AutoProperty(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
 
@@ -219,21 +218,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (AutoProperty)@delegate(binder, typeof(AutoProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Value.Should().Be("123");
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_ReadonlyAutoProperty(BindDelegate @delegate)
+    public Task BindsTo_ReadonlyAutoProperty(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
 
@@ -243,21 +233,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ReadonlyAutoProperty)@delegate(binder, typeof(ReadonlyAutoProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Value.Should().Be("123");
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_PrivateSetterProperty(BindDelegate @delegate)
+    public Task BindsTo_PrivateSetterProperty(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
 
@@ -267,21 +248,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (PrivateSetterProperty)@delegate(binder, typeof(PrivateSetterProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Value.Should().Be("123");
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_ComplexProperties(BindDelegate @delegate)
+    public Task BindsTo_ComplexProperties(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
 
@@ -292,22 +264,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Value.Should().Be("123");
-        result.AutoProperty.Value.Should().Be("456");
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_ComplexProperties_CustomSep(BindDelegate @delegate)
+    public Task BindsTo_ComplexProperties_CustomSep(BindDelegate @delegate)
     {
         var binder = new JsonBinder("__");
 
@@ -318,22 +280,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Value.Should().Be("123");
-        result.AutoProperty.Value.Should().Be("456");
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_ComplexProperties_Null(BindDelegate @delegate)
+    public Task BindsTo_ComplexProperties_Null(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
 
@@ -343,22 +295,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Value.Should().Be("123");
-        result.AutoProperty.Should().BeNull();
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .Contain(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_ArrayProperties(BindDelegate @delegate)
+    public Task BindsTo_ArrayProperties(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
         var keyValuePairs = new[]
@@ -369,29 +311,13 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ArrayProperties)@delegate(binder, typeof(ArrayProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result
-           .Values.Should()
-           .BeEquivalentTo(
-                [
-                    new() { Value = "123" },
-                    new() { Value = "456" },
-                    new AutoProperty { Value = "789" },
-                ]
-            );
 
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_SimpleArrayProperties(BindDelegate @delegate)
+    public Task BindsTo_SimpleArrayProperties(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
         var keyValuePairs = new[]
@@ -402,21 +328,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (SimpleArrayProperties)@delegate(binder, typeof(SimpleArrayProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.Values.Should().BeEquivalentTo("123", "456", "789");
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_EnumerableProperties(BindDelegate @delegate)
+    public Task BindsTo_EnumerableProperties(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
         var keyValuePairs = new[]
@@ -427,29 +344,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (EnumerableProperties)@delegate(binder, typeof(EnumerableProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result
-           .Values.Should()
-           .BeEquivalentTo(
-                [
-                    new() { Value = "123" },
-                    new() { Value = "456" },
-                    new AutoProperty { Value = "789" },
-                ]
-            );
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_IListProperties(BindDelegate @delegate)
+    public Task BindsTo_IListProperties(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
         var keyValuePairs = new[]
@@ -459,30 +359,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
             new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (IListProperties)@delegate(binder, typeof(IListProperties), JsonBinder.DefaultSerializer, keyValuePairs);
-
-        result
-           .Values.Should()
-           .BeEquivalentTo(
-                [
-                    new() { Value = "123" },
-                    new() { Value = "456" },
-                    new AutoProperty { Value = "789" },
-                ]
-            );
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_ListProperties(BindDelegate @delegate)
+    public Task BindsTo_ListProperties(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
         var keyValuePairs = new[]
@@ -492,25 +374,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
             new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (ListProperties)@delegate(binder, typeof(ListProperties), JsonBinder.DefaultSerializer, keyValuePairs);
-
-        result
-           .Values.Should()
-           .BeEquivalentTo(
-                [
-                    new() { Value = "123" },
-                    new() { Value = "456" },
-                    new AutoProperty { Value = "789" },
-                ]
-            );
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
@@ -520,7 +384,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
 
         var values = binder.GetValues(new { a = new { b = new { value = "ABC" } } });
 
-        values.Should().Contain(x => x.Key == "a:b:value");
+        values.ShouldContain(x => x.Key == "a:b:value");
     }
 
     [Test]
@@ -530,12 +394,12 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
 
         var values = binder.GetValues(new { a = new { b = new { value = "ABC" } } });
 
-        values.Should().Contain(x => x.Key == "a__b__value");
+        values.ShouldContain(x => x.Key == "a__b__value");
     }
 
     [Test]
     [MethodDataSource(nameof(BindValues))]
-    public void BindsTo_ExtensionData(BindDelegate @delegate)
+    public Task BindsTo_ExtensionData(BindDelegate @delegate)
     {
         var binder = new JsonBinder();
 
@@ -550,30 +414,21 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ExtraProperties)@delegate(binder, typeof(ExtraProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        result.ComplexProperty.Value.Should().Be("123");
-        result.ComplexProperty.AutoProperty.Value.Should().Be("456");
-        result.ComplexProperty.CustomFields["something"].ToString().Should().Be("2123");
-        result.ComplexProperty.CustomFields["somethingelse"]["value"]!.ToString().Should().Be("2456");
+        result.ComplexProperty.Value.ShouldBe("123");
+        result.ComplexProperty.AutoProperty.Value.ShouldBe("456");
+        result.ComplexProperty.CustomFields["something"].ToString().ShouldBe("2123");
+        result.ComplexProperty.CustomFields["somethingelse"]["value"]!.ToString().ShouldBe("2456");
 
-        result.CustomFields.Should().NotBeEmpty();
-        result.CustomFields["something"].ToString().Should().Be("1123");
-        result.CustomFields["somethingelse"]["value"]!.ToString().Should().Be("1456");
+        result.CustomFields.ShouldNotBeEmpty();
+        result.CustomFields["something"].ToString().ShouldBe("1123");
+        result.CustomFields["somethingelse"]["value"]!.ToString().ShouldBe("1456");
 
-        Logger.Information(JsonConvert.SerializeObject(result.CustomFields));
-
-        binder
-           .From(result)
-           .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-           .Should()
-           .BeEquivalentTo(
-                keyValuePairs
-                   .Select(x => new KeyValuePair<string, string>(x.Key.ToLower(), x.Value))
-            );
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     [Test]
     [MethodDataSource(nameof(PopulateValues))]
-    public void Populates_Value(PopulateDelegate @delegate)
+    public Task Populates_Value(PopulateDelegate @delegate)
     {
         var binder = new JsonBinder();
 
@@ -596,14 +451,14 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
             ]
         );
 
-        result.A.Should().Be("123");
-        result.B.Should().Be(123);
+        result.A.ShouldBe("123");
+        result.B.ShouldBe(123);
 
-        result.ComplexProperty.Value.Should().Be("123");
-        result.ComplexProperty.CustomFields.Should().NotBeEmpty();
-        result.CustomFields.Should().NotBeEmpty();
+        result.ComplexProperty.Value.ShouldBe("123");
+        result.ComplexProperty.CustomFields.ShouldNotBeEmpty();
+        result.CustomFields.ShouldNotBeEmpty();
 
-        Logger.Information(JsonConvert.SerializeObject(result.CustomFields));
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId).HashParameters();
     }
 
     private class AutoProperty

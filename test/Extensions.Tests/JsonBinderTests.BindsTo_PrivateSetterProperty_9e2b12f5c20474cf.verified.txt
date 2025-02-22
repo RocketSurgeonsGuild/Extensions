@@ -1,0 +1,10 @@
+﻿{
+  result: {
+    Value: 123
+  },
+  bindingResult: [
+    {
+      Value: 123
+    }
+  ]
+}

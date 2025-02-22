@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Rocket.Surgery.Extensions.Testing;
 
 #pragma warning disable CS0649
@@ -14,8 +13,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(NullableTest)
            .GetProperty(nameof(NullableTest.Property))
            .GetNullability()
-           .Should()
-           .Be(Nullability.Nullable);
+           .ShouldBe(Nullability.Nullable);
     }
 
     [Test]
@@ -24,8 +22,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(NullableTest)
            .GetField(nameof(NullableTest._field))
            .GetNullability()
-           .Should()
-           .Be(Nullability.Nullable);
+           .ShouldBe(Nullability.Nullable);
     }
 
     [Test]
@@ -34,8 +31,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(NullableTest)
            .GetMethod(nameof(NullableTest.Method))
            .GetNullability()
-           .Should()
-           .Be(Nullability.Nullable);
+           .ShouldBe(Nullability.Nullable);
     }
 
     [Test]
@@ -43,8 +39,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
     {
         typeof(NullableTest).GetMethod(nameof(NullableTest.Method))!.GetParameters()[0]
                             .GetNullability()
-                            .Should()
-                            .Be(Nullability.Nullable);
+                            .ShouldBe(Nullability.Nullable);
     }
 
     [Test]
@@ -53,8 +48,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(NonNullableTest)
            .GetProperty(nameof(NonNullableTest.Property))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NonNullable);
+           .ShouldBe(Nullability.NonNullable);
     }
 
     [Test]
@@ -63,8 +57,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(NonNullableTest)
            .GetField(nameof(NonNullableTest._field))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NonNullable);
+           .ShouldBe(Nullability.NonNullable);
     }
 
     [Test]
@@ -73,8 +66,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(NonNullableTest)
            .GetMethod(nameof(NonNullableTest.Method))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NonNullable);
+           .ShouldBe(Nullability.NonNullable);
     }
 
     [Test]
@@ -82,8 +74,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
     {
         typeof(NonNullableTest).GetMethod(nameof(NonNullableTest.Method))!.GetParameters()[0]
                                .GetNullability()
-                               .Should()
-                               .Be(Nullability.NonNullable);
+                               .ShouldBe(Nullability.NonNullable);
     }
 
     [Test]
@@ -92,8 +83,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(DisabledNullableTest)
            .GetProperty(nameof(DisabledNullableTest.Property))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NotDefined);
+           .ShouldBe(Nullability.NotDefined);
     }
 
     [Test]
@@ -102,8 +92,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(DisabledNullableTest)
            .GetField(nameof(DisabledNullableTest._field))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NotDefined);
+           .ShouldBe(Nullability.NotDefined);
     }
 
     [Test]
@@ -112,8 +101,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(DisabledNullableTest)
            .GetMethod(nameof(DisabledNullableTest.Method))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NotDefined);
+           .ShouldBe(Nullability.NotDefined);
     }
 
     [Test]
@@ -121,8 +109,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
     {
         typeof(DisabledNullableTest).GetMethod(nameof(DisabledNullableTest.Method))!.GetParameters()[0]
                                     .GetNullability()
-                                    .Should()
-                                    .Be(Nullability.NotDefined);
+                                    .ShouldBe(Nullability.NotDefined);
     }
 
     [Test]
@@ -131,8 +118,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(ValueNullableTest)
            .GetProperty(nameof(ValueNullableTest.Property))
            .GetNullability()
-           .Should()
-           .Be(Nullability.Nullable);
+           .ShouldBe(Nullability.Nullable);
     }
 
     [Test]
@@ -141,8 +127,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(ValueNullableTest)
            .GetField(nameof(ValueNullableTest._field))
            .GetNullability()
-           .Should()
-           .Be(Nullability.Nullable);
+           .ShouldBe(Nullability.Nullable);
     }
 
     [Test]
@@ -151,8 +136,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(ValueNullableTest)
            .GetMethod(nameof(ValueNullableTest.Method))
            .GetNullability()
-           .Should()
-           .Be(Nullability.Nullable);
+           .ShouldBe(Nullability.Nullable);
     }
 
     [Test]
@@ -160,8 +144,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
     {
         typeof(ValueNullableTest).GetMethod(nameof(ValueNullableTest.Method))!.GetParameters()[0]
                                  .GetNullability()
-                                 .Should()
-                                 .Be(Nullability.Nullable);
+                                 .ShouldBe(Nullability.Nullable);
     }
 
     [Test]
@@ -170,8 +153,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(ValueNonNullableTest)
            .GetProperty(nameof(ValueNonNullableTest.Property))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NonNullable);
+           .ShouldBe(Nullability.NonNullable);
     }
 
     [Test]
@@ -180,8 +162,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(ValueNonNullableTest)
            .GetField(nameof(ValueNonNullableTest._field))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NonNullable);
+           .ShouldBe(Nullability.NonNullable);
     }
 
     [Test]
@@ -190,8 +171,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
         typeof(ValueNonNullableTest)
            .GetMethod(nameof(ValueNonNullableTest.Method))
            .GetNullability()
-           .Should()
-           .Be(Nullability.NonNullable);
+           .ShouldBe(Nullability.NonNullable);
     }
 
     [Test]
@@ -199,8 +179,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
     {
         typeof(ValueNonNullableTest).GetMethod(nameof(ValueNonNullableTest.Method))!.GetParameters()[0]
                                     .GetNullability()
-                                    .Should()
-                                    .Be(Nullability.NonNullable);
+                                    .ShouldBe(Nullability.NonNullable);
     }
 
     private class NullableTest
@@ -234,7 +213,7 @@ public class NullableTests() : LoggerTest(Defaults.LoggerTest)
 
         public int Method(int value) => value;
     }
-    #nullable disable
+#nullable disable
     private class DisabledNullableTest
     {
         public MyObject _field;

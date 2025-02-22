@@ -1,5 +1,4 @@
 #nullable disable
-using FluentAssertions;
 using Rocket.Surgery.Reflection;
 
 // ReSharper disable NullableWarningSuppressionIsUsed
@@ -25,7 +24,7 @@ public class BackingFieldTests
     {
         var instance = (IBackingField)Activator.CreateInstance(backingField);
         new BackingFieldHelper().SetBackingField(instance, x => x.Value, "abcd");
-        instance!.Value.Should().Be("abcd");
+        instance!.Value.ShouldBe("abcd");
     }
 
     [Test]
@@ -36,8 +35,8 @@ public class BackingFieldTests
     {
         var instance = (IBackingField)Activator.CreateInstance(backingField);
         var a = () => new BackingFieldHelper().SetBackingField(instance, x => x.Value, "abcd");
-        instance!.Value.Should().BeNullOrWhiteSpace();
-        a.Should().Throw<NotSupportedException>();
+        instance!.Value.ShouldBeNullOrWhiteSpace();
+        a.ShouldThrow<NotSupportedException>();
     }
 
     internal interface IBackingField

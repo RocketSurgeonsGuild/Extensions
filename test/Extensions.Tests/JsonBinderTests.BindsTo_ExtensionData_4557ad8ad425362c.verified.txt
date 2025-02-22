@@ -1,0 +1,42 @@
+﻿{
+  result: {
+    ComplexProperty: {
+      CustomFields: {
+        something: [],
+        somethingelse: {
+          value: []
+        }
+      },
+      AutoProperty: {
+        Value: 456
+      },
+      Value: 123
+    },
+    CustomFields: {
+      something: [],
+      somethingelse: {
+        value: []
+      }
+    }
+  },
+  bindingResult: [
+    {
+      ComplexProperty:AutoProperty:Value: 456
+    },
+    {
+      ComplexProperty:Value: 123
+    },
+    {
+      ComplexProperty:something: 2123
+    },
+    {
+      ComplexProperty:somethingelse:value: 2456
+    },
+    {
+      something: 1123
+    },
+    {
+      somethingelse:value: 1456
+    }
+  ]
+}

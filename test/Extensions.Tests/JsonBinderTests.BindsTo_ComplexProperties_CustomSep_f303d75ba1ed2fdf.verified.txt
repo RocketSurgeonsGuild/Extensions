@@ -1,0 +1,16 @@
+﻿{
+  result: {
+    AutoProperty: {
+      Value: 456
+    },
+    Value: 123
+  },
+  bindingResult: [
+    {
+      AutoProperty__Value: 456
+    },
+    {
+      Value: 123
+    }
+  ]
+}

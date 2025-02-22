@@ -1,5 +1,4 @@
 ﻿using System.Reactive.Linq;
-using FluentAssertions;
 using Microsoft.Reactive.Testing;
 using Rocket.Surgery.Extensions.Testing;
 
@@ -20,7 +19,7 @@ public class DebounceTests() : LoggerTest(Defaults.LoggerTest)
         observable.Debounce(TimeSpan.FromTicks(20), true, false, _scheduler).Subscribe(receiver);
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 
     [Test]
@@ -34,7 +33,7 @@ public class DebounceTests() : LoggerTest(Defaults.LoggerTest)
         observable.Debounce(TimeSpan.FromTicks(15), true, true, _scheduler).Subscribe(receiver.CreateUnitObserver());
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 
     [Test]
@@ -50,7 +49,7 @@ public class DebounceTests() : LoggerTest(Defaults.LoggerTest)
            .Subscribe(receiver);
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 
     [Test]
@@ -66,7 +65,7 @@ public class DebounceTests() : LoggerTest(Defaults.LoggerTest)
            .Subscribe(receiver);
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 
     [Test]
@@ -82,6 +81,6 @@ public class DebounceTests() : LoggerTest(Defaults.LoggerTest)
            .Subscribe(receiver);
         _scheduler.Start();
 
-        receiver.GetMarbles().Should().Be(output);
+        receiver.GetMarbles().ShouldBe(output);
     }
 }

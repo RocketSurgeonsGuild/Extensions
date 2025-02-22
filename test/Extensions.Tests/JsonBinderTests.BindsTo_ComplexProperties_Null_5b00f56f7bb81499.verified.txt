@@ -1,0 +1,13 @@
+﻿{
+  result: {
+    Value: 123
+  },
+  bindingResult: [
+    {
+      AutoProperty: 
+    },
+    {
+      Value: 123
+    }
+  ]
+}
