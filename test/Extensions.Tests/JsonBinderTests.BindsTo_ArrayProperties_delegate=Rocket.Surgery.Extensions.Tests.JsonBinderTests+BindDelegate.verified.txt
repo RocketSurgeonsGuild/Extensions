@@ -1,0 +1,26 @@
+﻿{
+  Item1: {
+    Values: [
+      {
+        Value: 123
+      },
+      {
+        Value: 456
+      },
+      {
+        Value: 789
+      }
+    ]
+  },
+  Item2: [
+    {
+      Values:0:Value: 123
+    },
+    {
+      Values:1:Value: 456
+    },
+    {
+      Values:2:Value: 789
+    }
+  ]
+}

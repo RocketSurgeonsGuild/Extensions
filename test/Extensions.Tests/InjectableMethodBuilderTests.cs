@@ -1,5 +1,4 @@
 using FakeItEasy;
-using FluentAssertions;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
 using Rocket.Surgery.Reflection;
 
@@ -23,7 +22,7 @@ public class InjectableMethodBuilderTests
         var method = InjectableMethodBuilder
                     .Create<MethodFuncTest>(nameof(MethodFuncTest.ExecuteReturn0))
                     .Compile<bool>();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
@@ -42,7 +41,7 @@ public class InjectableMethodBuilderTests
         var method = InjectableMethodBuilder
                     .Create<MethodFuncTest>(nameof(MethodFuncTest.ExecuteReturn0))
                     .Compile<bool>();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var injected1 = A.Fake<IInjected1>();
         var injected2 = A.Fake<IInjected2>();
@@ -62,7 +61,7 @@ public class InjectableMethodBuilderTests
                     .Create<MethodFuncTest>(nameof(MethodFuncTest.Execute1))
                     .WithParameter<IConfigured1>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var injected1 = A.Fake<IInjected1>();
@@ -83,7 +82,7 @@ public class InjectableMethodBuilderTests
                     .Create<MethodFuncTest>(nameof(MethodFuncTest.ExecuteEnumerable1))
                     .WithParameter<IConfigured1>()
                     .Compile<IEnumerable<IReturn>>();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var injected1 = A.Fake<IInjected1>();
@@ -109,7 +108,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured1>()
                     .WithParameter<IConfigured2>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -138,7 +137,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured2>()
                     .WithParameter<IConfigured3>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -170,7 +169,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured3>()
                     .WithParameter<IConfigured4>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -205,7 +204,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured4>()
                     .WithParameter<IConfigured5>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -243,7 +242,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured5>()
                     .WithParameter<IConfigured6>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -284,7 +283,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured6>()
                     .WithParameter<IConfigured7>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -328,7 +327,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured7>()
                     .WithParameter<IConfigured8>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -375,7 +374,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured8>()
                     .WithParameter<IConfigured9>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -425,7 +424,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured9>()
                     .WithParameter<IConfigured10>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -478,7 +477,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured10>()
                     .WithParameter<IConfigured11>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();
@@ -534,7 +533,7 @@ public class InjectableMethodBuilderTests
                     .WithParameter<IConfigured11>()
                     .WithParameter<IConfigured12>()
                     .Compile();
-        method.Should().NotBeNull();
+        method.ShouldNotBeNull();
         var serviceProvider = A.Fake<IServiceProvider>();
         var configured1 = A.Fake<IConfigured1>();
         var configured2 = A.Fake<IConfigured2>();

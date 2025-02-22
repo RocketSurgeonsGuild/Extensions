@@ -1,6 +1,5 @@
 using FakeItEasy;
 
-using FluentAssertions;
 
 using Rocket.Surgery.Extensions.Tests.Fixtures;
 using Rocket.Surgery.Reflection;
@@ -27,7 +26,7 @@ public class InjectableMethodTests
                        .WithParameter<IConfigured1>()
                        .Compile();
                 };
-        a.Should().Throw<ArgumentException>();
+        a.ShouldThrow<ArgumentException>();
     }
 
     [Test]

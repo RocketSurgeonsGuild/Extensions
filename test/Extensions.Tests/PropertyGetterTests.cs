@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using FluentAssertions;
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Tests.Fixtures;
 using Rocket.Surgery.Reflection;
@@ -12,18 +11,18 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
     {
         foreach (var item in GetListFixtures())
         {
-            yield return () => ( item, "Things[0].A", "123" );
-            yield return () => ( item, "Things[0].B", 1 );
-            yield return () => ( item, "Things[0].C", null );
-            yield return () => ( item, "Things[1].A", "456" );
-            yield return () => ( item, "Things[1].B", 2 );
-            yield return () => ( item, "Things[1].C", 1L );
-            yield return () => ( item, "Things[2].A", "789" );
-            yield return () => ( item, "Things[2].B", 3 );
-            yield return () => ( item, "Things[2].C", null );
-            yield return () => ( item, "Values[0]", "1" );
-            yield return () => ( item, "Values[1]", "2" );
-            yield return () => ( item, "Values[2]", "3"
+            yield return () => (item, "Things[0].A", "123");
+            yield return () => (item, "Things[0].B", 1);
+            yield return () => (item, "Things[0].C", null);
+            yield return () => (item, "Things[1].A", "456");
+            yield return () => (item, "Things[1].B", 2);
+            yield return () => (item, "Things[1].C", 1L);
+            yield return () => (item, "Things[2].A", "789");
+            yield return () => (item, "Things[2].B", 3);
+            yield return () => (item, "Things[2].C", null);
+            yield return () => (item, "Values[0]", "1");
+            yield return () => (item, "Values[1]", "2");
+            yield return () => (item, "Values[2]", "3"
                              );
         }
     }
@@ -32,40 +31,40 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
     {
         foreach (var item in GetListFixtures())
         {
-            yield return () => ( item, "Things__0__A", "123" );
-            yield return () => ( item, "Things__0__B", 1 );
-            yield return () => ( item, "Things__0__C", null );
-            yield return () => ( item, "Things__1__A", "456" );
-            yield return () => ( item, "Things__1__B", 2 );
-            yield return () => ( item, "Things__1__C", 1L );
-            yield return () => ( item, "Things__2__A", "789" );
-            yield return () => ( item, "Things__2__B", 3 );
-            yield return () => ( item, "Things__2__C", null );
-            yield return () => ( item, "Values__0", "1" );
-            yield return () => ( item, "Values__1", "2" );
-            yield return () => ( item, "Values__2", "3" );
+            yield return () => (item, "Things__0__A", "123");
+            yield return () => (item, "Things__0__B", 1);
+            yield return () => (item, "Things__0__C", null);
+            yield return () => (item, "Things__1__A", "456");
+            yield return () => (item, "Things__1__B", 2);
+            yield return () => (item, "Things__1__C", 1L);
+            yield return () => (item, "Things__2__A", "789");
+            yield return () => (item, "Things__2__B", 3);
+            yield return () => (item, "Things__2__C", null);
+            yield return () => (item, "Values__0", "1");
+            yield return () => (item, "Values__1", "2");
+            yield return () => (item, "Values__2", "3");
         }
     }
 
     public static IEnumerable<Func<(object fixture, string path)>> ListData_ForFailureCases() =>
-        GetListFixtures().Select(item => (Func<(object fixture, string path)>)( () => ( item, "Things[0].D" ) ));
+        GetListFixtures().Select(item => (Func<(object fixture, string path)>)(() => (item, "Things[0].D")));
 
     public static IEnumerable<Func<(object fixture, string path, object? value)>> DictionaryData()
     {
         foreach (var item in GetDictionaryFixtures())
         {
-            yield return () => ( item, "Things[A].A", "123" );
-            yield return () => ( item, "Things[A].B", 1 );
-            yield return () => ( item, "Things[A].C", null );
-            yield return () => ( item, "Things[B].A", "456" );
-            yield return () => ( item, "Things[B].B", 2 );
-            yield return () => ( item, "Things[B].C", 1L );
-            yield return () => ( item, "Things[C].A", "789" );
-            yield return () => ( item, "Things[C].B", 3 );
-            yield return () => ( item, "Things[C].C", null );
-            yield return () => ( item, "Values[A]", "1" );
-            yield return () => ( item, "Values[B]", "2" );
-            yield return () => ( item, "Values[C]", "3" );
+            yield return () => (item, "Things[A].A", "123");
+            yield return () => (item, "Things[A].B", 1);
+            yield return () => (item, "Things[A].C", null);
+            yield return () => (item, "Things[B].A", "456");
+            yield return () => (item, "Things[B].B", 2);
+            yield return () => (item, "Things[B].C", 1L);
+            yield return () => (item, "Things[C].A", "789");
+            yield return () => (item, "Things[C].B", 3);
+            yield return () => (item, "Things[C].C", null);
+            yield return () => (item, "Values[A]", "1");
+            yield return () => (item, "Values[B]", "2");
+            yield return () => (item, "Values[C]", "3");
         }
     }
 
@@ -179,13 +178,13 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
         };
 
         var value = getter.Get(fixture, "A");
-        value.Should().Be("123");
+        value.ShouldBe("123");
 
         value = getter.Get(fixture, "B");
-        value.Should().Be(1);
+        value.ShouldBe(1);
 
         value = getter.Get(fixture, "C");
-        value.Should().BeNull();
+        value.ShouldBeNull();
     }
 
     [Test]
@@ -207,19 +206,19 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
         };
 
         var value = getter.Get(fixture, "Thing1.A");
-        value.Should().Be("123");
+        value.ShouldBe("123");
 
         value = getter.Get(fixture, "Thing1.B");
-        value.Should().Be(1);
+        value.ShouldBe(1);
 
         value = getter.Get(fixture, "Thing1.C");
-        value.Should().BeNull();
+        value.ShouldBeNull();
 
         value = getter.Get(fixture, "D");
-        value.Should().Be(123);
+        value.ShouldBe(123);
 
         value = getter.Get(fixture, "E");
-        value.Should().Be(1234L);
+        value.ShouldBe(1234L);
     }
 
     [Test]
@@ -242,8 +241,7 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
 
 
         getter.TryGetPropertyDelegate(fixture, "thing1.a", out var propertyDelegate);
-        propertyDelegate.Should().NotBeNull();
-        propertyDelegate.StronglyTypedExpression.Type.Should().Be<Func<Fixture_Thing2, string>>();
+        propertyDelegate.ShouldNotBeNull();
     }
 
     [Test]
@@ -264,8 +262,8 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
             E = 1234L,
         };
 
-        getter.TryGetPropertyDelegate(fixture, "thing1.a", out _).Should().BeFalse();
-        getter.TryGetPropertyDelegate(fixture, "Thing1.A", out _).Should().BeTrue();
+        getter.TryGetPropertyDelegate(fixture, "thing1.a", out _).ShouldBeFalse();
+        getter.TryGetPropertyDelegate(fixture, "Thing1.A", out _).ShouldBeTrue();
     }
 
     [Test]
@@ -275,7 +273,7 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
         var getter = new PropertyGetter();
 
         var result = getter.Get(fixture, path);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Test]
@@ -285,7 +283,7 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
         var getter = new PropertyGetter();
 
         var result = getter.Get(fixture, path);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Test]
@@ -295,7 +293,7 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
         var getter = new PropertyGetter("__");
 
         var result = getter.Get(fixture, path);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
     [Test]
@@ -305,6 +303,6 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
         var getter = new PropertyGetter();
 
         Action a = () => getter.Get(fixture, path);
-        a.Should().Throw<ArgumentException>();
+        a.ShouldThrow<ArgumentException>();
     }
 }

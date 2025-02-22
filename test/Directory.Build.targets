@@ -4,12 +4,14 @@
         <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
         <PackageReference Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" />
         <PackageReference Include="Bogus" />
-        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="Shouldly" />
 
         <PackageReference Include="Rocket.Surgery.Extensions.Testing.TUnit" />
         <PackageReference Include="TUnit" />
         <PackageReference Include="Verify.TUnit" />
         <PackageReference Include="Serilog.Sinks.Console" />
+
+        <Using Include="Shouldly" />
     </ItemGroup>
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
 </Project>
