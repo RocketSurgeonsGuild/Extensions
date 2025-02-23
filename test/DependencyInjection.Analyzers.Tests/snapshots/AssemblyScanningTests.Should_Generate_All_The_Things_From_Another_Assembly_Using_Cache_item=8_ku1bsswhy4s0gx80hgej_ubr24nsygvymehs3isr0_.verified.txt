@@ -129,7 +129,7 @@
             ServiceDescriptor: {
               ServiceTypeDescriptors: [
                 {
-                  Identifier: "s"
+                  Identifier: s
                 }
               ]
             }

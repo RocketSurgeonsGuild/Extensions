@@ -72,7 +72,7 @@
             ServiceDescriptor: {
               ServiceTypeDescriptors: [
                 {
-                  Identifier: "i",
+                  Identifier: i,
                   TypeFilter: {
                     Filter: All,
                     NamespaceFilters: null,
@@ -184,7 +184,7 @@
             ServiceDescriptor: {
               ServiceTypeDescriptors: [
                 {
-                  Identifier: "s"
+                  Identifier: s
                 }
               ]
             }

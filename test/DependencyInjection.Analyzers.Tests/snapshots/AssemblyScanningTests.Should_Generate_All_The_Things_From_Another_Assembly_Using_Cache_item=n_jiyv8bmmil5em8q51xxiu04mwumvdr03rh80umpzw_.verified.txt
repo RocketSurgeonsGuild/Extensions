@@ -61,7 +61,7 @@
             ServiceDescriptor: {
               ServiceTypeDescriptors: [
                 {
-                  Identifier: "i"
+                  Identifier: i
                 }
               ]
             }
@@ -151,7 +151,7 @@
             ServiceDescriptor: {
               ServiceTypeDescriptors: [
                 {
-                  Identifier: "s"
+                  Identifier: s
                 }
               ]
             }

@@ -70,10 +70,10 @@
             ServiceDescriptor: {
               ServiceTypeDescriptors: [
                 {
-                  Identifier: "s"
+                  Identifier: s
                 },
                 {
-                  Identifier: "i"
+                  Identifier: i
                 }
               ],
               Lifetime: 1
@@ -165,7 +165,7 @@
             ServiceDescriptor: {
               ServiceTypeDescriptors: [
                 {
-                  Identifier: "s"
+                  Identifier: s
                 }
               ]
             }
