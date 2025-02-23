@@ -62,8 +62,6 @@
                 <ModulePath>.*Bogus\.dll</ModulePath>
                 <ModulePath>.*FakeItEasy\.Analyzer\.CSharp\.dll</ModulePath>
                 <ModulePath>.*FastExpressionCompiler\.dll</ModulePath>
-                <ModulePath>.*FluentAssertions\.Analyzers\.dll</ModulePath>
-                <ModulePath>.*FluentAssertions\.dll</ModulePath>
                 <ModulePath>.*GitVersion\.Tool\.dll</ModulePath>
                 <ModulePath>.*JetBrains\.Annotations\.dll</ModulePath>
                 <ModulePath>.*JetBrains\.dotCover\.CommandLineTools\.dll</ModulePath>
@@ -102,6 +100,7 @@
                 <ModulePath>.*Roslynator\.Formatting\.Analyzers\.dll</ModulePath>
                 <ModulePath>.*Roslynator\.Refactorings\.dll</ModulePath>
                 <ModulePath>.*Serilog\.Sinks\.Console\.dll</ModulePath>
+                <ModulePath>.*Shouldly\.dll</ModulePath>
                 <ModulePath>.*System\.Collections\.Immutable\.dll</ModulePath>
                 <ModulePath>.*System\.Interactive\.Async\.dll</ModulePath>
                 <ModulePath>.*System\.Interactive\.dll</ModulePath>
