@@ -7,6 +7,7 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Tools.MSBuild;
+
 using Rocket.Surgery.Nuke.DotNetCore;
 
 [PublicAPI]
@@ -25,6 +26,7 @@ internal partial class Pipeline : NukeBuild,
     ICanPackWithDotNetCore,
     ICanClean,
     IHaveCommonLintTargets,
+                                IRemoveUnusedDependencies,
 //                                IHavePublicApis,
     IGenerateCodeCoverageReport,
     IGenerateCodeCoverageSummary,

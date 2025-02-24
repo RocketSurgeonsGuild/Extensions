@@ -50,6 +50,7 @@
         "PostLint",
         "Prettier",
         "RegenerateBuildConfigurations",
+        "RemoveUnusedDependencies",
         "Restore",
         "Test"
       ]
