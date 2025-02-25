@@ -29,6 +29,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(OtherProject.GetType("Program")!);
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
@@ -41,6 +44,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -71,6 +77,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly)!;
     private Assembly _OtherProject;
     private Assembly OtherProject => _OtherProject ??= _context.LoadFromAssemblyName(new AssemblyName("OtherProject, Version=version, Culture=neutral, PublicKeyToken=null"));
+
+    private Assembly _RocketSurgeryDependencyInjectionExtensions;
+    private Assembly RocketSurgeryDependencyInjectionExtensions => _RocketSurgeryDependencyInjectionExtensions ??= _context.LoadFromAssemblyName(new AssemblyName("Rocket.Surgery.DependencyInjection.Extensions, Version=version, Culture=neutral, PublicKeyToken=null"));
 
     private Assembly _TestAssembly;
     private Assembly TestAssembly => _TestAssembly ??= _context.LoadFromAssemblyName(new AssemblyName("TestAssembly, Version=version, Culture=neutral, PublicKeyToken=null"));

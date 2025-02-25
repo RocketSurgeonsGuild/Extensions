@@ -115,6 +115,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Program));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ExcludeFromCompiledTypeProviderAttribute));
@@ -140,6 +143,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.Nested));
@@ -222,6 +228,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Program));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ExcludeFromCompiledTypeProviderAttribute));
@@ -247,6 +256,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.Nested));
@@ -263,6 +275,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: 6eINCg7X1s1Fy3K8elffJw==
             case 132:
                 items.Add(typeof(global::Program));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`1")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`6")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`5")!);
@@ -275,6 +290,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`4")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`3")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`2")!);
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+Validator")!);
@@ -288,6 +306,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Program));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
@@ -322,6 +343,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
@@ -348,6 +372,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Program));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
@@ -382,6 +409,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
@@ -408,6 +438,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Program));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
@@ -420,6 +453,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IOther));
@@ -442,6 +478,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Program));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
@@ -478,6 +517,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
@@ -504,6 +546,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Program));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionTypeSelector));
@@ -540,6 +585,9 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.IExecuteScopedOptional<, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
@@ -722,9 +770,15 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             case 92:
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
+                items.Add(TestAssembly.GetType("MyAssembly")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::TestAssembly.Nested));
                 break;
             // FilePath: Input0.cs Expression: jbfZ/SBhNLTKU8V8KCyblQ==
