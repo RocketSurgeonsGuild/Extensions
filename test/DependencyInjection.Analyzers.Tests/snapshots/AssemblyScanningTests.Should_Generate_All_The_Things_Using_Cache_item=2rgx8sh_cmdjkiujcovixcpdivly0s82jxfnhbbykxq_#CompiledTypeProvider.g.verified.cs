@@ -30,6 +30,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Program));
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Metadata")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`1")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScoped`6")!);
@@ -45,6 +46,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Rocket.Surgery.DependencyInjection.ExecuteScopedOptional`2")!);
                 items.Add(TestAssembly.GetType("MyAssembly")!);
                 items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Metadata")!);
                 items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(TestAssembly.GetType("TestAssembly.Nested+MyRecord")!);

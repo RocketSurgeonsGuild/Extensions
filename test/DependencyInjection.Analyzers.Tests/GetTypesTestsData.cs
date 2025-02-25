@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,25 +11,6 @@ using Rocket.Surgery.DependencyInjection.Compiled;
 using TestAssembly;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
-
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
-public partial record TestSource(string Name, string Source)
-{
-    public string GetTempDirectory(string? suffix = null) => (
-            suffix is { }
-                ? Path.Combine(ModuleInitializer.TempDirectory, FileSafeName, suffix)
-                : Path.Combine(ModuleInitializer.TempDirectory, FileSafeName)
-        )
-       .Replace("\\", "/");
-
-    /// <inheritdoc />
-    public override string ToString() => AssemblyScanningTests.GenerateFilenameSafeString(Name);
-
-    public string FileSafeName => AssemblyScanningTests.GenerateFilenameSafeString(AssemblyScanningTests.HashFilename(Name, Source));
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => Source;
-}
 
 public partial class AssemblyScanningTests
 {

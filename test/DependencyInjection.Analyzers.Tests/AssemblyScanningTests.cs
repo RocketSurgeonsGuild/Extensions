@@ -5,11 +5,12 @@ using TestAssembly;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
+[Timeout(ModuleInitializer.TestTimeout)]
 public partial class AssemblyScanningTests : GeneratorTest
 {
     [Test]
     [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
-    public async Task Should_Generate_All_The_Things(TestSource item)
+    public async Task Should_Generate_All_The_Things(TestSource item, CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(item.Source)
