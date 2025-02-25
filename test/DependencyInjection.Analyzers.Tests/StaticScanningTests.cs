@@ -10,7 +10,7 @@ using Serilog;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
-[DebuggerDisplay("{DebuggerDisplay,nq}")]
+[Timeout(ModuleInitializer.TestTimeout)]
 public class StaticScanningTests : GeneratorTest
 {
     [Test]
@@ -1780,7 +1780,7 @@ public static class Program {
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-                               
+
                                	        provider.Scan(
                                            services,
                                            z => z
@@ -2448,7 +2448,7 @@ public static class Program {
                                           ///     The configuration key to use
                                           /// </summary>
                                           public string ConfigurationKey { get; } = configurationKey;
-                                      
+
                                           /// <summary>
                                           ///     The optional options name
                                           /// </summary>
@@ -2464,7 +2464,7 @@ public static class Program {
                                               var classes = provider.GetTypes(
                                                   s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
                                               );
-                                      
+
                                               return services;
                                           }
                                       }
@@ -2506,7 +2506,7 @@ public static class Program {
                                        var classes = provider.GetTypes(
                                            s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
                                        );
-                               
+
                                        return services;
                                    }
                                }
@@ -2536,7 +2536,4 @@ public static class Program {
             return ( method!.Invoke(null, []) as IServiceCollection )!;
         }
     }
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay => ToString();
 }

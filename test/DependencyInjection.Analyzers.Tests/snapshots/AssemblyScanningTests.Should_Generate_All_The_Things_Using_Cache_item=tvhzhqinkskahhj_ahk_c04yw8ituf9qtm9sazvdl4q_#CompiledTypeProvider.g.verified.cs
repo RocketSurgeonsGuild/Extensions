@@ -31,12 +31,14 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Info")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Metadata")!);
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceExtensions));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ScopedServiceOptionalExtensions));
                 items.Add(TestAssembly.GetType("MyAssembly")!);
                 items.Add(TestAssembly.GetType("MyAssembly+Info")!);
+                items.Add(TestAssembly.GetType("MyAssembly+Metadata")!);
                 items.Add(TestAssembly.GetType("MyAssembly+Project")!);
                 items.Add(typeof(global::TestAssembly.Nested));
                 break;
