@@ -1,0 +1,44 @@
+﻿{
+  FinalDiagnostics: [
+    {
+      Id: RSGD0001,
+      Title: Must be a expression,
+      Severity: Error,
+      WarningLevel: 0,
+      Location: Input0.cs: (19,21)-(21,33),
+      MessageFormat: Methods that will be analyzed statically must be an expression, blocks and variables are not allowed,
+      Message: Methods that will be analyzed statically must be an expression, blocks and variables are not allowed,
+      Category: Dependency Injection
+    }
+  ],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator: [
+      {
+        Id: RSGD0001,
+        Title: Must be a expression,
+        Severity: Error,
+        WarningLevel: 0,
+        Location: Input0.cs: (19,21)-(21,33),
+        MessageFormat: Methods that will be analyzed statically must be an expression, blocks and variables are not allowed,
+        Message: Methods that will be analyzed statically must be an expression, blocks and variables are not allowed,
+        Category: Dependency Injection
+      }
+    ]
+  },
+  GlobalOptions: {
+    build_property.IntermediateOutputPath: obj/net9.0,
+    build_property.ProjectDir: {TempDirectory}/Guid_1/Guid_2
+  },
+  References: [
+    <in-memory assembly>,
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ]
+}

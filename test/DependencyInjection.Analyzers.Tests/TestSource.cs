@@ -13,9 +13,9 @@ public partial record TestSource(string Name, string Source)
        .Replace("\\", "/");
 
     /// <inheritdoc />
-    public override string ToString() => AssemblyScanningTests.GenerateFilenameSafeString(Name);
+    public override string ToString() => AssemblyScanningTestData.GenerateFilenameSafeString(Name);
 
-    public string FileSafeName => AssemblyScanningTests.GenerateFilenameSafeString(AssemblyScanningTests.HashFilename(Name, Source));
+    public string FileSafeName => AssemblyScanningTestData.GenerateFilenameSafeString(AssemblyScanningTestData.HashFilename(Name, Source));
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private string DebuggerDisplay => Source;

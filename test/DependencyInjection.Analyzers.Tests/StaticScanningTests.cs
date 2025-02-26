@@ -14,7 +14,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 public class StaticScanningTests : GeneratorTest
 {
     [Test]
-    public async Task Should_Filter_As_And_Filter_Generic_Interfaces()
+    public async Task Should_Filter_As_And_Filter_Generic_Interfaces(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -53,7 +53,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -61,7 +61,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_As_And_Filter_Generic_Interfaces2()
+    public async Task Should_Filter_As_And_Filter_Generic_Interfaces2(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -99,7 +99,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -107,7 +107,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_As_And_Filter_Interfaces()
+    public async Task Should_Filter_As_And_Filter_Interfaces(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -145,7 +145,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -153,7 +153,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableTo()
+    public async Task Should_Filter_AssignableTo(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -191,7 +191,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -199,7 +199,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableToAny()
+    public async Task Should_Filter_AssignableToAny(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -238,7 +238,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -246,7 +246,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces()
+    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -285,7 +285,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -293,7 +293,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces2()
+    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces2(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -331,7 +331,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -339,7 +339,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces3()
+    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces3(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -378,7 +378,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -386,7 +386,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces4()
+    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces4(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -425,7 +425,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -433,7 +433,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces5()
+    public async Task Should_Filter_AssignableToAny_And_Filter_Generic_Interfaces5(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -473,7 +473,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -481,7 +481,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableToAny_And_Filter_Interfaces()
+    public async Task Should_Filter_AssignableToAny_And_Filter_Interfaces(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -520,7 +520,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -528,7 +528,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_AssignableToAny_And_Filter_Interfaces2()
+    public async Task Should_Filter_AssignableToAny_And_Filter_Interfaces2(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -566,7 +566,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -580,7 +580,7 @@ public static class Program {
     [Arguments(NamespaceFilter.In, "TestProject.A.Nested.ServiceA", "TestProject.B.ServiceB", true)]
     [Arguments(NamespaceFilter.NotIn, "TestProject.A.C", "TestProject.B", false)]
     [Arguments(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", "TestProject.B.ServiceB", true)]
-    public async Task Should_Filter_Multiple_Namespaces(NamespaceFilter filter, string namespaceFilterValue, string namespaceFilterValueSecond, bool usingClass)
+    public async Task Should_Filter_Multiple_Namespaces(NamespaceFilter filter, string namespaceFilterValue, string namespaceFilterValueSecond, bool usingClass, CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -643,7 +643,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -662,7 +662,7 @@ public static class Program {
     [Arguments(NamespaceFilter.NotIn, "TestProject.A.C", false, false)]
     [Arguments(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", true, false)]
     [Arguments(NamespaceFilter.NotIn, "TestProject.A.C.ServiceC", true, true)]
-    public async Task Should_Filter_Namespaces(NamespaceFilter filter, string namespaceFilterValue, bool usingClass, bool usingTypeof)
+    public async Task Should_Filter_Namespaces(NamespaceFilter filter, string namespaceFilterValue, bool usingClass, bool usingTypeof, CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -727,7 +727,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -737,7 +737,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_With_Contains()
+    public async Task Should_Filter_With_Contains(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -778,7 +778,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -786,7 +786,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_With_Contains_NameOf()
+    public async Task Should_Filter_With_Contains_NameOf(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -827,7 +827,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -835,7 +835,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_With_EndsWith()
+    public async Task Should_Filter_With_EndsWith(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -876,7 +876,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -884,7 +884,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_With_EndsWith_NameOf()
+    public async Task Should_Filter_With_EndsWith_NameOf(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -925,7 +925,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -933,7 +933,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_With_StartsWith()
+    public async Task Should_Filter_With_StartsWith(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -974,7 +974,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -982,7 +982,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Filter_With_StartsWith_NameOf()
+    public async Task Should_Filter_With_StartsWith_NameOf(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1023,7 +1023,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1032,7 +1032,7 @@ public static class Program {
 
     [Test]
     [MatrixDataSource]
-    public async Task Should_Filter_WithAttribute([Matrix(true, false)] bool useTypeof)
+    public async Task Should_Filter_WithAttribute([Matrix(true, false)] bool useTypeof, CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1076,7 +1076,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1086,7 +1086,7 @@ public static class Program {
 
     [Test]
     [MatrixDataSource]
-    public async Task Should_Filter_WithoutAttribute([Matrix(true, false)] bool useTypeof)
+    public async Task Should_Filter_WithoutAttribute([Matrix(true, false)] bool useTypeof, CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1130,7 +1130,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1149,7 +1149,8 @@ public static class Program {
             4,
             5
         )]
-        int dependencyCount
+        int dependencyCount,
+        CancellationToken cancellationToken
     )
     {
         var dependencies = new List<GeneratorTestResults>();
@@ -1167,7 +1168,7 @@ namespace RootDependencyProject
                                   )
                                  .AddCacheOptions(GetTempPath())
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
         dependencies.Add(rootGenerator);
 
         for (var i = 0; i < dependencyCount; i++)
@@ -1189,7 +1190,7 @@ namespace RootDependencyProject
                                    )
                                   .AddCacheOptions(GetTempPath())
                                   .Build()
-                                  .GenerateAsync();
+                                  .GenerateAsync(cancellationToken);
             dependencies.Add(dependency);
         }
 
@@ -1226,7 +1227,7 @@ namespace TestProject
                           .AddCompilationReferences([.. dependencies])
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1235,7 +1236,7 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Handle_Private_Classes_Within_Self()
+    public async Task Should_Handle_Private_Classes_Within_Self(CancellationToken cancellationToken)
     {
         var dependency = await GeneratorTestContextBuilder
                               .Create()
@@ -1252,7 +1253,7 @@ namespace DependencyProject
                                )
                               .AddCacheOptions(GetTempPath())
                               .Build()
-                              .GenerateAsync();
+                              .GenerateAsync(cancellationToken);
 
         var result = await Builder
                           .AddSources(
@@ -1289,7 +1290,7 @@ namespace TestProject
                           .AddCompilationReferences(dependency)
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1297,7 +1298,7 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Handle_Private_Closed_Generic_Types()
+    public async Task Should_Handle_Private_Closed_Generic_Types(CancellationToken cancellationToken)
     {
         var dependencies = new List<GeneratorTestResults>();
         var rootGenerator = await GeneratorTestContextBuilder
@@ -1319,7 +1320,7 @@ namespace RootDependencyProject
                                   )
                                  .AddCacheOptions(GetTempPath())
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
         dependencies.Add(rootGenerator);
 
         var result = await Builder
@@ -1355,7 +1356,7 @@ namespace TestProject
                           .AddCompilationReferences([.. dependencies])
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
@@ -1372,7 +1373,8 @@ namespace TestProject
             4,
             5
         )]
-        int dependencyCount
+        int dependencyCount,
+        CancellationToken cancellationToken
     )
     {
         var dependencies = new List<GeneratorTestResults>();
@@ -1391,7 +1393,7 @@ namespace RootDependencyProject
                                   )
                                  .AddCacheOptions(GetTempPath())
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
         dependencies.Add(rootGenerator);
 
         for (var i = 0; i < dependencyCount; i++)
@@ -1417,7 +1419,7 @@ namespace RootDependencyProject
                                    )
                                   .AddCacheOptions(GetTempPath())
                                   .Build()
-                                  .GenerateAsync();
+                                  .GenerateAsync(cancellationToken);
             dependencies.Add(dependency);
         }
 
@@ -1454,7 +1456,7 @@ namespace TestProject
                           .AddCompilationReferences([.. dependencies])
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1463,7 +1465,7 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Handle_Private_Open_Generic_Types()
+    public async Task Should_Handle_Private_Open_Generic_Types(CancellationToken cancellationToken)
     {
         var dependencies = new List<GeneratorTestResults>();
 
@@ -1482,7 +1484,7 @@ namespace RootDependencyProject
                                   )
                                  .AddCacheOptions(GetTempPath())
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
         dependencies.Add(rootGenerator);
 
         var result = await Builder
@@ -1515,7 +1517,7 @@ public static class Program {
                           .AddCompilationReferences([.. dependencies])
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1523,7 +1525,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Handle_Private_Types()
+    public async Task Should_Handle_Private_Types(CancellationToken cancellationToken)
     {
         var dependencies = new List<GeneratorTestResults>();
 
@@ -1542,7 +1544,7 @@ namespace RootDependencyProject
                                   )
                                  .AddCacheOptions(GetTempPath())
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
         dependencies.Add(rootGenerator);
 
         var result = await Builder
@@ -1579,7 +1581,7 @@ namespace TestProject
                           .AddCompilationReferences([.. dependencies])
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1587,7 +1589,7 @@ namespace TestProject
     }
 
     [Test]
-    public async Task Should_Handle_Public_Closed_Generic_Types()
+    public async Task Should_Handle_Public_Closed_Generic_Types(CancellationToken cancellationToken)
     {
         var dependencies = new List<GeneratorTestResults>();
         var rootGenerator = await GeneratorTestContextBuilder
@@ -1609,7 +1611,7 @@ namespace RootDependencyProject
                                   )
                                  .AddCacheOptions(GetTempPath())
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
         dependencies.Add(rootGenerator);
 
         var result = await Builder
@@ -1645,14 +1647,14 @@ namespace TestProject
                           .AddCompilationReferences([.. dependencies])
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Test]
-    public async Task Should_Handle_Public_Open_Generic_Types()
+    public async Task Should_Handle_Public_Open_Generic_Types(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1691,7 +1693,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1699,7 +1701,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Handle_Public_Types()
+    public async Task Should_Handle_Public_Types(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1739,7 +1741,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1750,7 +1752,8 @@ public static class Program {
     [MatrixDataSource]
     public async Task Should_Have_Correct_Lifetime(
         [Matrix(ServiceLifetime.Scoped, ServiceLifetime.Singleton, ServiceLifetime.Transient)]
-        ServiceLifetime serviceLifetime
+        ServiceLifetime serviceLifetime,
+        CancellationToken cancellationToken
     )
     {
         var result = await Builder
@@ -1797,7 +1800,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1806,7 +1809,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Ignore_Abstract_Classes()
+    public async Task Should_Ignore_Abstract_Classes(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1840,7 +1843,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -1848,7 +1851,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Report_Diagnostic_For_Duplicate_ServiceRegistrationAttributes()
+    public async Task Should_Report_Diagnostic_For_Duplicate_ServiceRegistrationAttributes(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1866,14 +1869,14 @@ public class Service : IService { }
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result)
             ;
     }
 
     [Test]
-    public async Task Should_Report_Diagnostic_Not_Given_A_Compiled_Type()
+    public async Task Should_Report_Diagnostic_Not_Given_A_Compiled_Type(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1905,14 +1908,14 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result)
             ;
     }
 
     [Test]
-    public async Task Should_Report_Diagnostic_Not_Given_A_Static_Namespace()
+    public async Task Should_Report_Diagnostic_Not_Given_A_Static_Namespace(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1946,14 +1949,14 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result)
             ;
     }
 
     [Test]
-    public async Task Should_Report_Diagnostic_When_Not_Using_Expressions()
+    public async Task Should_Report_Diagnostic_When_Not_Using_Expressions(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -1986,7 +1989,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result)
             ;
@@ -1998,7 +2001,8 @@ public static class Program {
         [Matrix("ServiceA", "ServiceB", "ServiceC")]
         string className,
         [Matrix(true, false)]
-        bool useTypeof
+        bool useTypeof,
+        CancellationToken cancellationToken
     )
     {
         var dependencies = new List<GeneratorTestResults>();
@@ -2007,6 +2011,7 @@ public static class Program {
             AssemblyLoadContext context,
             ILogger logger,
             string tempPath,
+            CancellationToken cancellationToken,
             params GeneratorTestResults[] dependencies
         )
         {
@@ -2026,7 +2031,7 @@ namespace RootDependencyProject
                                   )
                                  .AddGlobalOption("build_property.IntermediateOutputPath", tempPath)
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
             generator.AssertCompilationWasSuccessful();
             generator.AssertGenerationWasSuccessful();
             return generator;
@@ -2037,6 +2042,7 @@ namespace RootDependencyProject
             ILogger logger,
             string tempPath,
             string suffix,
+            CancellationToken cancellationToken,
             params GeneratorTestResults[] dependencies
         )
         {
@@ -2065,18 +2071,19 @@ namespace RootDependencyProject
                             )
                            .AddGlobalOption("build_property.IntermediateOutputPath", tempPath)
                            .Build()
-                           .GenerateAsync();
+                           .GenerateAsync(cancellationToken);
             return dep;
         }
 
-        var root = await CreateRoot(AssemblyLoadContext, Logger, GetTempPath());
-        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "A", root);
-        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "B", root);
+        var root = await CreateRoot(AssemblyLoadContext, Logger, GetTempPath(), cancellationToken);
+        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "A", cancellationToken, root);
+        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "B", cancellationToken, root);
         var dependencyC = await CreateServiceDependency(
             AssemblyLoadContext,
             Logger,
             GetTempPath(),
             "C",
+            cancellationToken,
             dependencyA,
             root
         );
@@ -2085,6 +2092,7 @@ namespace RootDependencyProject
             Logger,
             GetTempPath(),
             "D",
+            cancellationToken,
             dependencyA,
             dependencyC,
             root
@@ -2136,7 +2144,7 @@ namespace RootDependencyProject
                           .AddCompilationReferences([.. dependencies])
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -2146,7 +2154,7 @@ namespace RootDependencyProject
 
     [Test]
     [MatrixDataSource]
-    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyOf([Matrix(true, false)] bool useTypeof)
+    public async Task Should_Select_Specific_Assemblies_Using_FromAssemblyOf([Matrix(true, false)] bool useTypeof, CancellationToken cancellationToken)
     {
         var dependencies = new List<GeneratorTestResults>();
 
@@ -2155,6 +2163,7 @@ namespace RootDependencyProject
             ILogger logger,
             string tempPath,
             string suffix,
+            CancellationToken cancellationToken,
             params GeneratorTestResults[] dependencies
         )
         {
@@ -2177,16 +2186,16 @@ namespace RootDependencyProject
                                   )
                                  .AddGlobalOption("build_property.IntermediateOutputPath", tempPath)
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
             generator.AssertCompilationWasSuccessful();
             generator.AssertGenerationWasSuccessful();
             return generator;
         }
 
-        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "A");
-        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "B");
-        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "C", dependencyA);
-        var dependencyD = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "D", dependencyC);
+        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "A", cancellationToken);
+        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "B", cancellationToken);
+        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "C", cancellationToken, dependencyA);
+        var dependencyD = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "D", cancellationToken, dependencyC);
         dependencies.Add(dependencyA);
         dependencies.Add(dependencyB);
         dependencies.Add(dependencyC);
@@ -2231,7 +2240,7 @@ namespace RootDependencyProject
                           .AddCompilationReferences([.. dependencies])
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -2240,7 +2249,7 @@ namespace RootDependencyProject
     }
 
     [Test]
-    public async Task Should_Split_Correctly_Given_Same_Line_Number_Run()
+    public async Task Should_Split_Correctly_Given_Same_Line_Number_Run(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -2304,7 +2313,7 @@ public static class Program2 {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services1 = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "Method");
         var services2 = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program2", "Method");
@@ -2314,7 +2323,7 @@ public static class Program2 {
     }
 
     [Test]
-    public async Task Should_Support_ServiceRegistrationAttributes()
+    public async Task Should_Support_ServiceRegistrationAttributes(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSource(
@@ -2383,14 +2392,14 @@ public class ServiceB : IService, IServiceB { }
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result)
             ;
     }
 
     [Test]
-    public async Task Should_Using_Support_As_Type()
+    public async Task Should_Using_Support_As_Type(CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(
@@ -2423,7 +2432,7 @@ public static class Program {
                            )
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
@@ -2431,7 +2440,7 @@ public static class Program {
     }
 
     [Test]
-    public async Task Should_Work_With_this_Weird_Query()
+    public async Task Should_Work_With_this_Weird_Query(CancellationToken cancellationToken)
     {
         var rootGenerator = await Builder
                                  .WithProjectName("RootDependencyProject")
@@ -2473,7 +2482,7 @@ public static class Program {
                                   )
                                  .AddCacheOptions(GetTempPath())
                                  .Build()
-                                 .GenerateAsync();
+                                 .GenerateAsync(cancellationToken);
 
         var result = await Builder
                           .AddSources(
@@ -2516,7 +2525,7 @@ public static class Program {
                           .AddCompilationReferences(rootGenerator)
                           .AddCacheOptions(GetTempPath())
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result);
     }
