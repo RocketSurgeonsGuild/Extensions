@@ -5,11 +5,12 @@ using TestAssembly;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
+[Timeout(ModuleInitializer.TestTimeout)]
 public partial class AssemblyScanningTests : GeneratorTest
 {
     [Test]
-    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
-    public async Task Should_Generate_All_The_Things(TestSource item)
+    [MethodDataSource(typeof(AssemblyScanningTestData), nameof(AssemblyScanningTestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things(TestSource item, CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(item.Source)
@@ -17,7 +18,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddCacheOptions(item.GetTempDirectory())
                           .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft")
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
@@ -25,8 +26,8 @@ public partial class AssemblyScanningTests : GeneratorTest
     }
 
     [Test]
-    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
-    public async Task Should_Generate_All_The_Things_From_Another_Assembly(TestSource item)
+    [MethodDataSource(typeof(AssemblyScanningTestData), nameof(AssemblyScanningTestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_From_Another_Assembly(TestSource item, CancellationToken cancellationToken)
     {
         using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
         var other = await Builder
@@ -47,7 +48,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddCacheOptions(item.GetTempDirectory("test"))
                           .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection")
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
@@ -56,8 +57,8 @@ public partial class AssemblyScanningTests : GeneratorTest
 
     [Test]
     [DependsOn(nameof(Should_Generate_All_The_Things_From_Another_Assembly), ProceedOnFailure = true)]
-    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
-    public async Task Should_Generate_All_The_Things_From_Another_Assembly_Using_Cache(TestSource item)
+    [MethodDataSource(typeof(AssemblyScanningTestData), nameof(AssemblyScanningTestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_From_Another_Assembly_Using_Cache(TestSource item, CancellationToken cancellationToken)
     {
         using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
         var other = await Builder
@@ -67,7 +68,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                          .PopulateCache(item.GetTempDirectory("other"))
                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection")
                          .Build()
-                         .GenerateAsync();
+                         .GenerateAsync(cancellationToken);
 
         other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ShouldBeEmpty();
         other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
@@ -87,8 +88,8 @@ public partial class AssemblyScanningTests : GeneratorTest
 
     [Test]
     [Skip("This test is flaky")]
-    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
-    public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly(TestSource item)
+    [MethodDataSource(typeof(AssemblyScanningTestData), nameof(AssemblyScanningTestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly(TestSource item, CancellationToken cancellationToken)
     {
         using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
         var other = await Builder
@@ -98,7 +99,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                          .AddCacheOptions(item.GetTempDirectory("other"))
                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection.Abstractions")
                          .Build()
-                         .GenerateAsync();
+                         .GenerateAsync(cancellationToken);
 
         other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ShouldBeEmpty();
         other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
@@ -120,8 +121,8 @@ public partial class AssemblyScanningTests : GeneratorTest
     [Test]
     [Skip("This test is flaky")]
     [DependsOn(nameof(Should_Generate_All_The_Things_From_Self_And_Another_Assembly), ProceedOnFailure = true)]
-    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
-    public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly_Using_Cache(TestSource item)
+    [MethodDataSource(typeof(AssemblyScanningTestData), nameof(AssemblyScanningTestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_From_Self_And_Another_Assembly_Using_Cache(TestSource item, CancellationToken cancellationToken)
     {
         using var assemblyLoadContext = new CollectibleTestAssemblyLoadContext();
         var other = await Builder
@@ -131,7 +132,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                          .PopulateCache(item.GetTempDirectory("other"))
                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection.Abstractions")
                          .Build()
-                         .GenerateAsync();
+                         .GenerateAsync(cancellationToken);
 
         other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ShouldBeEmpty();
         other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
@@ -143,7 +144,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .PopulateCache(item.GetTempDirectory("test"))
                           .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection.Abstractions")
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
@@ -152,8 +153,8 @@ public partial class AssemblyScanningTests : GeneratorTest
 
     [Test]
     [DependsOn(nameof(Should_Generate_All_The_Things), ProceedOnFailure = true)]
-    [MethodDataSource(typeof(TestData), nameof(TestData.GetTestData))]
-    public async Task Should_Generate_All_The_Things_Using_Cache(TestSource item)
+    [MethodDataSource(typeof(AssemblyScanningTestData), nameof(AssemblyScanningTestData.GetTestData))]
+    public async Task Should_Generate_All_The_Things_Using_Cache(TestSource item, CancellationToken cancellationToken)
     {
         var result = await Builder
                           .AddSources(item.Source)

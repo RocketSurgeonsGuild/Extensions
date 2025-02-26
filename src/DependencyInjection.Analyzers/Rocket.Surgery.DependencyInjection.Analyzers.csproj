@@ -10,13 +10,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="PolySharp" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Json" VersionOverride="8.0.5" PrivateAssets="all" />
-      <None
-            Include="$(MSBuildThisFileDirectory)\..\DependencyInjection.Analyzers.roslyn4.8\bin\$(Configuration)\netstandard2.0\$(AssemblyName).dll"
-            Pack="true"
-            PackagePath="analyzers/dotnet/roslyn4.8/cs"
-            Visible="false"
-        />
+    <PackageReference Include="System.Text.Json" VersionOverride="8.0.5" PrivateAssets="all">
+      <Version>9.0.2</Version>
+    </PackageReference>
+      <None Include="$(MSBuildThisFileDirectory)\..\DependencyInjection.Analyzers.roslyn4.8\bin\$(Configuration)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.8/cs" Visible="false" />
         <None Include="bin\$(Configuration)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.11/cs" Visible="false" />
         <None Include="$(PkgSystem_Text_Json)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.8/cs" Visible="false" />
         <None Include="$(PkgSystem_Text_Json)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn4.11/cs" Visible="false" />

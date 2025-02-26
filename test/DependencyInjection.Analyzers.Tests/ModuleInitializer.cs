@@ -17,6 +17,8 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 internal static partial class ModuleInitializer
 {
+    public const int TestTimeout = 60 * 60 * 1000;
+
     [ModuleInitializer]
     public static void Init()
     {
