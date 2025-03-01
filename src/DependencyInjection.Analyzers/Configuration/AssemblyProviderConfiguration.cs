@@ -452,7 +452,7 @@ internal partial class AssemblyProviderConfiguration
                     { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
                     { Identifier: 's' } => new SelfServiceTypeDescriptor(),
                     { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
-                    _ => throw new ArgumentOutOfRangeException(nameof(data)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(data), data, $"The type name was {data.GetType().FullName}"),
                 }
             );
         }
@@ -465,7 +465,7 @@ internal partial class AssemblyProviderConfiguration
     )
     {
         var serviceDescriptors = serviceTypeDescriptors.ServiceTypeDescriptors.Select(
-            z => z switch
+            descriptor => descriptor switch
                  {
                      ImplementedInterfacesServiceTypeDescriptor i => new(
                          'i',
@@ -478,7 +478,7 @@ internal partial class AssemblyProviderConfiguration
                          'c',
                          new(namedType.ContainingAssembly.MetadataName, namedType.MetadataName, namedType.IsUnboundGenericType)
                      ),
-                     _ => throw new ArgumentOutOfRangeException(nameof(z)),
+                     _ => throw new ArgumentOutOfRangeException(nameof(descriptor), descriptor, $"The type name was {descriptor.GetType().FullName}"),
                  }
         );
         return new(serviceDescriptors.ToImmutableArray(), serviceTypeDescriptors.Lifetime);
