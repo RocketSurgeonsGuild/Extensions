@@ -96,7 +96,7 @@ public class CompiledTypeProviderGenerator : IIncrementalGenerator
                     request.serviceDescriptors,
                     context.CancellationToken
                 );
-                var attributes = AssemblyProviderConfiguration.ToAssemblyAttributes(assemblyRequests, reflectionRequests, serviceDescriptorRequests).ToArray();
+                var attributes = AssemblyProviderConfiguration.ToAssemblyAttributes(context, assemblyRequests, reflectionRequests, serviceDescriptorRequests).ToArray();
 
                 var assemblySymbols = request
                                      .compilation

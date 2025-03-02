@@ -1,6 +1,80 @@
 ﻿{
   FinalDiagnostics: [],
   GeneratedCache: {
+    OtherProject: {
+      InternalServiceDescriptorRequests: [
+        {
+          Assembly: {
+            Location: {
+              Kind: ServiceDescriptor,
+              LineNumber: 16,
+              ExpressionHash: jm/nkIDlrjpFn5pT15jCnw==,
+              FileName: Input0.cs,
+              FilePath: Input0.cs
+            },
+            Assembly: {
+              AllAssembly: true,
+              IncludeSystem: false,
+              Assembly: null,
+              NotAssembly: null,
+              AssemblyDependencies: null
+            }
+          },
+          Reflection: {
+            Type: {
+              Filter: All,
+              NamespaceFilters: null,
+              NameFilters: null,
+              TypeKindFilters: [
+                {
+                  Include: true,
+                  TypeKinds: [
+                    Class
+                  ]
+                }
+              ],
+              TypeInfoFilters: [
+                {
+                  Include: false,
+                  TypeInfos: [
+                    Static,
+                    Abstract
+                  ]
+                }
+              ],
+              WithAttributeFilters: null,
+              WithAttributeStringFilters: null,
+              WithAnyAttributeFilters: null,
+              WithAnyAttributeStringFilters: null,
+              AssignableToTypeFilters: null,
+              AssignableToAnyTypeFilters: [
+                {
+                  Include: true,
+                  Types: [
+                    {
+                      Assembly: TestAssembly,
+                      Type: TestAssembly.IOther,
+                      UnboundGenericType: false
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          ServiceDescriptor: {
+            ServiceDescriptor: {
+              ServiceTypeDescriptors: null,
+              Lifetime: 1
+            },
+            Lifetime: 1
+          },
+          Type: GetServiceDescriptorCollectionData
+        }
+      ],
+      ExcludeFromResolution: false,
+      CacheVersion: {Scrubbed},
+      IsEmpty: false
+    },
     Rocket.Surgery.DependencyInjection.Extensions: {
       InternalServiceDescriptorRequests: [
         {
@@ -99,6 +173,28 @@
     build_property.ExcludeAssemblyFromCTP: Microsoft.Extensions.DependencyInjection,
     build_property.IntermediateOutputPath: obj/net9.0,
     build_property.ProjectDir: {TempPath}/test
+  },
+  PartialsCached: {
+    qGBCzGpSR08kZE9BB/9dxw==: {
+      ResolvedSources: {
+        TestAssembly: {
+          Location: {
+            Kind: ServiceDescriptor,
+            LineNumber: 16,
+            ExpressionHash: jm/nkIDlrjpFn5pT15jCnw==,
+            FileName: Input0.cs,
+            FilePath: Input0.cs
+          },
+          Expression:
+{
+},
+          PrivateAssemblies: [
+            TestAssembly
+          ],
+          CacheVersion: {Scrubbed}
+        }
+      }
+    }
   },
   References: [
     <in-memory assembly>,

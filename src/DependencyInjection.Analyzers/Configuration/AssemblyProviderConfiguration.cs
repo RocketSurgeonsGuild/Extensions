@@ -114,6 +114,7 @@ internal partial class AssemblyProviderConfiguration
     }
 
     public static IEnumerable<AttributeListSyntax> ToAssemblyAttributes(
+        SourceProductionContext context,
         ImmutableList<AssemblyCollection.Item> assemblyRequests,
         ImmutableList<ReflectionCollection.Item> reflectionTypes,
         ImmutableList<ServiceDescriptorCollection.Item> serviceDescriptorTypes
@@ -140,7 +141,7 @@ internal partial class AssemblyProviderConfiguration
                                .ThenBy(z => z.Location.LineNumber)
                                .ThenBy(z => z.Location.ExpressionHash))
         {
-            yield return Helpers.AddAssemblyAttribute(ServiceDescriptorTypesKey, GetServiceDescriptorToString(request));
+            yield return Helpers.AddAssemblyAttribute(ServiceDescriptorTypesKey, GetServiceDescriptorToString(context, request));
         }
     }
     #pragma warning disable RS1035
@@ -291,7 +292,7 @@ internal partial class AssemblyProviderConfiguration
         var result = new CompiledAssemblyProviderData(
             assemblyBuilder.Select(GetAssemblyCollectionData).ToImmutableList(),
             reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
-            serviceDescriptorBuilder.Select(GetServiceDescriptorCollectionData).ToImmutableList(),
+            serviceDescriptorBuilder.Select(z => GetServiceDescriptorCollectionData(context, z)).ToImmutableList(),
             excludeFromResolution,
             assembly.GetCachedVersion()
         );
@@ -340,12 +341,12 @@ internal partial class AssemblyProviderConfiguration
         return CompressString(result);
     }
 
-    private static GetServiceDescriptorCollectionData GetServiceDescriptorCollectionData(ServiceDescriptorCollection.Item item)
+    private static GetServiceDescriptorCollectionData GetServiceDescriptorCollectionData(SourceProductionContext context, ServiceDescriptorCollection.Item item)
     {
         var data = new GetServiceDescriptorCollectionData(
             new(item.Location, LoadAssemblyFilterData(item.AssemblyFilter)),
             new(LoadTypeFilterData(item.TypeFilter)),
-            new(LoadServiceDescriptorsData(item.ServicesTypeFilter), item.Lifetime)
+            new(LoadServiceDescriptorsData(context, item.ServicesTypeFilter), item.Lifetime)
         );
         return data;
     }
@@ -379,9 +380,9 @@ internal partial class AssemblyProviderConfiguration
         return GetServiceDescriptorFromData(compilation, assemblySymbols, config);
     }
 
-    private static string GetServiceDescriptorToString(ServiceDescriptorCollection.Item item)
+    private static string GetServiceDescriptorToString(SourceProductionContext context, ServiceDescriptorCollection.Item item)
     {
-        var data = GetServiceDescriptorCollectionData(item);
+        var data = GetServiceDescriptorCollectionData(context, item);
         var result = JsonSerializer.SerializeToUtf8Bytes(data, JsonSourceGenerationContext.Default.GetServiceDescriptorCollectionData);
         return CompressString(result);
     }
