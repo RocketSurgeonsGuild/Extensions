@@ -461,12 +461,23 @@ internal partial class AssemblyProviderConfiguration
     }
 
     private static ServiceDescriptorFilterData LoadServiceDescriptorsData(
+        SourceProductionContext context,
         CompiledServiceTypeDescriptors serviceTypeDescriptors
     )
     {
         var serviceDescriptors = serviceTypeDescriptors
                                 .ServiceTypeDescriptors
-                                .Where(z => z is not UnknownCompiledServiceTypeDescriptor)
+                                .Where(z =>
+                                       {
+                                           if (z is not UnknownCompiledServiceTypeDescriptor descriptor)
+                                           {
+                                               return true;
+                                           }
+
+                                           context.ReportDiagnostic(Diagnostic.Create(Diagnostics.CouldNotFindServiceType, null, descriptor.Data.Assembly, descriptor.Data.Type));
+                                           return false;
+                                       }
+                                 )
                                 .Select(
                                      descriptor => descriptor switch
                                                    {
