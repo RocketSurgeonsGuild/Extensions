@@ -67,5 +67,14 @@ internal static class Diagnostics
         true
     );
 
+    public static DiagnosticDescriptor CouldNotFindServiceType { get; } = new(
+        "RSGD0007",
+        "Could not find service type",
+        "Could not find service type {0} {1} {2}",
+        Category,
+        DiagnosticSeverity.Warning,
+        true
+    );
+
     private const string Category = "Dependency Injection";
 }

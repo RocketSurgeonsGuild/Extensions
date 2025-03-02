@@ -54,7 +54,7 @@ internal static class DataHelpers
             );
         }
 
-        var type = ModelExtensions.GetTypeInfo(semanticModel, memberAccessExpressionSyntax.Expression);
+        var type = ModelExtensions.GetTypeInfo(semanticModel, memberAccessExpressionSyntax.Expression, cancellationToken);
         if (type.Type is null) return;
         var typeName = type.Type.ToDisplayString();
         if (typeName is "Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector"
@@ -557,7 +557,7 @@ internal static class DataHelpers
             var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
             if (typeSyntax == null) yield break;
 
-            var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
+            var typeInfo = semanticModel.GetTypeInfo(typeSyntax, cancellationToken).Type;
             switch (typeInfo)
             {
                 case INamedTypeSymbol nts:
@@ -574,7 +574,7 @@ internal static class DataHelpers
             var typeSyntax = Helpers.ExtractSyntaxFromMethod(expression, name);
             if (typeSyntax == null) yield break;
 
-            var typeInfo = semanticModel.GetTypeInfo(typeSyntax).Type;
+            var typeInfo = semanticModel.GetTypeInfo(typeSyntax, cancellationToken).Type;
             switch (typeInfo)
             {
                 case INamedTypeSymbol nts:
