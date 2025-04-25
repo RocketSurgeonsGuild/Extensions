@@ -32,7 +32,7 @@
         <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.6.3" />
 
 
-        <PackageVersion Include="GitVersion.Tool" Version="6.2.0" />
+        <PackageVersion Include="GitVersion.Tool" Version="6.3.0" />
         <PackageVersion Include="Nuke.Common" Version="9.0.4" />
         <PackageVersion Include="PolySharp" Version="1.15.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
