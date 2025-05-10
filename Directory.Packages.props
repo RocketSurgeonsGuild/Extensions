@@ -38,7 +38,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageVersion>
-        <PackageVersion Include="ReportGenerator" Version="5.4.6" />
+        <PackageVersion Include="ReportGenerator" Version="5.4.7" />
         <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.9.11" />
         <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.13.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
