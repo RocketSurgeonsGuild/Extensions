@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" VersionOverride="4.14.0" PrivateAssets="all" />
     <PackageReference Include="PolySharp" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Json" VersionOverride="8.0.5" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" VersionOverride="8.0.6" PrivateAssets="all" />
     <PackageReference Include="JetBrains.Annotations" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
