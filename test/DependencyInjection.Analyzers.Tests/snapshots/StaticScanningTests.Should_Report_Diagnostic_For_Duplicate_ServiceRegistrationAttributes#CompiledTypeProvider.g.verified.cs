@@ -28,7 +28,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     {
         switch (lineNumber)
         {
-            // FilePath: {UserProfile}/Development/RocketSurgeonsGuild/Extensions/src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8PKITxXbtylCwtC8RjJaLg==
+            // FilePath: {CurrentDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs Expression: 8PKITxXbtylCwtC8RjJaLg==
             case 21:
                 break;
         }
