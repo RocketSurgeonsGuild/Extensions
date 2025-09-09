@@ -116,7 +116,7 @@
               LineNumber: 21,
               ExpressionHash: 8PKITxXbtylCwtC8RjJaLg==,
               FileName: CompiledTypeProviderServiceCollectionExtensions.cs,
-              FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
+              FilePath: {UserProfile}/Development/RocketSurgeonsGuild/Extensions/src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
             },
             Assembly: {
               AllAssembly: true,

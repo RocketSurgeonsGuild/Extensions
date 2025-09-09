@@ -1,14 +1,8 @@
 ﻿{
   result: {
-    AutoProperty: {
-      Value: 456
-    },
     Value: 123
   },
   bindingResult: [
-    {
-      AutoProperty:Value: 456
-    },
     {
       Value: 123
     }

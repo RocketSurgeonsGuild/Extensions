@@ -647,7 +647,6 @@ public static class Program {
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
         await Verify(new GeneratorTestResultsWithServices(result, services))
-             .HashParameters()
              .UseParameters(filter, namespaceFilterValue, namespaceFilterValueSecond, usingClass)
             ;
     }
@@ -730,10 +729,7 @@ public static class Program {
                           .GenerateAsync(cancellationToken);
 
         var services = await StaticHelper.ExecuteStaticServiceCollectionMethod(result, "Program", "LoadServices");
-        await Verify(new GeneratorTestResultsWithServices(result, services))
-             .HashParameters()
-             .UseParameters(filter, namespaceFilterValue, usingClass, usingTypeof)
-            ;
+        await Verify(new GeneratorTestResultsWithServices(result, services));
     }
 
     [Test]

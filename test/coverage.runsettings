@@ -103,8 +103,6 @@
                 <ModulePath>.*Roslynator\.Refactorings\.dll</ModulePath>
                 <ModulePath>.*Serilog\.Sinks\.Console\.dll</ModulePath>
                 <ModulePath>.*Shouldly\.dll</ModulePath>
-                <ModulePath>.*System\.Collections\.Immutable\.dll</ModulePath>
-                <ModulePath>.*System\.Interactive\.Async\.dll</ModulePath>
                 <ModulePath>.*System\.Interactive\.dll</ModulePath>
                 <ModulePath>.*System\.Reactive\.dll</ModulePath>
                 <ModulePath>.*System\.Reactive\.Observable\.Aliases\.dll</ModulePath>
