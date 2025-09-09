@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project>
     <PropertyGroup>
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
@@ -10,61 +9,61 @@
         <GlobalPackageReference Include="Rocket.Surgery.MSBuild.GitVersion" Version="1.3.0-beta.2" />
         <GlobalPackageReference Include="Rocket.Surgery.MSBuild.SourceLink" Version="1.3.0-beta.2" />
         <GlobalPackageReference Include="Rocket.Surgery.MyAssembly" Version="1.3.0-beta.2" />
-        <GlobalPackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
-        <GlobalPackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.3.4" />
+        <GlobalPackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" />
+        <GlobalPackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="4.14.0" />
         <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-        <GlobalPackageReference Include="Roslynator.Analyzers" Version="4.13.1" />
-        <GlobalPackageReference Include="Roslynator.Formatting.Analyzers" Version="4.13.1" />
-        <GlobalPackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.13.1" />
-        <GlobalPackageReference Include="Roslynator.CodeFixes" Version="4.13.1" />
-        <GlobalPackageReference Include="Roslynator.Refactorings" Version="4.13.1" />
+        <GlobalPackageReference Include="Roslynator.Analyzers" Version="4.14.0" />
+        <GlobalPackageReference Include="Roslynator.Formatting.Analyzers" Version="4.14.0" />
+        <GlobalPackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.14.0" />
+        <GlobalPackageReference Include="Roslynator.CodeFixes" Version="4.14.0" />
+        <GlobalPackageReference Include="Roslynator.Refactorings" Version="4.14.0" />
         <GlobalPackageReference Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1" />
     </ItemGroup>
     <ItemGroup>
-        <PackageVersion Include="JetBrains.Annotations" Version="2024.3.0" />
-        <PackageVersion Include="JetBrains.dotCover.CommandLineTools" Version="2024.3.6" />
+        <PackageVersion Include="JetBrains.Annotations" Version="2025.2.2" />
+        <PackageVersion Include="JetBrains.dotCover.CommandLineTools" Version="2024.3.8" />
 
 
-        <PackageVersion Include="JetBrains.ReSharper.GlobalTools" Version="2024.3.6" />
-        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.13.0" />
-        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="4.13.0" />
+        <PackageVersion Include="JetBrains.ReSharper.GlobalTools" Version="2024.3.8" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="4.14.0" />
         <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="17.14.2" />
-        <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.6.2" />
+        <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.8.4" />
 
 
-        <PackageVersion Include="GitVersion.Tool" Version="6.1.0" />
+        <PackageVersion Include="GitVersion.Tool" Version="6.4.0" />
         <PackageVersion Include="Nuke.Common" Version="9.0.4" />
         <PackageVersion Include="PolySharp" Version="1.15.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageVersion>
-        <PackageVersion Include="ReportGenerator" Version="5.4.4" />
+        <PackageVersion Include="ReportGenerator" Version="5.4.12" />
         <PackageVersion Include="Rocket.Surgery.Nuke" Version="2.9.11" />
-        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.13.0" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.2" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Ini" Version="9.0.2" />
-        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.2" />
-        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.8" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Ini" Version="9.0.8" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8" />
 
 
-        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.2" />
-        <PackageVersion Include="FastExpressionCompiler" Version="5.0.2" />
+        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+        <PackageVersion Include="FastExpressionCompiler" Version="5.3.0" />
         <PackageVersion Include="NetEscapades.Configuration.Yaml" Version="3.1.0" />
         <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <PackageVersion Include="System.Collections.Immutable" Version="9.0.2" />
-        <PackageVersion Include="System.Interactive" Version="6.0.1" />
-        <PackageVersion Include="System.Interactive.Async" Version="6.0.1" />
-        <PackageVersion Include="System.Text.Json" Version="9.0.2" />
-        <PackageVersion Include="System.Reactive" Version="6.0.1" />
-        <PackageVersion Include="System.Reactive.Observable.Aliases" Version="6.0.1" />
+        
+        <PackageVersion Include="System.Interactive" Version="6.0.3" />
+        <PackageVersion Include="System.Interactive.Async" Version="6.0.3" />
+        <PackageVersion Include="System.Text.Json" Version="9.0.6" />
+        <PackageVersion Include="System.Reactive" Version="6.0.2" />
+        <PackageVersion Include="System.Reactive.Observable.Aliases" Version="6.0.2" />
 
 
-        <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.0.1" />
+        <PackageVersion Include="Microsoft.Reactive.Testing" Version="6.0.2" />
 
 
-        <PackageVersion Include="Bogus" Version="35.6.2" />
+        <PackageVersion Include="Bogus" Version="35.6.3" />
 
 
         <PackageVersion Include="Shouldly" Version="4.3.0" />
@@ -73,13 +72,14 @@
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" Version="9.0.5" />
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.TUnit" Version="9.0.5" />
         <PackageVersion Include="Rocket.Surgery.Extensions.Testing.SourceGenerators" Version="9.0.5" />
-        <PackageVersion Include="TUnit" Version="0.15.30" />
+        <PackageVersion Include="TUnit" Version="0.57.24" />
         <PackageVersion Include="Verify.DiffPlex" Version="3.1.2" />
-        <PackageVersion Include="Verify.TUnit" Version="28.13.0" />
+        <PackageVersion Include="Verify.TUnit" Version="30.11.0" />
 
 
     </ItemGroup>
     <Import
         Project="$(MSBuildThisFileDirectory)/Directory.Packages.support.props"
-        Condition="Exists('$(MSBuildThisFileDirectory)/Directory.Packages.support.props')" />
+        Condition="Exists('$(MSBuildThisFileDirectory)/Directory.Packages.support.props')"
+    />
 </Project>
