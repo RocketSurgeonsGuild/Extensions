@@ -70,7 +70,7 @@ internal static class Diagnostics
     public static DiagnosticDescriptor CouldNotFindServiceType { get; } = new(
         "RSGD0007",
         "Could not find service type",
-        "Could not find service type {0} {1} {2}",
+        "Could not find service type {0} {1}",
         Category,
         DiagnosticSeverity.Warning,
         true
