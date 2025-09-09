@@ -17,8 +17,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 internal static partial class ModuleInitializer
 {
-    public const int TestTimeout = 60 * 60 * 1000;
-
     [ModuleInitializer]
     public static void Init()
     {
@@ -89,6 +87,7 @@ internal static partial class ModuleInitializer
     }
 
     public static string TempDirectory { get; private set; } = null!;
+    public const int TestTimeout = 60 * 60 * 1000;
 
     private class ServiceDescriptorConverter : WriteOnlyJsonConverter<ServiceDescriptor>
     {

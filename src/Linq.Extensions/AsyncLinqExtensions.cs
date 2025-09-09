@@ -16,10 +16,7 @@ public static class AsyncLinqExtensions
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <returns>An <see cref="IAsyncEnumerable{TSource}" /> that contains elements from the input sequence that satisfy the condition.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-    public static IAsyncEnumerable<TSource> Filter<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, bool> predicate)
-    {
-        return source.Where(predicate);
-    }
+    public static IAsyncEnumerable<TSource> Filter<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, bool> predicate) => source.Where(predicate);
 
     /// <summary>
     ///     Filters a sequence of values based on a predicate. Each element's index is used in the logic of the predicate function.
@@ -32,10 +29,7 @@ public static class AsyncLinqExtensions
     /// </param>
     /// <returns>An <see cref="IAsyncEnumerable{TSource}" /> that contains elements from the input sequence that satisfy the condition.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="predicate" /> is null.</exception>
-    public static IAsyncEnumerable<TSource> Filter<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, int, bool> predicate)
-    {
-        return source.Where(predicate);
-    }
+    public static IAsyncEnumerable<TSource> Filter<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, int, bool> predicate) => source.Where(predicate);
 
     /// <summary>
     ///     Projects each element of a sequence into a new form.
@@ -49,10 +43,7 @@ public static class AsyncLinqExtensions
     ///     <paramref name="source" />.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-    public static IAsyncEnumerable<TResult> Map<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, TResult> selector)
-    {
-        return source.Select(selector);
-    }
+    public static IAsyncEnumerable<TResult> Map<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, TResult> selector) => source.Select(selector);
 
     /// <summary>
     ///     Projects each element of a sequence into a new form by incorporating the element's index.
@@ -66,10 +57,7 @@ public static class AsyncLinqExtensions
     ///     <paramref name="source" />.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-    public static IAsyncEnumerable<TResult> Map<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, int, TResult> selector)
-    {
-        return source.Select(selector);
-    }
+    public static IAsyncEnumerable<TResult> Map<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, int, TResult> selector) => source.Select(selector);
 
     /// <summary>
     ///     Projects each element of a sequence to an <see cref="IAsyncEnumerable{TSource}" /> and flattens the resulting sequences into one sequence.
@@ -83,10 +71,7 @@ public static class AsyncLinqExtensions
     ///     sequence.
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
-    public static IAsyncEnumerable<TResult> MergeMap<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, IAsyncEnumerable<TResult>> selector)
-    {
-        return source.SelectMany(selector);
-    }
+    public static IAsyncEnumerable<TResult> MergeMap<TSource, TResult>(this IAsyncEnumerable<TSource> source, Func<TSource, IAsyncEnumerable<TResult>> selector) => source.SelectMany(selector);
 
     /// <summary>
     ///     Projects each element of a sequence to an <see cref="IAsyncEnumerable{TSource}" />, and flattens the resulting sequences into one sequence. The index of
@@ -102,11 +87,10 @@ public static class AsyncLinqExtensions
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="selector" /> is null.</exception>
     public static IAsyncEnumerable<TResult> MergeMap<TSource, TResult>(
-        this IAsyncEnumerable<TSource> source, Func<TSource, int, IAsyncEnumerable<TResult>> selector
-    )
-    {
-        return source.SelectMany(selector);
-    }
+        this IAsyncEnumerable<TSource> source,
+        Func<TSource, int, IAsyncEnumerable<TResult>> selector
+    ) =>
+        source.SelectMany(selector);
 
     /// <summary>
     ///     Projects each element of a sequence to an <see cref="IAsyncEnumerable{TSource}" />, flattens the resulting sequences into one sequence, and invokes a
@@ -125,12 +109,11 @@ public static class AsyncLinqExtensions
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
     public static IAsyncEnumerable<TResult> MergeMap<TSource, TCollection, TResult>(
-        this IAsyncEnumerable<TSource> source, Func<TSource, IAsyncEnumerable<TCollection>> collectionSelector,
+        this IAsyncEnumerable<TSource> source,
+        Func<TSource, IAsyncEnumerable<TCollection>> collectionSelector,
         Func<TSource, TCollection, TResult> resultSelector
-    )
-    {
-        return source.SelectMany(collectionSelector, resultSelector);
-    }
+    ) =>
+        source.SelectMany(collectionSelector, resultSelector);
 
     /// <summary>
     ///     Projects each element of a sequence to an <see cref="IAsyncEnumerable{TSource}" />, flattens the resulting sequences into one sequence, and invokes a
@@ -152,13 +135,11 @@ public static class AsyncLinqExtensions
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
     public static IAsyncEnumerable<TResult> MergeMap<TSource, TCollection, TResult>(
-        this IAsyncEnumerable<TSource> source, Func<TSource, int, IAsyncEnumerable<TCollection>> collectionSelector,
+        this IAsyncEnumerable<TSource> source,
+        Func<TSource, int, IAsyncEnumerable<TCollection>> collectionSelector,
         Func<TSource, TCollection, TResult> resultSelector
-    )
-    {
-        return source.SelectMany(collectionSelector, resultSelector);
-    }
-
+    ) =>
+        source.SelectMany(collectionSelector, resultSelector);
 
     /// <summary>
     ///     Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified
@@ -174,12 +155,11 @@ public static class AsyncLinqExtensions
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
     /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
     public static ValueTask<TAccumulate> ReduceAsync<TSource, TAccumulate>(
-        this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator
-    )
-    {
-        return source.AggregateAsync(seed, accumulator);
-    }
-
+        this IAsyncEnumerable<TSource> source,
+        TAccumulate seed,
+        Func<TAccumulate, TSource, TAccumulate> accumulator
+    ) =>
+        source.AggregateAsync(seed, accumulator);
 
     /// <summary>
     ///     Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified
@@ -197,11 +177,12 @@ public static class AsyncLinqExtensions
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> or <paramref name="resultSelector" /> is null.</exception>
     /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
     public static ValueTask<TResult> ReduceAsync<TSource, TAccumulate, TResult>(
-        this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector
-    )
-    {
-        return source.AggregateAsync(seed, accumulator, resultSelector);
-    }
+        this IAsyncEnumerable<TSource> source,
+        TAccumulate seed,
+        Func<TAccumulate, TSource, TAccumulate> accumulator,
+        Func<TAccumulate, TResult> resultSelector
+    ) =>
+        source.AggregateAsync(seed, accumulator, resultSelector);
 
     /// <summary>
     ///     Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence.
@@ -214,10 +195,7 @@ public static class AsyncLinqExtensions
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
     /// <exception cref="InvalidOperationException">(Asynchronous) The source sequence is empty.</exception>
     /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
-    public static ValueTask<TSource> ReduceAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator)
-    {
-        return source.AggregateAsync(accumulator);
-    }
+    public static ValueTask<TSource> ReduceAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator) => source.AggregateAsync(accumulator);
 
     /// <summary>
     ///     Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified
@@ -234,11 +212,12 @@ public static class AsyncLinqExtensions
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> is null.</exception>
     /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
     public static ValueTask<TAccumulate> ReduceAsync<TSource, TAccumulate>(
-        this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, CancellationToken cancellationToken
-    )
-    {
-        return source.AggregateAsync(seed, accumulator, cancellationToken);
-    }
+        this IAsyncEnumerable<TSource> source,
+        TAccumulate seed,
+        Func<TAccumulate, TSource, TAccumulate> accumulator,
+        CancellationToken cancellationToken
+    ) =>
+        source.AggregateAsync(seed, accumulator, cancellationToken);
 
     /// <summary>
     ///     Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified
@@ -257,12 +236,13 @@ public static class AsyncLinqExtensions
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="accumulator" /> or <paramref name="resultSelector" /> is null.</exception>
     /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
     public static ValueTask<TResult> ReduceAsync<TSource, TAccumulate, TResult>(
-        this IAsyncEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> accumulator, Func<TAccumulate, TResult> resultSelector,
+        this IAsyncEnumerable<TSource> source,
+        TAccumulate seed,
+        Func<TAccumulate, TSource, TAccumulate> accumulator,
+        Func<TAccumulate, TResult> resultSelector,
         CancellationToken cancellationToken
-    )
-    {
-        return source.AggregateAsync(seed, accumulator, resultSelector, cancellationToken);
-    }
+    ) =>
+        source.AggregateAsync(seed, accumulator, resultSelector, cancellationToken);
 
     /// <summary>
     ///     Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence.
@@ -277,9 +257,9 @@ public static class AsyncLinqExtensions
     /// <exception cref="InvalidOperationException">(Asynchronous) The source sequence is empty.</exception>
     /// <remarks>The return type of this operator differs from the corresponding operator on IAsyncEnumerable in order to retain asynchronous behavior.</remarks>
     public static ValueTask<TSource> ReduceAsync<TSource>(
-        this IAsyncEnumerable<TSource> source, Func<TSource, TSource, TSource> accumulator, CancellationToken cancellationToken
-    )
-    {
-        return source.AggregateAsync(accumulator, cancellationToken);
-    }
+        this IAsyncEnumerable<TSource> source,
+        Func<TSource, TSource, TSource> accumulator,
+        CancellationToken cancellationToken
+    ) =>
+        source.AggregateAsync(accumulator, cancellationToken);
 }

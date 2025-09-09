@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -1783,7 +1782,7 @@ public static class Program {
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-
+                               
                                	        provider.Scan(
                                            services,
                                            z => z
@@ -2076,8 +2075,22 @@ namespace RootDependencyProject
         }
 
         var root = await CreateRoot(AssemblyLoadContext, Logger, GetTempPath(), cancellationToken);
-        var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "A", cancellationToken, root);
-        var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "B", cancellationToken, root);
+        var dependencyA = await CreateServiceDependency(
+            AssemblyLoadContext,
+            Logger,
+            GetTempPath(),
+            "A",
+            cancellationToken,
+            root
+        );
+        var dependencyB = await CreateServiceDependency(
+            AssemblyLoadContext,
+            Logger,
+            GetTempPath(),
+            "B",
+            cancellationToken,
+            root
+        );
         var dependencyC = await CreateServiceDependency(
             AssemblyLoadContext,
             Logger,
@@ -2194,8 +2207,22 @@ namespace RootDependencyProject
 
         var dependencyA = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "A", cancellationToken);
         var dependencyB = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "B", cancellationToken);
-        var dependencyC = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "C", cancellationToken, dependencyA);
-        var dependencyD = await CreateServiceDependency(AssemblyLoadContext, Logger, GetTempPath(), "D", cancellationToken, dependencyC);
+        var dependencyC = await CreateServiceDependency(
+            AssemblyLoadContext,
+            Logger,
+            GetTempPath(),
+            "C",
+            cancellationToken,
+            dependencyA
+        );
+        var dependencyD = await CreateServiceDependency(
+            AssemblyLoadContext,
+            Logger,
+            GetTempPath(),
+            "D",
+            cancellationToken,
+            dependencyC
+        );
         dependencies.Add(dependencyA);
         dependencies.Add(dependencyB);
         dependencies.Add(dependencyC);
@@ -2457,7 +2484,7 @@ public static class Program {
                                           ///     The configuration key to use
                                           /// </summary>
                                           public string ConfigurationKey { get; } = configurationKey;
-
+                                      
                                           /// <summary>
                                           ///     The optional options name
                                           /// </summary>
@@ -2473,7 +2500,7 @@ public static class Program {
                                               var classes = provider.GetTypes(
                                                   s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
                                               );
-
+                                      
                                               return services;
                                           }
                                       }
@@ -2515,7 +2542,7 @@ public static class Program {
                                        var classes = provider.GetTypes(
                                            s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
                                        );
-
+                               
                                        return services;
                                    }
                                }
