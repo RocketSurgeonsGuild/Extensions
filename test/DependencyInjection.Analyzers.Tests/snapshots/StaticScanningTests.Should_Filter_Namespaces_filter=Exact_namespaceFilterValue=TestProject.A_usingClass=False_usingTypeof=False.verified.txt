@@ -1,0 +1,48 @@
+﻿{
+  FinalDiagnostics: [],
+  GeneratorDiagnostics: {
+    Rocket.Surgery.DependencyInjection.Analyzers.CompiledTypeProviderGenerator: []
+  },
+  GlobalOptions: {
+    build_property.IntermediateOutputPath: obj/net9.0,
+    build_property.ProjectDir: {TempDirectory}/Guid_1/Guid_2
+  },
+  References: [
+    Microsoft.Extensions.DependencyInjection.Abstractions.dll,
+    mscorlib.dll,
+    netstandard.dll,
+    Rocket.Surgery.DependencyInjection.Extensions.dll,
+    System.ComponentModel.dll,
+    System.Core.dll,
+    System.dll,
+    System.Private.CoreLib.dll,
+    System.Runtime.dll
+  ],
+  Services: [
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.Nested+ServiceA,
+      ImplementationType: TestProject.A.Nested+ServiceA
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.A.IService]
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.Service,
+      ImplementationType: TestProject.A.Service
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.A.IService,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.A.IService]
+    },
+    {
+      Lifetime: Scoped,
+      ServiceType: TestProject.B.IServiceB,
+      ImplementationFactory: System.Func`2[System.IServiceProvider,TestProject.B.IServiceB]
+    }
+  ]
+}

@@ -125,40 +125,13 @@ public static class AsyncLinqExtensions
     /// </returns>
     /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
     public static IAsyncEnumerable<TResult> MergeMap<TSource, TCollection, TResult>(
-        this IAsyncEnumerable<TSource> source, Func<TSource, IAsyncEnumerable<TCollection>> collectionSelector,
+        this IAsyncEnumerable<TSource> source,
+        Func<TSource, IAsyncEnumerable<TCollection>> collectionSelector,
         Func<TSource, TCollection, TResult> resultSelector
     )
     {
         return source.SelectMany(collectionSelector, resultSelector);
     }
-
-    /// <summary>
-    ///     Projects each element of a sequence to an <see cref="IAsyncEnumerable{TSource}" />, flattens the resulting sequences into one sequence, and invokes a
-    ///     result selector function on each element therein. The index of each source element is used in the intermediate projected form of that element.
-    /// </summary>
-    /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
-    /// <typeparam name="TCollection">The type of the intermediate elements collected by <paramref name="collectionSelector" />.</typeparam>
-    /// <typeparam name="TResult">The type of the elements of the resulting sequence.</typeparam>
-    /// <param name="source">A sequence of values to project.</param>
-    /// <param name="collectionSelector">
-    ///     A transform function to apply to each source element; the second parameter of the function represents the index of the source
-    ///     element.
-    /// </param>
-    /// <param name="resultSelector">A transform function to apply to each element of the intermediate sequence.</param>
-    /// <returns>
-    ///     An <see cref="IAsyncEnumerable{TSource}" /> whose elements are the result of invoking the one-to-many transform function
-    ///     <paramref name="collectionSelector" /> on each element of <paramref name="source" /> and then mapping each of those sequence elements and their
-    ///     corresponding source element to a result element.
-    /// </returns>
-    /// <exception cref="ArgumentNullException"><paramref name="source" /> or <paramref name="collectionSelector" /> or <paramref name="resultSelector" /> is null.</exception>
-    public static IAsyncEnumerable<TResult> MergeMap<TSource, TCollection, TResult>(
-        this IAsyncEnumerable<TSource> source, Func<TSource, int, IAsyncEnumerable<TCollection>> collectionSelector,
-        Func<TSource, TCollection, TResult> resultSelector
-    )
-    {
-        return source.SelectMany(collectionSelector, resultSelector);
-    }
-
 
     /// <summary>
     ///     Applies an accumulator function over an async sequence, returning the result of the aggregation as a single element in the result sequence. The specified
