@@ -7,9 +7,9 @@ using System.Text.Json.Serialization.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers;
+using static SyntaxFactory;
 
 internal static class AssemblyProviderBuilder
 {

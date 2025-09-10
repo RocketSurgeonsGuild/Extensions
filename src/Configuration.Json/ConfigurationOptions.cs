@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Configuration;
-using IMsftConfigurationBuilder = Microsoft.Extensions.Configuration.IConfigurationBuilder;
 
 namespace Rocket.Surgery.Extensions.Configuration;
 

@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
+using VerifyTests;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
@@ -26,8 +27,6 @@ internal static partial class ModuleInitializer
         TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         VerifierSettings.ScrubLinesWithReplace(s => s.Replace(TempDirectory, "{TempDirectory}").Replace(TempDirectory.Replace("\\", "/"), "{TempDirectory}"));
         VerifyGeneratorTextContext.Initialize(DiagnosticSeverity.Warning, Customizers.Default, Customizers.ExcludeParseOptions);
-        VerifierSettings.DontScrubUserProfile();
-        VerifierSettings.DontScrubSolutionDirectory();
 
         VerifierSettings.AssignTargetAssembly(typeof(ModuleInitializer).Assembly);
         VerifyDiffPlex.Initialize();

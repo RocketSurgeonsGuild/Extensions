@@ -54,7 +54,7 @@ internal static class AssemblyCollection
                     cancellationToken
                 );
 
-                var assemblyFilter = new CompiledAssemblyFilter([.. assemblies]);
+                var assemblyFilter = new CompiledAssemblyFilter(ImmutableList.CreateRange( assemblies));
 
                 var source = Helpers.CreateSourceLocation(SourceLocationKind.Assembly, methodCallSyntax, cancellationToken);
                 // disallow list?
