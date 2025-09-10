@@ -54,7 +54,7 @@ internal static class AssemblyCollection
                     cancellationToken
                 );
 
-                var assemblyFilter = new CompiledAssemblyFilter(ImmutableList.CreateRange( assemblies));
+                var assemblyFilter = new CompiledAssemblyFilter([.. assemblies]);
 
                 var source = Helpers.CreateSourceLocation(SourceLocationKind.Assembly, methodCallSyntax, cancellationToken);
                 // disallow list?
@@ -131,7 +131,7 @@ internal static class AssemblyCollection
                 if (filterAssemblies.Length == 0) continue;
 
                 var descriptors = GenerateDescriptors(compilation, filterAssemblies, pa).NormalizeWhitespace().ToFullString().Replace("\r", "");
-                results.Add(new(item.Location, descriptors, pa.Select(z => z.MetadataName).ToImmutableHashSet(), ""));
+                results.Add(new(item.Location, descriptors, [.. pa.Select(z => z.MetadataName)], ""));
             }
             catch (Exception e)
             {

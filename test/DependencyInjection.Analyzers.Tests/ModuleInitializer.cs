@@ -11,15 +11,12 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
-using VerifyTests;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 internal static partial class ModuleInitializer
 {
-    public const int TestTimeout = 60 * 60 * 1000;
-
     [ModuleInitializer]
     public static void Init()
     {
@@ -92,6 +89,7 @@ internal static partial class ModuleInitializer
     }
 
     public static string TempDirectory { get; private set; } = null!;
+    public const int TestTimeout = 60 * 60 * 1000;
 
     private class ServiceDescriptorConverter : WriteOnlyJsonConverter<ServiceDescriptor>
     {
@@ -202,7 +200,7 @@ internal static partial class ModuleInitializer
                                  )!
                              )
                             .SingleOrDefault()
-         ?? new(ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty, [], ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty);
+         ?? new([], [], []);
 
         var generatorDiagnostics = target
                                   .Results

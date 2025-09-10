@@ -1,7 +1,7 @@
 using System.Runtime.Loader;
+
 using Rocket.Surgery.Extensions.Testing;
 using Rocket.Surgery.Extensions.Testing.SourceGenerators;
-using TUnit.Core;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
