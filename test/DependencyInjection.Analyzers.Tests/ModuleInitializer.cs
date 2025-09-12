@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -17,8 +16,6 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers.Tests;
 
 internal static partial class ModuleInitializer
 {
-    public const int TestTimeout = 60 * 60 * 1000;
-
     [ModuleInitializer]
     public static void Init()
     {
@@ -27,7 +24,6 @@ internal static partial class ModuleInitializer
         VerifierSettings.ScrubLinesWithReplace(s => s.Replace(TempDirectory, "{TempDirectory}").Replace(TempDirectory.Replace("\\", "/"), "{TempDirectory}"));
         VerifyGeneratorTextContext.Initialize(DiagnosticSeverity.Warning, Customizers.Default, Customizers.ExcludeParseOptions);
         VerifierSettings.DontScrubUserProfile();
-        VerifierSettings.DontScrubSolutionDirectory();
 
         VerifierSettings.AssignTargetAssembly(typeof(ModuleInitializer).Assembly);
         VerifyDiffPlex.Initialize();
@@ -92,6 +88,7 @@ internal static partial class ModuleInitializer
     }
 
     public static string TempDirectory { get; private set; } = null!;
+    public const int TestTimeout = 60 * 60 * 1000;
 
     private class ServiceDescriptorConverter : WriteOnlyJsonConverter<ServiceDescriptor>
     {
@@ -202,7 +199,7 @@ internal static partial class ModuleInitializer
                                  )!
                              )
                             .SingleOrDefault()
-         ?? new(ImmutableDictionary<string, CompiledAssemblyProviderData>.Empty, [], ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection>.Empty);
+         ?? new([], [], []);
 
         var generatorDiagnostics = target
                                   .Results

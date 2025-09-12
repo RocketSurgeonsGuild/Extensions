@@ -1,6 +1,6 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
+
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 
@@ -8,7 +8,7 @@ internal class TypeSymbolVisitor
     (Compilation compilation, ICompiledTypeFilter<IAssemblySymbol> assemblyFilter, ICompiledTypeFilter<INamedTypeSymbol> typeFilter)
     : TypeSymbolVisitorBase(compilation, assemblyFilter, typeFilter)
 {
-    private readonly HashSet<INamedTypeSymbol> _types = new(SymbolEqualityComparer.Default);
+    public ImmutableList<INamedTypeSymbol> GetTypes() => [.. _types];
 
     protected override bool FoundNamedType(INamedTypeSymbol symbol)
     {
@@ -16,7 +16,7 @@ internal class TypeSymbolVisitor
         return false;
     }
 
-    public ImmutableList<INamedTypeSymbol> GetTypes() => _types.ToImmutableList();
+    private readonly HashSet<INamedTypeSymbol> _types = new(SymbolEqualityComparer.Default);
 }
 
 internal static class TypeSymbolVisitorExtensions
@@ -28,10 +28,18 @@ internal static class TypeSymbolVisitorExtensions
             switch (symbol)
             {
                 case IAssemblySymbol:
-                    symbol.Accept(visitor);
-                    break;
+                    {
+                        symbol.Accept(visitor);
+                        break;
+                    }
+
                 case IModuleSymbol:
-                    symbol.Accept(visitor);
+                    {
+                        symbol.Accept(visitor);
+                        break;
+                    }
+
+                default:
                     break;
             }
         }

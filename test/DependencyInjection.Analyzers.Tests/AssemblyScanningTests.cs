@@ -1,4 +1,3 @@
-
 using Microsoft.CodeAnalysis;
 
 using TestAssembly;
@@ -37,7 +36,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                          .AddCacheOptions(item.GetTempDirectory("other"))
                          .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection")
                          .Build()
-                         .GenerateAsync();
+                         .GenerateAsync(cancellationToken);
 
         other.FinalDiagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error).ShouldBeEmpty();
         other.EnsureDiagnosticSeverity(DiagnosticSeverity.Error);
@@ -79,7 +78,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .PopulateCache(item.GetTempDirectory("test"))
                           .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection")
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
@@ -111,7 +110,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .AddCacheOptions(item.GetTempDirectory("test"))
                           .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft.Extensions.DependencyInjection.Abstractions")
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))
@@ -162,7 +161,7 @@ public partial class AssemblyScanningTests : GeneratorTest
                           .PopulateCache(item.GetTempDirectory())
                           .AddGlobalOption("build_property.ExcludeAssemblyFromCTP", "Microsoft")
                           .Build()
-                          .GenerateAsync();
+                          .GenerateAsync(cancellationToken);
 
         await Verify(result.AddCacheFiles())
              .AddScrubber(z => z.Replace(item.GetTempDirectory(), "{TempPath}"))

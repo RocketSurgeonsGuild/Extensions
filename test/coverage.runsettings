@@ -85,6 +85,7 @@
                 <ModulePath>.*NETStandard\.Library\.dll</ModulePath>
                 <ModulePath>.*Newtonsoft\.Json\.dll</ModulePath>
                 <ModulePath>.*Nuke\.Common\.dll</ModulePath>
+                <ModulePath>.*Polyfill\.dll</ModulePath>
                 <ModulePath>.*PolySharp\.dll</ModulePath>
                 <ModulePath>.*ReportGenerator\.dll</ModulePath>
                 <ModulePath>.*Rocket\.Surgery\.Extensions\.Testing\.FakeItEasy\.dll</ModulePath>
