@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project>
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'netstandard2.0'">
         <PackageVersion Update="Microsoft.Extensions.Configuration" Version="8.0.0" />
