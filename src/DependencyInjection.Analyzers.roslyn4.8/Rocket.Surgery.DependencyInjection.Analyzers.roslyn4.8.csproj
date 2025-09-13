@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <_Analyzer_Roslyn_Version_>$(MSBuildProjectName.Replace("Rocket.Surgery.DependencyInjection.Analyzers.",
-      ""))</_Analyzer_Roslyn_Version_>
+    <_Analyzer_Roslyn_Version_>$(MSBuildProjectName.Replace("Rocket.Surgery.DependencyInjection.Analyzers.",""))</_Analyzer_Roslyn_Version_>
     <DefineConstants>$(DefineConstants);ROSLYN4_8</DefineConstants>
     <IsPackable>false</IsPackable>
     <AssemblyName>Rocket.Surgery.DependencyInjection.Analyzers</AssemblyName>

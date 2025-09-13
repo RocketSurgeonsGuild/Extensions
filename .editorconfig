@@ -1,5 +1,10 @@
 root = true
 
+[*]
+charset = utf-8
+insert_final_newline = true
+max_line_length = 200
+
 [*.{cs, cshtml}]
 indent_style = space
 indent_size = 4
@@ -14,6 +19,8 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true
+xml_max_line_length = off
+max_line_length = off
 
 [{*.graphqlconfig,*.graphqlrc,*.har,*.jsb2,*.jsb3,*.json,*.jsonc,*.postman_collection,*.postman_environment,.babelrc,.eslintrc,.prettierrc,.stylelintrc,bowerrc,jest.config}]
 indent_style = space
@@ -35,11 +42,6 @@ indent_style = space
 indent_size = 4
 tab_width = 4
 trim_trailing_whitespace = true
-
-[*]
-charset = utf-8
-insert_final_newline = true
-max_line_length = 200
 
 ## Other configs
 dotnet_diagnostic.RMG012.severity = error # Unmapped target member
@@ -5058,8 +5060,8 @@ resharper_xml_max_line_length = 200
 resharper_xml_pi_attribute_style = do_not_touch
 resharper_xml_space_after_last_pi_attribute = false
 resharper_xml_space_before_self_closing = true
-resharper_xml_wrap_lines = true
-resharper_xml_wrap_tags_and_pi = true
+resharper_xml_wrap_lines = false
+resharper_xml_wrap_tags_and_pi = false
 resharper_xml_wrap_text = false
 
 # ReSharper inspection severities
