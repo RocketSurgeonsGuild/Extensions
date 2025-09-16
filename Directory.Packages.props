@@ -43,7 +43,7 @@
         <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0-rc.1.25451.107" />
         <PackageVersion Include="FastExpressionCompiler" Version="5.3.0" />
         <PackageVersion Include="NetEscapades.Configuration.Yaml" Version="3.1.0" />
-        <PackageVersion Include="Newtonsoft.Json" Version="13.0.4-beta1" />
+        <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
         <PackageVersion Include="System.Interactive" Version="6.0.3" />
         <PackageVersion Include="System.Interactive.Async" Version="6.0.3" />
