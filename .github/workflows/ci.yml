@@ -146,13 +146,13 @@ jobs:
           dotnet .build/bin/Debug/.build.dll --target Default --skip Restore Build Test Pack
       - name: 🏺 Publish logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'logs'
           path: 'artifacts/logs/'
       - name: 🏺 Publish test data
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'test data'
           path: 'artifacts/test/'
@@ -163,7 +163,7 @@ jobs:
           files: 'artifacts/test/**/*.trx'
       - name: 🏺 Publish coverage data
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'coverage'
           path: 'coverage/'
@@ -184,7 +184,7 @@ jobs:
           token: '${{ secrets.CODECOV_TOKEN }}'
       - name: 🏺 Publish NuGet Packages
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: 'nuget'
           path: 'artifacts/nuget/'
