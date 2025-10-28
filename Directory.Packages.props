@@ -22,8 +22,8 @@
     </ItemGroup>
     <ItemGroup>
         <PackageVersion Include="JetBrains.Annotations" Version="2025.2.2" />
-        <PackageVersion Include="JetBrains.dotCover.CommandLineTools" Version="2025.2.3" />
-        <PackageVersion Include="JetBrains.ReSharper.GlobalTools" Version="2025.2.3" />
+        <PackageVersion Include="JetBrains.dotCover.CommandLineTools" Version="2025.2.4" />
+        <PackageVersion Include="JetBrains.ReSharper.GlobalTools" Version="2025.2.4" />
         <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
         <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Features" Version="4.14.0" />
         <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="17.14.2" />
