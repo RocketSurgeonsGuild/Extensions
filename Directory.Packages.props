@@ -45,8 +45,8 @@
         <PackageVersion Include="NetEscapades.Configuration.Yaml" Version="3.1.0" />
         <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953" />
-        <PackageVersion Include="System.Interactive" Version="6.0.3" />
-        <PackageVersion Include="System.Interactive.Async" Version="6.0.3" />
+        <PackageVersion Include="System.Interactive" Version="7.0.0" />
+        <PackageVersion Include="System.Interactive.Async" Version="7.0.0" />
         <PackageVersion Include="System.Text.Json" Version="8.0.6" />
         <PackageVersion Include="System.Reactive" Version="6.0.2" />
         <PackageVersion Include="System.Reactive.Observable.Aliases" Version="6.0.2" />
