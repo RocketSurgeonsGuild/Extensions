@@ -163,7 +163,7 @@ internal partial class Pipeline : NukeBuild,
     /// </summary>
     public Target JetBrainsCleanupCode => _ => _
                                               .Inherit<ICanDotNetFormat>(x => x.JetBrainsCleanupCode)
-                                              .OnlyWhenStatic(() => IsServerBuild);
+                                              .OnlyWhenStatic(() => false);
 
     [OptionalGitRepository]
     public GitRepository? GitRepository { get; }
