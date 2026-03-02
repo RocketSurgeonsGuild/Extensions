@@ -32,9 +32,7 @@ internal static partial class ModuleInitializer
         VerifierSettings.ScrubMember<ResolvedSourceLocation>(z => z.CacheVersion);
         VerifierSettings.ScrubMember<CompiledAssemblyProviderData>(z => z.CacheVersion);
 
-        VerifierSettings.AddExtraSettings(
-            settings => settings.Converters.Add(new ServiceDescriptorConverter())
-        );
+        VerifierSettings.AddExtraSettings(settings => settings.Converters.Add(new ServiceDescriptorConverter()));
 
         VerifierSettings.RegisterFileConverter<GeneratorTestResultsWithServices>(Convert);
         VerifierSettings.RegisterFileConverter<GeneratorTestResultsWithCacheFiles>(Convert);
@@ -229,7 +227,7 @@ internal static partial class ModuleInitializer
 
             ["FinalDiagnostics"] = target.FinalDiagnostics.OrderDiagnosticResults(DiagnosticSeverity.Error),
             ["GeneratorDiagnostics"] = generatorDiagnostics,
-            ["SkippedAssemblies"] = generatedCache.SkipAssemblies.Order().ToArray(),
+            ["EmptyAssemblies"] = generatedCache.EmptyAssemblies.Order().ToArray(),
             ["PartialsCached"] = partialsCached,
             ["GeneratedCache"] = generatedCache
                                 .AssemblyData

@@ -30,6 +30,7 @@
     <NuGetAuditMode>all</NuGetAuditMode>
     <NuGetAuditLevel>moderate</NuGetAuditLevel>
     <SolutionDir>$(MSBuildThisFileDirectory)</SolutionDir>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
     <None

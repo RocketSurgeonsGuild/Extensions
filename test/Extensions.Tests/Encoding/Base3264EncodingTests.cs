@@ -74,7 +74,7 @@ public class Base3264EncodingTests() : AutoFakeTest(Defaults.LoggerTest)
         var g = Guid.NewGuid();
         var enc = new Base32Url(false, true, true, "AaCDEFGHIJKLMNOPQRSTUVWXYZ123456");
         var o = enc.Encode(g.ToByteArray());
-        await Assert.That(g).IsEqualTo(new(enc.Decode(o)));
+        await Assert.That(g).IsEqualTo(new Guid(enc.Decode(o)));
     }
 
     [Test]

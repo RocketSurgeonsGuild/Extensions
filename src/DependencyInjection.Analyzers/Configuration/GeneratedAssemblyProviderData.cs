@@ -7,7 +7,7 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 public record GeneratedAssemblyProviderData
 (
     ImmutableDictionary<string, CompiledAssemblyProviderData> AssemblyData,
-    ImmutableHashSet<string> SkipAssemblies,
+    ImmutableHashSet<string> EmptyAssemblies,
     ImmutableDictionary<string, GeneratedLocationAssemblyResolvedSourceCollection> Partials
 )
 {
@@ -23,5 +23,5 @@ public record GeneratedAssemblyProviderData
             ? data
             : factory();
 
-    public bool IsAssemblySkipped(IAssemblySymbol assembly) => SkipAssemblies.Contains(assembly.MetadataName);
+    public bool DoesAssemblyContainExpressions(IAssemblySymbol assembly) => EmptyAssemblies.Contains(assembly.MetadataName);
 }

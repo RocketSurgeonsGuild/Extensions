@@ -1,4 +1,14 @@
 ﻿{
+  EmptyAssemblies: [
+    mscorlib,
+    netstandard,
+    System,
+    System.ComponentModel,
+    System.Core,
+    System.Private.CoreLib,
+    System.Runtime,
+    TestAssembly
+  ],
   FinalDiagnostics: [],
   GeneratedCache: {
     Rocket.Surgery.DependencyInjection.Extensions: {
@@ -163,15 +173,5 @@
     System.Private.CoreLib.dll,
     System.Runtime.dll,
     TestAssembly.dll
-  ],
-  SkippedAssemblies: [
-    mscorlib,
-    netstandard,
-    System,
-    System.ComponentModel,
-    System.Core,
-    System.Private.CoreLib,
-    System.Runtime,
-    TestAssembly
   ]
 }

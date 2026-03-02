@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Rocket.Surgery.DependencyInjection;
 using Rocket.Surgery.DependencyInjection.Compiled;
+using System.Runtime.Loader;
 
 [assembly: Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute(typeof(CompiledTypeProvider), "{scrubbed}")]
 [System.CodeDom.Compiler.GeneratedCode("Rocket.Surgery.DependencyInjection.Analyzers", "version"), System.Runtime.CompilerServices.CompilerGenerated, System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -25,6 +26,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
         {
             // FilePath: Input0.cs Expression: qBIVSXgRbSfIUDtbJ2U3ow==
             case 16:
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
@@ -32,6 +34,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+                items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 break;
         }
 
@@ -42,6 +45,13 @@ file class CompiledTypeProvider : ICompiledTypeProvider
     {
         return services;
     }
+
+    private AssemblyLoadContext _context = AssemblyLoadContext.GetLoadContext(typeof(CompiledTypeProvider).Assembly)!;
+    private Assembly _RocketSurgeryDependencyInjectionExtensions;
+    private Assembly RocketSurgeryDependencyInjectionExtensions => _RocketSurgeryDependencyInjectionExtensions ??= _context.LoadFromAssemblyName(new AssemblyName("Rocket.Surgery.DependencyInjection.Extensions, Version=version, Culture=neutral, PublicKeyToken=null"));
+
+    private Assembly _TestAssembly;
+    private Assembly TestAssembly => _TestAssembly ??= _context.LoadFromAssemblyName(new AssemblyName("TestAssembly, Version=version, Culture=neutral, PublicKeyToken=null"));
 }
 #pragma warning restore CA1002, CA1034, CA1822, CS0105, CS1573, CA5351, CS8618, CS8669, IL2026, IL2072
 #nullable restore

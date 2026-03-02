@@ -27,6 +27,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: ca8FK2k2biWcJo/tQ2D+0Q==
             case 16:
                 items.Add(OtherProject.GetType("Program")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ExcludeFromCompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
@@ -68,6 +69,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+                items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
