@@ -69,6 +69,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: Xt+gXX8VI+/o1zAmcdZPUw==
             case 42:
                 items.Add(OtherProject.GetType("Program")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
@@ -100,6 +101,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+                items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(TestAssembly.GetType("MyAssembly")!);
                 items.Add(TestAssembly.GetType("MyAssembly+Info")!);
                 items.Add(TestAssembly.GetType("MyAssembly+Metadata")!);
@@ -120,6 +122,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: ca8FK2k2biWcJo/tQ2D+0Q==
             case 102:
                 items.Add(OtherProject.GetType("Program")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ExcludeFromCompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
@@ -161,6 +164,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+                items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
                 items.Add(typeof(global::TestAssembly.GenericServiceB));
                 items.Add(typeof(global::TestAssembly.IGenericService<>));
@@ -184,6 +188,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
             // FilePath: Input0.cs Expression: aZistx/1kY6goq1k0APviA==
             case 122:
                 items.Add(OtherProject.GetType("Program")!);
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
                 items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
                 items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
@@ -215,6 +220,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+                items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(TestAssembly.GetType("MyAssembly")!);
                 items.Add(TestAssembly.GetType("MyAssembly+Info")!);
                 items.Add(TestAssembly.GetType("MyAssembly+Metadata")!);
@@ -730,6 +736,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 break;
             // FilePath: Input0.cs Expression: qBIVSXgRbSfIUDtbJ2U3ow==
             case 82:
+                items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
@@ -737,6 +744,7 @@ file class CompiledTypeProvider : ICompiledTypeProvider
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
                 items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
+                items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
                 break;
             // FilePath: Input0.cs Expression: OEcoVmZS+d2TfT1y2s87jg==
             case 92:

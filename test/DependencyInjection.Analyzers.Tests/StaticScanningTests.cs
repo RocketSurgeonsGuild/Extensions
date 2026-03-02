@@ -1778,7 +1778,7 @@ public static class Program {
                                                .AsImplementedInterfaces()
                                                .With{{serviceLifetime}}Lifetime()
                                        );
-                               
+
                                	        provider.Scan(
                                            services,
                                            z => z
@@ -2480,7 +2480,7 @@ public static class Program {
                                           ///     The configuration key to use
                                           /// </summary>
                                           public string ConfigurationKey { get; } = configurationKey;
-                                      
+
                                           /// <summary>
                                           ///     The optional options name
                                           /// </summary>
@@ -2496,7 +2496,7 @@ public static class Program {
                                               var classes = provider.GetTypes(
                                                   s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
                                               );
-                                      
+
                                               return services;
                                           }
                                       }
@@ -2538,7 +2538,7 @@ public static class Program {
                                        var classes = provider.GetTypes(
                                            s => s.FromAssemblyDependenciesOf<RegisterOptionsConfigurationAttribute>().GetTypes(f => f.WithAttribute<RegisterOptionsConfigurationAttribute>())
                                        );
-                               
+
                                        return services;
                                    }
                                }

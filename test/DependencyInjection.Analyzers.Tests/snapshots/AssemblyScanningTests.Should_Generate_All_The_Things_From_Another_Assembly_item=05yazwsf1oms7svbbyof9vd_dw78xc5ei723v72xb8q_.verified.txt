@@ -1,4 +1,14 @@
 ﻿{
+  EmptyAssemblies: [
+    mscorlib,
+    netstandard,
+    System,
+    System.ComponentModel,
+    System.Core,
+    System.Private.CoreLib,
+    System.Runtime,
+    TestAssembly
+  ],
   FinalDiagnostics: [],
   GeneratedCache: {
     OtherProject: {
@@ -83,7 +93,7 @@
               LineNumber: 21,
               ExpressionHash: 8PKITxXbtylCwtC8RjJaLg==,
               FileName: CompiledTypeProviderServiceCollectionExtensions.cs,
-              FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
+              FilePath: {CurrentDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
             },
             Assembly: {
               AllAssembly: true,
@@ -203,6 +213,7 @@
           },
           Expression:
 {
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ExcludeFromCompiledTypeProviderAttribute));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
@@ -260,6 +271,7 @@
           },
           Expression:
 {
+    items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
     items.Add(typeof(global::TestAssembly.GenericServiceB));
     items.Add(typeof(global::TestAssembly.IGenericService<>));
@@ -300,15 +312,5 @@
     System.Private.CoreLib.dll,
     System.Runtime.dll,
     TestAssembly.dll
-  ],
-  SkippedAssemblies: [
-    mscorlib,
-    netstandard,
-    System,
-    System.ComponentModel,
-    System.Core,
-    System.Private.CoreLib,
-    System.Runtime,
-    TestAssembly
   ]
 }

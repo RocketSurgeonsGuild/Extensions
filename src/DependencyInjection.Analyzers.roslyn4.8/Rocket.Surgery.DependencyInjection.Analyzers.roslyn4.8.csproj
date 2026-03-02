@@ -3,7 +3,8 @@
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <_Analyzer_Roslyn_Version_>$(MSBuildProjectName.Replace("Rocket.Surgery.DependencyInjection.Analyzers.",""))</_Analyzer_Roslyn_Version_>
+    <_Analyzer_Roslyn_Version_>
+      $(MSBuildProjectName.Replace("Rocket.Surgery.DependencyInjection.Analyzers.",""))</_Analyzer_Roslyn_Version_>
     <DefineConstants>$(DefineConstants);ROSLYN4_8</DefineConstants>
     <IsPackable>false</IsPackable>
     <AssemblyName>Rocket.Surgery.DependencyInjection.Analyzers</AssemblyName>
@@ -13,7 +14,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="5.0.0" PrivateAssets="all" />
     <PackageReference Include="PolySharp" PrivateAssets="all" />
     <PackageReference Include="System.Text.Json" OverrideVersion="9.0.9" PrivateAssets="all" />
-    <PackageReference Include="JetBrains.Annotations" PrivateAssets="all" />
+    <PackageReference Include="JetBrains.Annotations.Sources" PrivateAssets="all" Condition="'$(MSBuildProjectName)'!='.build'" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\DependencyInjection.Analyzers\**\*.cs" Exclude="..\DependencyInjection.Analyzers\obj\**\*.cs" />

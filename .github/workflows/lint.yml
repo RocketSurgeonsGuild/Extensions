@@ -63,10 +63,6 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '8.0.x'
-      - name: 🔨 Use .NET Core 9.0 SDK
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: '9.0.x'
       - name: 🔨 Use .NET Core 10.0 SDK
         uses: actions/setup-dotnet@v5
         with:

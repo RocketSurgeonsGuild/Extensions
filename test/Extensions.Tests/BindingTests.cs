@@ -1,8 +1,11 @@
 #nullable disable
 using System.Reflection;
+
 using Microsoft.Extensions.Configuration;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using Rocket.Surgery.Binding;
 using Rocket.Surgery.Extensions.Testing;
 
@@ -218,7 +221,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (AutoProperty)@delegate(binder, typeof(AutoProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -233,7 +236,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ReadonlyAutoProperty)@delegate(binder, typeof(ReadonlyAutoProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -248,7 +251,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (PrivateSetterProperty)@delegate(binder, typeof(PrivateSetterProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -264,7 +267,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -280,7 +283,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -295,7 +298,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ComplexProperty)@delegate(binder, typeof(ComplexProperty), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -311,8 +314,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (ArrayProperties)@delegate(binder, typeof(ArrayProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -328,7 +330,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (SimpleArrayProperties)@delegate(binder, typeof(SimpleArrayProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -344,7 +346,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         };
         var result = (EnumerableProperties)@delegate(binder, typeof(EnumerableProperties), JsonBinder.DefaultSerializer, keyValuePairs);
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -359,7 +361,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
             new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (IListProperties)@delegate(binder, typeof(IListProperties), JsonBinder.DefaultSerializer, keyValuePairs);
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -374,7 +376,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
             new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (ListProperties)@delegate(binder, typeof(ListProperties), JsonBinder.DefaultSerializer, keyValuePairs);
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -423,7 +425,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         result.CustomFields["something"].ToString().ShouldBe("1123");
         result.CustomFields["somethingelse"]["value"]!.ToString().ShouldBe("1456");
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     [Test]
@@ -458,7 +460,7 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
         result.ComplexProperty.CustomFields.ShouldNotBeEmpty();
         result.CustomFields.ShouldNotBeEmpty();
 
-        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current.TestDetails.TestId);
+        return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }
 
     private class AutoProperty

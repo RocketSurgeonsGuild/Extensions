@@ -8,8 +8,12 @@ coverage:
   precision: 2
 
   status:
-    project: yes
-    patch: yes
+    project:
+      default:
+        threshold: 1%
+    patch:
+      default:
+        threshold: 1%
     changes: no
 
 comment:

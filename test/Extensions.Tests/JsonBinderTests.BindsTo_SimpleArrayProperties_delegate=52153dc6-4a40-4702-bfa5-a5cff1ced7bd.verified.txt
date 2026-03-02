@@ -1,0 +1,20 @@
+﻿{
+  result: {
+    Values: [
+      123,
+      456,
+      789
+    ]
+  },
+  bindingResult: [
+    {
+      Values:0: 123
+    },
+    {
+      Values:1: 456
+    },
+    {
+      Values:2: 789
+    }
+  ]
+}

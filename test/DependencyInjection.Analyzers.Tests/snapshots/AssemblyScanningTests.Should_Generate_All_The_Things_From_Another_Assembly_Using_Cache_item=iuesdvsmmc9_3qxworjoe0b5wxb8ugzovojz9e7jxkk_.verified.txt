@@ -1,4 +1,14 @@
 ﻿{
+  EmptyAssemblies: [
+    mscorlib,
+    netstandard,
+    System,
+    System.ComponentModel,
+    System.Core,
+    System.Private.CoreLib,
+    System.Runtime,
+    TestAssembly
+  ],
   FinalDiagnostics: [],
   GeneratedCache: {
     OtherProject: {
@@ -3165,7 +3175,7 @@
               LineNumber: 21,
               ExpressionHash: 8PKITxXbtylCwtC8RjJaLg==,
               FileName: CompiledTypeProviderServiceCollectionExtensions.cs,
-              FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
+              FilePath: {CurrentDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
             },
             Assembly: {
               AllAssembly: true,
@@ -3567,6 +3577,7 @@
           },
           Expression:
 {
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
     items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
@@ -3614,6 +3625,7 @@
           },
           Expression:
 {
+    items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(TestAssembly.GetType("MyAssembly")!);
     items.Add(TestAssembly.GetType("MyAssembly+Info")!);
     items.Add(TestAssembly.GetType("MyAssembly+Metadata")!);
@@ -3667,6 +3679,7 @@
           },
           Expression:
 {
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.CompiledTypeProviderServiceCollectionExtensions));
     items.Add(typeof(global::Microsoft.Extensions.DependencyInjection.ScopedServiceDependencyInjectionExtensions));
     items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("MyAssembly")!);
@@ -3714,6 +3727,7 @@
           },
           Expression:
 {
+    items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(TestAssembly.GetType("MyAssembly")!);
     items.Add(TestAssembly.GetType("MyAssembly+Info")!);
     items.Add(TestAssembly.GetType("MyAssembly+Metadata")!);
@@ -3828,6 +3842,7 @@
           },
           Expression:
 {
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.ExcludeFromCompiledTypeProviderAttribute));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.IReflectionAssemblySelector));
@@ -3885,6 +3900,7 @@
           },
           Expression:
 {
+    items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(TestAssembly.GetType("TestAssembly.GenericService")!);
     items.Add(typeof(global::TestAssembly.GenericServiceB));
     items.Add(typeof(global::TestAssembly.IGenericService<>));
@@ -4764,6 +4780,7 @@
           },
           Expression:
 {
+    items.Add(RocketSurgeryDependencyInjectionExtensions.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.CompiledTypeProviderAttribute));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeInfoFilter));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.Compiled.TypeKindFilter));
@@ -4772,6 +4789,26 @@
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<,, >));
     items.Add(typeof(global::Rocket.Surgery.DependencyInjection.ServiceRegistrationAttribute<, >));
 },
+          PrivateAssemblies: [
+            Rocket.Surgery.DependencyInjection.Extensions
+          ],
+          CacheVersion: {Scrubbed}
+        },
+        TestAssembly: {
+          Location: {
+            Kind: Reflection,
+            LineNumber: 82,
+            ExpressionHash: qBIVSXgRbSfIUDtbJ2U3ow==,
+            FileName: Input0.cs,
+            FilePath: Input0.cs
+          },
+          Expression:
+{
+    items.Add(TestAssembly.GetType("Microsoft.CodeAnalysis.EmbeddedAttribute")!);
+},
+          PrivateAssemblies: [
+            TestAssembly
+          ],
           CacheVersion: {Scrubbed}
         }
       }
@@ -5198,15 +5235,5 @@
     System.Private.CoreLib.dll,
     System.Runtime.dll,
     TestAssembly.dll
-  ],
-  SkippedAssemblies: [
-    mscorlib,
-    netstandard,
-    System,
-    System.ComponentModel,
-    System.Core,
-    System.Private.CoreLib,
-    System.Runtime,
-    TestAssembly
   ]
 }

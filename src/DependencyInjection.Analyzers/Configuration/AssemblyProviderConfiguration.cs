@@ -1,9 +1,11 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
@@ -41,7 +43,7 @@ internal partial class AssemblyProviderConfiguration
         {
             try
             {
-                GetAssemblyData(
+                GetAssemblyExpressionData(
                     assembly,
                     out var assemblyAssemblySources,
                     out var assemblyReflectionBuilder,
@@ -144,7 +146,7 @@ internal partial class AssemblyProviderConfiguration
             yield return Helpers.AddAssemblyAttribute(ServiceDescriptorTypesKey, GetServiceDescriptorToString(context, request));
         }
     }
-    #pragma warning disable RS1035
+#pragma warning disable RS1035
     internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
     {
         if (generatedJson.GetSourceLocation(assemblySymbol, location, factory) is not { } savedLocation) return null;
@@ -152,7 +154,7 @@ internal partial class AssemblyProviderConfiguration
         resultingJson.AddSourceLocation(assemblySymbol, savedLocation);
         return savedLocation;
     }
-    #pragma warning restore RS1035
+#pragma warning restore RS1035
 
     private static string CompressString(byte[] bytes) => Convert.ToBase64String(bytes);
 
@@ -199,8 +201,8 @@ internal partial class AssemblyProviderConfiguration
         return data;
     }
 
-    #pragma warning disable RS1035
-    private void GetAssemblyData(
+#pragma warning disable RS1035
+    private void GetAssemblyExpressionData(
         IAssemblySymbol assembly,
         out ImmutableList<AssemblyCollection.Item> assemblyItems,
         out ImmutableList<ReflectionCollection.Item> reflection,
@@ -209,9 +211,9 @@ internal partial class AssemblyProviderConfiguration
         ImmutableDictionary<string, IAssemblySymbol> assemblySymbols
     )
     {
-        if (generatedJson.IsAssemblySkipped(assembly))
+        if (generatedJson.DoesAssemblyContainExpressions(assembly))
         {
-            resultingJson.AddSkipAssembly(assembly);
+            resultingJson.NoExpressions(assembly);
             assemblyItems = [];
             reflection = [];
             serviceDescriptor = [];
@@ -221,10 +223,10 @@ internal partial class AssemblyProviderConfiguration
 
         if (generatedJson.GetAssemblyData(assembly) is { } generatedData)
         {
-            resultingJson.AddAssemblyData(assembly, generatedData);
-            assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
-            reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z)).ToImmutableList();
-            serviceDescriptor = generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z)).ToImmutableList();
+            resultingJson.AddExpressionData(assembly, generatedData);
+            assemblyItems = [.. generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z))];
+            reflection = [.. generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z))];
+            serviceDescriptor = [.. generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z))];
             excludeFromResolution = generatedData.ExcludeFromResolution;
             return;
         }
@@ -290,19 +292,19 @@ internal partial class AssemblyProviderConfiguration
         serviceDescriptor = serviceDescriptorBuilder.ToImmutable();
 
         var result = new CompiledAssemblyProviderData(
-            assemblyBuilder.Select(GetAssemblyCollectionData).ToImmutableList(),
-            reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
-            serviceDescriptorBuilder.Select(z => GetServiceDescriptorCollectionData(context, z)).ToImmutableList(),
+            [.. assemblyBuilder.Select(GetAssemblyCollectionData)],
+            [.. reflectionBuilder.Select(GetReflectionCollectionData)],
+            [.. serviceDescriptorBuilder.Select(z => GetServiceDescriptorCollectionData(context, z))],
             excludeFromResolution,
             assembly.GetCachedVersion()
         );
 
         if (result.IsEmpty)
-            resultingJson.AddSkipAssembly(assembly);
+            resultingJson.NoExpressions(assembly);
         else
-            resultingJson.AddAssemblyData(assembly, result);
+            resultingJson.AddExpressionData(assembly, result);
     }
-    #pragma warning restore RS1035
+#pragma warning restore RS1035
 
     private static GetReflectionCollectionData GetReflectionCollectionData(ReflectionCollection.Item item)
     {
@@ -441,18 +443,18 @@ internal partial class AssemblyProviderConfiguration
         foreach (var item in data.ServiceTypeDescriptors)
         {
             IServiceTypeDescriptor serviceTypeDescriptor = item switch
-                                                           {
-                                                               { Identifier: 'c', TypeData: { } typeData } when findType(assemblySymbols, compilation, typeData.Assembly, typeData.Type) is { } type =>
-                                                                   new CompiledServiceTypeDescriptor(type),
-                                                               { Identifier: 'c', TypeData: { } typeData } => new UnknownCompiledServiceTypeDescriptor(typeData),
-                                                               { Identifier: 'i', TypeFilter: { } typeFilter } =>
-                                                                   new ImplementedInterfacesServiceTypeDescriptor(LoadTypeFilter(compilation, typeFilter, source, assemblySymbols)),
-                                                               { Identifier: 'i' } => new ImplementedInterfacesServiceTypeDescriptor(null),
-                                                               { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
-                                                               { Identifier: 's' } => new SelfServiceTypeDescriptor(),
-                                                               { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
-                                                               _                   => throw new ArgumentOutOfRangeException(nameof(data), data, $"The type name was {data.GetType().FullName}"),
-                                                           };
+            {
+                { Identifier: 'c', TypeData: { } typeData } when findType(assemblySymbols, compilation, typeData.Assembly, typeData.Type) is { } type =>
+                    new CompiledServiceTypeDescriptor(type),
+                { Identifier: 'c', TypeData: { } typeData } => new UnknownCompiledServiceTypeDescriptor(typeData),
+                { Identifier: 'i', TypeFilter: { } typeFilter } =>
+                    new ImplementedInterfacesServiceTypeDescriptor(LoadTypeFilter(compilation, typeFilter, source, assemblySymbols)),
+                { Identifier: 'i' } => new ImplementedInterfacesServiceTypeDescriptor(null),
+                { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
+                { Identifier: 's' } => new SelfServiceTypeDescriptor(),
+                { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
+                _ => throw new ArgumentOutOfRangeException(nameof(data), data, $"The type name was {data.GetType().FullName}"),
+            };
             descriptors.Add(
                 serviceTypeDescriptor
             );
@@ -479,24 +481,23 @@ internal partial class AssemblyProviderConfiguration
                                            return false;
                                        }
                                  )
-                                .Select(
-                                     descriptor => descriptor switch
-                                                   {
-                                                       ImplementedInterfacesServiceTypeDescriptor i => new(
-                                                           'i',
-                                                           TypeFilter: i is { InterfaceFilter: { } filter } ? LoadTypeFilterData(filter) : null
-                                                       ),
-                                                       MatchingInterfaceServiceTypeDescriptor => new('m'),
-                                                       SelfServiceTypeDescriptor              => new('s'),
-                                                       AsTypeFilterServiceTypeDescriptor      => new('a'),
-                                                       CompiledServiceTypeDescriptor { Type: { } namedType } => new ServiceTypeData(
-                                                           'c',
-                                                           new(namedType.ContainingAssembly.MetadataName, namedType.MetadataName, namedType.IsUnboundGenericType)
-                                                       ),
-                                                       _ => throw new ArgumentOutOfRangeException(nameof(descriptor), descriptor, $"The type name was {descriptor.GetType().FullName}"),
-                                                   }
+                                .Select(descriptor => descriptor switch
+                                                      {
+                                                          ImplementedInterfacesServiceTypeDescriptor i => new(
+                                                              'i',
+                                                              TypeFilter: i is { InterfaceFilter: { } filter } ? LoadTypeFilterData(filter) : null
+                                                          ),
+                                                          MatchingInterfaceServiceTypeDescriptor => new('m'),
+                                                          SelfServiceTypeDescriptor => new('s'),
+                                                          AsTypeFilterServiceTypeDescriptor => new('a'),
+                                                          CompiledServiceTypeDescriptor { Type: { } namedType } => new ServiceTypeData(
+                                                              'c',
+                                                              new(namedType.ContainingAssembly.MetadataName, namedType.MetadataName, namedType.IsUnboundGenericType)
+                                                          ),
+                                                          _ => throw new ArgumentOutOfRangeException(nameof(descriptor), descriptor, $"The type name was {descriptor.GetType().FullName}"),
+                                                      }
                                  );
-        return new(serviceDescriptors.ToImmutableArray(), serviceTypeDescriptors.Lifetime);
+        return new([.. serviceDescriptors], serviceTypeDescriptors.Lifetime);
     }
 
     private static CompiledTypeFilter LoadTypeFilter(
@@ -598,14 +599,13 @@ internal partial class AssemblyProviderConfiguration
 
     private static TypeFilterData LoadTypeFilterData(CompiledTypeFilter typeFilter) => new(
         typeFilter.ClassFilter,
-        typeFilter
+        [.. typeFilter
            .TypeFilterDescriptors
            .OfType<NamespaceFilterDescriptor>()
            .Select(static z => new NamespaceFilterData(z.Filter, [.. z.Namespaces.OrderBy(z => z)]))
            .OrderBy(static z => string.Join(",", z.Namespaces.OrderBy(static z => z)))
            .ThenBy(static z => z.Filter)
-           .Select(static z => z with { Namespaces = [.. z.Namespaces.OrderBy(z => z)] })
-           .ToImmutableArray(),
+           .Select(static z => z with { Namespaces = [.. z.Namespaces.OrderBy(z => z)] })],
         [
             .. typeFilter
               .TypeFilterDescriptors.OfType<NameFilterDescriptor>()
@@ -630,23 +630,22 @@ internal partial class AssemblyProviderConfiguration
         [
             .. typeFilter
               .TypeFilterDescriptors
-              .Select(
-                   f => f switch
-                        {
-                            WithAttributeFilterDescriptor descriptor => new(
-                                true,
-                                descriptor.Attribute.ContainingAssembly.MetadataName,
-                                Helpers.GetFullMetadataName(descriptor.Attribute),
-                                descriptor.Attribute.IsUnboundGenericType
-                            ),
-                            WithoutAttributeFilterDescriptor descriptor => new WithAttributeData(
-                                false,
-                                descriptor.Attribute.ContainingAssembly.MetadataName,
-                                Helpers.GetFullMetadataName(descriptor.Attribute),
-                                descriptor.Attribute.IsUnboundGenericType
-                            ),
-                            _ => null!,
-                        }
+              .Select(f => f switch
+                           {
+                               WithAttributeFilterDescriptor descriptor => new(
+                                   true,
+                                   descriptor.Attribute.ContainingAssembly.MetadataName,
+                                   Helpers.GetFullMetadataName(descriptor.Attribute),
+                                   descriptor.Attribute.IsUnboundGenericType
+                               ),
+                               WithoutAttributeFilterDescriptor descriptor => new WithAttributeData(
+                                   false,
+                                   descriptor.Attribute.ContainingAssembly.MetadataName,
+                                   Helpers.GetFullMetadataName(descriptor.Attribute),
+                                   descriptor.Attribute.IsUnboundGenericType
+                               ),
+                               _ => null!,
+                           }
                )
               .Where(z => z is { })
               .OrderBy(z => z.Assembly)
@@ -656,13 +655,12 @@ internal partial class AssemblyProviderConfiguration
         [
             .. typeFilter
               .TypeFilterDescriptors
-              .Select(
-                   f => f switch
-                        {
-                            WithAttributeStringFilterDescriptor descriptor    => new(true, descriptor.AttributeClassName),
-                            WithoutAttributeStringFilterDescriptor descriptor => new WithAttributeStringData(false, descriptor.AttributeClassName),
-                            _                                                 => null!,
-                        }
+              .Select(f => f switch
+                           {
+                               WithAttributeStringFilterDescriptor descriptor    => new(true, descriptor.AttributeClassName),
+                               WithoutAttributeStringFilterDescriptor descriptor => new WithAttributeStringData(false, descriptor.AttributeClassName),
+                               _                                                 => null!,
+                           }
                )
               .Where(z => z is { })
               .OrderBy(z => z.Attribute)
@@ -671,21 +669,19 @@ internal partial class AssemblyProviderConfiguration
         [
             .. typeFilter
               .TypeFilterDescriptors
-              .SelectMany(
-                   f => f switch
-                        {
-                            WithAnyAttributeFilterDescriptor descriptor =>
-                                descriptor.Attributes
-                                          .Select(
-                                               attribute => new WithAttributeData(
-                                                   true,
-                                                   attribute.ContainingAssembly.MetadataName,
-                                                   Helpers.GetFullMetadataName(attribute),
-                                                   attribute.IsUnboundGenericType
-                                               )
-                                           ),
-                            _ => [],
-                        }
+              .SelectMany(f => f switch
+                               {
+                                   WithAnyAttributeFilterDescriptor descriptor =>
+                                       descriptor.Attributes
+                                                 .Select(attribute => new WithAttributeData(
+                                                             true,
+                                                             attribute.ContainingAssembly.MetadataName,
+                                                             Helpers.GetFullMetadataName(attribute),
+                                                             attribute.IsUnboundGenericType
+                                                         )
+                                                  ),
+                                   _ => [],
+                               }
                )
               .Where(z => z is { })
               .OrderBy(z => z.Assembly)
@@ -695,15 +691,13 @@ internal partial class AssemblyProviderConfiguration
         [
             .. typeFilter
               .TypeFilterDescriptors
-              .SelectMany(
-                   f =>
-                       f switch
-                       {
-                           WithAnyAttributeStringFilterDescriptor descriptor => descriptor.AttributeClassNames.Select(
-                               z => new WithAttributeStringData(true, z)
-                           ),
-                           _ => [],
-                       }
+              .SelectMany(f =>
+                              f switch
+                              {
+                                  WithAnyAttributeStringFilterDescriptor descriptor => descriptor.AttributeClassNames.Select(z => new WithAttributeStringData(true, z)
+                                  ),
+                                  _ => [],
+                              }
                )
               .Where(z => z is { })
               .OrderBy(z => z.Attribute)
@@ -712,23 +706,22 @@ internal partial class AssemblyProviderConfiguration
         [
             .. typeFilter
               .TypeFilterDescriptors
-              .Select(
-                   f => f switch
-                        {
-                            AssignableToTypeFilterDescriptor descriptor => new(
-                                true,
-                                descriptor.Type.ContainingAssembly.MetadataName,
-                                Helpers.GetFullMetadataName(descriptor.Type),
-                                descriptor.Type.IsUnboundGenericType
-                            ),
-                            NotAssignableToTypeFilterDescriptor descriptor => new AssignableToTypeData(
-                                false,
-                                descriptor.Type.ContainingAssembly.MetadataName,
-                                Helpers.GetFullMetadataName(descriptor.Type),
-                                descriptor.Type.IsUnboundGenericType
-                            ),
-                            _ => null!,
-                        }
+              .Select(f => f switch
+                           {
+                               AssignableToTypeFilterDescriptor descriptor => new(
+                                   true,
+                                   descriptor.Type.ContainingAssembly.MetadataName,
+                                   Helpers.GetFullMetadataName(descriptor.Type),
+                                   descriptor.Type.IsUnboundGenericType
+                               ),
+                               NotAssignableToTypeFilterDescriptor descriptor => new AssignableToTypeData(
+                                   false,
+                                   descriptor.Type.ContainingAssembly.MetadataName,
+                                   Helpers.GetFullMetadataName(descriptor.Type),
+                                   descriptor.Type.IsUnboundGenericType
+                               ),
+                               _ => null!,
+                           }
                )
               .Where(z => z is { })
               .OrderBy(z => z.Assembly)
@@ -738,32 +731,30 @@ internal partial class AssemblyProviderConfiguration
         [
             .. typeFilter
               .TypeFilterDescriptors
-              .Select(
-                   f => f switch
-                        {
-                            AssignableToAnyTypeFilterDescriptor descriptor => new(
-                                true,
-                                [
-                                    .. descriptor
-                                      .Types.Select(
-                                           z => new AnyTypeData(z.ContainingAssembly.MetadataName, Helpers.GetFullMetadataName(z), z.IsUnboundGenericType)
-                                       )
-                                      .OrderBy(z => z.Assembly)
-                                      .ThenBy(z => z.Type),
-                                ]
-                            ),
-                            NotAssignableToAnyTypeFilterDescriptor descriptor => new AssignableToAnyTypeData(
-                                false,
-                                [
-                                    .. descriptor
-                                      .Types
-                                      .Select(z => new AnyTypeData(z.ContainingAssembly.MetadataName, Helpers.GetFullMetadataName(z), z.IsUnboundGenericType))
-                                      .OrderBy(z => z.Assembly)
-                                      .ThenBy(z => z.Type),
-                                ]
-                            ),
-                            _ => null!,
-                        }
+              .Select(f => f switch
+                           {
+                               AssignableToAnyTypeFilterDescriptor descriptor => new(
+                                   true,
+                                   [
+                                       .. descriptor
+                                         .Types.Select(z => new AnyTypeData(z.ContainingAssembly.MetadataName, Helpers.GetFullMetadataName(z), z.IsUnboundGenericType)
+                                          )
+                                         .OrderBy(z => z.Assembly)
+                                         .ThenBy(z => z.Type),
+                                   ]
+                               ),
+                               NotAssignableToAnyTypeFilterDescriptor descriptor => new AssignableToAnyTypeData(
+                                   false,
+                                   [
+                                       .. descriptor
+                                         .Types
+                                         .Select(z => new AnyTypeData(z.ContainingAssembly.MetadataName, Helpers.GetFullMetadataName(z), z.IsUnboundGenericType))
+                                         .OrderBy(z => z.Assembly)
+                                         .ThenBy(z => z.Type),
+                                   ]
+                               ),
+                               _ => null!,
+                           }
                )
               .Where(z => z is { })
               .OrderBy(z => string.Join(",", z.Types))

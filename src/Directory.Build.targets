@@ -1,6 +1,3 @@
 <Project>
-    <ItemGroup>
-        <!-- <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" PrivateAssets="All" /> -->
-    </ItemGroup>
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
 </Project>

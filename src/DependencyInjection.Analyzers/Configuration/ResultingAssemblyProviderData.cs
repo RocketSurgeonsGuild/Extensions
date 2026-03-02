@@ -8,14 +8,14 @@ namespace Rocket.Surgery.DependencyInjection.Analyzers;
 
 public class ResultingAssemblyProviderData
 {
-    public void AddAssemblyData(IAssemblySymbol assembly, CompiledAssemblyProviderData data)
+    public void AddExpressionData(IAssemblySymbol assembly, CompiledAssemblyProviderData data)
     {
         if (_assemblyData.TryGetValue(assembly.MetadataName, out _)) return;
 
         _assemblyData.Add(assembly.MetadataName, data);
     }
 
-    public bool AddSkipAssembly(IAssemblySymbol assembly) => _skipAssemblies.Add(assembly.MetadataName);
+    public bool NoExpressions(IAssemblySymbol assembly) => _expressionlessAssemblies.Add(assembly.MetadataName);
 
     public void AddSourceLocation(IAssemblySymbol assembly, ResolvedSourceLocation resolvedSource)
     {
@@ -27,7 +27,7 @@ public class ResultingAssemblyProviderData
 
     public GeneratedAssemblyProviderData ToGeneratedAssemblyProviderData() => new(
         _assemblyData.ToImmutableDictionary(),
-        [.. _skipAssemblies],
+        [.. _expressionlessAssemblies],
         _sourceLocations.ToImmutableDictionary(
             x => x.Key,
             x => new GeneratedLocationAssemblyResolvedSourceCollection(x.Value.SourceLocation, x.Value.ResolvedSources.ToImmutableDictionary())
@@ -51,6 +51,6 @@ public class ResultingAssemblyProviderData
     }
 
     private readonly Dictionary<string, CompiledAssemblyProviderData> _assemblyData = [];
-    private readonly HashSet<string> _skipAssemblies = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _expressionlessAssemblies = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, ResultingLocationAssemblyResolvedSourceCollection> _sourceLocations = [];
 }

@@ -9,7 +9,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="System.Interactive" />
-        <PackageReference Include="System.Interactive.Async" Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net9.0'" />
+        <PackageReference Include="System.Interactive.Async" Condition="'$(TargetFramework)' == 'net8.0'" />
         <PackageReference Include="System.Reactive" />
         <PackageReference Include="System.Reactive.Observable.Aliases" />
     </ItemGroup>

@@ -1,4 +1,14 @@
 ﻿{
+  EmptyAssemblies: [
+    mscorlib,
+    netstandard,
+    System,
+    System.ComponentModel,
+    System.Core,
+    System.Private.CoreLib,
+    System.Runtime,
+    TestAssembly
+  ],
   FinalDiagnostics: [],
   GeneratedCache: {
     Rocket.Surgery.DependencyInjection.Extensions: {
@@ -10,7 +20,7 @@
               LineNumber: 21,
               ExpressionHash: 8PKITxXbtylCwtC8RjJaLg==,
               FileName: CompiledTypeProviderServiceCollectionExtensions.cs,
-              FilePath: {SolutionDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
+              FilePath: {CurrentDirectory}src/DependencyInjection.Extensions/CompiledTypeProviderServiceCollectionExtensions.cs
             },
             Assembly: {
               AllAssembly: true,
@@ -136,15 +146,5 @@
     System.Private.CoreLib.dll,
     System.Runtime.dll,
     TestAssembly.dll
-  ],
-  SkippedAssemblies: [
-    mscorlib,
-    netstandard,
-    System,
-    System.ComponentModel,
-    System.Core,
-    System.Private.CoreLib,
-    System.Runtime,
-    TestAssembly
   ]
 }
