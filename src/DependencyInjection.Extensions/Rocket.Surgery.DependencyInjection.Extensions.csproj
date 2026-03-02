@@ -10,7 +10,6 @@
             IncludeAssets="analyzers"
             ExcludeAssets="compile;runtime;native"
             PrivateAssets="contentfiles;build;buildMultitargeting;buildTransitive"
-            ReferenceOutputAssembly="false"
             OutputItemType="Analyzer"
         />
     </ItemGroup>
