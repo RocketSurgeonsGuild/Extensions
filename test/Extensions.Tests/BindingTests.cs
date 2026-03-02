@@ -1,8 +1,11 @@
 #nullable disable
 using System.Reflection;
+
 using Microsoft.Extensions.Configuration;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
 using Rocket.Surgery.Binding;
 using Rocket.Surgery.Extensions.Testing;
 
@@ -310,7 +313,6 @@ public class JsonBinderTests() : AutoFakeTest(Defaults.LoggerTest)
             new KeyValuePair<string, string>("Values:2:value", "789"),
         };
         var result = (ArrayProperties)@delegate(binder, typeof(ArrayProperties), JsonBinder.DefaultSerializer, keyValuePairs);
-
 
         return Verify(new { result, bindingResult = binder.From(result) }).UseParameters(TUnit.Core.TestContext.Current?.Metadata.TestDetails.TestId);
     }

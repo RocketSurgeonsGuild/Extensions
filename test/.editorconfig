@@ -14,6 +14,7 @@ dotnet_diagnostic.CA1711.severity = none
 dotnet_diagnostic.CA1715.severity = none
 dotnet_diagnostic.CA1720.severity = none
 dotnet_diagnostic.CA1812.severity = none
+dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.CA1829.severity = none
 dotnet_diagnostic.CA1845.severity = none
 dotnet_diagnostic.CA1848.severity = none
@@ -25,6 +26,16 @@ dotnet_diagnostic.CA2227.severity = none
 dotnet_diagnostic.CA2254.severity = none
 dotnet_diagnostic.IDE0060.severity = none
 dotnet_diagnostic.RCS1163.severity = none
+dotnet_diagnostic.IL2026.severity = none
+dotnet_diagnostic.IL2067.severity = none
 resharper_possible_multiple_enumeration_highlighting = none
 resharper_template_is_not_compile_time_constant_problem_highlighting = none
 resharper_inconsistent_naming_highlighting = none
+resharper_variable_hides_outer_variable_highlighting = none
+resharper_unused_parameter_local_highlighting = none
+resharper_unused_variable_highlighting = none
+resharper_suspicious_type_conversion_global_highlighting = none
+resharper_nullable_warning_suppression_is_used_highlighting = none
+
+# for conventions only
+dotnet_diagnostic.CS8620.severity = none

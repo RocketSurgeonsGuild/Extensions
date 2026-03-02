@@ -1,5 +1,5 @@
 <Project>
-    <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
+    <ItemGroup>
         <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
         <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
         <PackageReference Include="Rocket.Surgery.Extensions.Testing.FakeItEasy" />

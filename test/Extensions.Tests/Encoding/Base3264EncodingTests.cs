@@ -39,7 +39,7 @@ public class Base3264EncodingTests() : AutoFakeTest(Defaults.LoggerTest)
     {
         var b32 = new Base32Url(false, true, true, Base32Url.Base32CrockfordHumanFriendlyAlphabet);
 
-        var s = "Hello World!";
+        const string s = "Hello World!";
         var b = System.Text.Encoding.UTF8.GetBytes(s);
         var enc = b32.Encode(b);
 
@@ -81,7 +81,7 @@ public class Base3264EncodingTests() : AutoFakeTest(Defaults.LoggerTest)
     public async Task TestMethods()
     {
         var enc = System.Text.Encoding.UTF8;
-        var stringIn = "Hello World!";
+        const string stringIn = "Hello World!";
         var bytes = enc.GetBytes(stringIn);
 
         await Assert.That(Base3264Encoding.ToBase64(bytes)).IsEqualTo("SGVsbG8gV29ybGQh");

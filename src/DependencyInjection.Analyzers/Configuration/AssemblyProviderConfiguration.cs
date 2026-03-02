@@ -1,9 +1,11 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Text.Json;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Rocket.Surgery.DependencyInjection.Analyzers.AssemblyProviders;
 using Rocket.Surgery.DependencyInjection.Analyzers.Descriptors;
 
@@ -144,7 +146,7 @@ internal partial class AssemblyProviderConfiguration
             yield return Helpers.AddAssemblyAttribute(ServiceDescriptorTypesKey, GetServiceDescriptorToString(context, request));
         }
     }
-    #pragma warning disable RS1035
+#pragma warning disable RS1035
     internal ResolvedSourceLocation? CacheSourceLocation(SourceLocation location, IAssemblySymbol assemblySymbol, Func<ResolvedSourceLocation?> factory)
     {
         if (generatedJson.GetSourceLocation(assemblySymbol, location, factory) is not { } savedLocation) return null;
@@ -152,7 +154,7 @@ internal partial class AssemblyProviderConfiguration
         resultingJson.AddSourceLocation(assemblySymbol, savedLocation);
         return savedLocation;
     }
-    #pragma warning restore RS1035
+#pragma warning restore RS1035
 
     private static string CompressString(byte[] bytes) => Convert.ToBase64String(bytes);
 
@@ -199,7 +201,7 @@ internal partial class AssemblyProviderConfiguration
         return data;
     }
 
-    #pragma warning disable RS1035
+#pragma warning disable RS1035
     private void GetAssemblyExpressionData(
         IAssemblySymbol assembly,
         out ImmutableList<AssemblyCollection.Item> assemblyItems,
@@ -222,9 +224,9 @@ internal partial class AssemblyProviderConfiguration
         if (generatedJson.GetAssemblyData(assembly) is { } generatedData)
         {
             resultingJson.AddExpressionData(assembly, generatedData);
-            assemblyItems = generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z)).ToImmutableList();
-            reflection = generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z)).ToImmutableList();
-            serviceDescriptor = generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z)).ToImmutableList();
+            assemblyItems = [.. generatedData.InternalAssemblyRequests.Select(z => GetAssembliesFromData(assemblySymbols, z))];
+            reflection = [.. generatedData.InternalReflectionRequests.Select(z => GetReflectionFromData(compilation, assemblySymbols, z))];
+            serviceDescriptor = [.. generatedData.InternalServiceDescriptorRequests.Select(z => GetServiceDescriptorFromData(compilation, assemblySymbols, z))];
             excludeFromResolution = generatedData.ExcludeFromResolution;
             return;
         }
@@ -290,9 +292,9 @@ internal partial class AssemblyProviderConfiguration
         serviceDescriptor = serviceDescriptorBuilder.ToImmutable();
 
         var result = new CompiledAssemblyProviderData(
-            assemblyBuilder.Select(GetAssemblyCollectionData).ToImmutableList(),
-            reflectionBuilder.Select(GetReflectionCollectionData).ToImmutableList(),
-            serviceDescriptorBuilder.Select(z => GetServiceDescriptorCollectionData(context, z)).ToImmutableList(),
+            [.. assemblyBuilder.Select(GetAssemblyCollectionData)],
+            [.. reflectionBuilder.Select(GetReflectionCollectionData)],
+            [.. serviceDescriptorBuilder.Select(z => GetServiceDescriptorCollectionData(context, z))],
             excludeFromResolution,
             assembly.GetCachedVersion()
         );
@@ -302,7 +304,7 @@ internal partial class AssemblyProviderConfiguration
         else
             resultingJson.AddExpressionData(assembly, result);
     }
-    #pragma warning restore RS1035
+#pragma warning restore RS1035
 
     private static GetReflectionCollectionData GetReflectionCollectionData(ReflectionCollection.Item item)
     {
@@ -441,18 +443,18 @@ internal partial class AssemblyProviderConfiguration
         foreach (var item in data.ServiceTypeDescriptors)
         {
             IServiceTypeDescriptor serviceTypeDescriptor = item switch
-                                                           {
-                                                               { Identifier: 'c', TypeData: { } typeData } when findType(assemblySymbols, compilation, typeData.Assembly, typeData.Type) is { } type =>
-                                                                   new CompiledServiceTypeDescriptor(type),
-                                                               { Identifier: 'c', TypeData: { } typeData } => new UnknownCompiledServiceTypeDescriptor(typeData),
-                                                               { Identifier: 'i', TypeFilter: { } typeFilter } =>
-                                                                   new ImplementedInterfacesServiceTypeDescriptor(LoadTypeFilter(compilation, typeFilter, source, assemblySymbols)),
-                                                               { Identifier: 'i' } => new ImplementedInterfacesServiceTypeDescriptor(null),
-                                                               { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
-                                                               { Identifier: 's' } => new SelfServiceTypeDescriptor(),
-                                                               { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
-                                                               _                   => throw new ArgumentOutOfRangeException(nameof(data), data, $"The type name was {data.GetType().FullName}"),
-                                                           };
+            {
+                { Identifier: 'c', TypeData: { } typeData } when findType(assemblySymbols, compilation, typeData.Assembly, typeData.Type) is { } type =>
+                    new CompiledServiceTypeDescriptor(type),
+                { Identifier: 'c', TypeData: { } typeData } => new UnknownCompiledServiceTypeDescriptor(typeData),
+                { Identifier: 'i', TypeFilter: { } typeFilter } =>
+                    new ImplementedInterfacesServiceTypeDescriptor(LoadTypeFilter(compilation, typeFilter, source, assemblySymbols)),
+                { Identifier: 'i' } => new ImplementedInterfacesServiceTypeDescriptor(null),
+                { Identifier: 'm' } => new MatchingInterfaceServiceTypeDescriptor(),
+                { Identifier: 's' } => new SelfServiceTypeDescriptor(),
+                { Identifier: 'a' } => new AsTypeFilterServiceTypeDescriptor(),
+                _ => throw new ArgumentOutOfRangeException(nameof(data), data, $"The type name was {data.GetType().FullName}"),
+            };
             descriptors.Add(
                 serviceTypeDescriptor
             );
@@ -486,8 +488,8 @@ internal partial class AssemblyProviderConfiguration
                                                               TypeFilter: i is { InterfaceFilter: { } filter } ? LoadTypeFilterData(filter) : null
                                                           ),
                                                           MatchingInterfaceServiceTypeDescriptor => new('m'),
-                                                          SelfServiceTypeDescriptor              => new('s'),
-                                                          AsTypeFilterServiceTypeDescriptor      => new('a'),
+                                                          SelfServiceTypeDescriptor => new('s'),
+                                                          AsTypeFilterServiceTypeDescriptor => new('a'),
                                                           CompiledServiceTypeDescriptor { Type: { } namedType } => new ServiceTypeData(
                                                               'c',
                                                               new(namedType.ContainingAssembly.MetadataName, namedType.MetadataName, namedType.IsUnboundGenericType)
@@ -495,7 +497,7 @@ internal partial class AssemblyProviderConfiguration
                                                           _ => throw new ArgumentOutOfRangeException(nameof(descriptor), descriptor, $"The type name was {descriptor.GetType().FullName}"),
                                                       }
                                  );
-        return new(serviceDescriptors.ToImmutableArray(), serviceTypeDescriptors.Lifetime);
+        return new([.. serviceDescriptors], serviceTypeDescriptors.Lifetime);
     }
 
     private static CompiledTypeFilter LoadTypeFilter(
@@ -597,14 +599,13 @@ internal partial class AssemblyProviderConfiguration
 
     private static TypeFilterData LoadTypeFilterData(CompiledTypeFilter typeFilter) => new(
         typeFilter.ClassFilter,
-        typeFilter
+        [.. typeFilter
            .TypeFilterDescriptors
            .OfType<NamespaceFilterDescriptor>()
            .Select(static z => new NamespaceFilterData(z.Filter, [.. z.Namespaces.OrderBy(z => z)]))
            .OrderBy(static z => string.Join(",", z.Namespaces.OrderBy(static z => z)))
            .ThenBy(static z => z.Filter)
-           .Select(static z => z with { Namespaces = [.. z.Namespaces.OrderBy(z => z)] })
-           .ToImmutableArray(),
+           .Select(static z => z with { Namespaces = [.. z.Namespaces.OrderBy(z => z)] })],
         [
             .. typeFilter
               .TypeFilterDescriptors.OfType<NameFilterDescriptor>()
