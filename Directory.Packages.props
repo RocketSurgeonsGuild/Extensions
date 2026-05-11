@@ -18,7 +18,7 @@
     <GlobalPackageReference Include="Roslynator.CodeFixes" Version="4.15.0" />
     <GlobalPackageReference Include="Roslynator.Refactorings" Version="4.15.0" />
     <GlobalPackageReference Include="FakeItEasy.Analyzer.CSharp" Version="6.1.1" />
-    <GlobalPackageReference Include="JetBrains.ExternalAnnotations" Version="10.2.167" />
+    <GlobalPackageReference Include="JetBrains.ExternalAnnotations" Version="10.2.168" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="JetBrains.Annotations.Sources" Version="2025.2.4" />
