@@ -28,10 +28,6 @@ node = "22"
 
 [tasks]
 build = { run = "dotnet run build/Build.cs" }
-docs = { run = "cd docs && npm run dev", description = "Start Astro/Starlight dev server" }
-"docs:build" = { run = "mise run docs:api && cd docs && npm run build", description = "Generate API reference then build Starlight site" }
-"docs:api" = { run = "dotnet publish src/Indago/Indago.csproj -c Release -f net8.0 -o /tmp/indago-publish --nologo && mkdir -p docs/src/content/docs/api && xmldocmd /tmp/indago-publish/Indago.dll docs/src/content/docs/api/ --namespace Indago --source https://github.com/RocketSurgeonsGuild/Indago/blob/main/src/Indago/ --clean && node docs/scripts/add-api-frontmatter.mjs", description = "Publish Indago, generate API reference via xmldocmd, inject Starlight frontmatter" }
-"docs:preview" = { run = "cd docs && npm run preview", description = "Preview built Starlight site" }
 "roslyn-lsp" = { run = "bash build/scripts/install-roslyn-lsp.sh", description = "Install the Microsoft Roslyn language server for this RID" }
 "pkl-vscode" = { run = "bash build/scripts/install-pkl-vscode.sh", description = "Install the Pkl VS Code extension (not in marketplace; installed from VSIX)" }
 
