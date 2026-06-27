@@ -8,13 +8,7 @@ namespace Rocket.Surgery.Extensions.Tests;
 public class InjectableMethodBuilderTests
 {
     [System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
-    private string DebuggerDisplay
-    {
-        get
-        {
-            return ToString();
-        }
-    }
+    private string DebuggerDisplay => ToString();
 
     [Test]
     public void CreatesAMethod_WithZeroParameters()

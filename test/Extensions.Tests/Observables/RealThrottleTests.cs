@@ -1,4 +1,4 @@
-﻿using System.Reactive.Linq;
+using System.Reactive.Linq;
 using Microsoft.Reactive.Testing;
 using Rocket.Surgery.Extensions.Testing;
 

@@ -13,8 +13,8 @@
 [Dd]ebugPublic/
 [Rr]elease/
 x64/
-artifacts/
-coverage/
+/artifacts/
+/coverage/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -197,7 +197,7 @@ lib/
 .nuget/
 project.lock.json
 *.nupkg
-/.nuke/temp/
+/.temp/
 .automation/
 /tools/*/
 /tools/*.exe
@@ -210,3 +210,28 @@ codealike.json
 
 # Rider
 *.received.*
+
+.skillfile/cache/
+
+
+# APM dependencies
+apm_modules/
+
+# Roslyn language server (installed via mise `roslyn-lsp` task)
+.roslyn-lsp/
+
+# Pkl VS Code extension VSIX cache (installed via mise `pkl-vscode` task)
+.pkl-vscode/
+.temp/
+# Squad: ignore runtime state (logs, inbox, sessions)
+.squad/orchestration-log/
+.squad/log/
+.squad/decisions/inbox/
+.squad/sessions/
+.squad/.scratch/
+.squad/.cache/
+# Squad: SubSquad activation file (local to this machine)
+.squad-workstream
+dist/
+.astro/
+*.local.toml

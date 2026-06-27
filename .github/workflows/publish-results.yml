@@ -1,0 +1,85 @@
+name: Publish Results
+
+on:
+    workflow_run:
+        workflows:
+            - Build
+        types:
+            - completed
+
+permissions:
+    actions: read
+    checks: write
+    contents: read
+    deployments: read
+    id-token: none
+    issues: write
+    discussions: none
+    packages: none
+    pages: none
+    pull-requests: write
+    repository-projects: none
+    security-events: none
+    statuses: write
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        if: >
+            github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
+        steps:
+            - name: 📥 Download event
+              continue-on-error: true
+              uses: actions/download-artifact@v8
+              with:
+                  name: event
+                  path: artifacts/
+                  run-id: ${{ github.event.workflow_run.id }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+            - name: 📥 Download test data
+              continue-on-error: true
+              uses: actions/download-artifact@v8
+              with:
+                  name: test data
+                  path: artifacts/tests/
+                  run-id: ${{ github.event.workflow_run.id }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+            - name: 📥 Download coverage data
+              continue-on-error: true
+              uses: actions/download-artifact@v8
+              with:
+                  name: coverage
+                  path: artifacts/coverage/
+                  run-id: ${{ github.event.workflow_run.id }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+            - name: 🚀 Publish Test Results
+              if: always()
+              uses: EnricoMi/publish-unit-test-result-action@v2
+              with:
+                  commit: ${{ github.event.workflow_run.head_sha }}
+                  event_file: artifacts/event.json
+                  event_name: ${{ github.event.workflow_run.event }}
+                  files: artifacts/tests/**/*.trx
+            - name: 🚀 Publish Coverage Comment
+              if: always() && github.event.workflow_run.event == 'pull_request'
+              continue-on-error: true
+              uses: marocchino/sticky-pull-request-comment@v3.0.4
+              with:
+                  header: Coverage
+                  path: artifacts/coverage/summary/SummaryGithub.md
+                  number: ${{ github.event.workflow_run.pull_requests[0].number }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: 🚀 Publish Codecov Coverage
+              if: >
+                  always() && (
+                    github.event.workflow_run.event != 'pull_request' ||
+                    (github.event.workflow_run.actor.login != 'renovate[bot]' &&
+                     github.event.workflow_run.actor.login != 'dependabot[bot]')
+                  )
+              continue-on-error: true
+              uses: codecov/codecov-action@v7.0.0
+              with:
+                  name: actions
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  override_commit: ${{ github.event.workflow_run.head_sha }}
+                  directory: artifacts/coverage/

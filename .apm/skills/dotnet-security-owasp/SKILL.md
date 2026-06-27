@@ -1,0 +1,404 @@
+---
+name: dotnet-security-owasp
+description: Hardens .NET apps per OWASP Top 10 -- injection, auth, XSS, deprecated security APIs.
+license: MIT
+targets: ['*']
+category: security
+subcategory: owasp
+tags:
+  - security
+  - dotnet
+  - skill
+  - owasp
+  - xss
+  - injection
+version: '1.0.0'
+author: 'dotnet-agent-harness'
+invocable: true
+related_skills:
+  - dotnet-api-security
+  - dotnet-cryptography
+  - dotnet-secrets-management
+  - dotnet-input-validation
+claudecode:
+  allowed-tools: ['Read', 'Grep', 'Glob', 'Bash', 'Write', 'Edit']
+codexcli:
+  short-description: '.NET skill guidance for security tasks'
+opencode:
+  allowed-tools: ['Read', 'Grep', 'Glob', 'Bash', 'Write', 'Edit']
+copilot: {}
+geminicli: {}
+antigravity: {}
+---
+
+# dotnet-security-owasp
+
+OWASP Top 10 (2021) security guidance for .NET applications. Each category includes the vulnerability description,
+.NET-specific risk, mitigation code examples, and common pitfalls. This skill is the canonical owner of deprecated
+security pattern warnings (CAS, APTCA, .NET Remoting, DCOM, BinaryFormatter).
+
+## Scope
+
+- OWASP Top 10 (2021) vulnerability categories with .NET-specific mitigations
+- Injection, broken access control, XSS, SSRF prevention patterns
+- Deprecated security API warnings (CAS, APTCA, BinaryFormatter, .NET Remoting)
+- Security header configuration and CORS hardening
+- Rate limiting and anti-forgery middleware patterns
+- NuGet package audit and dependency vulnerability scanning
+
+## Out of scope
+
+- Authentication/authorization implementation -- see [skill:dotnet-api-security]
+- Blazor auth UI -- see [skill:dotnet-blazor-auth]
+- Cryptographic algorithm selection -- see [skill:dotnet-cryptography]
+- Configuration binding and Options pattern -- see [skill:dotnet-csharp-configuration]
+- Secrets storage and management -- see [skill:dotnet-secrets-management]
+
+Cross-references: [skill:dotnet-secrets-management] for secrets handling, [skill:dotnet-cryptography] for cryptographic
+best practices, [skill:dotnet-csharp-coding-standards] for secure coding conventions.
+
+---
+
+## A01: Broken Access Control
+
+**Vulnerability:** Users act outside their intended permissions -- accessing other users' data, elevating privileges, or
+bypassing access checks.
+
+**Risk in .NET:** Missing `[Authorize]` attributes on controllers/endpoints, insecure direct object references (IDOR)
+where user IDs are taken from route parameters without ownership validation, and CORS misconfiguration allowing
+unintended origins.
+
+### Mitigation
+
+````csharp
+
+// 1. Apply authorization globally, then opt out explicitly
+builder.Services.AddAuthorizationBuilder()
+    .SetFallbackPolicy(new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build());
+
+var app = builder.Build();
+app.MapControllers(); // All endpoints require auth by default
+
+// 2. Resource-based authorization to prevent IDOR
+public sealed class DocumentAuthorizationHandler
+    : AuthorizationHandler<EditRequirement, Document>
+{
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
+        EditRequirement requirement,
+        Document resource)
+    {
+        if (resource.OwnerId == context.User.FindFirstValue(ClaimTypes.NameIdentifier))
+        {
+            context.Succeed(requirement);
+        }
+        return Task.CompletedTask;
+    }
+}
+
+// In the endpoint:
+app.MapPut("/documents/{id}", async (
+    int id,
+    DocumentDto dto,
+    IAuthorizationService authService,
+    ClaimsPrincipal user,
+    AppDbContext db) =>
+{
+    var document = await db.Documents.FindAsync(id);
+    if (document is null) return Results.NotFound();
+
+    var authResult = await authService.AuthorizeAsync(user, document, "Edit");
+    if (!authResult.Succeeded) return Results.Forbid();
+
+    document.Title = dto.Title;
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+});
+
+```text
+
+```csharp
+
+// 3. Restrict CORS to known origins
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Strict", policy =>
+    {
+        policy.WithOrigins("https://app.example.com")
+              .WithMethods("GET", "POST")
+              .WithHeaders("Content-Type", "Authorization");
+    });
+});
+
+```text
+
+**Gotcha:** `AllowAnyOrigin()` combined with `AllowCredentials()` is rejected at runtime by ASP.NET Core, but `SetIsOriginAllowed(_ => true)` with `AllowCredentials()` silently allows all origins -- never use this pattern.
+
+---
+
+## A02: Cryptographic Failures
+
+**Vulnerability:** Sensitive data exposed due to weak or missing encryption -- plaintext storage, deprecated algorithms, or improper key management.
+
+**Risk in .NET:** Using MD5/SHA1 for hashing passwords, storing connection strings with plaintext passwords in `appsettings.json`, transmitting sensitive data over HTTP, or using `DES`/`RC2` for encryption.
+
+### Mitigation
+
+```csharp
+
+// Enforce HTTPS and HSTS
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.HttpsPort = 443;
+});
+
+var app = builder.Build();
+app.UseHsts(); // Strict-Transport-Security header
+app.UseHttpsRedirection();
+
+// Never store secrets in appsettings.json -- use user secrets or env vars
+// See [skill:dotnet-secrets-management] for proper secrets handling
+
+```json
+
+```csharp
+
+// Use Data Protection API for symmetric encryption of application data
+public sealed class TokenProtector(IDataProtectionProvider provider)
+{
+    private readonly IDataProtector _protector =
+        provider.CreateProtector("Tokens.V1");
+
+    public string Protect(string plaintext) => _protector.Protect(plaintext);
+
+    public string Unprotect(string ciphertext) => _protector.Unprotect(ciphertext);
+}
+
+```text
+
+See [skill:dotnet-cryptography] for algorithm selection (AES-GCM, RSA, ECDSA) and key derivation.
+
+---
+
+## A03: Injection
+
+**Vulnerability:** Untrusted data sent to an interpreter as part of a command or query -- SQL injection, command injection, LDAP injection, and cross-site scripting (XSS).
+
+**Risk in .NET:** String concatenation in SQL queries, `Process.Start` with unsanitized input, rendering user input as raw HTML in Razor pages.
+
+### Mitigation
+
+```csharp
+
+// SQL injection prevention: always use parameterized queries
+// EF Core is parameterized by default via LINQ
+var orders = await db.Orders
+    .Where(o => o.CustomerId == customerId)
+    .ToListAsync();
+
+// When raw SQL is needed, use parameterized interpolation
+var results = await db.Orders
+    .FromSqlInterpolated($"SELECT * FROM Orders WHERE Status = {status}")
+    .ToListAsync();
+
+// NEVER concatenate user input into SQL:
+// var bad = db.Orders.FromSqlRaw("SELECT * FROM Orders WHERE Status = '" + status + "'");
+
+```text
+
+```csharp
+
+// XSS prevention: Razor encodes output by default.
+// Use @Html.Raw() ONLY for trusted, pre-sanitized HTML.
+// In Minimal APIs, return typed results -- not raw strings:
+app.MapGet("/greeting", (string name) =>
+    Results.Content($"<p>Hello, {HtmlEncoder.Default.Encode(name)}</p>",
+        "text/html"));
+
+// Command injection prevention: avoid Process.Start with user input.
+// If unavoidable, validate against an allowlist:
+public static bool IsAllowedTool(string toolName) =>
+    toolName is "dotnet" or "git" or "nuget";
+
+```bash
+
+**Gotcha:** `FromSqlRaw` with string concatenation bypasses parameterization. Always use `FromSqlInterpolated` or pass `SqlParameter` objects to `FromSqlRaw`.
+
+---
+
+## A04: Insecure Design
+
+**Vulnerability:** Flaws in design patterns that cannot be fixed by implementation alone -- missing rate limiting, lack of defense in depth, unrestricted resource consumption.
+
+**Risk in .NET:** APIs without rate limiting, unbounded file uploads, missing anti-forgery tokens on state-changing operations.
+
+### Mitigation
+
+```csharp
+
+// Rate limiting with built-in middleware (.NET 7+)
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("api", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 100;
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.QueueLimit = 0;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
+var app = builder.Build();
+app.UseRateLimiter();
+
+app.MapGet("/api/data", () => Results.Ok("data"))
+    .RequireRateLimiting("api");
+
+```text
+
+```csharp
+
+// Anti-forgery for Minimal APIs (.NET 8+)
+builder.Services.AddAntiforgery();
+
+var app = builder.Build();
+app.UseAntiforgery();
+
+// Form-bound endpoint: antiforgery validated automatically
+app.MapPost("/orders", async ([FromForm] string productId, AppDbContext db) =>
+{
+    var order = new Order { ProductId = productId };
+    db.Orders.Add(order);
+    await db.SaveChangesAsync();
+    return Results.Created($"/orders/{order.Id}", order);
+});
+
+// JSON endpoint: opt in explicitly with RequireAntiforgery()
+app.MapPost("/api/orders", async (CreateOrderDto dto, AppDbContext db) =>
+{
+    var order = new Order { ProductId = dto.ProductId };
+    db.Orders.Add(order);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/orders/{order.Id}", order);
+}).RequireAntiforgery();
+
+```text
+
+**Gotcha:** `UseRateLimiter()` must be called after `UseRouting()` and before `MapControllers()`/`MapGet()` to apply correctly.
+
+---
+
+## A05: Security Misconfiguration
+
+**Vulnerability:** Insecure default configurations, incomplete configurations, open cloud storage, unnecessary features enabled, verbose error messages.
+
+**Risk in .NET:** Detailed exception pages in production (`UseDeveloperExceptionPage`), default Kestrel settings exposing server headers, debug endpoints left enabled, or missing security headers.
+
+### Mitigation
+
+```csharp
+
+// Remove server identity headers (configure BEFORE Build)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.AddServerHeader = false;
+});
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    // Generic error handler in production -- no stack traces
+    app.UseExceptionHandler("/error");
+    app.UseHsts();
+}
+
+// Add security headers via middleware
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Append(
+        "Content-Security-Policy",
+        "default-src 'self'; script-src 'self'; style-src 'self'");
+    await next();
+});
+
+```text
+
+```csharp
+
+// Constrain request body size to prevent resource exhaustion (configure BEFORE Build)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 10 * 1024 * 1024; // 10 MB
+    options.Limits.MaxRequestHeadersTotalSize = 32 * 1024; // 32 KB
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(30);
+});
+
+// Then: var app = builder.Build();
+
+```text
+
+**Gotcha:** `UseDeveloperExceptionPage()` leaks source code paths and stack traces. Ensure it is gated behind `IsDevelopment()` and never enabled in production or staging.
+
+---
+
+## A06: Vulnerable and Outdated Components
+
+**Vulnerability:** Using components with known vulnerabilities, unsupported frameworks, or unpatched dependencies.
+
+**Risk in .NET:** Running on out-of-support .NET versions, NuGet packages with known CVEs, transitive dependency vulnerabilities not audited.
+
+### Mitigation
+
+```xml
+
+<!-- Enable NuGet audit in Directory.Build.props or csproj -->
+<PropertyGroup>
+  <NuGetAudit>true</NuGetAudit>
+  <NuGetAuditLevel>low</NuGetAuditLevel>
+  <NuGetAuditMode>all</NuGetAuditMode> <!-- Audit direct + transitive -->
+</PropertyGroup>
+
+```text
+
+```bash
+
+# Audit NuGet packages for known vulnerabilities
+dotnet list package --vulnerable --include-transitive
+
+# Keep packages up to date
+dotnet outdated  # requires dotnet-outdated-tool
+
+# Check .NET SDK/runtime support status
+dotnet --info
+
+```text
+
+**Gotcha:** `NuGetAuditMode` defaults to `direct` -- transitive vulnerabilities are hidden unless you set `all`. Always use `all` in CI to catch deep dependency issues.
+
+---
+
+## A07: Identification and Authentication Failures
+
+**Vulnerability:** Weak authentication mechanisms, credential stuffing, session fixation, missing multi-factor authentication.
+
+**Risk in .NET:** Default Identity password policies that are too weak, session cookies without `Secure`/`SameSite` attributes, missing account lockout configuration.
+
+### Mitigation
+
+```csharp
+
+// Configure strong Identity password and lockout policies
+
+## Detailed Examples
+
+See [references/detailed-examples.md](references/detailed-examples.md) for complete code samples and advanced patterns.

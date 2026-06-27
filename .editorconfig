@@ -4,30 +4,61 @@ root = true
 charset = utf-8
 insert_final_newline = true
 max_line_length = 200
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+max_line_length = 80
+trim_trailing_whitespace = true
+
+[*.{css,scss}]
+indent_size = 4
+indent_style = space
+
+[*.{graphql,graphqls,gql}]
+indent_size = 4
+indent_style = space
+
+[*.{html,htm}]
+indent_size = 4
+indent_style = space
+
+[*.{js,jsx,cjs,mjs}]
+indent_size = 4
+indent_style = space
+
+[*.{json,jsonc,json5}]
+indent_size = 4
+indent_style = space
+
+[*.{md,mdx}]
+indent_size = 4
+indent_style = space
+
+[*.{ts,tsx,cts,mts}]
+indent_size = 4
+indent_style = space
 
 [*.{cs, cshtml}]
-indent_style = space
 indent_size = 4
-trim_trailing_whitespace = true
-
-[*.{js, ts, vue}]
 indent_style = space
+
+[*.{vue}]
 indent_size = 4
-trim_trailing_whitespace = true
-
-[*.{json, xml, yml, yaml}]
 indent_style = space
+
+[*.{json, xml, yml, yaml, props, targets, *proj}]
 indent_size = 2
+indent_style = space
 trim_trailing_whitespace = true
 xml_max_line_length = off
 max_line_length = off
 
 [{*.graphqlconfig,*.graphqlrc,*.har,*.jsb2,*.jsb3,*.json,*.jsonc,*.postman_collection,*.postman_environment,.babelrc,.eslintrc,.prettierrc,.stylelintrc,bowerrc,jest.config}]
-indent_style = space
-indent_size = 2
-trim_trailing_whitespace = true
-
-[{*.yaml,*.yml}]
 indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true

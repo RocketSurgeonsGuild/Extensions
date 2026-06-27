@@ -25,7 +25,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute6(
         IConfigured1 i1,
@@ -37,7 +38,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute7(
         IConfigured1 i1,
@@ -50,7 +52,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute8(
         IConfigured1 i1,
@@ -64,7 +67,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute9(
         IConfigured1 i1,
@@ -79,7 +83,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute10(
         IConfigured1 i1,
@@ -95,7 +100,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute11(
         IConfigured1 i1,
@@ -112,7 +118,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute12(
         IConfigured1 i1,
@@ -130,7 +137,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute13(
         IConfigured1 i1,
@@ -149,7 +157,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual void Execute14(
         IConfigured1 i1,
@@ -169,7 +178,8 @@ public class MethodFuncTest
         IInjected1 n1,
         IInjected2 n2,
         IInjected3? n3 = null
-    ) { }
+    )
+    { }
 
     public virtual bool ExecuteReturn() => true;
 

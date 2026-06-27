@@ -47,7 +47,7 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
     }
 
     public static IEnumerable<Func<(object fixture, string path)>> ListData_ForFailureCases() =>
-        GetListFixtures().Select(item => (Func<(object fixture, string path)>)(() => (item, "Things[0].D")));
+        GetListFixtures().Select(item => (Func<(object fixture, string path)>)( () => (item, "Things[0].D") ));
 
     public static IEnumerable<Func<(object fixture, string path, object? value)>> DictionaryData()
     {
@@ -103,36 +103,36 @@ public class PropertyGetterTests() : AutoFakeTest(Defaults.LoggerTest)
         yield return new Fixture_ReadOnlyCollection
         {
             Things = new(
-                new List<Fixture_Thing>(
+                [with(
                     [
                         new() { A = "123", B = 1, C = null },
                         new() { A = "456", B = 2, C = 1L },
                         new() { A = "789", B = 3, C = null },
                     ]
-                )
+                )]
             ),
             Values = new ReadOnlyCollection<string>(new Collection<string> { "1", "2", "3" }),
         };
         yield return new Fixture_List
         {
-            Things = new List<Fixture_Thing>
-            {
+            Things =
+            [
                 new() { A = "123", B = 1, C = null },
                 new() { A = "456", B = 2, C = 1L },
                 new() { A = "789", B = 3, C = null },
-            },
+            ],
             Values = ["1", "2", "3"],
         };
         yield return new Fixture_ReadOnlyList
         {
             Things = new ReadOnlyCollection<Fixture_Thing>(
-                new List<Fixture_Thing>(
+                [with(
                     [
                         new() { A = "123", B = 1, C = null },
                         new() { A = "456", B = 2, C = 1L },
                         new() { A = "789", B = 3, C = null },
                     ]
-                )
+                )]
             ),
             Values = new ReadOnlyCollection<string>(new Collection<string> { "1", "2", "3" }),
         };

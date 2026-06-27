@@ -1,0 +1,8 @@
+<Project>
+    <PropertyGroup>
+        <BuildScriptsRoot>$(MSBuildThisFileDirectory)</BuildScriptsRoot>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectProperty Include="BuildScriptsRoot" />
+    </ItemGroup>
+</Project>

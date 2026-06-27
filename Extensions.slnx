@@ -1,0 +1,88 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/config/">
+    <File Path=".codecov.yml" />
+    <File Path=".config/dotnet-tools.json" />
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path=".gitmodules" />
+    <File Path=".prettierignore" />
+    <File Path=".prettierrc" />
+    <File Path="build.cmd" />
+    <File Path="build.ps1" />
+    <File Path="build.sh" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Directory.Packages.support.props" />
+    <File Path="dotnet-tools.json" />
+    <File Path="GitReleaseManager.yaml" />
+    <File Path="GitVersion.yml" />
+    <File Path="LICENSE" />
+    <File Path="NuGet.config" />
+    <File Path="package.json" />
+    <File Path="Readme.md" />
+    <Project Path=".build/.build.csproj">
+      <Build Project="false" />
+    </Project>
+  </Folder>
+  <Folder Name="/config/.github/">
+    <File Path="labels.yml" />
+    <File Path="release.yml" />
+    <File Path="renovate.json" />
+  </Folder>
+  <Folder Name="/config/.github/workflows/">
+    <File Path="ci-ignore.yml" />
+    <File Path="ci.yml" />
+    <File Path="close-milestone.yml" />
+    <File Path="dependabot-merge.yml" />
+    <File Path="draft-release.yml" />
+    <File Path="lint.yml" />
+    <File Path="publish-nuget.yml" />
+    <File Path="sync-labels.yml" />
+    <File Path="update-milestone.yml" />
+  </Folder>
+  <Folder Name="/config/.husky/">
+    <File Path="pre-commit" />
+    <File Path="task-runner.json" />
+  </Folder>
+  <Folder Name="/config/.vscode/">
+    <File Path="settings.json" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <Project Path="src/Binding.Extensions/Rocket.Surgery.Extensions.Binding.csproj" />
+    <Project Path="src/Configuration.Ini/Rocket.Surgery.Extensions.Configuration.Ini.csproj" />
+    <Project Path="src/Configuration.Json/Rocket.Surgery.Extensions.Configuration.Json.csproj" />
+    <Project Path="src/Configuration.Yaml/Rocket.Surgery.Extensions.Configuration.Yaml.csproj" />
+    <Project Path="src/Configuration/Rocket.Surgery.Extensions.Configuration.csproj" />
+    <Project Path="src/DependencyInjection.Extensions/Rocket.Surgery.DependencyInjection.Extensions.csproj" />
+    <Project Path="src/Extensions.Abstractions/Rocket.Surgery.Extensions.Abstractions.csproj" />
+    <Project Path="src/Extensions/Rocket.Surgery.Extensions.csproj" />
+    <Project Path="src/Linq.Extensions/Rocket.Surgery.Linq.Extensions.csproj" />
+    <Project Path="src/Logging/Rocket.Surgery.Extensions.Logging.csproj" />
+    <Project Path="src/Reactive.Extensions/Rocket.Surgery.Reactive.Extensions.csproj" />
+    <Project Path="src/Reflection.Extensions/Rocket.Surgery.Reflection.Extensions.csproj" />
+    <Project Path="src/System/Rocket.Surgery.System.csproj" />
+    <Project Path="src/Task.Extensions/Rocket.Surgery.Task.Extensions.csproj" />
+  </Folder>
+  <Folder Name="/src/DependencyInjection.Analyzers.roslyn4.8/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/src/DependencyInjection.Analyzers/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/test/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <Project Path="test/Extensions.Tests/Rocket.Surgery.Extensions.Tests.csproj" />
+  </Folder>
+</Solution>

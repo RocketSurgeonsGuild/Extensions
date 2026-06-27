@@ -1,4 +1,4 @@
-﻿using System.Reactive;
+using System.Reactive;
 using System.Text;
 using Microsoft.Reactive.Testing;
 
@@ -46,12 +46,12 @@ internal static class Helpers
             }
 
             var marbleEvents = character switch
-                               {
-                                   '#' => EnumerableEx.Return(ReactiveTest.OnError<char>(time, new Exception("end"))),
-                                   '|' => EnumerableEx.Return(ReactiveTest.OnCompleted(time, character)),
-                                   '-' => [],
-                                   _   => EnumerableEx.Return(ReactiveTest.OnNext(time, character)),
-                               };
+            {
+                '#' => EnumerableEx.Return(ReactiveTest.OnError<char>(time, new Exception("end"))),
+                '|' => EnumerableEx.Return(ReactiveTest.OnCompleted(time, character)),
+                '-' => [],
+                _ => EnumerableEx.Return(ReactiveTest.OnNext(time, character)),
+            };
 
             foreach (var marble in marbleEvents)
                 yield return marble;
@@ -87,36 +87,23 @@ internal static class Helpers
                 case NotificationKind.OnCompleted:
                     sb.Append('|');
                     break;
+                default:
+                    break;
             }
         }
 
         return sb.ToString();
     }
 
-    private class UnitObserver : IObserver<Unit>
+    private class UnitObserver(IObserver<char> observer) : IObserver<Unit>
     {
-        private readonly IObserver<char> _observer;
-        private char _next;
+        private readonly IObserver<char> _observer = observer;
+        private char _next = 'a';
 
-        public UnitObserver(IObserver<char> observer)
-        {
-            _observer = observer;
-            _next = 'a';
-        }
+        public void OnCompleted() => _observer.OnCompleted();
 
-        public void OnCompleted()
-        {
-            _observer.OnCompleted();
-        }
+        public void OnError(Exception error) => _observer.OnError(error);
 
-        public void OnError(Exception error)
-        {
-            _observer.OnError(error);
-        }
-
-        public void OnNext(Unit value)
-        {
-            _observer.OnNext(_next++);
-        }
+        public void OnNext(Unit value) => _observer.OnNext(_next++);
     }
 }

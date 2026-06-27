@@ -1,4 +1,4 @@
-﻿using FakeItEasy;
+using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using Rocket.Surgery.Extensions.Logging;
 
@@ -7,10 +7,7 @@ namespace Rocket.Surgery.Extensions.Tests.Logging;
 public class LoggingExtensionTests
 {
     [Test]
-    public void TimeInformationShouldNotBeNull()
-    {
-        A.Fake<ILogger>().TimeInformation("message").ShouldNotBeNull();
-    }
+    public void TimeInformationShouldNotBeNull() => A.Fake<ILogger>().TimeInformation("message").ShouldNotBeNull();
 
     [Test]
     public void TimeInformationShouldDispose()
@@ -23,10 +20,7 @@ public class LoggingExtensionTests
     }
 
     [Test]
-    public void TimeDebugShouldNotBeNull()
-    {
-        A.Fake<ILogger>().TimeDebug("message").ShouldNotBeNull();
-    }
+    public void TimeDebugShouldNotBeNull() => A.Fake<ILogger>().TimeDebug("message").ShouldNotBeNull();
 
     [Test]
     public void TimeDebugShouldDispose()
@@ -39,10 +33,7 @@ public class LoggingExtensionTests
     }
 
     [Test]
-    public void TimeTraceShouldNotBeNull()
-    {
-        A.Fake<ILogger>().TimeTrace("message").ShouldNotBeNull();
-    }
+    public void TimeTraceShouldNotBeNull() => A.Fake<ILogger>().TimeTrace("message").ShouldNotBeNull();
 
     [Test]
     public void TimeTraceShouldDispose()

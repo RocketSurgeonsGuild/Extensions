@@ -1,7 +1,28 @@
 {
-    "private": true,
+    "name": "private",
+    "version": "1.0.0",
+    "license": "ISC",
+    "author": "",
+    "type": "commonjs",
+    "main": "index.js",
+    "directories": {
+        "test": "tests"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "chevrotain": "7.1.1",
+        "regexp-to-ast": "0.5.0"
+    },
     "devDependencies": {
+        "oxlint": "1.71.0",
+        "oxlint-tsgolint": "0.23.0",
         "@prettier/plugin-xml": "3.4.2",
-        "prettier": "3.8.1"
+        "@standard-config/prettier": "1.13.3",
+        "prettier": "3.8.4",
+        "prettier-plugin-powershell": "2.1.5",
+        "prettier-plugin-toml": "2.0.6",
+        "prettier-plugin-yaml": "1.2.0"
     }
 }

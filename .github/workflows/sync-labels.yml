@@ -1,14 +1,14 @@
 name: Sync Labels
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - .github/workflows/sync-labels.yml
-      - .github/labels.yml
-  schedule:
-    - cron: '0 0 * * 4'
+    push:
+        branches:
+            - main
+        paths:
+            - .github/workflows/sync-labels.yml
+            - .github/labels.yml
+    schedule:
+        - cron: 0 0 * * 4
 
 jobs:
-  sync_labels:
-    uses: RocketSurgeonsGuild/actions/.github/workflows/sync-labels.yml@v0.3.15
+    sync_labels:
+        uses: RocketSurgeonsGuild/actions/.github/workflows/sync-labels.yml@v0.3.15

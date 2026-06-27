@@ -1,0 +1,3 @@
+# install  <platform>  <scope>
+install  claude-code  local
+install  copilot  local

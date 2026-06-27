@@ -60,9 +60,9 @@ public class Base32UrlTests() : AutoFakeTest(Defaults.LoggerTest)
 
         foreach (var s in rfc4684TestVectors)
         {
-            #pragma warning disable CA1308 // Normalize strings to uppercase
+#pragma warning disable CA1308 // Normalize strings to uppercase
             var encodedS1 = s[1].ToLowerInvariant();
-            #pragma warning restore CA1308 // Normalize strings to uppercase
+#pragma warning restore CA1308 // Normalize strings to uppercase
             await Assert.That(System.Text.Encoding.ASCII.GetString(enc.Decode(encodedS1))).IsEqualTo(s[0]);
         }
     }

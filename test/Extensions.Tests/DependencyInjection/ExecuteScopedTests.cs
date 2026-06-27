@@ -33,14 +33,14 @@ public class ExecuteScopedTests : LoggerTest
 
         foreach ((var serviceType, var implementationType) in interfaces.Join(
                      implementations,
-                     z => z.Name.Substring(1),
+                     z => z.Name[1..],
                      z => z.Name,
                      (serviceType, implementationType) => (serviceType, implementationType)
                  ))
         {
             yield return () => (
-                             serviceType.MakeGenericType(services.Take(serviceType.GetGenericArguments().Length).ToArray()),
-                             implementationType.MakeGenericType(services.Take(implementationType.GetGenericArguments().Length).ToArray())
+                             serviceType.MakeGenericType([.. services.Take(serviceType.GetGenericArguments().Length)]),
+                             implementationType.MakeGenericType([.. services.Take(implementationType.GetGenericArguments().Length)])
                          );
         }
 
@@ -73,7 +73,7 @@ public class ExecuteScopedTests : LoggerTest
         var executor = _serviceProvider.WithScoped<Service1>();
         executor.Invoke(s => s.ScopedValue).Value.ShouldBe(0);
         executor.Invoke(s => { s.ScopedValue.Value.ShouldBe(1); });
-        (await executor.Invoke(async s => s.ScopedValue.Value).ConfigureAwait(false)).ShouldBe(2);
+        ( await executor.Invoke(async s => s.ScopedValue.Value).ConfigureAwait(false) ).ShouldBe(2);
         await executor.Invoke(async s => { s.ScopedValue.Value.ShouldBe(3); }).ConfigureAwait(false);
     }
 
@@ -97,7 +97,7 @@ public class ExecuteScopedTests : LoggerTest
                 s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        (await executor
+        ( await executor
                .Invoke(
                     async (s1, s2) =>
                     {
@@ -105,7 +105,7 @@ public class ExecuteScopedTests : LoggerTest
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false))
+               .ConfigureAwait(false) )
            .ShouldBe(2);
         await executor
              .Invoke(
@@ -140,7 +140,7 @@ public class ExecuteScopedTests : LoggerTest
                 s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        (await executor
+        ( await executor
                .Invoke(
                     async (s1, s2, s3) =>
                     {
@@ -149,7 +149,7 @@ public class ExecuteScopedTests : LoggerTest
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false))
+               .ConfigureAwait(false) )
            .ShouldBe(2);
         await executor
              .Invoke(
@@ -187,7 +187,7 @@ public class ExecuteScopedTests : LoggerTest
                 s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        (await executor
+        ( await executor
                .Invoke(
                     async (s1, s2, s3, s4) =>
                     {
@@ -197,7 +197,7 @@ public class ExecuteScopedTests : LoggerTest
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false))
+               .ConfigureAwait(false) )
            .ShouldBe(2);
         await executor
              .Invoke(
@@ -238,7 +238,7 @@ public class ExecuteScopedTests : LoggerTest
                 s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        (await executor
+        ( await executor
                .Invoke(
                     async (s1, s2, s3, s4, s5) =>
                     {
@@ -249,7 +249,7 @@ public class ExecuteScopedTests : LoggerTest
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false))
+               .ConfigureAwait(false) )
            .ShouldBe(2);
         await executor
              .Invoke(
@@ -293,7 +293,7 @@ public class ExecuteScopedTests : LoggerTest
                 s1.ScopedValue.Value.ShouldBe(1);
             }
         );
-        (await executor
+        ( await executor
                .Invoke(
                     async (s1, s2, s3, s4, s5, s6) =>
                     {
@@ -305,7 +305,7 @@ public class ExecuteScopedTests : LoggerTest
                         return s1.ScopedValue.Value;
                     }
                 )
-               .ConfigureAwait(false))
+               .ConfigureAwait(false) )
            .ShouldBe(2);
         await executor
              .Invoke(
@@ -327,52 +327,38 @@ public class ExecuteScopedTests : LoggerTest
     public async Task Should_Resolve_ExecuteScoped(Type serviceType, Type implementationType) =>
         _serviceProvider.GetService(serviceType).ShouldBeOfType(implementationType);
 
-    private class ScopedValue
+    private class ScopedValue(int value)
     {
-        public ScopedValue(int value) => Value = value;
-
-        public int Value { get; }
+        public int Value { get; } = value;
     }
 
-    private class Service1
+    private class Service1(ExecuteScopedTests.ScopedValue scopedValue)
     {
-        public Service1(ScopedValue scopedValue) => ScopedValue = scopedValue;
-
-        public ScopedValue ScopedValue { get; }
+        public ScopedValue ScopedValue { get; } = scopedValue;
     }
 
-    private class Service2
+    private class Service2(ExecuteScopedTests.Service1 service)
     {
-        public Service2(Service1 service) => Service = service;
-
-        public Service1 Service { get; }
+        public Service1 Service { get; } = service;
     }
 
-    private class Service3
+    private class Service3(ExecuteScopedTests.Service2 service)
     {
-        public Service3(Service2 service) => Service = service;
-
-        public Service2 Service { get; }
+        public Service2 Service { get; } = service;
     }
 
-    private class Service4
+    private class Service4(ExecuteScopedTests.Service3 service)
     {
-        public Service4(Service3 service) => Service = service;
-
-        public Service3 Service { get; }
+        public Service3 Service { get; } = service;
     }
 
-    private class Service5
+    private class Service5(ExecuteScopedTests.Service4 service)
     {
-        public Service5(Service4 service) => Service = service;
-
-        public Service4 Service { get; }
+        public Service4 Service { get; } = service;
     }
 
-    private class Service6
+    private class Service6(ExecuteScopedTests.Service5 service)
     {
-        public Service6(Service5 service) => Service = service;
-
-        public Service5 Service { get; }
+        public Service5 Service { get; } = service;
     }
 }
