@@ -1,0 +1,50 @@
+[tools]
+"github:microsoft/apm" = { version = "v0.20.0", bin = "apm" }
+"github:eljulians/skillfile" = { version = "v1.7.1", bin = "skillfile" }
+"github:yvgude/lean-ctx" = { version = "v3.8.8", bin = "lean-ctx" }
+hk = "1.48.0"
+pkl = "0.31.1"
+bun = "1.3.14"
+actionlint = "1.7.12"
+prettier = "3.8.4"
+
+dotnet = [{ version = "8.0.14", runtime = "dotnet" }, { version = "10.0.301" }]
+"dotnet:gitversion.tool" = "6.6.0"
+"dotnet:dotnet-reportgenerator-globaltool" = "5.5.3"
+"dotnet:codecov.tool" = "1.13.0"
+"dotnet:jetbrains.resharper.globaltools" = "2025.3.3"
+"dotnet:jetbrains.dotcover.commandlinetools" = "2025.3.3"
+"dotnet:jetbrains.dottrace.globaltools" = "2025.3.3"
+"dotnet:dotnet-coverage" = "18.5.1"
+"dotnet:dotnet-outdated-tool" = "4.7.0"
+"dotnet:verify.tool" = "0.7.0"
+"dotnet:gitreleasemanager.tool" = "0.20.0"
+"dotnet:NuGet.Mcp.Server" = "1.4.3"
+"dotnet:xmldocmd" = "2.9.0"
+node = "22"
+"pipx:git+https://github.com/github/spec-kit.git" = "latest"
+"npm:@bradygaster/squad-cli" = "0.10.0"
+# dotnet
+
+[tasks]
+build = { run = "dotnet run build/Build.cs" }
+docs = { run = "cd docs && npm run dev", description = "Start Astro/Starlight dev server" }
+"docs:build" = { run = "mise run docs:api && cd docs && npm run build", description = "Generate API reference then build Starlight site" }
+"docs:api" = { run = "dotnet publish src/Indago/Indago.csproj -c Release -f net8.0 -o /tmp/indago-publish --nologo && mkdir -p docs/src/content/docs/api && xmldocmd /tmp/indago-publish/Indago.dll docs/src/content/docs/api/ --namespace Indago --source https://github.com/RocketSurgeonsGuild/Indago/blob/main/src/Indago/ --clean && node docs/scripts/add-api-frontmatter.mjs", description = "Publish Indago, generate API reference via xmldocmd, inject Starlight frontmatter" }
+"docs:preview" = { run = "cd docs && npm run preview", description = "Preview built Starlight site" }
+"roslyn-lsp" = { run = "bash build/scripts/install-roslyn-lsp.sh", description = "Install the Microsoft Roslyn language server for this RID" }
+"pkl-vscode" = { run = "bash build/scripts/install-pkl-vscode.sh", description = "Install the Pkl VS Code extension (not in marketplace; installed from VSIX)" }
+
+[settings]
+lockfile = true
+prereleases = true
+
+[env]
+HK_MISE = 1
+# Microsoft Roslyn language server (Microsoft.CodeAnalysis.LanguageServer), installed by the
+# `roslyn-lsp` task from the Azure DevOps vs-impl feed. The wrapper lands on PATH below.
+ROSLYN_LSP_VERSION = "4.8.0-7.26274.14"
+PKL_VSCODE_VERSION = "0.22.0"
+
+[hooks]
+postinstall = ["hk install --mise", "npm install"]

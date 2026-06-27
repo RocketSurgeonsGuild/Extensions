@@ -7,8 +7,38 @@
   "bracketSpacing": true,
   "printWidth": 160,
   "plugins": [
-    "@prettier/plugin-xml"
+    "@standard-config/prettier",
+    "@prettier/plugin-xml",
+    "prettier-plugin-yaml",
+    "prettier-plugin-powershell",
+    "prettier-plugin-toml"
   ],
+  "xmlWhitespaceSensitivity": "ignore",
+  "xmlQuoteAttributes": "double",
+  "powershellIndentStyle": "spaces",
+  "powershellIndentSize": 4,
+  "powershellTrailingComma": "none",
+  "powershellSortHashtableKeys": false,
+  "powershellBlankLinesBetweenFunctions": 1,
+  "powershellBlankLineAfterParam": true,
+  "powershellBraceStyle": "1tbs",
+  "powershellLineWidth": 120,
+  "powershellPreferSingleQuote": false,
+  "powershellKeywordCase": "preserve",
+  "powershellRewriteAliases": false,
+  "powershellRewriteWriteHost": false,
+  "powershellPreset": "none",
+  "alignEntries": true,
+  "alignComments": true,
+  "arrayAutoExpand": true,
+  "arrayAutoCollapse": true,
+  "compactArrays": true,
+  "compactInlineTables": false,
+  "compactEntries": false,
+  "indentTables": false,
+  "indentEntries": false,
+  "reorderKeys": false,
+  "allowedBlankLines": 1,
   "overrides": [
     {
       "files": [
@@ -18,15 +48,6 @@
       ],
       "options": {
         "parser": "xml"
-      }
-    },
-    {
-      "files": [
-        "*.yml",
-        "*.yaml"
-      ],
-      "options": {
-        "tabWidth": 2
       }
     }
   ]

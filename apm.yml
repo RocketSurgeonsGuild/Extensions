@@ -1,0 +1,33 @@
+name: Extensions
+version: 1.0.0
+description: APM project for Extensions
+author: David Driscoll
+targets:
+    - claude
+    - copilot
+dependencies:
+    apm:
+        - diegosouzapw/awesome-omni-skills/skills/mise-configurator-v2
+        - majiayu000/claude-skill-registry/skills/data/hk-setup
+        - sickn33/antigravity-awesome-skills/plugins/antigravity-awesome-skills-claude/skills/mise-configurator
+        - terrylica/cc-skills/plugins/itp/skills/mise-configuration
+        - terrylica/cc-skills/plugins/itp/skills/mise-tasks
+        - terrylica/cc-skills/plugins/mise
+        - github/awesome-copilot/plugins/context-engineering
+        - github/awesome-copilot/plugins/csharp-dotnet-development
+        - dotnet/modernize-dotnet/plugins/modernize-dotnet
+        - dotnet/skills
+        - yvgude/lean-ctx
+        - antfu/skills/skills/vitepress
+        - obra/superpowers
+        -
+    mcp:
+        - io.github.upstash/context7
+        - name: nuget
+          registry: false
+          transport: stdio
+          command: nuget-mcp-server
+        - microsoftdocs/mcp
+        - io.github.github/github-mcp-server
+includes: auto
+scripts: {}

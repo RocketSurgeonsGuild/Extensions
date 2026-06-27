@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Project>
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations.Sources" PrivateAssets="all" Condition="'$(MSBuildProjectName)'!='.build'" />
@@ -12,5 +12,6 @@
             Visible="false"
         />
         <None Include="$(MSBuildThisFileDirectory)/LICENSE" Pack="true" PackagePath="/" Visible="false" />
+        <None Include="$(MSBuildThisFileDirectory)/Readme.md" Pack="true" PackagePath="/" Visible="false" />
     </ItemGroup>
 </Project>

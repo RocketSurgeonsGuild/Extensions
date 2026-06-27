@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "apple.pkl-vscode",
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "editorconfig.editorconfig",
+        "tamasfe.even-better-toml",
+        "lambdageek.msbuild-structured-log-viewer",
+        "github.vscode-github-actions",
+        "christian-kohler.path-intellisense",
+        "esbenp.prettier-vscode",
+        "astro-build.astro-vscode",
+        "hideoo.starlight-links"
+    ]
+}

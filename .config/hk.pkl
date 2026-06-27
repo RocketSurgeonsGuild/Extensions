@@ -1,0 +1,111 @@
+amends "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.48.0/hk@1.48.0#/Builtins.pkl"
+
+// Solution the .NET formatters operate against.
+local solution = "Extensions.slnx"
+
+local excludeDiagnostics = new Listing<String> {
+  "CA1869"
+  "CA2255"
+  "CS0103"
+  "CS0108"
+  "CS1061"
+  "CS0246"
+  "CS1591"
+  "CS8602"
+  "CS8604"
+  "IDE0052"
+  "IDE0060"
+  "IDE0130"
+  "IDE1006"
+  "RCS1060"
+  "RCS1075"
+  "RCS1093"
+  "RCS1110"
+  "RCS1112"
+  "RCS1163"
+  "RCS1175"
+  "RCS1246"
+  "RCS1250"
+  "RCS1251"
+  "RCS1264"
+  "RS0026"
+}
+
+local excludes = new Listing<String> {
+  "**/obj/**/*"
+  "**/bin/**/*"
+  ".git/**/*"
+  ".vs/**/*"
+  ".vscode/**/*"
+  ".idea/**/*"
+  ".claude/**/*"
+  ".agents/**/*"
+  ".apm/**/*"
+  ".copilot/**/*"
+  ".squad/**/*"
+}
+
+local excludedDiagnosticsString = excludeDiagnostics.join(" ")
+
+// `dotnet format` — whitespace / code-style / analyzer fixes, scoped to the changed C# files.
+// Has a real verify mode, so it can run in `check` as well as `fix`.
+local dotnetFormat: Step = new Step {
+  glob = "**/*.cs"
+  check =
+    "dotnet format \(solution) --exclude-diagnostics \(excludedDiagnosticsString) --verify-no-changes --include {{files}}"
+  fix =
+    "dotnet format \(solution) --exclude-diagnostics \(excludedDiagnosticsString) --include {{files}}"
+}
+
+// JetBrains ReSharper `cleanupcode` (`jb` global tool, resolved via mise).
+// Fix-only: cleanupcode rewrites files in place and has no verify mode, so we only set `fix`.
+// `--include` wants a `;`-separated list of relative paths.
+// Sequenced after dotnet-format and made exclusive so the two don't race on the same .cs files.
+// To pin a profile/settings add e.g. --profile="Built-in: Reformat Code" --settings="<solution>.DotSettings".
+local jbCleanupCode: Step = new Step {
+  glob = List("**/*.cs")
+  exclusive = true
+  depends = new Listing<String> { "dotnet-format" }
+  fix = "jb cleanupcode \(solution) --include=\"{{ files | replace(from=\" \", to=\";\") }}\""
+}
+
+local linters = new Mapping<String, Step> {
+  ["mise"] = Builtins.mise
+  ["byte-order-marker"] = Builtins.byte_order_marker
+  ["case-conflict"] = Builtins.check_case_conflict
+  ["merge-conflict"] = Builtins.check_merge_conflict
+  ["symlinks"] = Builtins.check_symlinks
+  ["hk-test"] = Builtins.hk_test
+  ["pkl-format"] = Builtins.pkl_format
+  ["prettier"] = (Builtins.prettier) {
+    exclude = excludes
+  }
+  ["prettier-extended"] = (Builtins.prettier) {
+    glob = List("*.*proj", "*.props", "*.targets", "*.xml")
+  }
+  // Validate the hand-authored GitHub Actions workflows (.github/workflows/*.yml).
+  ["actionlint"] = Builtins.actionlint
+  // Safety nets (no external binaries required).
+  ["detect-private-key"] = (Builtins.detect_private_key) {
+    exclude = excludes
+  }
+  ["large-files"] = Builtins.check_added_large_files
+  ["dotnet-format"] = dotnetFormat
+  // ["jb-cleanupcode"] = jbCleanupCode
+}
+
+hooks {
+  ["pre-commit"] {
+    fix = true
+    stash = "git"
+    steps = linters
+  }
+  ["fix"] {
+    fix = true
+    steps = linters
+  }
+  ["check"] {
+    steps = linters
+  }
+}

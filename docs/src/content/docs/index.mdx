@@ -1,0 +1,35 @@
+---
+title: Indago — Static Assembly Scanning for .NET
+description: Compile-time assembly/type-scanning that replaces runtime reflection-based DI scanning with a Roslyn source generator. AOT-safe, zero runtime reflection.
+template: splash
+hero:
+    title: Indago
+    tagline: Compile-time assembly scanning for .NET. AOT-safe, zero runtime reflection.
+    actions:
+        - text: Get Started
+          link: ./guide/
+          icon: right-arrow
+          variant: primary
+        - text: View on GitHub
+          link: https://github.com/RocketSurgeonsGuild/Indago
+          icon: external
+          variant: minimal
+banner:
+    content: |
+        Indago is currently in early development.
+        <a href="https://github.com/RocketSurgeonsGuild/Indago/releases">See releases →</a>
+---
+
+import { CardGrid, Card } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+  <Card title="AOT & Trim Safe" icon="rocket">
+    Generated code requires zero runtime reflection — fully compatible with .NET Native AOT and IL trimming.
+  </Card>
+  <Card title="Build-Time Scanning" icon="setting">
+    A Roslyn incremental source generator resolves selector expressions at compile time and emits a strongly-typed `IIndagoProvider`.
+  </Card>
+  <Card title="Drop-In for Scrutor" icon="puzzle">
+    Familiar fluent selector API — `FromAssemblyOf<T>()`, `AddClasses()`, `AsMatchingInterface()` — but evaluated at build time.
+  </Card>
+</CardGrid>

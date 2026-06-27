@@ -1,0 +1,17 @@
+name: dotnet-agent-harness
+version: 0.1.0
+description: >
+  Comprehensive .NET development skills, specialist agents, commands, and hooks.
+  Migrated from rudironsoni/dotnet-agent-harness (.rulesync).
+  Includes 151 skills, 18 specialist subagents, 13 commands, operating mode rules,
+  and post-edit automation hooks for C#/.NET projects.
+author: rudironsoni
+license: MIT
+repository: https://github.com/rudironsoni/dotnet-agent-harness
+type: hybrid
+targets:
+  - claudecode
+  - copilot
+  - geminicli
+  - codexcli
+  - opencode

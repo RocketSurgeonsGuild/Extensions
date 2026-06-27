@@ -8,5 +8,26 @@
     "languageServerExample.maxNumberOfProblems": 60,
     "csharp.preview.improvedLaunchExperience": true,
     "dotnet.automaticallySyncWithActiveItem": true,
-    "dotnet.testWindow.useTestingPlatformProtocol": true
+    "dotnet.testWindow.useTestingPlatformProtocol": true,
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#af885b",
+        "activityBar.background": "#af885b",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#bfe0d0",
+        "activityBarBadge.foreground": "#15202b",
+        "editorGroup.border": "#af885b",
+        "panel.border": "#af885b",
+        "sash.hoverBorder": "#af885b",
+        "sideBar.border": "#af885b",
+        "statusBar.background": "#af885b",
+        "statusBar.debuggingBackground": "#5b82af",
+        "statusBar.debuggingForeground": "#e7e7e7",
+        "statusBar.foreground": "#15202b",
+        "statusBarItem.hoverBackground": "#906e46",
+        "statusBarItem.remoteBackground": "#af885b",
+        "statusBarItem.remoteForeground": "#15202b",
+        "tab.activeBorder": "#af885b"
+    },
+    "peacock.color": "#af885b"
 }

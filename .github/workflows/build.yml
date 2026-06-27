@@ -1,0 +1,76 @@
+name: Build
+
+on:
+    push:
+        branches:
+            - main
+            - next
+        tags:
+            - v*
+    pull_request:
+        branches:
+            - main
+            - next
+    merge_group:
+        branches:
+            - main
+            - next
+
+permissions:
+    contents: read
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+              with:
+                  clean: 'false'
+                  fetch-depth: '0'
+            - name: 🛠️ Setup mise
+              uses: jdx/mise-action@v4
+              with:
+                  install: true
+                  cache: true
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+            - name: ⚙️ Build
+              id: build
+              run: |
+                  mise run build
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NUGET_API_KEY: ${{ secrets.RSG_NUGET_API_KEY }}
+            - name: 🏺 Save GitHub event
+              if: always()
+              run: cp "$GITHUB_EVENT_PATH" artifacts/event.json || true
+            - name: 🏺 Publish logs
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: logs
+                  path: artifacts/logs/
+            - name: 🏺 Publish test data
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: test data
+                  path: artifacts/tests/
+            - name: 🏺 Publish coverage data
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: coverage
+                  path: artifacts/coverage/
+            - name: 🏺 Publish NuGet Packages
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: nuget
+                  path: artifacts/nuget/
+            - name: 🏺 Publish event
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: event
+                  path: artifacts/event.json

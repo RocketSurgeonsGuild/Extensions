@@ -1,0 +1,85 @@
+name: Deploy Docs
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - docs/**
+            - src/**
+            - .github/workflows/deploy-docs.yml
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+concurrency:
+    group: pages
+    cancel-in-progress: false
+
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: |
+                      8.0.x
+                      10.0.x
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: npm
+                  cache-dependency-path: docs/package-lock.json
+
+            - name: Install xmldocmd
+              run: dotnet tool install --global xmldocmd --version 2.9.0
+
+            - name: Publish Extensions
+              run: >
+                  dotnet publish src/Extensions/Extensions.csproj -c Release -o /tmp/extensions-publish --nologo
+
+            - name: Generate API reference
+              run: |
+                  mkdir -p docs/src/content/docs/api
+                  xmldocmd /tmp/extensions-publish/Extensions.dll docs/src/content/docs/api/ \
+                    --namespace Extensions \
+                    --source https://github.com/RocketSurgeonsGuild/Extensions/blob/main/src/Extensions/ \
+                    --clean
+                  node docs/scripts/add-api-frontmatter.mjs
+
+            - name: Install docs dependencies
+              run: npm ci
+              working-directory: docs
+
+            - name: Build docs
+              run: npm run build
+              working-directory: docs
+              env:
+                  GH_API_TOKEN: ${{ secrets.GH_API_TOKEN }}
+
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: docs/dist
+
+    deploy:
+        name: Deploy
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
