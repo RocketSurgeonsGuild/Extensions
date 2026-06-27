@@ -1,4 +1,4 @@
-using Rocket.Surgery.DependencyInjection;
+using Indago;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;

@@ -15,7 +15,7 @@ if [ "$CI" == "true" ]; then
 fi
 EXEPATH="$SCRIPT_DIR/.build/bin/Debug/.build"
 BUILD_PROJECT_FILE="$SCRIPT_DIR/.build/.build.csproj"
-TEMP_DIRECTORY="$SCRIPT_DIR//.nuke/temp"
+TEMP_DIRECTORY="$SCRIPT_DIR//.temp"
 
 DOTNET_GLOBAL_FILE="$SCRIPT_DIR//global.json"
 DOTNET_INSTALL_URL="https://dot.net/v1/dotnet-install.sh"

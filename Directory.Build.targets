@@ -3,4 +3,14 @@
     <ItemGroup>
         <PackageReference Include="JetBrains.Annotations.Sources" PrivateAssets="all" Condition="'$(MSBuildProjectName)'!='.build'" />
     </ItemGroup>
+    <ItemGroup>
+        <None
+            Include="$(MSBuildThisFileDirectory).temp/packageicon.png"
+            Condition="Exists('$(MSBuildThisFileDirectory).temp/packageicon.png')"
+            Pack="true"
+            PackagePath="/images/"
+            Visible="false"
+        />
+        <None Include="$(MSBuildThisFileDirectory)/LICENSE" Pack="true" PackagePath="/" Visible="false" />
+    </ItemGroup>
 </Project>

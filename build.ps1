@@ -16,7 +16,7 @@ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
 $IsCI = $env:CI -eq "true"
 $ExePath = "$PSScriptRoot/.build/bin/Debug/.build.exe"
 $BuildProjectFile = "$PSScriptRoot/.build/.build.csproj"
-$TempDirectory = "$PSScriptRoot/.nuke/temp"
+$TempDirectory = "$PSScriptRoot/.temp"
 
 $DotNetGlobalFile = "$PSScriptRoot/global.json"
 $DotNetInstallUrl = "https://dot.net/v1/dotnet-install.ps1"
@@ -74,7 +74,7 @@ if (Test-Path env:NUKE_ENTERPRISE_TOKEN) {
 if ($IsCI) {
     if (-not (Test-Path "$ExePath")) {
         ExecSafe { & $env:DOTNET_EXE build $BuildProjectFile /nodeReuse:false /p:UseSharedCompilation=false -nologo -clp:NoSummary --verbosity quiet }
-        New-Item -Type File = "$PSScriptRoot/.nuke/temp/ci" | Out-Null
+        New-Item -Type File = "$PSScriptRoot/.temp/ci" | Out-Null
     }
 }
 else {

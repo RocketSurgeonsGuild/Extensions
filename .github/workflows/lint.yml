@@ -14,7 +14,7 @@
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: lint
+name: Lint
 
 on:
   pull_request_target:
